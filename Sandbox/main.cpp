@@ -14,11 +14,13 @@ void printTime(const string &msg, const std::chrono::duration<long long, std::ra
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    EASY_PROFILER_ENABLE;
     SandBox w;
     w.show();
     //benchmark();
-    return a.exec();
-    //return 0;
+    int ret = a.exec();
+    profiler::dumpBlocksToFile("test_profile.prof");
+    return ret;
 }
 
 void benchmark()

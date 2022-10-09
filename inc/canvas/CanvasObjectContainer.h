@@ -42,8 +42,12 @@ class CanvasObjectContainer
         template<typename T>
         void removeObject(CanvasObject *obj,std::vector<T*> &list);
 
+        // All objects will be contained in this list
         std::vector<CanvasObject*> m_container;
 
+        // Additional, all objects will be split up in the
+        // individual components which are inherited in the obj
+        std::vector<SfEventHandle*> m_eventhandledObjects;
         std::vector<Drawable*> m_drawables;
         std::vector<CameraController*> m_cameras;
 

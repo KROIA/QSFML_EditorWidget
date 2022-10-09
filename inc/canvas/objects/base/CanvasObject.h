@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <vector>
 #include "CanvasForwardDeclaration.h"
+#include <easy/profiler.h>
 
 class CanvasObject
 {
@@ -29,7 +30,7 @@ class CanvasObject
 
         virtual void onCanvasParentChange(QSFML_Canvas *newParent);
         virtual void onParentChange(CanvasObject *newParent);
-        virtual void sfEvent(const sf::Event &e);
+       // virtual void sfEvent(const sf::Event &e);
 
         const static size_t npos = -1;
     protected:

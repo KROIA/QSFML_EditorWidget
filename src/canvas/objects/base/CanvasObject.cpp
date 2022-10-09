@@ -91,4 +91,4 @@ size_t CanvasObject::getChildIndex(CanvasObject *child)
 }
 void CanvasObject::onCanvasParentChange(QSFML_Canvas *newParent) {}
 void CanvasObject::onParentChange(CanvasObject *newParent) {}
-void CanvasObject::sfEvent(const sf::Event &e) {}
+//void CanvasObject::sfEvent(const sf::Event &e) {}

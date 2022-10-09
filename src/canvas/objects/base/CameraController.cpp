@@ -3,7 +3,8 @@
 #include <QDebug>
 
 CameraController::CameraController(CanvasObject *parent)
-    :   CanvasObject(parent)
+    : CanvasObject(parent),
+      SfEventHandle()
 {
    // m_canvasParent = nullptr;
     m_currentZoom = 1;

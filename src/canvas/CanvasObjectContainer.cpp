@@ -12,6 +12,7 @@ CanvasObjectContainer::~CanvasObjectContainer()
 
 void CanvasObjectContainer::addObject(CanvasObject *obj)
 {
+    EASY_FUNCTION(profiler::colors::Orange);
     if(!objectExists(obj))
     {
         if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
@@ -19,13 +20,14 @@ void CanvasObjectContainer::addObject(CanvasObject *obj)
         m_container.push_back(obj);
         obj->setCanvasParent(m_parent);
 
-
+        addObject<SfEventHandle>(obj,m_eventhandledObjects);
         addObject<Drawable>(obj,m_drawables);
         addObject<CameraController>(obj,m_cameras);
     }
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
 {
+    EASY_FUNCTION(profiler::colors::Orange);
     for(size_t i=0; i<objs.size(); ++i)
     {
         addObject(objs[i]);
@@ -34,17 +36,19 @@ void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
 
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
 {
+    EASY_FUNCTION(profiler::colors::Orange);
     size_t index = getObjectIndex(obj);
     if(index == npos) return;
     obj->setCanvasParent(nullptr);
     m_container.erase(m_container.begin() + index);
 
-
+    removeObject<SfEventHandle>(obj,m_eventhandledObjects);
     removeObject<Drawable>(obj,m_drawables);
     removeObject<CameraController>(obj,m_cameras);
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 {
+    EASY_FUNCTION(profiler::colors::Orange);
     for(size_t i=0; i<objs.size(); ++i)
     {
         removeObject(objs[i]);
@@ -78,7 +82,9 @@ size_t CanvasObjectContainer::getObjectIndex(CanvasObject *obj)
 
 void CanvasObjectContainer::sfEvent(const sf::Event &e)
 {
-    for(std::vector<CanvasObject*>::iterator it = m_container.begin(); it != m_container.end(); ++it) {
+    for(std::vector<SfEventHandle*>::iterator it = m_eventhandledObjects.begin();
+        it != m_eventhandledObjects.end(); ++it)
+    {
         (*it)->sfEvent(e);
     }
 }
@@ -93,6 +99,7 @@ void CanvasObjectContainer::draw()
 template<typename T>
 bool CanvasObjectContainer::objectExists(T *obj,const std::vector<T*> &list)
 {
+    EASY_FUNCTION(profiler::colors::Orange100);
     size_t num = list.size();
     if(!num) return false;
 
@@ -105,6 +112,7 @@ bool CanvasObjectContainer::objectExists(T *obj,const std::vector<T*> &list)
 template<typename T>
 size_t CanvasObjectContainer::getObjectIndex(T *obj,const std::vector<T*> &list)
 {
+    EASY_FUNCTION(profiler::colors::Orange200);
     size_t num = list.size();
     if(!num) return npos;
 
@@ -116,6 +124,7 @@ size_t CanvasObjectContainer::getObjectIndex(T *obj,const std::vector<T*> &list)
 template<typename T>
 void CanvasObjectContainer::addObject(CanvasObject *obj,std::vector<T*> &list)
 {
+    EASY_FUNCTION(profiler::colors::Orange300);
     T* transformed = dynamic_cast<T*>(obj);
     if(transformed)
     {
@@ -126,6 +135,7 @@ void CanvasObjectContainer::addObject(CanvasObject *obj,std::vector<T*> &list)
 template<typename T>
 void CanvasObjectContainer::removeObject(CanvasObject *obj,std::vector<T*> &list)
 {
+    EASY_FUNCTION(profiler::colors::Orange400);
     T* transformed = dynamic_cast<T*>(obj);
     if(transformed)
     {

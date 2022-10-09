@@ -84,32 +84,6 @@ const sf::ContextSettings &QSFML_Canvas::getContextSettings() const
 {
     return m_settings.contextSettings;
 }
-/*
-void QSFML_Canvas::zoomCamera(float zoomValue)
-{
-
-}
-void QSFML_Canvas::setCameraZoom(float zoomValue)
-{
-
-}
-float QSFML_Canvas::getCameraZoom() const
-{
-
-}
-
-void QSFML_Canvas::moveCamera(const sf::Vector2f &worldCoords)
-{
-
-}
-void QSFML_Canvas::setCameraPosition(const sf::Vector2f &worldCoords)
-{
-
-}
-const sf::Vector2f &QSFML_Canvas::getCameraPosition() const
-{
-
-}*/
 
 void QSFML_Canvas::setCameraView(const sf::View &view)
 {
@@ -191,26 +165,29 @@ void QSFML_Canvas::showEvent(QShowEvent*)
 void QSFML_Canvas::paintEvent(QPaintEvent*)
 {
     if(!m_window)return;
+    EASY_FUNCTION(profiler::colors::Green); // Magenta block with name "foo"
     // Let the derived class do its specific stuff
     OnUpdate();
     sf::Event event;
+
+    EASY_BLOCK("Process sf::Events",profiler::colors::Green200);
     while (m_window->pollEvent(event))
     {
+
         sfEvent(event);
         internal_event(event);
     }
+    EASY_END_BLOCK;
+
+    EASY_BLOCK("Process draw",profiler::colors::Green400);
     m_window->clear(sf::Color(100,100,100));
-
-    /*sf::Vertex line[] =
-    {
-        sf::Vertex(sf::Vector2f(0, 0)),
-        sf::Vertex(sf::Vector2f(1500, 1500))
-    };*/
-
-   // m_window->draw(line,2, sf::Lines);
     CanvasObjectContainer::draw();
+    EASY_END_BLOCK;
+
+    EASY_BLOCK("Process display",profiler::colors::Green600);
     // Display on screen
     m_window->display();
+    EASY_END_BLOCK;
 }
 
 void QSFML_Canvas::resizeEvent(QResizeEvent *event)
@@ -271,10 +248,4 @@ void QSFML_Canvas::sfEvent(const sf::Event &){}
 void QSFML_Canvas::internal_event(const sf::Event &e)
 {
     CanvasObjectContainer::sfEvent(e);
-    /*if (e.type == sf::Event::MouseWheelMoved)
-    {
-        qDebug() << "wheel movement: " << e.mouseWheel.delta;
-        qDebug() << "mouse x: " << e.mouseWheel.x;
-        qDebug() << "mouse y: " << e.mouseWheel.y;
-    }*/
 }

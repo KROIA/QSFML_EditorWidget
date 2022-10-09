@@ -7,32 +7,34 @@ inc = $$PWD/inc
 src = $$PWD/src
 
 include(extern/SFML.pri)
+include(extern/easy_profiler.pri)
 
 INCLUDEPATH += \
     $$inc \
     $$inc/canvas \
-    $$inc/camera \
-    $$inc/canvas/objects
+    $$inc/canvas/objects \
+    $$inc/canvas/objects/base
 
 HEADERS += \
-    $$PWD/inc/camera/CameraInterface.h \
-    $$PWD/inc/canvas/CanvasForwardDeclaration.h \
-    $$PWD/inc/canvas/DrawInterface.h \
-    $$PWD/inc/canvas/objects/BackgroundGrid.h \
-    $$PWD/inc/canvas/objects/CanvasObject.h \
-    $$PWD/inc/canvas/CanvasObjectContainer.h \
-    $$PWD/inc/canvas/objects/Drawable.h \
-    $$PWD/inc/canvas/objects/VisibleCamera.h \
+    $$inc/canvas/CameraInterface.h \
+    $$inc/canvas/CanvasForwardDeclaration.h \
+    $$inc/canvas/DrawInterface.h \
+    $$inc/canvas/objects/BackgroundGrid.h \
+    $$inc/canvas/objects/base/CanvasObject.h \
+    $$inc/canvas/CanvasObjectContainer.h \
+    $$inc/canvas/objects/base/Drawable.h \
+    $$inc/canvas/objects/SfEventHandle.h \
+    $$inc/canvas/objects/VisibleCamera.h \
     $$inc/canvas/CanvasSettings.h \
     $$inc/canvas/QSFML_Canvas.h \
-    $$inc/camera/CameraController.h
+    $$inc/canvas/objects/base/CameraController.h
 
 SOURCES += \
-    $$PWD/src/canvas/objects/CanvasObject.cpp \
-    $$PWD/src/canvas/CanvasObjectContainer.cpp \
-    $$PWD/src/canvas/objects/Drawable.cpp \
+    $$src/canvas/objects/base/CanvasObject.cpp \
+    $$src/canvas/CanvasObjectContainer.cpp \
+    $$src/canvas/objects/base/Drawable.cpp \
     $$src/canvas/QSFML_Canvas.cpp \
-    $$src/camera/CameraController.cpp
+    $$src/canvas/objects/base/CameraController.cpp
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.

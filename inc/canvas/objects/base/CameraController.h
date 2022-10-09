@@ -3,9 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include "CanvasObject.h"
 #include "CameraInterface.h"
+#include "SfEventHandle.h"
 #include <QDebug>
 
-class CameraController: virtual public CanvasObject
+class CameraController: virtual public CanvasObject, public SfEventHandle
 {
     public:
         CameraController(CanvasObject *parent = nullptr);

@@ -30,22 +30,9 @@ class QSFML_Canvas : public QWidget,
         void setContextSettings(const sf::ContextSettings &contextSettings);
         const sf::ContextSettings &getContextSettings() const;
 
-
-
-        // Camera Interface
-       /* void zoomCamera(float zoomValue) override;
-        void setCameraZoom(float zoomValue) override;
-        float getCameraZoom() const override;
-
-        void moveCamera(const sf::Vector2f &worldCoords) override;
-        void setCameraPosition(const sf::Vector2f &worldCoords) override;
-        const sf::Vector2f &getCameraPosition() const override;
-*/
         void setCameraView(const sf::View &view);
         const sf::View &getCameraView() const;
         const sf::View &getDefaultCameraView() const;
-      //  CameraInterface *getCameraInterface() const {return (CameraInterface*)this;}
-
 
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;

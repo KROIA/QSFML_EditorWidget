@@ -33,8 +33,6 @@ class Drawable : virtual public CanvasObject, protected DrawInterface
 
         void internalOnCanvasParentChange(QSFML_Canvas *newParent) override;
         void internalOnParentChange(CanvasObject *newParent) override;
-
-        DrawInterface *m_drawInterface;
     private:
 
 
