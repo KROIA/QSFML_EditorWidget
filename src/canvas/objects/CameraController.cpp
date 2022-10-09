@@ -2,20 +2,22 @@
 #include "QSFML_Canvas.h"
 #include <QDebug>
 
-CameraController::CameraController(CanvasObject *parent)
-    : CanvasObject(parent),
-      SfEventHandle()
+CameraController::CameraController(const std::string &name,
+                                   CanvasObject *parent)
+    : CanvasObject(name,parent)
 {
    // m_canvasParent = nullptr;
     m_currentZoom = 1;
     setMinZoom(0.1);
     setMaxZoom(10);
     setMaxMovingBounds(sf::FloatRect(-200,-200,900,900));
+
+    m_eventHandleComponent = new SfEventComponent();
+    m_eventHandleComponent->setController(this);
+    addComponent(m_eventHandleComponent);
 }
 CameraController::~CameraController()
-{
-
-}
+{}
 void CameraController::setMinZoom(float min)
 {
     m_minZoom = min;
@@ -155,9 +157,13 @@ const sf::View CameraController::getView()
     return m_canvasParent->getCameraView();
 }
 
-void CameraController::sfEvent(const sf::Event &e)
+void CameraController::SfEventComponent::setController(CameraController *controller)
 {
-    if(!m_canvasParent) return;
+    m_controller = controller;
+}
+void CameraController::SfEventComponent::sfEvent(const sf::Event &e)
+{
+    if(!m_controller) return;
 
     static bool mousePressed = false;
     static sf::Vector2f startPos;
@@ -169,16 +175,16 @@ void CameraController::sfEvent(const sf::Event &e)
             //zoom(1+0.01f*(float)e.mouseWheelScroll.delta,getMousePosition());
             float zoomAmount = 1.1;
             if (e.mouseWheelScroll.delta > 0)
-                zoom( 1/zoomAmount , { e.mouseWheelScroll.x, e.mouseWheelScroll.y });
+                m_controller->zoom( 1/zoomAmount , { e.mouseWheelScroll.x, e.mouseWheelScroll.y });
             else if (e.mouseWheelScroll.delta < 0)
-                zoom(zoomAmount , { e.mouseWheelScroll.x, e.mouseWheelScroll.y });
+                m_controller->zoom(zoomAmount , { e.mouseWheelScroll.x, e.mouseWheelScroll.y });
             break;
         }
         case sf::Event::MouseButtonPressed:
         {
             if(e.mouseButton.button == sf::Mouse::Button::Left)
             {
-                startPos = sf::Vector2f(getMousePosition());
+                startPos = sf::Vector2f(m_controller->getMousePosition());
                 mousePressed = true;
             }
             break;
@@ -204,10 +210,10 @@ void CameraController::sfEvent(const sf::Event &e)
             // Swap these to invert the movement direction
 
             //this->mapPixelToCoords(sf::Vector2i(m_movingOldPos*100.f - newPos*100.f))/100.f;
-            sf::Vector2f deltaPos = (getInWorldSpace(sf::Vector2i(startPos*100.f))-
-                                     getInWorldSpace(sf::Vector2i(newPos*100.f)))/100.f;
+            sf::Vector2f deltaPos = (m_controller->getInWorldSpace(sf::Vector2i(startPos*100.f))-
+                                     m_controller->getInWorldSpace(sf::Vector2i(newPos*100.f)))/100.f;
 
-            movePosition(deltaPos);
+            m_controller->movePosition(deltaPos);
             // Move our view accordingly and update the window
             //sf::View view = this->getView();
             //view.move(deltaPos); // <-- Here I use move

@@ -11,7 +11,7 @@
 QSFML_Canvas::QSFML_Canvas(QWidget* parent, const CanvasSettings &settings) :
   QWidget(parent),
  //CameraInterface(),
-  DrawInterface(),
+ // DrawInterface(),
   CanvasObjectContainer(this)
   //sf::RenderWindow(),
 {
@@ -171,17 +171,20 @@ void QSFML_Canvas::paintEvent(QPaintEvent*)
     sf::Event event;
 
     EASY_BLOCK("Process sf::Events",profiler::colors::Green200);
+
+    std::vector<sf::Event> events;
+    events.reserve(20);
     while (m_window->pollEvent(event))
     {
-
-        sfEvent(event);
-        internal_event(event);
+        events.push_back(event);
     }
+    sfEvent(events);
+    internal_event(events);
     EASY_END_BLOCK;
 
     EASY_BLOCK("Process draw",profiler::colors::Green400);
     m_window->clear(sf::Color(100,100,100));
-    CanvasObjectContainer::draw();
+    CanvasObjectContainer::draw(*m_window);
     EASY_END_BLOCK;
 
     EASY_BLOCK("Process display",profiler::colors::Green600);
@@ -207,45 +210,10 @@ void QSFML_Canvas::resizeEvent(QResizeEvent *event)
     }
 }
 
-void QSFML_Canvas::draw(const sf::Drawable &drawable,
-                        const sf::RenderStates &states)
+
+
+void QSFML_Canvas::sfEvent(const std::vector<sf::Event> &events){}
+void QSFML_Canvas::internal_event(const std::vector<sf::Event> &events)
 {
-    if(!m_window) return;
-    m_window->draw(drawable,states);
-}
-
-
-void QSFML_Canvas::draw(const sf::Vertex *vertices,
-                        std::size_t vertexCount,
-                        sf::PrimitiveType type,
-                        const sf::RenderStates &states)
-{
-    if(!m_window) return;
-    m_window->draw(vertices,vertexCount,type,states);
-}
-
-
-void QSFML_Canvas::draw(const sf::VertexBuffer &vertexBuffer,
-                        const sf::RenderStates &states)
-{
-    if(!m_window) return;
-    m_window->draw(vertexBuffer,states);
-}
-
-
-void QSFML_Canvas::draw(const sf::VertexBuffer &vertexBuffer,
-                        std::size_t firstVertex,
-                        std::size_t vertexCount,
-                        const sf::RenderStates &states)
-{
-    if(!m_window) return;
-    m_window->draw(vertexBuffer,firstVertex,vertexCount,states);
-}
-
-
-
-void QSFML_Canvas::sfEvent(const sf::Event &){}
-void QSFML_Canvas::internal_event(const sf::Event &e)
-{
-    CanvasObjectContainer::sfEvent(e);
+    CanvasObjectContainer::sfEvent(events);
 }

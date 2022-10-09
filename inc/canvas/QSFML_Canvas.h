@@ -7,11 +7,10 @@
 #include "CameraController.h"
 #include "CanvasObject.h"
 #include "CanvasObjectContainer.h"
-#include "DrawInterface.h"
 
-class QSFML_Canvas : public QWidget,
-        //public CameraInterface,
-        public DrawInterface,
+
+class QSFML_Canvas :
+        public QWidget,
         public CanvasObjectContainer
 {
     public :
@@ -39,26 +38,9 @@ class QSFML_Canvas : public QWidget,
         sf::Vector2f getInWorldSpace(const sf::Vector2i &pixelSpace);
         sf::Vector2i getInScreenSpace(const sf::Vector2f &worldSpace);
 
-        //Draw Interface
-        void draw(const sf::Drawable &drawable,
-                  const sf::RenderStates &states=sf::RenderStates::Default) override;
 
-        void draw(const sf::Vertex *vertices,
-                  std::size_t vertexCount,
-                  sf::PrimitiveType type,
-                  const sf::RenderStates &states=sf::RenderStates::Default) override;
+        void sfEvent(const std::vector<sf::Event> &events);
 
-        void draw(const sf::VertexBuffer &vertexBuffer,
-                  const sf::RenderStates &states=sf::RenderStates::Default) override;
-
-        void draw(const sf::VertexBuffer &vertexBuffer,
-                  std::size_t firstVertex,
-                  std::size_t vertexCount,
-                  const sf::RenderStates &states=sf::RenderStates::Default) override;
-        DrawInterface *getDrawInterface() const {return (DrawInterface*)this;}
-
-
-        void sfEvent(const sf::Event &e);
     protected:
         QPaintEngine* paintEngine() const override;
         void showEvent(QShowEvent*) override;
@@ -72,7 +54,7 @@ class QSFML_Canvas : public QWidget,
         virtual void OnInit();
         virtual void OnUpdate();
 
-        void internal_event(const sf::Event &e);
+        void internal_event(const std::vector<sf::Event> &events);
 
 
 

@@ -20,9 +20,9 @@ void CanvasObjectContainer::addObject(CanvasObject *obj)
         m_container.push_back(obj);
         obj->setCanvasParent(m_parent);
 
-        addObject<SfEventHandle>(obj,m_eventhandledObjects);
-        addObject<Drawable>(obj,m_drawables);
-        addObject<CameraController>(obj,m_cameras);
+       // addObject<SfEventHandleComponent>(obj,m_eventhandledObjects);
+       // addObject<DrawableComponent>(obj,m_drawables);
+       // addObject<CameraController>(obj,m_cameras);
     }
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
@@ -42,9 +42,9 @@ void CanvasObjectContainer::removeObject(CanvasObject *obj)
     obj->setCanvasParent(nullptr);
     m_container.erase(m_container.begin() + index);
 
-    removeObject<SfEventHandle>(obj,m_eventhandledObjects);
-    removeObject<Drawable>(obj,m_drawables);
-    removeObject<CameraController>(obj,m_cameras);
+   // removeObject<SfEventHandleComponent>(obj,m_eventhandledObjects);
+   // removeObject<DrawableComponent>(obj,m_drawables);
+   // removeObject<CameraController>(obj,m_cameras);
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 {
@@ -80,20 +80,30 @@ size_t CanvasObjectContainer::getObjectIndex(CanvasObject *obj)
     return getObjectIndex<CanvasObject>(obj,m_container);
 }
 
-void CanvasObjectContainer::sfEvent(const sf::Event &e)
+void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)
 {
-    for(std::vector<SfEventHandle*>::iterator it = m_eventhandledObjects.begin();
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        m_container[i]->sfEvent(events);
+    }
+
+
+   /* for(std::vector<SfEventHandleComponent*>::iterator it = m_eventhandledObjects.begin();
         it != m_eventhandledObjects.end(); ++it)
     {
         (*it)->sfEvent(e);
-    }
+    }*/
 }
-void CanvasObjectContainer::draw()
+void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {
-    //qDebug() << m_drawables.size()<<" drawables";
-    for(std::vector<Drawable*>::iterator it = m_drawables.begin(); it != m_drawables.end(); ++it) {
-        (*it)->draw();
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        m_container[i]->draw(window);
     }
+    //qDebug() << m_drawables.size()<<" drawables";
+    /*for(std::vector<DrawableComponent*>::iterator it = m_drawables.begin(); it != m_drawables.end(); ++it) {
+        (*it)->draw();
+    }*/
 }
 
 template<typename T>

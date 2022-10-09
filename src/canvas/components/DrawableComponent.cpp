@@ -1,17 +1,23 @@
-#include "Drawable.h"
+#include "DrawableComponent.h"
 #include "QSFML_Canvas.h"
 
-Drawable::Drawable(CanvasObject *parent)
-    :   CanvasObject(parent)
+DrawableComponent::DrawableComponent(const std::string &name)
+    :   Component(name)
 {
-    m_canvasParent = nullptr;
+   // m_canvasParent = nullptr;
 }
-Drawable::~Drawable()
+DrawableComponent::~DrawableComponent()
 {
 
 }
-
-void Drawable::draw(const sf::Drawable &drawable,
+/*
+void DrawableComponent::setParent(CanvasObject *parent)
+{
+    Component::setParent(parent);
+    m_canvasParent = Component::getParent()->getCanvasParent();
+}*/
+/*
+void DrawableComponent::draw(const sf::Drawable &drawable,
                         const sf::RenderStates &states)
 {
     if(!m_canvasParent) return;
@@ -19,7 +25,7 @@ void Drawable::draw(const sf::Drawable &drawable,
 }
 
 
-void Drawable::draw(const sf::Vertex *vertices,
+void DrawableComponent::draw(const sf::Vertex *vertices,
                         std::size_t vertexCount,
                         sf::PrimitiveType type,
                         const sf::RenderStates &states)
@@ -29,7 +35,7 @@ void Drawable::draw(const sf::Vertex *vertices,
 }
 
 
-void Drawable::draw(const sf::VertexBuffer &vertexBuffer,
+void DrawableComponent::draw(const sf::VertexBuffer &vertexBuffer,
                         const sf::RenderStates &states)
 {
     if(!m_canvasParent) return;
@@ -37,19 +43,19 @@ void Drawable::draw(const sf::VertexBuffer &vertexBuffer,
 }
 
 
-void Drawable::draw(const sf::VertexBuffer &vertexBuffer,
+void DrawableComponent::draw(const sf::VertexBuffer &vertexBuffer,
                         std::size_t firstVertex,
                         std::size_t vertexCount,
                         const sf::RenderStates &states)
 {
     if(!m_canvasParent) return;
     m_canvasParent->draw(vertexBuffer,firstVertex,vertexCount,states);
-}
-void Drawable::internalOnCanvasParentChange(QSFML_Canvas *newParent)
+}*/
+/*void DrawableComponent::internalOnCanvasParentChange(QSFML_Canvas *newParent)
 {
 
 }
-void Drawable::internalOnParentChange(CanvasObject *newParent)
+void DrawableComponent::internalOnParentChange(CanvasObject *newParent)
 {
 
-}
+}*/

@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "CanvasObject.h"
-#include "Drawable.h"
+#include "DrawableComponent.h"
 #include "CameraController.h"
 
 class CanvasObjectContainer
@@ -25,8 +25,8 @@ class CanvasObjectContainer
         bool objectExists(CanvasObject *obj);
         size_t getObjectIndex(CanvasObject *obj);
 
-        void sfEvent(const sf::Event &e);
-        void draw();
+        void sfEvent(const std::vector<sf::Event> &events);
+        void draw(sf::RenderWindow &window);
 
         const static size_t npos = -1;
     private:
@@ -47,9 +47,9 @@ class CanvasObjectContainer
 
         // Additional, all objects will be split up in the
         // individual components which are inherited in the obj
-        std::vector<SfEventHandle*> m_eventhandledObjects;
-        std::vector<Drawable*> m_drawables;
-        std::vector<CameraController*> m_cameras;
+        //std::vector<SfEventHandleComponent*> m_eventhandledObjects;
+        //std::vector<DrawableComponent*> m_drawables;
+        //std::vector<CameraController*> m_cameras;
 
         QSFML_Canvas *m_parent;
 };

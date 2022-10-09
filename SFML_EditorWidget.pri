@@ -13,28 +13,31 @@ INCLUDEPATH += \
     $$inc \
     $$inc/canvas \
     $$inc/canvas/objects \
-    $$inc/canvas/objects/base
+    $$inc/canvas/components
 
 HEADERS += \
+    $$inc/canvas/components/Component.h \
+    $$inc/canvas/components/DrawableComponent.h \
+    $$inc/canvas/components/SfEventHandleComponent.h \
+    $$inc/canvas/objects/CanvasObject.h \
+    $$inc/canvas/objects/BackgroundGrid.h \
+    $$inc/canvas/objects/CameraController.h \
+    $$inc/canvas/objects/VisibleCamera.h \
     $$inc/canvas/CameraInterface.h \
     $$inc/canvas/CanvasForwardDeclaration.h \
     $$inc/canvas/DrawInterface.h \
-    $$inc/canvas/objects/BackgroundGrid.h \
-    $$inc/canvas/objects/base/CanvasObject.h \
     $$inc/canvas/CanvasObjectContainer.h \
-    $$inc/canvas/objects/base/Drawable.h \
-    $$inc/canvas/objects/SfEventHandle.h \
-    $$inc/canvas/objects/VisibleCamera.h \
     $$inc/canvas/CanvasSettings.h \
-    $$inc/canvas/QSFML_Canvas.h \
-    $$inc/canvas/objects/base/CameraController.h
+    $$inc/canvas/QSFML_Canvas.h
 
 SOURCES += \
-    $$src/canvas/objects/base/CanvasObject.cpp \
+    $$src/canvas/objects/BackgroundGrid.cpp \
+    $$src/canvas/components/Component.cpp \
+    $$src/canvas/components/DrawableComponent.cpp \
+    $$src/canvas/objects/CanvasObject.cpp \
     $$src/canvas/CanvasObjectContainer.cpp \
-    $$src/canvas/objects/base/Drawable.cpp \
     $$src/canvas/QSFML_Canvas.cpp \
-    $$src/canvas/objects/base/CameraController.cpp
+    $$src/canvas/objects/CameraController.cpp
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
