@@ -1,8 +1,11 @@
 #pragma once
 
-#include "DrawableComponent.h"
+#include "Drawable.h"
 #include "CameraController.h"
-
+namespace QSFML
+{
+namespace Objects
+{
 class VisibleCamera : public CameraController
 {
         class DrawableComp;
@@ -19,21 +22,21 @@ class VisibleCamera : public CameraController
 
 
 
-        /*void internalOnCanvasParentChange(QSFML_Canvas *newParent) override
+        /*void internalOnCanvasParentChange(Canvas *newParent) override
         {
             CameraController::internalOnCanvasParentChange(newParent);
-            DrawableComponent::internalOnCanvasParentChange(newParent);
+            Drawable::internalOnCanvasParentChange(newParent);
         }
         void internalOnParentChange(CanvasObject *newParent) override
         {
             CameraController::internalOnParentChange(newParent);
-            DrawableComponent::internalOnParentChange(newParent);
+            Drawable::internalOnParentChange(newParent);
         }*/
 
     private:
 
 
-        class DrawableComp : public DrawableComponent
+        class DrawableComp : public Components::Drawable
         {
             public:
 
@@ -44,7 +47,7 @@ class VisibleCamera : public CameraController
             protected:
                 void draw(sf::RenderTarget& target, sf::RenderStates states) const final
                 {
-                    sf::View view = m_cam->getView();
+                    sf::View view = m_cam->getCameraView();
                     sf::FloatRect viewRect = sf::FloatRect(view.getCenter()-view.getSize()/2.f,view.getSize());
                     float offset = 0.1;
                     viewRect.height-=2*offset;
@@ -84,3 +87,6 @@ class VisibleCamera : public CameraController
                 VisibleCamera *m_cam;
         };
 };
+
+}
+}

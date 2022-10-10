@@ -1,7 +1,11 @@
 #include "CanvasObjectContainer.h"
-#include "QSFML_Canvas.h"
+#include "Canvas.h"
 
-CanvasObjectContainer::CanvasObjectContainer(QSFML_Canvas *parent)
+using namespace QSFML::Objects;
+using namespace QSFML::Components;
+using namespace QSFML;
+
+CanvasObjectContainer::CanvasObjectContainer(Canvas *parent)
 {
     m_parent = parent;
 }
@@ -20,8 +24,8 @@ void CanvasObjectContainer::addObject(CanvasObject *obj)
         m_container.push_back(obj);
         obj->setCanvasParent(m_parent);
 
-       // addObject<SfEventHandleComponent>(obj,m_eventhandledObjects);
-       // addObject<DrawableComponent>(obj,m_drawables);
+       // addObject<SfEventHandle>(obj,m_eventhandledObjects);
+       // addObject<Drawable>(obj,m_drawables);
        // addObject<CameraController>(obj,m_cameras);
     }
 }
@@ -42,8 +46,8 @@ void CanvasObjectContainer::removeObject(CanvasObject *obj)
     obj->setCanvasParent(nullptr);
     m_container.erase(m_container.begin() + index);
 
-   // removeObject<SfEventHandleComponent>(obj,m_eventhandledObjects);
-   // removeObject<DrawableComponent>(obj,m_drawables);
+   // removeObject<SfEventHandle>(obj,m_eventhandledObjects);
+   // removeObject<Drawable>(obj,m_drawables);
    // removeObject<CameraController>(obj,m_cameras);
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
@@ -67,9 +71,45 @@ size_t CanvasObjectContainer::getObjectsCount() const
 {
     return m_container.size();
 }
+template<typename T>
+size_t CanvasObjectContainer::getObjectsCount() const
+{
+    size_t count = 0;
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        T* obj = dynamic_cast<T*>(m_container[i]);
+        if(obj)
+            ++count;
+    }
+    return count;
+}
 const std::vector<CanvasObject*> &CanvasObjectContainer::getObjects() const
 {
     return m_container;
+}
+template<typename T>
+std::vector<T*> CanvasObjectContainer::getObjects() const
+{
+    std::vector<T*> list;
+    list.reserve(m_container.size());
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        T* obj = dynamic_cast<T*>(m_container[i]);
+        if(obj)
+            list.push_back(obj);
+    }
+    return list;
+}
+template<typename T>
+T* CanvasObjectContainer::getFirstObject() const
+{
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        T* obj = dynamic_cast<T*>(m_container[i]);
+        if(obj)
+            return obj;
+    }
+    return nullptr;
 }
 bool CanvasObjectContainer::objectExists(CanvasObject *obj)
 {
@@ -88,7 +128,7 @@ void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)
     }
 
 
-   /* for(std::vector<SfEventHandleComponent*>::iterator it = m_eventhandledObjects.begin();
+   /* for(std::vector<SfEventHandle*>::iterator it = m_eventhandledObjects.begin();
         it != m_eventhandledObjects.end(); ++it)
     {
         (*it)->sfEvent(e);
@@ -101,7 +141,7 @@ void CanvasObjectContainer::draw(sf::RenderWindow &window)
         m_container[i]->draw(window);
     }
     //qDebug() << m_drawables.size()<<" drawables";
-    /*for(std::vector<DrawableComponent*>::iterator it = m_drawables.begin(); it != m_drawables.end(); ++it) {
+    /*for(std::vector<Drawable*>::iterator it = m_drawables.begin(); it != m_drawables.end(); ++it) {
         (*it)->draw();
     }*/
 }

@@ -12,14 +12,18 @@ CONFIG+=BUILD_WITH_EASY_PROFILER
 
 include(../SFML_EditorWidget.pri)
 
-INCLUDEPATH += inc
+inc = inc
+src = src
 
-SOURCES += \
-    main.cpp \
-    sandbox.cpp \
+INCLUDEPATH += $$inc
 
 HEADERS += \
-    sandbox.h \
+    $$inc/sandbox.h \
+    inc/VectorDisplayer.h
+
+SOURCES += \
+    $$src/main.cpp \
+    $$src/sandbox.cpp \
 
 FORMS += \
     sandbox.ui \
@@ -28,3 +32,4 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+

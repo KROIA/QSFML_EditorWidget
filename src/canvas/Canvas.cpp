@@ -1,4 +1,4 @@
-#include "QSFML_Canvas.h"
+#include "Canvas.h"
 #include <QResizeEvent>
 #include <QHBoxLayout>
 #include <QDebug>
@@ -7,10 +7,10 @@
     #include <X11/Xlib.h>
 #endif
 
+using namespace QSFML;
 
-QSFML_Canvas::QSFML_Canvas(QWidget* parent, const CanvasSettings &settings) :
+Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
   QWidget(parent),
- //CameraInterface(),
  // DrawInterface(),
   CanvasObjectContainer(this)
   //sf::RenderWindow(),
@@ -35,21 +35,21 @@ QSFML_Canvas::QSFML_Canvas(QWidget* parent, const CanvasSettings &settings) :
 
     setSettings(settings);
 }
-QSFML_Canvas::~QSFML_Canvas()
+Canvas::~Canvas()
 {
     delete m_window;
 }
 
-void QSFML_Canvas::setSettings(const CanvasSettings &settings)
+void Canvas::setSettings(const CanvasSettings &settings)
 {
     setLayout(settings.layout);
     setTiming(settings.timing);
 }
-const CanvasSettings &QSFML_Canvas::getSettings() const
+const CanvasSettings &Canvas::getSettings() const
 {
     return m_settings;
 }
-void QSFML_Canvas::setLayout(const CanvasSettings::Layout &layout)
+void Canvas::setLayout(const CanvasSettings::Layout &layout)
 {
     m_settings.layout = layout;
     parentWidget()->layout()->setContentsMargins(m_settings.layout.margin.left,
@@ -61,87 +61,95 @@ void QSFML_Canvas::setLayout(const CanvasSettings::Layout &layout)
         QWidget::setFixedSize(m_settings.layout.fixedSize.x, m_settings.layout.fixedSize.y);
     }
 }
-const CanvasSettings::Layout QSFML_Canvas::getLayout() const
+const CanvasSettings::Layout Canvas::getLayout() const
 {
     return m_settings.layout;
 }
-void QSFML_Canvas::setTiming(const CanvasSettings::Timing &timing)
+void Canvas::setTiming(const CanvasSettings::Timing &timing)
 {
     m_settings.timing = timing;
 
     // Setup the timer
     m_frameTimer.setInterval(m_settings.timing.frameTime);
 }
-const CanvasSettings::Timing &QSFML_Canvas::getTiming() const
+const CanvasSettings::Timing &Canvas::getTiming() const
 {
     return m_settings.timing;
 }
-void QSFML_Canvas::setContextSettings(const sf::ContextSettings &contextSettings)
+void Canvas::setContextSettings(const sf::ContextSettings &contextSettings)
 {
     m_settings.contextSettings = contextSettings;
 }
-const sf::ContextSettings &QSFML_Canvas::getContextSettings() const
+const sf::ContextSettings &Canvas::getContextSettings() const
 {
     return m_settings.contextSettings;
 }
 
-void QSFML_Canvas::setCameraView(const sf::View &view)
+void Canvas::setCameraView(const sf::View &view)
 {
     if(!m_window) return;
     m_window->setView(view);
 }
-const sf::View &QSFML_Canvas::getCameraView() const
+const sf::View &Canvas::getCameraView() const
 {
     static sf::View dummy;
     if(!m_window) return dummy;
     return m_window->getView();
 }
-const sf::View &QSFML_Canvas::getDefaultCameraView() const
+const sf::View &Canvas::getDefaultCameraView() const
 {
     static sf::View dummy;
     if(!m_window) return dummy;
     return m_window->getDefaultView();
 }
+sf::Vector2u Canvas::getCanvasSize() const
+{
+    return m_window->getSize();
+}
+sf::Vector2u Canvas::getOldCanvasSize() const
+{
+    return m_oldCanvasSize;
+}
 
-sf::Vector2i QSFML_Canvas::getMousePosition() const
+sf::Vector2i Canvas::getMousePosition() const
 {
     if(m_window)
         return sf::Mouse::getPosition(*m_window);
     return sf::Mouse::getPosition();
 }
-sf::Vector2f QSFML_Canvas::getMouseWorldPosition() const
+sf::Vector2f Canvas::getMouseWorldPosition() const
 {
     if(!m_window) return sf::Vector2f(0,0);
     sf::Vector2i pixelPos = getMousePosition();
     return m_window->mapPixelToCoords(pixelPos);
 }
-sf::Vector2f QSFML_Canvas::getInWorldSpace(const sf::Vector2i &pixelSpace)
+sf::Vector2f Canvas::getInWorldSpace(const sf::Vector2i &pixelSpace)
 {
     if(!m_window) return sf::Vector2f(0,0);
     return m_window->mapPixelToCoords(pixelSpace);
 }
-sf::Vector2i QSFML_Canvas::getInScreenSpace(const sf::Vector2f &worldSpace)
+sf::Vector2i Canvas::getInScreenSpace(const sf::Vector2f &worldSpace)
 {
     if(!m_window) return sf::Vector2i(0,0);
     return m_window->mapCoordsToPixel(worldSpace);
 
 }
 
-void QSFML_Canvas::OnInit()
+void Canvas::OnInit()
 {
 
 }
 
-void QSFML_Canvas::OnUpdate()
+void Canvas::OnUpdate()
 {
 
 }
 
-QPaintEngine* QSFML_Canvas::paintEngine() const
+QPaintEngine* Canvas::paintEngine() const
 {
     return nullptr;
 }
-void QSFML_Canvas::showEvent(QShowEvent*)
+void Canvas::showEvent(QShowEvent*)
 {
     if (!m_window)
     {
@@ -160,9 +168,10 @@ void QSFML_Canvas::showEvent(QShowEvent*)
         // Setup the timer to trigger a refresh at specified framerate
         connect(&m_frameTimer, SIGNAL(timeout()), this, SLOT(repaint()));
         m_frameTimer.start();
+        m_oldCanvasSize = getCanvasSize();
     }
 }
-void QSFML_Canvas::paintEvent(QPaintEvent*)
+void Canvas::paintEvent(QPaintEvent*)
 {
     if(!m_window)return;
     EASY_FUNCTION(profiler::colors::Green); // Magenta block with name "foo"
@@ -183,7 +192,7 @@ void QSFML_Canvas::paintEvent(QPaintEvent*)
     EASY_END_BLOCK;
 
     EASY_BLOCK("Process draw",profiler::colors::Green400);
-    m_window->clear(sf::Color(100,100,100));
+    m_window->clear(m_settings.colors.defaultBackground);
     CanvasObjectContainer::draw(*m_window);
     EASY_END_BLOCK;
 
@@ -193,15 +202,30 @@ void QSFML_Canvas::paintEvent(QPaintEvent*)
     EASY_END_BLOCK;
 }
 
-void QSFML_Canvas::resizeEvent(QResizeEvent *event)
+void Canvas::resizeEvent(QResizeEvent *event)
 {
     if(!m_window) return;
     if(m_settings.layout.autoAjustSize)
     {
        QSize size = event->size();
-       //m_window->setSize(sf::Vector2u(size.width(),size.height()));
-       sf::View view2(sf::Vector2f(size.width(), size.height())/2.f, sf::Vector2f(size.width(), size.height()));
-       m_window->setView(view2);
+       m_oldCanvasSize.x = event->oldSize().width();
+       m_oldCanvasSize.y = event->oldSize().height();
+       m_window->setSize(sf::Vector2u(size.width(),size.height()));
+      /* sf::View view = getCameraView();
+
+       sf::Vector2u oldWindowSize(event->oldSize().width(),event->oldSize().height());
+       sf::Vector2u newWindowSize(size.width(),size.height());
+       sf::FloatRect viewRect = sf::FloatRect(view.getCenter()-view.getSize()/2.f,view.getSize());
+       //viewPort.width = size.width()
+       //sf::View view2(sf::Vector2f(size.width(), size.height())/2.f, sf::Vector2f(size.width(), size.height()));
+       //m_window->setView(view2);
+
+       viewRect.width = viewRect.width/oldWindowSize.x * newWindowSize.x;
+       viewRect.height = viewRect.height/oldWindowSize.y * newWindowSize.y;
+
+       view.setSize(viewRect.width,viewRect.height);
+       view.setCenter(viewRect.left+viewRect.width/2.f,viewRect.top+viewRect.height/2.f);
+       m_window->setView(view);*/
     }
     else
     {
@@ -212,8 +236,8 @@ void QSFML_Canvas::resizeEvent(QResizeEvent *event)
 
 
 
-void QSFML_Canvas::sfEvent(const std::vector<sf::Event> &events){}
-void QSFML_Canvas::internal_event(const std::vector<sf::Event> &events)
+void Canvas::sfEvent(const std::vector<sf::Event> &events){}
+void Canvas::internal_event(const std::vector<sf::Event> &events)
 {
     CanvasObjectContainer::sfEvent(events);
 }

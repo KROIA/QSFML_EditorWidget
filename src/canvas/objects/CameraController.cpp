@@ -1,6 +1,8 @@
 #include "CameraController.h"
-#include "QSFML_Canvas.h"
+#include "Canvas.h"
 #include <QDebug>
+
+using namespace QSFML::Objects;
 
 CameraController::CameraController(const std::string &name,
                                    CanvasObject *parent)
@@ -9,7 +11,7 @@ CameraController::CameraController(const std::string &name,
    // m_canvasParent = nullptr;
     m_currentZoom = 1;
     setMinZoom(0.1);
-    setMaxZoom(10);
+    setMaxZoom(3);
     setMaxMovingBounds(sf::FloatRect(-200,-200,900,900));
 
     m_eventHandleComponent = new SfEventComponent();
@@ -112,10 +114,11 @@ void CameraController::zoom(float amount, const sf::Vector2i &pixel)
     float newZoom = m_currentZoom * amount;
     if(newZoom < m_minZoom || newZoom > m_maxZoom)
         return;
+    sf::View view = m_canvasParent->getCameraView();
     m_currentZoom = newZoom;
 
-    const sf::Vector2f beforeCoord{ getInWorldSpace(pixel) };
-    sf::View view{ m_canvasParent->getCameraView() };
+    const sf::Vector2f beforeCoord = getInWorldSpace(pixel);
+
     view.zoom(amount);
     positionCheck(view);
     m_canvasParent->setCameraView(view);
@@ -145,16 +148,10 @@ void CameraController::setZoom(float amount, const sf::Vector2i &pixel)
     m_canvasParent->setCameraView(defaultView);
     zoom(amount,pixel);
 }
-void CameraController::setView(const sf::View &view)
+void CameraController::setCameraView(const sf::View &view)
 {
     if(!m_canvasParent) return;
     m_canvasParent->setCameraView(view);
-}
-const sf::View CameraController::getView()
-{
-    static const sf::View dummy;
-    if(!m_canvasParent) return dummy;
-    return m_canvasParent->getCameraView();
 }
 
 void CameraController::SfEventComponent::setController(CameraController *controller)
@@ -171,8 +168,6 @@ void CameraController::SfEventComponent::sfEvent(const sf::Event &e)
     {
         case sf::Event::MouseWheelScrolled:
         {
-            //zoom(1+0.01f*(float)e.mouseWheelScroll.delta);
-            //zoom(1+0.01f*(float)e.mouseWheelScroll.delta,getMousePosition());
             float zoomAmount = 1.1;
             if (e.mouseWheelScroll.delta > 0)
                 m_controller->zoom( 1/zoomAmount , { e.mouseWheelScroll.x, e.mouseWheelScroll.y });
@@ -224,11 +219,28 @@ void CameraController::SfEventComponent::sfEvent(const sf::Event &e)
             startPos = newPos; // With move, I don't need to recalculate
             break;
         }
+        case sf::Event::Resized:
+        {
+            sf::View view = m_controller->getCameraView();
+
+            sf::Vector2u oldWindowSize = m_controller->getOldCanvasSize();
+            sf::Vector2u newWindowSize = m_controller->getCanvasSize();
+            sf::FloatRect viewRect = sf::FloatRect(view.getCenter()-view.getSize()/2.f,view.getSize());
+
+            viewRect.width = viewRect.width/oldWindowSize.x * newWindowSize.x;
+            viewRect.height = viewRect.height/oldWindowSize.y * newWindowSize.y;
+
+            view.setSize(viewRect.width,viewRect.height);
+            view.setCenter(viewRect.left+viewRect.width/2.f,viewRect.top+viewRect.height/2.f);
+            m_controller->positionCheck(view);
+            m_controller->setCameraView(view);
+            break;
+        }
     }
 
 }
 
-void CameraController::internalOnCanvasParentChange(QSFML_Canvas *newParent)
+void CameraController::internalOnCanvasParentChange(Canvas *newParent)
 {
 
 }
@@ -239,27 +251,70 @@ void CameraController::internalOnParentChange(CanvasObject *newParent)
 
 void CameraController::positionCheck(sf::View &view)
 {
+    //return;
     sf::FloatRect viewRect = sf::FloatRect(view.getCenter()-view.getSize()/2.f,view.getSize());
-//qDebug() << "1ViewRect= "<<viewRect.left << " " << viewRect.top << " w*h="<<viewRect.width<<" "<<viewRect.height;
+    sf::Vector2f cameraPos = view.getCenter();
+    sf::Vector2u windowSize = getCanvasSize();
+    float aspectRatio = (float)windowSize.x/(float)windowSize.y;
 
-    if(m_maxMovingBounds.width < viewRect.width)
+    //qDebug() << "1ViewRect= "<<viewRect.left << " " << viewRect.top << " w*h="<<viewRect.width<<" "<<viewRect.height;
+
+
+    // Fixes the gridsize
+    /*if(m_maxMovingBounds.width < viewRect.width)
         viewRect.width = m_maxMovingBounds.width;
     if(m_maxMovingBounds.height < viewRect.height)
-        viewRect.height = m_maxMovingBounds.height;
+        viewRect.height = m_maxMovingBounds.height;*/
 
-    if(m_maxMovingBounds.left > viewRect.left)
-        viewRect.left = m_maxMovingBounds.left;
-    if(m_maxMovingBounds.top > viewRect.top)
-        viewRect.top = m_maxMovingBounds.top;
-
+    if(viewRect.width / viewRect.height > aspectRatio)
+    {
+        viewRect.width = viewRect.height * aspectRatio;
+    }
+    else
+    {
+        viewRect.height = viewRect.width/aspectRatio;
+    }
+/*
     if(m_maxMovingBounds.left+m_maxMovingBounds.width < viewRect.left+viewRect.width)
         viewRect.left = m_maxMovingBounds.left+m_maxMovingBounds.width-viewRect.width;
     if(m_maxMovingBounds.top+m_maxMovingBounds.height < viewRect.top+viewRect.height)
         viewRect.top = m_maxMovingBounds.top+m_maxMovingBounds.height-viewRect.height;
 
 
+    if(m_maxMovingBounds.left > viewRect.left)
+        viewRect.left = m_maxMovingBounds.left;
+    if(m_maxMovingBounds.top > viewRect.top)
+        viewRect.top = m_maxMovingBounds.top;
+*/
+    if(cameraPos.x < m_maxMovingBounds.left)
+        cameraPos.x = m_maxMovingBounds.left;
+    else if(cameraPos.x > m_maxMovingBounds.left+m_maxMovingBounds.width)
+        cameraPos.x = m_maxMovingBounds.left+m_maxMovingBounds.width;
+
+    if(cameraPos.y < m_maxMovingBounds.top)
+        cameraPos.y = m_maxMovingBounds.top;
+    else if(cameraPos.y > m_maxMovingBounds.top+m_maxMovingBounds.height)
+        cameraPos.y = m_maxMovingBounds.top+m_maxMovingBounds.height;
+
+
 
  //   qDebug() << "2ViewRect= "<<viewRect.left << " " << viewRect.top << " w*h="<<viewRect.width<<" "<<viewRect.height;
     view.setSize(viewRect.width,viewRect.height);
-    view.setCenter(viewRect.left+viewRect.width/2.f,viewRect.top+viewRect.height/2.f);
+    view.setCenter(cameraPos);
+    //view.setCenter(viewRect.left+viewRect.width/2.f,viewRect.top+viewRect.height/2.f);
 }
+/*bool CameraController::isOutsideBounds(sf::View &view)
+{
+    sf::FloatRect viewRect = sf::FloatRect(view.getCenter()-view.getSize()/2.f,view.getSize());
+
+    if(m_maxMovingBounds.left+m_maxMovingBounds.width < viewRect.left+viewRect.width)
+        return true;
+    if(m_maxMovingBounds.top+m_maxMovingBounds.height < viewRect.top+viewRect.height)
+        return true;
+
+    if(m_maxMovingBounds.left > viewRect.left)
+        return true;
+    if(m_maxMovingBounds.top > viewRect.top)
+        return true;
+    return false;
+}*/

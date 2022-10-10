@@ -1,7 +1,12 @@
 #include "CanvasObject.h"
-#include "QSFML_Canvas.h"
-#include "DrawableComponent.h"
-#include "SfEventHandleComponent.h"
+#include "Canvas.h"
+#include "Drawable.h"
+#include "SfEventHandle.h"
+
+
+using namespace QSFML;
+using namespace QSFML::Objects;
+using namespace QSFML::Components;
 
 size_t CanvasObject::m_objNameCounter = 0;
 CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
@@ -14,6 +19,7 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     }
     m_canvasParent = nullptr;
     m_parent = parent;
+    setEnabled(true);
 }
 CanvasObject::~CanvasObject()
 {
@@ -26,7 +32,7 @@ CanvasObject::~CanvasObject()
     m_components.clear();
 }
 
-void CanvasObject::setCanvasParent(QSFML_Canvas *parent)
+void CanvasObject::setCanvasParent(Canvas *parent)
 {
     m_canvasParent = parent;
     for(size_t i=0; i<m_components.size(); ++i)
@@ -38,7 +44,7 @@ void CanvasObject::setCanvasParent(QSFML_Canvas *parent)
     internalOnCanvasParentChange(m_canvasParent);
     onCanvasParentChange(m_canvasParent);
 }
-QSFML_Canvas *CanvasObject::getCanvasParent() const
+Canvas *CanvasObject::getCanvasParent() const
 {
     return m_canvasParent;
 }
@@ -55,6 +61,14 @@ void CanvasObject::setParent(CanvasObject *parent)
         m_components[i]->setParent(this);
     internalOnParentChange(m_parent);
     onParentChange(m_parent);
+}
+void CanvasObject::setEnabled(bool enable)
+{
+    m_enabled = enable;
+}
+bool CanvasObject::isEnabled() const
+{
+    return m_enabled;
 }
 CanvasObject *CanvasObject::getParent() const
 {
@@ -212,12 +226,37 @@ size_t CanvasObject::getComponentCount() const
     }
     return count;
 }
+const sf::View CanvasObject::getCameraView() const
+{
+    static const sf::View dummy;
+    if(!m_canvasParent) return dummy;
+    return m_canvasParent->getCameraView();
+}
+const sf::View &CanvasObject::getDefaultCameraView() const
+{
+    static const sf::View dummy;
+    if(!m_canvasParent) return dummy;
+    return m_canvasParent->getDefaultCameraView();
+}
+sf::Vector2u CanvasObject::getCanvasSize() const
+{
+    if(!m_canvasParent) return sf::Vector2u(0,0);
+    return m_canvasParent->getCanvasSize();
+}
+sf::Vector2u CanvasObject::getOldCanvasSize() const
+{
+    if(!m_canvasParent) return sf::Vector2u(0,0);
+    return m_canvasParent->getOldCanvasSize();
+}
 
 void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
 {
+    if(!m_enabled) return;
     for(size_t i=0; i<m_components.size(); ++i)
     {
-        SfEventHandleComponent* comp = dynamic_cast<SfEventHandleComponent*>(m_components[i]);
+        if(!m_components[i]->isEnabled())
+            continue;
+        SfEventHandle* comp = dynamic_cast<SfEventHandle*>(m_components[i]);
         if(comp)
         {
             for(size_t j=0; j<events.size(); ++j)
@@ -226,14 +265,18 @@ void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
     }
     for(size_t i=0; i<m_childs.size(); ++i)
     {
-        m_childs[i]->sfEvent(events);
+        if(m_childs[i]->m_enabled)
+            m_childs[i]->sfEvent(events);
     }
 }
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
+    if(!m_enabled) return;
     for(size_t i=0; i<m_components.size(); ++i)
     {
-        DrawableComponent* comp = dynamic_cast<DrawableComponent*>(m_components[i]);
+        if(!m_components[i]->isEnabled())
+            continue;
+        Drawable* comp = dynamic_cast<Drawable*>(m_components[i]);
         if(comp)
         {
             window.draw(*comp);
@@ -241,7 +284,8 @@ void CanvasObject::draw(sf::RenderWindow &window) const
     }
     for(size_t i=0; i<m_childs.size(); ++i)
     {
-        m_childs[i]->draw(window);
+        if(m_childs[i]->m_enabled)
+            m_childs[i]->draw(window);
     }
 }
 
@@ -264,11 +308,15 @@ std::vector<std::string> CanvasObject::toStringInternal(const std::string &preSt
     std::vector<string> lines;
     const CanvasObject *t = this;
 
-    lines.push_back(preStr+" | "+string(typeid(t).name())+": "+m_name);
+    auto en = [](bool enabled) {
+        return enabled?"[Enabled ]":"[Disabled]";
+      };
+
+    lines.push_back(preStr+" | "+string(typeid(t).name())+": \""+m_name + "\" "+en(t->isEnabled()));
     lines.push_back(preStr+" |  Components:");
     for(size_t i=0; i<m_components.size(); ++i)
     {
-        lines.push_back(preStr+  " |  - " +string(typeid(m_components[i]).name())+": "+m_components[i]->getName());
+        lines.push_back(preStr+  " |  - " +string(typeid(m_components[i]).name())+": \""+m_components[i]->getName()+ "\" "+en(m_components[i]->isEnabled()));
     }
     lines.push_back(preStr+" |  Childs:");
     for(size_t i=0; i<m_childs.size(); ++i)
@@ -285,7 +333,7 @@ std::vector<std::string> CanvasObject::toStringInternal(const std::string &preSt
     return lines;
 }
 
-void CanvasObject::onCanvasParentChange(QSFML_Canvas *newParent) {}
+void CanvasObject::onCanvasParentChange(Canvas *newParent) {}
 void CanvasObject::onParentChange(CanvasObject *newParent) {}
 //void CanvasObject::sfEvent(const sf::Event &e) {}
 

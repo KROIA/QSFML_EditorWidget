@@ -2,9 +2,13 @@
 
 #include <SFML/Graphics.hpp>
 #include "CanvasObject.h"
-#include "CameraInterface.h"
-#include "SfEventHandleComponent.h"
+#include "SfEventHandle.h"
 #include <QDebug>
+
+namespace QSFML
+{
+namespace Objects
+{
 
 class CameraController: public CanvasObject
 {
@@ -37,19 +41,17 @@ class CameraController: public CanvasObject
         void setZoom(float amount);
         void setZoom(float amount, const sf::Vector2i &pixel);
 
-        void setView(const sf::View &view);
-        const sf::View getView();
+        void setCameraView(const sf::View &view);
+
 
 
 
 
     private:
-        void internalOnCanvasParentChange(QSFML_Canvas *newParent) override;
+        void internalOnCanvasParentChange(Canvas *newParent) override;
         void internalOnParentChange(CanvasObject *newParent) override;
         void positionCheck(sf::View &view);
 
-
-        //CameraInterface *m_interface;
         float m_currentZoom;
         float m_minZoom;
         float m_maxZoom;
@@ -58,17 +60,18 @@ class CameraController: public CanvasObject
         SfEventComponent *m_eventHandleComponent;
 
     // Defining component
-    class SfEventComponent : public SfEventHandleComponent
+    class SfEventComponent : public Components::SfEventHandle
     {
         public:
             SfEventComponent(){}
             ~SfEventComponent(){}
 
             void setController(CameraController *controller);
-
             void sfEvent(const sf::Event &e) override;
 
         private:
             CameraController *m_controller;
     };
 };
+}
+}

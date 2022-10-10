@@ -2,7 +2,7 @@
 #define SANDBOX_H
 
 #include <QMainWindow>
-#include "QSFML_Canvas.h"
+#include "Canvas.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SandBox; }
@@ -19,6 +19,6 @@ class SandBox : public QMainWindow
     private:
         Ui::SandBox *ui;
 
-        QSFML_Canvas *m_canvas;
+        QSFML::Canvas *m_canvas;
 };
 #endif // SANDBOX_H

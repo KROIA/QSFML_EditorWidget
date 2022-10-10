@@ -7,16 +7,18 @@
 #include "CameraController.h"
 #include "CanvasObjectContainer.h"
 
+namespace QSFML
+{
 
-class QSFML_Canvas :
+class Canvas :
         public QWidget,
         public CanvasObjectContainer
 {
     public :
 
-        QSFML_Canvas(QWidget* parent, const CanvasSettings &settings = CanvasSettings());
+        Canvas(QWidget* parent, const CanvasSettings &settings = CanvasSettings());
 
-        virtual ~QSFML_Canvas();
+        virtual ~Canvas();
 
 
         void setSettings(const CanvasSettings &settings);
@@ -31,6 +33,8 @@ class QSFML_Canvas :
         void setCameraView(const sf::View &view);
         const sf::View &getCameraView() const;
         const sf::View &getDefaultCameraView() const;
+        sf::Vector2u getCanvasSize() const;
+        sf::Vector2u getOldCanvasSize() const;
 
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;
@@ -61,4 +65,6 @@ class QSFML_Canvas :
 
     CanvasSettings m_settings;
     sf::RenderWindow *m_window;
+    sf::Vector2u m_oldCanvasSize;
 };
+}

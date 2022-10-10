@@ -1,8 +1,10 @@
 #pragma once
 
 #include <SFML/Window.hpp>
+#include <SFML/Graphics/Color.hpp>
 
-
+namespace QSFML
+{
 struct CanvasSettings
 {
     /**
@@ -46,6 +48,20 @@ struct CanvasSettings
     Layout layout;
 
     /**
+     * \brief The Colors of different parts on the canvas
+     */
+    struct Colors
+    {
+        sf::Color defaultBackground; //!< Background color of parts on which nothing was painted
+
+        Colors()
+        {
+            defaultBackground = sf::Color(80,80,80);
+        }
+    };
+    Colors colors;
+
+    /**
      * \brief The time related settings
      */
     struct Timing
@@ -61,3 +77,4 @@ struct CanvasSettings
     sf::ContextSettings contextSettings;
 
 };
+}

@@ -1,4 +1,10 @@
 #pragma once
 
-class QSFML_Canvas;
-class CanvasObject;
+namespace QSFML
+{
+    class Canvas;
+    namespace Objects
+    {
+        class CanvasObject;
+    }
+}
