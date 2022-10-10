@@ -5,7 +5,6 @@
 #include <QTimer>
 #include "CanvasSettings.h"
 #include "CameraController.h"
-#include "CanvasObject.h"
 #include "CanvasObjectContainer.h"
 
 

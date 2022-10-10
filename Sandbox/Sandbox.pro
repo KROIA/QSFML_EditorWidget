@@ -12,15 +12,17 @@ CONFIG+=BUILD_WITH_EASY_PROFILER
 
 include(../SFML_EditorWidget.pri)
 
+INCLUDEPATH += inc
+
 SOURCES += \
     main.cpp \
-    sandbox.cpp
+    sandbox.cpp \
 
 HEADERS += \
-    sandbox.h
+    sandbox.h \
 
 FORMS += \
-    sandbox.ui
+    sandbox.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

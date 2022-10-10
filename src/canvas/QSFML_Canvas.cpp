@@ -198,10 +198,10 @@ void QSFML_Canvas::resizeEvent(QResizeEvent *event)
     if(!m_window) return;
     if(m_settings.layout.autoAjustSize)
     {
-        QSize size = event->size();
-        m_window->setSize(sf::Vector2u(size.width(),size.height()));
-        sf::View view2(sf::Vector2f(size.width(), size.height())/2.f, sf::Vector2f(size.width(), size.height()));
-        m_window->setView(view2);
+       QSize size = event->size();
+       //m_window->setSize(sf::Vector2u(size.width(),size.height()));
+       sf::View view2(sf::Vector2f(size.width(), size.height())/2.f, sf::Vector2f(size.width(), size.height()));
+       m_window->setView(view2);
     }
     else
     {
