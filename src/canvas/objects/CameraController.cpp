@@ -8,7 +8,7 @@ CameraController::CameraController(const std::string &name,
                                    CanvasObject *parent)
     : CanvasObject(name,parent)
 {
-   // m_canvasParent = nullptr;
+   // getCanvasParent() = nullptr;
     m_currentZoom = 1;
     setMinZoom(0.1);
     setMaxZoom(3);
@@ -67,91 +67,91 @@ void CameraController::moveDown(float amount)
 }
 void CameraController::movePosition(const sf::Vector2f &delta)
 {
-    if(!m_canvasParent) return;
-    sf::View view = m_canvasParent->getCameraView();
+    if(!getCanvasParent()) return;
+    sf::View view = getCanvasParent()->getCameraView();
     view.move(delta);
     positionCheck(view);
-    m_canvasParent->setCameraView(view);
+    getCanvasParent()->setCameraView(view);
 }
 void CameraController::setPosition(const sf::Vector2f &pos)
 {
-    if(!m_canvasParent) return;
-    sf::View view = m_canvasParent->getCameraView();
+    if(!getCanvasParent()) return;
+    sf::View view = getCanvasParent()->getCameraView();
     view.setCenter(pos);
     positionCheck(view);
-    m_canvasParent->setCameraView(view);
+    getCanvasParent()->setCameraView(view);
 }
 void CameraController::rotate(float angle)
 {
-    if(!m_canvasParent) return;
-    sf::View view = m_canvasParent->getCameraView();
+    if(!getCanvasParent()) return;
+    sf::View view = getCanvasParent()->getCameraView();
     view.rotate(angle);
-    m_canvasParent->setCameraView(view);
+    getCanvasParent()->setCameraView(view);
 }
 void CameraController::setRotation(float angle)
 {
-    if(!m_canvasParent) return;
-    sf::View view = m_canvasParent->getCameraView();
+    if(!getCanvasParent()) return;
+    sf::View view = getCanvasParent()->getCameraView();
     view.setRotation(angle);
-    m_canvasParent->setCameraView(view);
+    getCanvasParent()->setCameraView(view);
 }
 void CameraController::zoom(float amount)
 {
-    if(!m_canvasParent) return;
+    if(!getCanvasParent()) return;
     float newZoom = m_currentZoom * amount;
     if(newZoom < m_minZoom || newZoom > m_maxZoom)
         return;
     m_currentZoom = newZoom;
 
-    sf::View view = m_canvasParent->getCameraView();
+    sf::View view = getCanvasParent()->getCameraView();
     view.zoom(amount);
     positionCheck(view);
-    m_canvasParent->setCameraView(view);
+    getCanvasParent()->setCameraView(view);
 }
 void CameraController::zoom(float amount, const sf::Vector2i &pixel)
 {
-    if(!m_canvasParent) return;
+    if(!getCanvasParent()) return;
     float newZoom = m_currentZoom * amount;
     if(newZoom < m_minZoom || newZoom > m_maxZoom)
         return;
-    sf::View view = m_canvasParent->getCameraView();
+    sf::View view = getCanvasParent()->getCameraView();
     m_currentZoom = newZoom;
 
     const sf::Vector2f beforeCoord = getInWorldSpace(pixel);
 
     view.zoom(amount);
     positionCheck(view);
-    m_canvasParent->setCameraView(view);
+    getCanvasParent()->setCameraView(view);
     const sf::Vector2f afterCoord{ getInWorldSpace(pixel) };
     const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
     view.move(offsetCoords);
     positionCheck(view);
-    m_canvasParent->setCameraView(view);
+    getCanvasParent()->setCameraView(view);
 }
 void CameraController::setZoom(float amount)
 {
-    if(!m_canvasParent) return;
-    sf::View view = m_canvasParent->getCameraView();
-    sf::View defaultView = m_canvasParent->getDefaultCameraView();
+    if(!getCanvasParent()) return;
+    sf::View view = getCanvasParent()->getCameraView();
+    sf::View defaultView = getCanvasParent()->getDefaultCameraView();
 
     defaultView.setCenter(view.getCenter());
-    m_canvasParent->setCameraView(defaultView);
+    getCanvasParent()->setCameraView(defaultView);
     zoom(amount);
 }
 void CameraController::setZoom(float amount, const sf::Vector2i &pixel)
 {
-    if(!m_canvasParent) return;
-    sf::View view = m_canvasParent->getCameraView();
-    sf::View defaultView = m_canvasParent->getDefaultCameraView();
+    if(!getCanvasParent()) return;
+    sf::View view = getCanvasParent()->getCameraView();
+    sf::View defaultView = getCanvasParent()->getDefaultCameraView();
 
     defaultView.setCenter(view.getCenter());
-    m_canvasParent->setCameraView(defaultView);
+    getCanvasParent()->setCameraView(defaultView);
     zoom(amount,pixel);
 }
 void CameraController::setCameraView(const sf::View &view)
 {
-    if(!m_canvasParent) return;
-    m_canvasParent->setCameraView(view);
+    if(!getCanvasParent()) return;
+    getCanvasParent()->setCameraView(view);
 }
 
 void CameraController::SfEventComponent::setController(CameraController *controller)

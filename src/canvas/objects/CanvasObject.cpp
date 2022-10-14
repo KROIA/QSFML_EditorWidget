@@ -30,24 +30,11 @@ CanvasObject::~CanvasObject()
     for(size_t i=0; i<m_components.size(); ++i)
         delete m_components[i];
     m_components.clear();
+    if(m_canvasParent)
+        m_canvasParent->removeObject(this);
 }
 
-void CanvasObject::setCanvasParent(Canvas *parent)
-{
-    m_canvasParent = parent;
-    for(size_t i=0; i<m_components.size(); ++i)
-        m_components[i]->setParent(this);
 
-    for(size_t i=0; i<m_childs.size(); ++i)
-        m_childs[i]->setCanvasParent(parent);
-
-    internalOnCanvasParentChange(m_canvasParent);
-    onCanvasParentChange(m_canvasParent);
-}
-Canvas *CanvasObject::getCanvasParent() const
-{
-    return m_canvasParent;
-}
 void CanvasObject::setParent(CanvasObject *parent)
 {
     if(m_parent)
@@ -123,11 +110,12 @@ void CanvasObject::removeChild(CanvasObject *child)
     child->setParent(nullptr);
     m_childs.erase(m_childs.begin() + index);
 }
-void CanvasObject::clearChilds()
+void CanvasObject::deleteChilds()
 {
     for(size_t i=0; i<m_childs.size(); ++i)
     {
         m_childs[i]->setParent(nullptr);
+        delete m_childs[i];
     }
     m_childs.clear();
 }
@@ -170,12 +158,12 @@ void CanvasObject::removeComponent(Component *comp)
     comp->setParent(nullptr);
     m_components.erase(m_components.begin() + index);
 }
-void CanvasObject::clearComponents()
+void CanvasObject::deleteComponents()
 {
     for(size_t i=0; i<m_components.size(); ++i)
     {
         m_components[i]->setParent(nullptr);
-        //delete m_components[i];
+        delete m_components[i];
     }
     m_components.clear();
 }
@@ -197,35 +185,12 @@ const std::vector<Component*> &CanvasObject::getComponents() const
 {
     return m_components;
 }
-template<typename T>
-std::vector<T*> CanvasObject::getComponents() const
-{
-    std::vector<T*> list;
-    list.reserve(m_components.size());
-    for(size_t i=0; i<m_components.size(); ++i)
-    {
-        T* comp = dynamic_cast<T*>(m_components[i]);
-        if(comp)
-            list.push_back(comp);
-    }
-    return list;
-}
+
 size_t CanvasObject::getComponentCount() const
 {
     return m_components.size();
 }
-template<typename T>
-size_t CanvasObject::getComponentCount() const
-{
-    size_t count = 0;
-    for(size_t i=0; i<m_components.size(); ++i)
-    {
-        T* comp = dynamic_cast<T*>(m_components[i]);
-        if(comp)
-            ++count;
-    }
-    return count;
-}
+
 const sf::View CanvasObject::getCameraView() const
 {
     static const sf::View dummy;
@@ -249,45 +214,7 @@ sf::Vector2u CanvasObject::getOldCanvasSize() const
     return m_canvasParent->getOldCanvasSize();
 }
 
-void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
-{
-    if(!m_enabled) return;
-    for(size_t i=0; i<m_components.size(); ++i)
-    {
-        if(!m_components[i]->isEnabled())
-            continue;
-        SfEventHandle* comp = dynamic_cast<SfEventHandle*>(m_components[i]);
-        if(comp)
-        {
-            for(size_t j=0; j<events.size(); ++j)
-                comp->sfEvent(events[j]);
-        }
-    }
-    for(size_t i=0; i<m_childs.size(); ++i)
-    {
-        if(m_childs[i]->m_enabled)
-            m_childs[i]->sfEvent(events);
-    }
-}
-void CanvasObject::draw(sf::RenderWindow &window) const
-{
-    if(!m_enabled) return;
-    for(size_t i=0; i<m_components.size(); ++i)
-    {
-        if(!m_components[i]->isEnabled())
-            continue;
-        Drawable* comp = dynamic_cast<Drawable*>(m_components[i]);
-        if(comp)
-        {
-            window.draw(*comp);
-        }
-    }
-    for(size_t i=0; i<m_childs.size(); ++i)
-    {
-        if(m_childs[i]->m_enabled)
-            m_childs[i]->draw(window);
-    }
-}
+
 
 
 std::string CanvasObject::toString() const
@@ -335,5 +262,63 @@ std::vector<std::string> CanvasObject::toStringInternal(const std::string &preSt
 
 void CanvasObject::onCanvasParentChange(Canvas *newParent) {}
 void CanvasObject::onParentChange(CanvasObject *newParent) {}
-//void CanvasObject::sfEvent(const sf::Event &e) {}
+void CanvasObject::internalOnCanvasParentChange(Canvas *newParent) {}
+void CanvasObject::internalOnParentChange(CanvasObject *newParent) {}
+
+Canvas *CanvasObject::getCanvasParent() const
+{
+    return m_canvasParent;
+}
+
+void CanvasObject::setCanvasParent(Canvas *parent)
+{
+    m_canvasParent = parent;
+    for(size_t i=0; i<m_components.size(); ++i)
+        m_components[i]->setParent(this);
+
+    for(size_t i=0; i<m_childs.size(); ++i)
+        m_childs[i]->setCanvasParent(parent);
+
+    internalOnCanvasParentChange(m_canvasParent);
+    onCanvasParentChange(m_canvasParent);
+}
+void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
+{
+    if(!m_enabled) return;
+    for(size_t i=0; i<m_components.size(); ++i)
+    {
+        if(!m_components[i]->isEnabled())
+            continue;
+        SfEventHandle* comp = dynamic_cast<SfEventHandle*>(m_components[i]);
+        if(comp)
+        {
+            for(size_t j=0; j<events.size(); ++j)
+                comp->sfEvent(events[j]);
+        }
+    }
+    for(size_t i=0; i<m_childs.size(); ++i)
+    {
+        if(m_childs[i]->m_enabled)
+            m_childs[i]->sfEvent(events);
+    }
+}
+void CanvasObject::draw(sf::RenderWindow &window) const
+{
+    if(!m_enabled) return;
+    for(size_t i=0; i<m_components.size(); ++i)
+    {
+        if(!m_components[i]->isEnabled())
+            continue;
+        Drawable* comp = dynamic_cast<Drawable*>(m_components[i]);
+        if(comp)
+        {
+            window.draw(*comp);
+        }
+    }
+    for(size_t i=0; i<m_childs.size(); ++i)
+    {
+        if(m_childs[i]->m_enabled)
+            m_childs[i]->draw(window);
+    }
+}
 

@@ -156,17 +156,13 @@ namespace Objects
 
 class CanvasObject
 {
+        friend Canvas;
+        friend CanvasObjectContainer;
     public:
         CanvasObject(const std::string &name = "",
                      CanvasObject *parent = nullptr);
         virtual ~CanvasObject();
 
-        // Canvas Object Internal functions
-        void setCanvasParent(Canvas *parent);
-        Canvas *getCanvasParent() const;
-
-
-        // Canvas Object external functions
         void setParent(CanvasObject *parent);
         CanvasObject *getParent() const;
 
@@ -183,15 +179,25 @@ class CanvasObject
 
         void addChild(CanvasObject *child);
         void removeChild(CanvasObject *child);
-        void clearChilds();
+        void deleteChilds();
+        template<typename T>
+        void deleteChilds();
+
         bool childExists(CanvasObject *child) const;
         size_t getChildIndex(CanvasObject *child) const;
         const std::vector<CanvasObject*> &getChilds() const;
+        template<typename T>
+        std::vector<T*> getChilds() const;
+        size_t getChildCount() const;
+        template<typename T>
         size_t getChildCount() const;
 
         void addComponent(Components::Component *comp);
         void removeComponent(Components::Component *comp);
-        void clearComponents();
+        void deleteComponents();
+        template<typename T>
+        void deleteComponents();
+
         bool componentExists(Components::Component *comp) const;
         size_t getComponentIndex(Components::Component *comp) const;
         const std::vector<Components::Component*> &getComponents()  const;
@@ -206,8 +212,7 @@ class CanvasObject
         sf::Vector2u getCanvasSize() const;
         sf::Vector2u getOldCanvasSize() const;
 
-        void sfEvent(const std::vector<sf::Event> &events);
-        void draw(sf::RenderWindow &window) const;
+
 
         std::string toString() const;
         const static size_t npos = -1;
@@ -218,22 +223,109 @@ class CanvasObject
         virtual void onCanvasParentChange(Canvas *newParent);
         virtual void onParentChange(CanvasObject *newParent);
 
-        virtual void internalOnCanvasParentChange(Canvas *newParent) {}
-        virtual void internalOnParentChange(CanvasObject *newParent) {}
+        virtual void internalOnCanvasParentChange(Canvas *newParent);
+        virtual void internalOnParentChange(CanvasObject *newParent);
 
+        Canvas *getCanvasParent() const;
+
+
+
+    private:
         static size_t m_objNameCounter;
 
         bool m_enabled;
         std::string m_name;
         Canvas *m_canvasParent;
         CanvasObject *m_parent;
-
-
         std::vector<CanvasObject*> m_childs;
         std::vector<Components::Component*> m_components;
 
+        // Canvas Object Internal functions
+        void setCanvasParent(Canvas *parent);
+        void sfEvent(const std::vector<sf::Event> &events);
+        void draw(sf::RenderWindow &window) const;
 
 };
 
+template<typename T>
+void CanvasObject::deleteChilds()
+{
+    for(size_t i=0; i<m_childs.size(); ++i)
+    {
+        T* child = dynamic_cast<T*>(m_childs[i]);
+        if(child)
+        {
+            m_childs.erase(m_childs.begin() + i);
+            --i;
+            delete child;
+        }
+    }
+}
+template<typename T>
+std::vector<T*> CanvasObject::getChilds() const
+{
+    std::vector<T*> list;
+    list.reserve(m_childs.size());
+    for(size_t i=0; i<m_childs.size(); ++i)
+    {
+        T* child = dynamic_cast<T*>(m_childs[i]);
+        if(child)
+            list.push_back(child);
+    }
+    return list;
+}
+template<typename T>
+size_t CanvasObject::getChildCount() const
+{
+    size_t counter = 0;
+    for(size_t i=0; i<m_childs.size(); ++i)
+    {
+        T* child = dynamic_cast<T*>(m_childs[i]);
+        if(child)
+            ++counter;
+    }
+    return counter;
+}
+
+template<typename T>
+void CanvasObject::deleteComponents()
+{
+    for(size_t i=0; i<m_components.size(); ++i)
+    {
+        T* comp = dynamic_cast<T*>(m_components[i]);
+        if(comp)
+        {
+            m_components.erase(m_components.begin() + i);
+            --i;
+            delete comp;
+        }
+    }
+}
+
+template<typename T>
+std::vector<T*> CanvasObject::getComponents() const
+{
+    std::vector<T*> list;
+    list.reserve(m_components.size());
+    for(size_t i=0; i<m_components.size(); ++i)
+    {
+        T* comp = dynamic_cast<T*>(m_components[i]);
+        if(comp)
+            list.push_back(comp);
+    }
+    return list;
+}
+template<typename T>
+size_t CanvasObject::getComponentCount() const
+{
+    size_t count = 0;
+    for(size_t i=0; i<m_components.size(); ++i)
+    {
+        T* comp = dynamic_cast<T*>(m_components[i]);
+        if(comp)
+            ++count;
+    }
+    return count;
+}
 }
 }

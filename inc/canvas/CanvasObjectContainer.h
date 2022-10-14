@@ -18,6 +18,8 @@ class CanvasObjectContainer
 
         void removeObject(Objects::CanvasObject *obj);
         void removeObject(const std::vector<Objects::CanvasObject*> &objs);
+        void deleteObject(Objects::CanvasObject *obj);
+        void deleteObject(const std::vector<Objects::CanvasObject*> &objs);
         void clearObjects();
 
         void reserveObjectsCount(size_t size);
@@ -56,5 +58,90 @@ class CanvasObjectContainer
 
         Canvas *m_parent;
 };
+template<typename T>
+size_t CanvasObjectContainer::getObjectsCount() const
+{
+    size_t count = 0;
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        T* obj = dynamic_cast<T*>(m_container[i]);
+        if(obj)
+            ++count;
+    }
+    return count;
+}
+template<typename T>
+std::vector<T*> CanvasObjectContainer::getObjects() const
+{
+    std::vector<T*> list;
+    list.reserve(m_container.size());
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        T* obj = dynamic_cast<T*>(m_container[i]);
+        if(obj)
+            list.push_back(obj);
+    }
+    return list;
+}
+template<typename T>
+T* CanvasObjectContainer::getFirstObject() const
+{
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        T* obj = dynamic_cast<T*>(m_container[i]);
+        if(obj)
+            return obj;
+    }
+    return nullptr;
+}
+template<typename T>
+bool CanvasObjectContainer::objectExists(T *obj,const std::vector<T*> &list)
+{
+    EASY_FUNCTION(profiler::colors::Orange100);
+    size_t num = list.size();
+    if(!num) return false;
+
+    for(auto it = list.begin(); it != list.end(); ++it) {
+        if(obj == *it) return true;
+    }
+    return false;
+}
+
+template<typename T>
+size_t CanvasObjectContainer::getObjectIndex(T *obj,const std::vector<T*> &list)
+{
+    EASY_FUNCTION(profiler::colors::Orange200);
+    size_t num = list.size();
+    if(!num) return npos;
+
+    for(auto it = list.begin(); it != list.end(); ++it) {
+        if(obj == *it) return it - list.begin();
+    }
+    return npos;
+}
+template<typename T>
+void CanvasObjectContainer::addObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
+{
+    EASY_FUNCTION(profiler::colors::Orange300);
+    T* transformed = dynamic_cast<T*>(obj);
+    if(transformed)
+    {
+        list.push_back(transformed);
+    }
+}
+
+template<typename T>
+void CanvasObjectContainer::removeObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
+{
+    EASY_FUNCTION(profiler::colors::Orange400);
+    T* transformed = dynamic_cast<T*>(obj);
+    if(transformed)
+    {
+        size_t index = getObjectIndex<T>(transformed,list);
+        if(index != npos)
+            list.erase(list.begin()+index);
+    }
+}
+
 
 }

@@ -19,6 +19,7 @@ class SandBox : public QMainWindow
     private:
         Ui::SandBox *ui;
 
-        QSFML::Canvas *m_canvas;
+        QSFML::Canvas *m_canvas_1;
+        QSFML::Canvas *m_canvas_2;
 };
 #endif // SANDBOX_H
