@@ -100,6 +100,13 @@ void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)
         m_container[i]->sfEvent(events);
     }
 }
+void CanvasObjectContainer::update()
+{
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        m_container[i]->update_internal();
+    }
+}
 void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {
     for(size_t i=0; i<m_container.size(); ++i)

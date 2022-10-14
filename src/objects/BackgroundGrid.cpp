@@ -40,6 +40,10 @@ unsigned int BackgroundGrid::getGridSpacing() const
 {
     return m_gridSpacing;
 }
+void BackgroundGrid::update()
+{
+
+}
 
 void BackgroundGrid::DrawableComp::draw(sf::RenderTarget& target,
                                         sf::RenderStates states) const

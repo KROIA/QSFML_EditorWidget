@@ -212,7 +212,7 @@ class CanvasObject
         sf::Vector2u getCanvasSize() const;
         sf::Vector2u getOldCanvasSize() const;
 
-
+        virtual void update();
 
         std::string toString() const;
         const static size_t npos = -1;
@@ -243,6 +243,7 @@ class CanvasObject
         // Canvas Object Internal functions
         void setCanvasParent(Canvas *parent);
         void sfEvent(const std::vector<sf::Event> &events);
+        void update_internal();
         void draw(sf::RenderWindow &window) const;
 
 };

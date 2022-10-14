@@ -36,11 +36,17 @@ class CanvasObjectContainer
         size_t getObjectIndex(Objects::CanvasObject *obj);
 
 
-        void sfEvent(const std::vector<sf::Event> &events);
-        void draw(sf::RenderWindow &window);
+
 
         const static size_t npos = -1;
+
+    protected:
+        void sfEvent(const std::vector<sf::Event> &events);
+        void update();
+        void draw(sf::RenderWindow &window);
     private:
+
+
         template<typename T>
         bool objectExists(T *obj,const std::vector<T*> &list);
 

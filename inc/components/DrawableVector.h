@@ -11,6 +11,7 @@ class DrawableVector: public Drawable
     public:
     DrawableVector(const std::string &name = "DrawableVector");
 
+    void setPoints(const sf::Vector2f &begin, const sf::Vector2f &end);
     void setStart(const sf::Vector2f &begin);
     void setEnd(const sf::Vector2f &end);
     void setDirection(const sf::Vector2f &directionVec);

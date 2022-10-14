@@ -31,6 +31,8 @@ class VectorDisplayer: public QSFML::Objects::CanvasObject
             follower->m_vec = this;
             addComponent(follower);
         }
+        void update() override
+        {}
 
         friend MouseFollower;
 

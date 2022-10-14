@@ -24,6 +24,8 @@ class BackgroundGrid: public CanvasObject
         void setGridSpacing(unsigned int spacing);
         unsigned int getGridSpacing() const;
 
+        void update() override;
+
     private:
         sf::IntRect m_gridArea;
         unsigned int m_gridSpacing;

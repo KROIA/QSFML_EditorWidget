@@ -153,6 +153,10 @@ void CameraController::setCameraView(const sf::View &view)
     if(!getCanvasParent()) return;
     getCanvasParent()->setCameraView(view);
 }
+void CameraController::update()
+{
+
+}
 
 void CameraController::SfEventComponent::setController(CameraController *controller)
 {

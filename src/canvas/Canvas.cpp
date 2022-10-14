@@ -191,7 +191,11 @@ void Canvas::paintEvent(QPaintEvent*)
     internal_event(events);
     EASY_END_BLOCK;
 
-    EASY_BLOCK("Process draw",profiler::colors::Green400);
+    EASY_BLOCK("Process update",profiler::colors::Green400);
+    CanvasObjectContainer::update();
+    EASY_END_BLOCK;
+
+    EASY_BLOCK("Process draw",profiler::colors::Green500);
     m_window->clear(m_settings.colors.defaultBackground);
     CanvasObjectContainer::draw(*m_window);
     EASY_END_BLOCK;

@@ -10,6 +10,11 @@ DrawableVector::DrawableVector(const std::string &name)
 
 }
 
+void DrawableVector::setPoints(const sf::Vector2f &begin, const sf::Vector2f &end)
+{
+    m_start = begin;
+    m_end = end;
+}
 void DrawableVector::setStart(const sf::Vector2f &begin)
 {
     m_start = begin;

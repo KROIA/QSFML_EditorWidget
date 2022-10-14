@@ -214,7 +214,10 @@ sf::Vector2u CanvasObject::getOldCanvasSize() const
     return m_canvasParent->getOldCanvasSize();
 }
 
+void CanvasObject::update()
+{
 
+}
 
 
 std::string CanvasObject::toString() const
@@ -300,6 +303,16 @@ void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
     {
         if(m_childs[i]->m_enabled)
             m_childs[i]->sfEvent(events);
+    }
+}
+void CanvasObject::update_internal()
+{
+    if(!m_enabled) return;
+    update();
+    for(size_t i=0; i<m_childs.size(); ++i)
+    {
+        if(m_childs[i]->m_enabled)
+            m_childs[i]->update_internal();
     }
 }
 void CanvasObject::draw(sf::RenderWindow &window) const

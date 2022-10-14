@@ -43,7 +43,7 @@ class CameraController: public CanvasObject
 
         void setCameraView(const sf::View &view);
 
-
+        void update() override;
 
 
 
