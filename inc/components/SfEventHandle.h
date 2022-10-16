@@ -36,6 +36,8 @@ namespace Components
  *                  // Do something with the moved mouse pos
  *              }
  *          }
+ *          default:
+ *              break;
  *     }
  * };
  * \endcode

@@ -44,6 +44,12 @@ void Canvas::setSettings(const CanvasSettings &settings)
 {
     setLayout(settings.layout);
     setTiming(settings.timing);
+    setContextSettings(settings.contextSettings);
+
+    if(!m_textfont.loadFromFile(settings.fontPath))
+    {
+        qDebug() << "Can't load Font: "<<settings.fontPath.c_str();
+    }
 }
 const CanvasSettings &Canvas::getSettings() const
 {
@@ -177,6 +183,11 @@ void Canvas::paintEvent(QPaintEvent*)
     EASY_FUNCTION(profiler::colors::Green); // Magenta block with name "foo"
     // Let the derived class do its specific stuff
     OnUpdate();
+
+    EASY_BLOCK("Delete unused objects",profiler::colors::Green200);
+    CanvasObjectContainer::deleteUnusedObjects();
+    EASY_END_BLOCK;
+
     sf::Event event;
 
     EASY_BLOCK("Process sf::Events",profiler::colors::Green200);
@@ -244,4 +255,8 @@ void Canvas::sfEvent(const std::vector<sf::Event> &events){}
 void Canvas::internal_event(const std::vector<sf::Event> &events)
 {
     CanvasObjectContainer::sfEvent(events);
+}
+const sf::Font &Canvas::getTextFont() const
+{
+    return m_textfont;
 }

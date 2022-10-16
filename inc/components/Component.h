@@ -72,6 +72,11 @@ class Component
          */
         bool isEnabled() const;
 
+        /**
+         * \brief update will be called once per frame
+         */
+        virtual void update();
+
     protected:
 
     private:

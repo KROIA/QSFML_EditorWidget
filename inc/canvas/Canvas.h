@@ -30,6 +30,7 @@ class Canvas :
         void setContextSettings(const sf::ContextSettings &contextSettings);
         const sf::ContextSettings &getContextSettings() const;
 
+
         void setCameraView(const sf::View &view);
         const sf::View &getCameraView() const;
         const sf::View &getDefaultCameraView() const;
@@ -43,6 +44,8 @@ class Canvas :
 
 
         void sfEvent(const std::vector<sf::Event> &events);
+
+        const sf::Font &getTextFont() const;
 
     protected:
         QPaintEngine* paintEngine() const override;
@@ -66,5 +69,6 @@ class Canvas :
     CanvasSettings m_settings;
     sf::RenderWindow *m_window;
     sf::Vector2u m_oldCanvasSize;
+    sf::Font m_textfont;
 };
 }

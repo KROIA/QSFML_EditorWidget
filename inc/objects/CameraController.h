@@ -18,6 +18,9 @@ class CameraController: public CanvasObject
                          CanvasObject *parent = nullptr);
         ~CameraController();
 
+        void setDragButton(sf::Mouse::Button button);
+        sf::Mouse::Button getDragButton() const;
+
         void setMinZoom(float min);
         void setMaxZoom(float max);
         float getMinZoom()const;
@@ -58,6 +61,7 @@ class CameraController: public CanvasObject
         sf::FloatRect m_maxMovingBounds;
 
         SfEventComponent *m_eventHandleComponent;
+        sf::Mouse::Button m_dragButton;
 
     // Defining component
     class SfEventComponent : public Components::SfEventHandle

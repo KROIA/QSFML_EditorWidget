@@ -46,6 +46,10 @@ void CanvasObject::setParent(CanvasObject *parent)
     m_parent = parent;
     for(size_t i=0; i<m_components.size(); ++i)
         m_components[i]->setParent(this);
+
+    for(size_t i=0; i<m_childs.size(); ++i)
+        m_childs[i]->setCanvasParent(m_canvasParent);
+
     internalOnParentChange(m_parent);
     onParentChange(m_parent);
 }
@@ -76,6 +80,7 @@ void CanvasObject::addChild(CanvasObject *child)
     if(!child)return;
     if(childExists(child)) return;
     child->setParent(this);
+    child->setCanvasParent(m_canvasParent);
     m_childs.push_back(child);
 }
 
@@ -107,17 +112,54 @@ void CanvasObject::removeChild(CanvasObject *child)
     if(!child)return;
     size_t index = getChildIndex(child);
     if(index == npos) return;
-    child->setParent(nullptr);
-    m_childs.erase(m_childs.begin() + index);
+    for(size_t i=0; i<m_toDeleteChilds.size(); ++i)
+        if(m_toDeleteChilds[i] == child)
+            return;
+    m_toRemoveChilds.push_back(child);
+}
+void CanvasObject::removeChild_internal()
+{
+    for(size_t i=0; i<m_toRemoveChilds.size(); ++i)
+    {
+        size_t index = getChildIndex(m_toRemoveChilds[i]);
+        if(index != npos)
+            m_childs.erase(m_childs.begin() + index);
+    }
+    m_toRemoveChilds.clear();
+}
+void CanvasObject::deleteChild(CanvasObject *child)
+{
+    if(!child)return;
+    size_t index = getChildIndex(child);
+    if(index == npos) return;
+    for(size_t i=0; i<m_toDeleteChilds.size(); ++i)
+        if(m_toDeleteChilds[i] == child)
+            return;
+    m_toDeleteChilds.push_back(child);
 }
 void CanvasObject::deleteChilds()
 {
     for(size_t i=0; i<m_childs.size(); ++i)
     {
-        m_childs[i]->setParent(nullptr);
-        delete m_childs[i];
+        bool match = false;
+        for(size_t j=0; j<m_toDeleteChilds.size(); ++j)
+            if(m_toDeleteChilds[j] == m_childs[i])
+                match = true;
+        if(!match)
+            m_toDeleteChilds.push_back(m_childs[i]);
     }
-    m_childs.clear();
+}
+void CanvasObject::deleteChild_internal()
+{
+    for(size_t i=0; i<m_toDeleteChilds.size(); ++i)
+    {
+        size_t index = getChildIndex(m_toDeleteChilds[i]);
+        if(index != npos)
+            m_childs.erase(m_childs.begin() + index);
+        qDebug() << "CanvasObject::deleteChild_internal(): "<<m_toDeleteChilds[i]->getName().c_str() << " child of: "<<getName().c_str();
+        delete m_toDeleteChilds[i];
+    }
+    m_toDeleteChilds.clear();
 }
 bool CanvasObject::childExists(CanvasObject *child) const
 {
@@ -155,8 +197,40 @@ void CanvasObject::removeComponent(Component *comp)
     if(!comp)return;
     size_t index = getComponentIndex(comp);
     if(index == npos) return;
+    for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
+        if(m_toRemoveComponents[i] == comp)
+            return;
+    m_toRemoveComponents.push_back(comp);
+}
+void CanvasObject::removeComponent_internal()
+{
+    for(size_t i=0; i<m_toDeleteComponents.size(); ++i)
+    {
+        size_t index = getComponentIndex(m_toDeleteComponents[i]);
+        if(index != npos)
+            m_components.erase(m_components.begin() + index);
+    }
+    m_toDeleteComponents.clear();
+}
+void CanvasObject::deleteComponent(Component *comp)
+{
+    if(!comp)return;
+    size_t index = getComponentIndex(comp);
+    if(index == npos) return;
     comp->setParent(nullptr);
     m_components.erase(m_components.begin() + index);
+    delete comp;
+}
+void CanvasObject::deleteComponent_internal()
+{
+    for(size_t i=0; i<m_toDeleteComponents.size(); ++i)
+    {
+        size_t index = getComponentIndex(m_toDeleteComponents[i]);
+        if(index != npos)
+            m_components.erase(m_components.begin() + index);
+        delete m_toDeleteComponents[i];
+    }
+    m_toDeleteComponents.clear();
 }
 void CanvasObject::deleteComponents()
 {
@@ -212,6 +286,13 @@ sf::Vector2u CanvasObject::getOldCanvasSize() const
 {
     if(!m_canvasParent) return sf::Vector2u(0,0);
     return m_canvasParent->getOldCanvasSize();
+}
+
+const sf::Font &CanvasObject::getTextFont() const
+{
+    const static sf::Font dummy;
+    if(!m_canvasParent) return dummy;
+    return m_canvasParent->getTextFont();
 }
 
 void CanvasObject::update()
@@ -272,6 +353,16 @@ Canvas *CanvasObject::getCanvasParent() const
 {
     return m_canvasParent;
 }
+void CanvasObject::deleteThis()
+{
+    if(m_parent)
+    {
+        m_parent->deleteChild(this);
+    }
+    else if(m_canvasParent)
+        m_canvasParent->CanvasObjectContainer::deleteLater(this);
+
+}
 
 void CanvasObject::setCanvasParent(Canvas *parent)
 {
@@ -284,6 +375,16 @@ void CanvasObject::setCanvasParent(Canvas *parent)
 
     internalOnCanvasParentChange(m_canvasParent);
     onCanvasParentChange(m_canvasParent);
+}
+void CanvasObject::deleteUnusedObjects()
+{
+    removeChild_internal();
+    deleteChild_internal();
+    removeComponent_internal();
+    deleteComponent_internal();
+
+    for(size_t i=0; i<m_childs.size(); ++i)
+        m_childs[i]->deleteUnusedObjects();
 }
 void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
 {
@@ -309,6 +410,12 @@ void CanvasObject::update_internal()
 {
     if(!m_enabled) return;
     update();
+    for(size_t i=0; i<m_components.size(); ++i)
+    {
+        if(!m_components[i]->isEnabled())
+            continue;
+        m_components[i]->update();
+    }
     for(size_t i=0; i<m_childs.size(); ++i)
     {
         if(m_childs[i]->m_enabled)

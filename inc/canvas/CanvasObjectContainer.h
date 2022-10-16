@@ -36,11 +36,12 @@ class CanvasObjectContainer
         size_t getObjectIndex(Objects::CanvasObject *obj);
 
 
-
+        void deleteLater(Objects::CanvasObject *obj);
 
         const static size_t npos = -1;
 
     protected:
+        void deleteUnusedObjects();
         void sfEvent(const std::vector<sf::Event> &events);
         void update();
         void draw(sf::RenderWindow &window);
@@ -61,6 +62,8 @@ class CanvasObjectContainer
 
         // All objects will be contained in this list
         std::vector<Objects::CanvasObject*> m_container;
+
+        std::vector<Objects::CanvasObject*> m_toDelete;
 
         Canvas *m_parent;
 };

@@ -179,6 +179,7 @@ class CanvasObject
 
         void addChild(CanvasObject *child);
         void removeChild(CanvasObject *child);
+        void deleteChild(CanvasObject *child);
         void deleteChilds();
         template<typename T>
         void deleteChilds();
@@ -194,6 +195,7 @@ class CanvasObject
 
         void addComponent(Components::Component *comp);
         void removeComponent(Components::Component *comp);
+        void deleteComponent(Components::Component *comp);
         void deleteComponents();
         template<typename T>
         void deleteComponents();
@@ -212,6 +214,11 @@ class CanvasObject
         sf::Vector2u getCanvasSize() const;
         sf::Vector2u getOldCanvasSize() const;
 
+        const sf::Font &getTextFont() const;
+
+        /**
+         * \brief update will be called once per frame
+         */
         virtual void update();
 
         std::string toString() const;
@@ -228,9 +235,14 @@ class CanvasObject
 
         Canvas *getCanvasParent() const;
 
-
+        void deleteThis();
 
     private:
+        void removeChild_internal();
+        void removeComponent_internal();
+        void deleteChild_internal();
+        void deleteComponent_internal();
+
         static size_t m_objNameCounter;
 
         bool m_enabled;
@@ -240,8 +252,14 @@ class CanvasObject
         std::vector<CanvasObject*> m_childs;
         std::vector<Components::Component*> m_components;
 
+        std::vector<CanvasObject*> m_toDeleteChilds;
+        std::vector<Components::Component*> m_toDeleteComponents;
+        std::vector<CanvasObject*> m_toRemoveChilds;
+        std::vector<Components::Component*> m_toRemoveComponents;
+
         // Canvas Object Internal functions
         void setCanvasParent(Canvas *parent);
+        void deleteUnusedObjects();
         void sfEvent(const std::vector<sf::Event> &events);
         void update_internal();
         void draw(sf::RenderWindow &window) const;

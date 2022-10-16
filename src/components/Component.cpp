@@ -38,3 +38,7 @@ bool Component::isEnabled() const
 {
     return m_enabled;
 }
+void Component::update()
+{
+
+}

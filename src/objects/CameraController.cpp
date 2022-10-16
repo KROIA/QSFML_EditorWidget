@@ -16,10 +16,19 @@ CameraController::CameraController(const std::string &name,
 
     m_eventHandleComponent = new SfEventComponent();
     m_eventHandleComponent->setController(this);
+    m_dragButton = sf::Mouse::Button::Left;
     addComponent(m_eventHandleComponent);
 }
 CameraController::~CameraController()
 {}
+void CameraController::setDragButton(sf::Mouse::Button button)
+{
+    m_dragButton = button;
+}
+sf::Mouse::Button CameraController::getDragButton() const
+{
+    return m_dragButton;
+}
 void CameraController::setMinZoom(float min)
 {
     m_minZoom = min;
@@ -181,7 +190,7 @@ void CameraController::SfEventComponent::sfEvent(const sf::Event &e)
         }
         case sf::Event::MouseButtonPressed:
         {
-            if(e.mouseButton.button == sf::Mouse::Button::Left)
+            if(e.mouseButton.button == m_controller->m_dragButton)
             {
                 startPos = sf::Vector2f(m_controller->getMousePosition());
                 mousePressed = true;
@@ -190,7 +199,7 @@ void CameraController::SfEventComponent::sfEvent(const sf::Event &e)
         }
         case sf::Event::MouseButtonReleased:
         {
-            if(e.mouseButton.button == sf::Mouse::Button::Left)
+            if(e.mouseButton.button == m_controller->m_dragButton)
                 mousePressed = false;
             break;
         }

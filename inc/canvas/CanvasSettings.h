@@ -76,5 +76,14 @@ struct CanvasSettings
     Timing timing;
     sf::ContextSettings contextSettings;
 
+    /**
+     * \brief Text settings
+     */
+    std::string fontPath;
+
+    CanvasSettings()
+    {
+        fontPath = "C:\\Windows\\Fonts\\Arial.ttf";
+    }
 };
 }

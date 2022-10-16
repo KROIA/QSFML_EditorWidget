@@ -17,7 +17,14 @@ INCLUDEPATH += \
     $$inc/utilities
 
 HEADERS += \
+    $$PWD/inc/components/AbstractPressEvent.h \
     $$PWD/inc/components/BoxCollider.h \
+    $$PWD/inc/components/Button.h \
+    $$PWD/inc/components/KeyPressEvent.h \
+    $$PWD/inc/components/Line.h \
+    $$PWD/inc/components/MouseFollower.h \
+    $$PWD/inc/components/MousePressEvent.h \
+    $$PWD/inc/components/Text.h \
     $$PWD/inc/objects/DrawableBoxCollider.h \
     $$inc/canvas/Canvas.h \
     $$inc/canvas/CanvasSettings.h \
@@ -39,7 +46,14 @@ HEADERS += \
 
 
 SOURCES += \
+    $$PWD/src/components/AbstractPressEvent.cpp \
     $$PWD/src/components/BoxCollider.cpp \
+    $$PWD/src/components/Button.cpp \
+    $$PWD/src/components/KeyPressEvent.cpp \
+    $$PWD/src/components/Line.cpp \
+    $$PWD/src/components/MouseFollower.cpp \
+    $$PWD/src/components/MousePressEvent.cpp \
+    $$PWD/src/components/Text.cpp \
     $$PWD/src/objects/DrawableBoxCollider.cpp \
     $$src/canvas/Canvas.cpp \
     $$src/canvas/CanvasObjectContainer.cpp \

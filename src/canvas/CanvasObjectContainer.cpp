@@ -92,7 +92,27 @@ size_t CanvasObjectContainer::getObjectIndex(CanvasObject *obj)
 {
     return getObjectIndex<CanvasObject>(obj,m_container);
 }
+void CanvasObjectContainer::deleteLater(Objects::CanvasObject *obj)
+{
+    if(objectExists(obj))
+    {
+        m_toDelete.push_back(obj);
+    }
+}
 
+void CanvasObjectContainer::deleteUnusedObjects()
+{
+    for(size_t i=0; i<m_toDelete.size(); ++i)
+    {
+        deleteObject(m_toDelete[i]);
+    }
+    m_toDelete.clear();
+
+    for(size_t i=0; i<m_container.size(); ++i)
+    {
+        m_container[i]->deleteUnusedObjects();
+    }
+}
 void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)
 {
     for(size_t i=0; i<m_container.size(); ++i)
