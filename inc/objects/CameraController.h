@@ -16,7 +16,9 @@ class CameraController: public CanvasObject
     public:
         CameraController(const std::string &name = "",
                          CanvasObject *parent = nullptr);
+        CameraController(const CameraController &other);
         ~CameraController();
+        CLONE_FUNC(CameraController)
 
         void setDragButton(sf::Mouse::Button button);
         sf::Mouse::Button getDragButton() const;
@@ -67,7 +69,15 @@ class CameraController: public CanvasObject
     class SfEventComponent : public Components::SfEventHandle
     {
         public:
-            SfEventComponent(){}
+            SfEventComponent()
+            {
+                m_controller = nullptr;
+            }
+            SfEventComponent(const SfEventComponent &other)
+                : SfEventHandle(other)
+            {
+                m_controller = nullptr;
+            }
             ~SfEventComponent(){}
 
             void setController(CameraController *controller);

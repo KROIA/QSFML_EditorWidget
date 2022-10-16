@@ -13,6 +13,17 @@ BackgroundGrid::BackgroundGrid(const std::string &name,
     setLineColor({sf::Color(130,130,130),sf::Color(100,100,100)});
     addComponent(m_draw);
 }
+BackgroundGrid::BackgroundGrid(const BackgroundGrid &other)
+    : CanvasObject(other)
+{
+    m_gridArea = other.m_gridArea;
+    m_gridSpacing = other.m_gridSpacing;
+    m_alternatingColors = other.m_alternatingColors;
+
+    m_draw = new DrawableComp(*other.m_draw);
+    m_draw->m_grid = this;
+
+}
 BackgroundGrid::~BackgroundGrid()
 {}
 
@@ -45,6 +56,16 @@ void BackgroundGrid::update()
 
 }
 
+BackgroundGrid::DrawableComp::DrawableComp(const std::string &name)
+    : Drawable(name)
+{
+    m_grid = nullptr;
+}
+BackgroundGrid::DrawableComp::DrawableComp(const Drawable &other)
+    : Drawable(other)
+{
+    m_grid = nullptr;
+}
 void BackgroundGrid::DrawableComp::draw(sf::RenderTarget& target,
                                         sf::RenderStates states) const
 {

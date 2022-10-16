@@ -9,6 +9,11 @@ MousePressEvent::MousePressEvent(const std::string &name,
 {
     setTriggerButton(button);
 }
+MousePressEvent::MousePressEvent(const MousePressEvent &other)
+    : AbstractPressEvent(other)
+{
+    m_button = other.m_button;
+}
 void MousePressEvent::setTriggerButton(sf::Mouse::Button button)
 {
     m_button = button;

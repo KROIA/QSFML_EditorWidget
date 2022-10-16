@@ -14,11 +14,19 @@ class VisibleCamera : public CameraController
                       CanvasObject *parent = nullptr)
             :   CameraController(name,parent)
         {
-            DrawableComp *draw = new DrawableComp();
-            draw->setCam(this);
-            addComponent(draw);
+            m_draw = new DrawableComp();
+            m_draw->setCam(this);
+            addComponent(m_draw);
+        }
+        VisibleCamera(const VisibleCamera &other)
+            :   CameraController(other)
+        {
+            m_draw = new DrawableComp(*other.m_draw);
+            m_draw->setCam(this);
+            addComponent(m_draw);
         }
         ~VisibleCamera(){}
+        CLONE_FUNC(VisibleCamera)
 
 
 
@@ -34,7 +42,7 @@ class VisibleCamera : public CameraController
         }*/
 
     private:
-
+        DrawableComp *m_draw;
 
         class DrawableComp : public Components::Drawable
         {

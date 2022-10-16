@@ -8,4 +8,10 @@ namespace QSFML
     {
         class CanvasObject;
     }
+
+#define CLONE_FUNC(classNameVal) \
+    classNameVal* clone() const override \
+    { \
+        return new classNameVal(*this); \
+    }
 }

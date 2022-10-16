@@ -25,6 +25,11 @@ namespace Components
  *     {
  *
  *     }
+ *     MyDrawable(const MyDrawable &other)
+ *          : Drawable(other)
+ *     {
+ *
+ *     }
  *
  *     void draw(sf::RenderTarget& target, sf::RenderStates states) const override
  *     {
@@ -43,7 +48,10 @@ class Drawable : public Component, public sf::Drawable
          * \see Component::setName()
          */
         Drawable(const std::string &name = "Drawable");
+        Drawable(const Drawable &other);
         ~Drawable();
+
+
 
         /**
          * \brief draw

@@ -21,6 +21,26 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     m_parent = parent;
     setEnabled(true);
 }
+CanvasObject::CanvasObject(const CanvasObject &other)
+{
+    m_enabled = other.m_enabled;
+    m_name = other.m_name;
+    m_canvasParent = nullptr;
+    m_parent = nullptr;
+
+    m_childs.reserve(other.m_childs.size());
+    for(size_t i=0; i<other.m_childs.size(); ++i)
+    {
+        CanvasObject *obj = other.m_childs[i]->clone();
+        addChild(obj);
+    }
+    m_components.reserve(other.m_components.size());
+    for(size_t i=0; i<other.m_components.size(); ++i)
+    {
+        Component *obj = other.m_components[i]->clone();
+        addComponent(obj);
+    }
+}
 CanvasObject::~CanvasObject()
 {
     for(size_t i=0; i<m_childs.size(); ++i)
@@ -34,7 +54,11 @@ CanvasObject::~CanvasObject()
         m_canvasParent->removeObject(this);
 }
 
-
+CanvasObject* CanvasObject::clone() const
+{
+    CanvasObject *obj = new CanvasObject(*this);
+    return obj;
+}
 void CanvasObject::setParent(CanvasObject *parent)
 {
     if(m_parent)

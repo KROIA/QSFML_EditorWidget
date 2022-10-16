@@ -14,6 +14,25 @@ DrawableBoxCollider::DrawableBoxCollider(const std::string &name,
 {
     setup(box);
 }
+DrawableBoxCollider::DrawableBoxCollider(const DrawableBoxCollider &other)
+    : CanvasObject(other)
+{
+    m_pos    = new QSFML::Components::DrawableVector(*other.m_pos   );
+    m_left   = new QSFML::Components::DrawableVector(*other.m_left  );
+    m_top    = new QSFML::Components::DrawableVector(*other.m_top   );
+    m_right  = new QSFML::Components::DrawableVector(*other.m_right );
+    m_bottom = new QSFML::Components::DrawableVector(*other.m_bottom);
+
+    m_box = new Components::BoxCollider(*other.m_box);
+    setColor(sf::Color::Green);
+
+    addComponent(m_pos);
+    addComponent(m_left);
+    addComponent(m_top);
+    addComponent(m_right);
+    addComponent(m_bottom);
+    addComponent(m_box);
+}
 void DrawableBoxCollider::setup(const Utilities::AABB &box)
 {
     m_pos    = new QSFML::Components::DrawableVector("pos");

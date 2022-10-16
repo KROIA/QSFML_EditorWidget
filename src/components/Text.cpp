@@ -12,6 +12,12 @@ Text::Text(const std::string &name)
     setText(name);
 
 }
+Text::Text(const Text &other)
+    :   Drawable(other)
+{
+    m_text = other.m_text;
+    m_pos = other.m_pos;
+}
 void Text::setText(const std::string &text)
 {
     m_text.setString(text);

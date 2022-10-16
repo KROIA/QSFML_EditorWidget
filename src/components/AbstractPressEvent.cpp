@@ -12,7 +12,14 @@ AbstractPressEvent::AbstractPressEvent(const std::string &name)
     m_down = false;
     m_risingEdge = false;
 }
-
+AbstractPressEvent::AbstractPressEvent(const AbstractPressEvent &other)
+    : QObject()
+    , Component(other)
+{
+    m_fallingEdge = other.m_fallingEdge;
+    m_down = other.m_down;
+    m_risingEdge = other.m_risingEdge;
+}
 void AbstractPressEvent::update()
 {
     if(getCurrentValue())

@@ -161,7 +161,10 @@ class CanvasObject
     public:
         CanvasObject(const std::string &name = "",
                      CanvasObject *parent = nullptr);
+        CanvasObject(const CanvasObject &other);
         virtual ~CanvasObject();
+
+        virtual CanvasObject* clone() const;
 
         void setParent(CanvasObject *parent);
         CanvasObject *getParent() const;

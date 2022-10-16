@@ -15,6 +15,12 @@ Button::Button(const std::string &name, const Utilities::AABB &box)
 {
 
 }
+Button::Button(const Button &other)
+    :   MousePressEvent(other)
+    ,   Utilities::AABB(other)
+{
+
+}
 Button::~Button()
 {
 

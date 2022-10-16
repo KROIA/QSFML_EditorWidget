@@ -15,7 +15,9 @@ class DrawableBoxCollider: public CanvasObject
     public:
     DrawableBoxCollider(const std::string &name = "DrawableBoxCollider");
     DrawableBoxCollider(const std::string &name, const Utilities::AABB &box);
+    DrawableBoxCollider(const DrawableBoxCollider &other);
     ~DrawableBoxCollider();
+    CLONE_FUNC(DrawableBoxCollider)
 
     void setColor(const sf::Color &color);
     const sf::Color &getColor() const;

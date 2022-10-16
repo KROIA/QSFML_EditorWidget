@@ -11,6 +11,18 @@ Line::Line(const std::string &name)
 {
     setColor(sf::Color::Cyan);
 }
+Line::Line(const Line &other)
+    : Drawable(other)
+{
+    m_vertices[0] = other.m_vertices[0];
+    m_vertices[1] = other.m_vertices[1];
+    m_vertices[2] = other.m_vertices[2];
+    m_vertices[3] = other.m_vertices[3];
+    m_thickness = other.m_thickness;
+    m_color = other.m_color;
+    m_begin = other.m_begin;
+    m_end = other.m_end;
+}
 
 void Line::setStartPos(const sf::Vector2f &pos)
 {

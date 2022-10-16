@@ -3,10 +3,16 @@
 
 using namespace QSFML::Components;
 
+
 Drawable::Drawable(const std::string &name)
     :   Component(name)
 {
    // m_canvasParent = nullptr;
+}
+Drawable::Drawable(const Drawable &other)
+    :   Component(other)
+{
+
 }
 Drawable::~Drawable()
 {

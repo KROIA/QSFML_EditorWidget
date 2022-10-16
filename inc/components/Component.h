@@ -30,7 +30,10 @@ class Component
          * \see setName()
          */
         Component(const std::string &name = "");
+        Component(const Component &other);
         virtual ~Component();
+
+        virtual Component *clone() const;
 
         /**
          * \brief setParent

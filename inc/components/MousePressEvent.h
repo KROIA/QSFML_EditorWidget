@@ -19,6 +19,8 @@ class MousePressEvent : public AbstractPressEvent
          */
         MousePressEvent(const std::string &name = "MousePressEvent",
                         sf::Mouse::Button button = sf::Mouse::Button::Left);
+        MousePressEvent(const MousePressEvent &other);
+        CLONE_FUNC(MousePressEvent)
 
         void setTriggerButton(sf::Mouse::Button button);
         sf::Mouse::Button getTriggerButton() const;

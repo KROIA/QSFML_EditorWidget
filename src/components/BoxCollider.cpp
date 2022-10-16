@@ -9,6 +9,12 @@ BoxCollider::BoxCollider(const std::string &name)
 {
 
 }
+BoxCollider::BoxCollider(const BoxCollider &other)
+    : Component(other)
+    , AABB(other)
+{
+
+}
 BoxCollider::BoxCollider(const std::string &name,
                          const Utilities::AABB &box)
     : Component(name)

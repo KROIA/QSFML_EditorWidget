@@ -9,6 +9,11 @@ KeyPressEvent::KeyPressEvent(const std::string &name,
 {
     setTriggerKey(key);
 }
+KeyPressEvent::KeyPressEvent(const KeyPressEvent &other)
+    : AbstractPressEvent(other)
+{
+    m_key = other.m_key;
+}
 void KeyPressEvent::setTriggerKey(sf::Keyboard::Key key)
 {
     m_key = key;

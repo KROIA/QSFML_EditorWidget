@@ -51,7 +51,9 @@ class SfEventHandle :   public Component
          * \see Component::setName()
          */
         SfEventHandle(const std::string &name = "SfEventHandle");
+        SfEventHandle(const SfEventHandle &other);
         virtual ~SfEventHandle();
+
 
         /**
          * \brief sfEvent

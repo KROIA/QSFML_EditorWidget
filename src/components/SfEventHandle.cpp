@@ -7,6 +7,11 @@ SfEventHandle::SfEventHandle(const std::string &name)
 {
 
 }
+SfEventHandle::SfEventHandle(const SfEventHandle &other)
+    : Component(other)
+{
+
+}
 SfEventHandle::~SfEventHandle()
 {
 

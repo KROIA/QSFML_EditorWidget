@@ -19,6 +19,18 @@ CameraController::CameraController(const std::string &name,
     m_dragButton = sf::Mouse::Button::Left;
     addComponent(m_eventHandleComponent);
 }
+CameraController::CameraController(const CameraController &other)
+    : CanvasObject(other)
+{
+    m_currentZoom = other.m_currentZoom;
+    m_minZoom = other.m_minZoom;
+    m_maxZoom = other.m_maxZoom;
+    m_maxMovingBounds = other.m_maxMovingBounds;
+    m_dragButton = other.m_dragButton;
+    m_eventHandleComponent = new SfEventComponent(*other.m_eventHandleComponent);
+    m_eventHandleComponent->setController(this);
+
+}
 CameraController::~CameraController()
 {}
 void CameraController::setDragButton(sf::Mouse::Button button)

@@ -17,7 +17,7 @@ class AbstractPressEvent : public QObject,  public Component
          * \see Component::setName()
          */
         AbstractPressEvent(const std::string &name = "AbstractPressEvent");
-
+        AbstractPressEvent(const AbstractPressEvent &other);
 
         /**
          * \brief update will be called once per frame

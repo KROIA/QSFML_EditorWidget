@@ -19,6 +19,8 @@ class KeyPressEvent : public AbstractPressEvent
          */
         KeyPressEvent(const std::string &name = "KeyPressEvent",
                       const sf::Keyboard::Key key = sf::Keyboard::Key::Space);
+        KeyPressEvent(const KeyPressEvent &other);
+        CLONE_FUNC(KeyPressEvent)
 
         void setTriggerKey(sf::Keyboard::Key key);
         sf::Keyboard::Key getTriggerKey() const;

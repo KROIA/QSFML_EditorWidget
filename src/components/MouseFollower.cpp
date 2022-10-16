@@ -11,6 +11,12 @@ MouseFollower::MouseFollower(const std::string &name)
 {
 
 }
+MouseFollower::MouseFollower(const MouseFollower &other)
+    : QObject()
+    , SfEventHandle(other)
+{
+
+}
 
 void MouseFollower::sfEvent(const sf::Event &e)
 {

@@ -11,6 +11,8 @@ class Line : public Drawable
 {
     public:
         Line(const std::string &name = "Line");
+        Line(const Line &other);
+        CLONE_FUNC(Line)
 
         void setStartPos(const sf::Vector2f &pos);
         const sf::Vector2f &getStartPos() const;

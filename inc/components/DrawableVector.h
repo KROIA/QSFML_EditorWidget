@@ -10,6 +10,8 @@ class DrawableVector: public Drawable
 {
     public:
     DrawableVector(const std::string &name = "DrawableVector");
+    DrawableVector(const DrawableVector &other);
+    CLONE_FUNC(DrawableVector)
 
     void setPoints(const sf::Vector2f &begin, const sf::Vector2f &end);
     void setStart(const sf::Vector2f &begin);

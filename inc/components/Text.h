@@ -16,6 +16,8 @@ class Text : public Drawable
          * \see Component::setName()
          */
         Text(const std::string &name = "Text");
+        Text(const Text &other);
+        CLONE_FUNC(Text)
 
         void setText(const std::string &text);
         std::string getText() const;

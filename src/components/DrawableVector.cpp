@@ -9,6 +9,13 @@ DrawableVector::DrawableVector(const std::string &name)
 {
 
 }
+DrawableVector::DrawableVector(const DrawableVector &other)
+    :   Drawable(other)
+{
+    m_start = other.m_start;
+    m_end = other.m_end;
+    m_color = other.m_color;
+}
 
 void DrawableVector::setPoints(const sf::Vector2f &begin, const sf::Vector2f &end)
 {

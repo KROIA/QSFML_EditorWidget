@@ -13,7 +13,9 @@ class BackgroundGrid: public CanvasObject
     public:
         BackgroundGrid(const std::string &name = "",
                        CanvasObject *parent = nullptr);
+        BackgroundGrid(const BackgroundGrid &other);
         virtual ~BackgroundGrid();
+        CLONE_FUNC(BackgroundGrid)
 
         void setSize(const sf::IntRect &size);
         const sf::IntRect &getSize() const;
@@ -39,6 +41,8 @@ class BackgroundGrid: public CanvasObject
 class BackgroundGrid::DrawableComp: public Components::Drawable
 {
     public:
+        DrawableComp(const std::string &name = "DrawableComp");
+        DrawableComp(const Drawable &other);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 
         void drawGrid(sf::RenderTarget& target,
