@@ -255,6 +255,10 @@ void CameraController::SfEventComponent::sfEvent(const sf::Event &e)
             viewRect.width = viewRect.width/oldWindowSize.x * newWindowSize.x;
             viewRect.height = viewRect.height/oldWindowSize.y * newWindowSize.y;
 
+           // qDebug() <<"old: "<< oldWindowSize.x << " " << oldWindowSize.y
+           //          << "  new: " << newWindowSize.x << " " << newWindowSize.y << " -- "
+           //          <<viewRect.width << " "<<viewRect.height;
+
             view.setSize(viewRect.width,viewRect.height);
             view.setCenter(viewRect.left+viewRect.width/2.f,viewRect.top+viewRect.height/2.f);
             m_controller->positionCheck(view);

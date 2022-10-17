@@ -94,13 +94,15 @@ const sf::ContextSettings &Canvas::getContextSettings() const
 void Canvas::setCameraView(const sf::View &view)
 {
     if(!m_window) return;
-    m_window->setView(view);
+    m_view = view;
+    m_window->setView(m_view);
 }
 const sf::View &Canvas::getCameraView() const
 {
     static sf::View dummy;
     if(!m_window) return dummy;
-    return m_window->getView();
+    return m_view;
+    //return m_window->getView();
 }
 const sf::View &Canvas::getDefaultCameraView() const
 {
@@ -167,7 +169,8 @@ void Canvas::showEvent(QShowEvent*)
 
         // Create the SFML window with the widget handle
         m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(),m_settings.contextSettings);
-
+         //   m_window->setSize(sf::Vector2u(QWidget::geometry().size().width(),QWidget::geometry().size().height()));
+        m_view = m_window->getView();
         // Let the derived class do its specific stuff
         OnInit();
 
@@ -223,9 +226,12 @@ void Canvas::resizeEvent(QResizeEvent *event)
     if(m_settings.layout.autoAjustSize)
     {
        QSize size = event->size();
-       m_oldCanvasSize.x = event->oldSize().width();
-       m_oldCanvasSize.y = event->oldSize().height();
-       m_window->setSize(sf::Vector2u(size.width(),size.height()));
+
+       m_oldCanvasSize = getCanvasSize();
+       //setCameraView(getCameraView());
+       //m_window->setSize(sf::Vector2u(QWidget::geometry().size().width(),QWidget::geometry().size().height()));
+       //m_window->setSize(sf::Vector2u(size.width(),size.height()));
+       //m_window->setSize(sf::Vector2u(m_oldCanvasSize.x,m_oldCanvasSize.y));
       /* sf::View view = getCameraView();
 
        sf::Vector2u oldWindowSize(event->oldSize().width(),event->oldSize().height());

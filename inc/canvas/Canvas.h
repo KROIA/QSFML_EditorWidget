@@ -70,5 +70,6 @@ class Canvas :
     sf::RenderWindow *m_window;
     sf::Vector2u m_oldCanvasSize;
     sf::Font m_textfont;
+    sf::View m_view;
 };
 }
