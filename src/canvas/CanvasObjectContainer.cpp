@@ -17,12 +17,15 @@ CanvasObjectContainer::~CanvasObjectContainer()
 void CanvasObjectContainer::addObject(CanvasObject *obj)
 {
     EASY_FUNCTION(profiler::colors::Orange);
-    if(!objectExists(obj))
+    //if(!objectExists(obj))
     {
         if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
             obj->getCanvasParent()->removeObject(obj);
-        m_container.push_back(obj);
-        obj->setCanvasParent(m_parent);
+        m_toAddContainer.push_back(obj);
+        QObject *qObj = dynamic_cast<QObject*>(obj);
+        if(qObj)
+            m_toAddContainer[m_toAddContainer.size() -1] -= 0x10;
+        //obj->setCanvasParent(m_parent);
     }
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
@@ -32,6 +35,17 @@ void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
     {
         addObject(objs[i]);
     }
+}
+void CanvasObjectContainer::addObject_internal()
+{
+    for(size_t i=0; i<m_toAddContainer.size(); ++i)
+    {
+        if(objectExists(m_toAddContainer[i]))
+            continue;
+        m_toAddContainer[i]->setCanvasParent(m_parent);
+        m_container.push_back(m_toAddContainer[i]);
+    }
+    m_toAddContainer.clear();
 }
 
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
@@ -100,7 +114,7 @@ void CanvasObjectContainer::deleteLater(Objects::CanvasObject *obj)
     }
 }
 
-void CanvasObjectContainer::deleteUnusedObjects()
+void CanvasObjectContainer::updateNewElements()
 {
     for(size_t i=0; i<m_toDelete.size(); ++i)
     {
@@ -108,9 +122,10 @@ void CanvasObjectContainer::deleteUnusedObjects()
     }
     m_toDelete.clear();
 
+    addObject_internal();
     for(size_t i=0; i<m_container.size(); ++i)
     {
-        m_container[i]->deleteUnusedObjects();
+        m_container[i]->updateNewElements();
     }
 }
 void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)

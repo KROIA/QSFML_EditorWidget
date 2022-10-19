@@ -102,10 +102,10 @@ const std::string CanvasObject::getName() const
 void CanvasObject::addChild(CanvasObject *child)
 {
     if(!child)return;
-    if(childExists(child)) return;
-    child->setParent(this);
-    child->setCanvasParent(m_canvasParent);
-    m_childs.push_back(child);
+
+    m_toAddChilds.push_back(child);
+
+
 }
 
 
@@ -212,9 +212,10 @@ size_t CanvasObject::getChildCount() const
 void CanvasObject::addComponent(Component *comp)
 {
     if(!comp)return;
-    if(componentExists(comp)) return;
-    comp->setParent(this);
-    m_components.push_back(comp);
+
+
+    m_toAddComponents.push_back(comp);
+
 }
 void CanvasObject::removeComponent(Component *comp)
 {
@@ -255,6 +256,30 @@ void CanvasObject::deleteComponent_internal()
         delete m_toDeleteComponents[i];
     }
     m_toDeleteComponents.clear();
+}
+void CanvasObject::addChild_internal()
+{
+    for(size_t i=0; i<m_toAddChilds.size(); ++i)
+    {
+        if(childExists(m_toAddChilds[i]))
+            continue;
+
+        m_toAddChilds[i]->setParent(this);
+        m_toAddChilds[i]->setCanvasParent(m_canvasParent);
+        m_childs.push_back(m_toAddChilds[i]);
+    }
+    m_toAddChilds.clear();
+}
+void CanvasObject::addComponent_internal()
+{
+    for(size_t i=0; i<m_toAddComponents.size(); ++i)
+    {
+        if(componentExists(m_toAddComponents[i]))
+            continue;
+        m_toAddComponents[i]->setParent(this);
+        m_components.push_back(m_toAddComponents[i]);
+    }
+    m_toAddComponents.clear();
 }
 void CanvasObject::deleteComponents()
 {
@@ -400,15 +425,17 @@ void CanvasObject::setCanvasParent(Canvas *parent)
     internalOnCanvasParentChange(m_canvasParent);
     onCanvasParentChange(m_canvasParent);
 }
-void CanvasObject::deleteUnusedObjects()
+void CanvasObject::updateNewElements()
 {
     removeChild_internal();
     deleteChild_internal();
     removeComponent_internal();
     deleteComponent_internal();
+    addChild_internal();
+    addComponent_internal();
 
     for(size_t i=0; i<m_childs.size(); ++i)
-        m_childs[i]->deleteUnusedObjects();
+        m_childs[i]->updateNewElements();
 }
 void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
 {

@@ -26,6 +26,7 @@ HEADERS += \
     $$PWD/inc/components/MousePressEvent.h \
     $$PWD/inc/components/Text.h \
     $$PWD/inc/objects/DrawableBoxCollider.h \
+    $$PWD/inc/utilities/VectorOperations.h \
     $$inc/canvas/Canvas.h \
     $$inc/canvas/CanvasSettings.h \
     $$inc/canvas/CanvasObjectContainer.h \
@@ -55,6 +56,7 @@ SOURCES += \
     $$PWD/src/components/MousePressEvent.cpp \
     $$PWD/src/components/Text.cpp \
     $$PWD/src/objects/DrawableBoxCollider.cpp \
+    $$PWD/src/utilities/VectorOperations.cpp \
     $$src/canvas/Canvas.cpp \
     $$src/canvas/CanvasObjectContainer.cpp \
     $$src/components/DrawableVector.cpp \

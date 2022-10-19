@@ -245,6 +245,8 @@ class CanvasObject
         void removeComponent_internal();
         void deleteChild_internal();
         void deleteComponent_internal();
+        void addChild_internal();
+        void addComponent_internal();
 
         static size_t m_objNameCounter;
 
@@ -253,7 +255,9 @@ class CanvasObject
         Canvas *m_canvasParent;
         CanvasObject *m_parent;
         std::vector<CanvasObject*> m_childs;
+        std::vector<CanvasObject*> m_toAddChilds;
         std::vector<Components::Component*> m_components;
+        std::vector<Components::Component*> m_toAddComponents;
 
         std::vector<CanvasObject*> m_toDeleteChilds;
         std::vector<Components::Component*> m_toDeleteComponents;
@@ -262,7 +266,7 @@ class CanvasObject
 
         // Canvas Object Internal functions
         void setCanvasParent(Canvas *parent);
-        void deleteUnusedObjects();
+        void updateNewElements();
         void sfEvent(const std::vector<sf::Event> &events);
         void update_internal();
         void draw(sf::RenderWindow &window) const;
