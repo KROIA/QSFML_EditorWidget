@@ -22,10 +22,7 @@ void CanvasObjectContainer::addObject(CanvasObject *obj)
         if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
             obj->getCanvasParent()->removeObject(obj);
         m_toAddContainer.push_back(obj);
-        QObject *qObj = dynamic_cast<QObject*>(obj);
-        if(qObj)
-            m_toAddContainer[m_toAddContainer.size() -1] -= 0x10;
-        //obj->setCanvasParent(m_parent);
+        obj->setCanvasParent(m_parent);
     }
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
@@ -42,7 +39,7 @@ void CanvasObjectContainer::addObject_internal()
     {
         if(objectExists(m_toAddContainer[i]))
             continue;
-        m_toAddContainer[i]->setCanvasParent(m_parent);
+        //m_toAddContainer[i]->setCanvasParent(m_parent);
         m_container.push_back(m_toAddContainer[i]);
     }
     m_toAddContainer.clear();
@@ -108,10 +105,19 @@ size_t CanvasObjectContainer::getObjectIndex(CanvasObject *obj)
 }
 void CanvasObjectContainer::deleteLater(Objects::CanvasObject *obj)
 {
-    if(objectExists(obj))
+    for(size_t i=0; i<m_toAddContainer.size(); ++i)
+    {
+        if(m_toAddContainer[i] == obj)
+        {
+            m_toAddContainer.erase(m_toAddContainer.begin() + i);
+            break;
+        }
+    }
+    /*if(objectExists(obj))
     {
         m_toDelete.push_back(obj);
-    }
+    }*/
+    m_toDelete.push_back(obj);
 }
 
 void CanvasObjectContainer::updateNewElements()

@@ -16,7 +16,7 @@ Text::Text(const Text &other)
     :   Drawable(other)
 {
     m_text = other.m_text;
-    m_pos = other.m_pos;
+    updateCenter(other.m_pos);
 }
 void Text::setText(const std::string &text)
 {
@@ -64,9 +64,14 @@ void Text::draw(sf::RenderTarget& target, sf::RenderStates) const
 void Text::updateCenter(const sf::Vector2f &pos)
 {
     sf::FloatRect bounds = m_text.getLocalBounds();
-    m_text.setOrigin(bounds.left + bounds.width/(2.f),
-                     bounds.top + bounds.height/(2.f));
+    //sf::Transform trans = m_text.getTransform();
+    //bounds = trans.transformRect(bounds);
+    m_text.setOrigin(sf::Vector2f(bounds.left + bounds.width/2.f,bounds.top + bounds.height/2.f));
+
+    //m_text.setOrigin(bounds.left + (m_text.getScale().x)*bounds.width/(2.f),
+    //                 bounds.top + (m_text.getScale().y)*bounds.height/(2.f));
     m_text.setPosition(pos);
+    qDebug() << bounds.width << " " <<bounds.height << " "<<std::string(m_text.getString()).c_str();
 }
 
 }

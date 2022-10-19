@@ -154,11 +154,18 @@ void CanvasObject::removeChild_internal()
 void CanvasObject::deleteChild(CanvasObject *child)
 {
     if(!child)return;
-    size_t index = getChildIndex(child);
-    if(index == npos) return;
+    /*size_t index = getChildIndex(child);
+    if(index == npos) return;*/
+
     for(size_t i=0; i<m_toDeleteChilds.size(); ++i)
         if(m_toDeleteChilds[i] == child)
             return;
+    for(size_t i=0; i<m_toAddChilds.size(); ++i)
+        if(m_toAddChilds[i] == child)
+        {
+            m_toAddChilds.erase(m_toAddChilds.begin() + i);
+            break;
+        }
     m_toDeleteChilds.push_back(child);
 }
 void CanvasObject::deleteChilds()
@@ -220,11 +227,17 @@ void CanvasObject::addComponent(Component *comp)
 void CanvasObject::removeComponent(Component *comp)
 {
     if(!comp)return;
-    size_t index = getComponentIndex(comp);
-    if(index == npos) return;
+    /*size_t index = getComponentIndex(comp);
+    if(index == npos) return;*/
     for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
         if(m_toRemoveComponents[i] == comp)
             return;
+    for(size_t i=0; i<m_toAddComponents.size(); ++i)
+        if(m_toAddComponents[i] == comp)
+        {
+            m_toAddComponents.erase(m_toAddComponents.begin() + i);
+            break;
+        }
     m_toRemoveComponents.push_back(comp);
 }
 void CanvasObject::removeComponent_internal()

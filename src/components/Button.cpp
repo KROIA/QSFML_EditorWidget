@@ -8,12 +8,15 @@ Button::Button(const std::string &name)
     :   MousePressEvent(name)
     ,   Utilities::AABB()
 {
+    m_wasInside = false;
+    m_wasPressed = false;
 }
 Button::Button(const std::string &name, const Utilities::AABB &box)
     :   MousePressEvent(name)
     ,   Utilities::AABB(box)
 {
-
+    m_wasInside = false;
+    m_wasPressed = false;
 }
 Button::Button(const Button &other)
     :   MousePressEvent(other)
@@ -29,12 +32,24 @@ Button::~Button()
 bool Button::getCurrentValue()
 {
     bool isPressed = sf::Mouse::isButtonPressed(getTriggerButton());
-    if(!isPressed)
-        return false;
-
     sf::Vector2f pos = getParent()->getMouseWorldPosition();
-    if(contains(pos))
+    bool isInside = contains(pos);
+
+    if(isPressed && m_wasInside && isInside)
+    {
+        m_wasInside = isInside;
+        m_wasPressed = isPressed;
         return true;
+    }
+
+    m_wasInside = isInside;
+    m_wasPressed = isPressed;
+
+   /* if(contains(pos))
+    {
+        m_wasPressed = true;
+        return true;
+    }*/
     return false;
 }
 }
