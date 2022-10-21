@@ -71,7 +71,7 @@ void Text::updateCenter(const sf::Vector2f &pos)
     //m_text.setOrigin(bounds.left + (m_text.getScale().x)*bounds.width/(2.f),
     //                 bounds.top + (m_text.getScale().y)*bounds.height/(2.f));
     m_text.setPosition(pos);
-    qDebug() << bounds.width << " " <<bounds.height << " "<<std::string(m_text.getString()).c_str();
+   // qDebug() << bounds.width << " " <<bounds.height << " "<<std::string(m_text.getString()).c_str();
 }
 
 }
