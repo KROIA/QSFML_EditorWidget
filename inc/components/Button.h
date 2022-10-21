@@ -20,6 +20,8 @@ class Button : public MousePressEvent, public Utilities::AABB
 
     protected:
         bool getCurrentValue() override;
+        bool m_wasInside;
+        bool m_wasPressed;
 };
 }
 }

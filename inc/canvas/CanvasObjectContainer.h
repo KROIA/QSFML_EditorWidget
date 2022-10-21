@@ -41,7 +41,7 @@ class CanvasObjectContainer
         const static size_t npos = -1;
 
     protected:
-        void deleteUnusedObjects();
+        void updateNewElements();
         void sfEvent(const std::vector<sf::Event> &events);
         void update();
         void draw(sf::RenderWindow &window);
@@ -60,8 +60,11 @@ class CanvasObjectContainer
         template<typename T>
         void removeObject(Objects::CanvasObject *obj,std::vector<T*> &list);
 
+        void addObject_internal();
+
         // All objects will be contained in this list
         std::vector<Objects::CanvasObject*> m_container;
+        std::vector<Objects::CanvasObject*> m_toAddContainer;
 
         std::vector<Objects::CanvasObject*> m_toDelete;
 

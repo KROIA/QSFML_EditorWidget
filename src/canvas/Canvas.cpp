@@ -188,7 +188,7 @@ void Canvas::paintEvent(QPaintEvent*)
     OnUpdate();
 
     EASY_BLOCK("Delete unused objects",profiler::colors::Green200);
-    CanvasObjectContainer::deleteUnusedObjects();
+    CanvasObjectContainer::updateNewElements();
     EASY_END_BLOCK;
 
     sf::Event event;

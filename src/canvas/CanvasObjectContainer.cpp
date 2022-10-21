@@ -17,11 +17,11 @@ CanvasObjectContainer::~CanvasObjectContainer()
 void CanvasObjectContainer::addObject(CanvasObject *obj)
 {
     EASY_FUNCTION(profiler::colors::Orange);
-    if(!objectExists(obj))
+    //if(!objectExists(obj))
     {
         if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
             obj->getCanvasParent()->removeObject(obj);
-        m_container.push_back(obj);
+        m_toAddContainer.push_back(obj);
         obj->setCanvasParent(m_parent);
     }
 }
@@ -32,6 +32,17 @@ void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
     {
         addObject(objs[i]);
     }
+}
+void CanvasObjectContainer::addObject_internal()
+{
+    for(size_t i=0; i<m_toAddContainer.size(); ++i)
+    {
+        if(objectExists(m_toAddContainer[i]))
+            continue;
+        //m_toAddContainer[i]->setCanvasParent(m_parent);
+        m_container.push_back(m_toAddContainer[i]);
+    }
+    m_toAddContainer.clear();
 }
 
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
@@ -94,13 +105,22 @@ size_t CanvasObjectContainer::getObjectIndex(CanvasObject *obj)
 }
 void CanvasObjectContainer::deleteLater(Objects::CanvasObject *obj)
 {
-    if(objectExists(obj))
+    for(size_t i=0; i<m_toAddContainer.size(); ++i)
+    {
+        if(m_toAddContainer[i] == obj)
+        {
+            m_toAddContainer.erase(m_toAddContainer.begin() + i);
+            break;
+        }
+    }
+    /*if(objectExists(obj))
     {
         m_toDelete.push_back(obj);
-    }
+    }*/
+    m_toDelete.push_back(obj);
 }
 
-void CanvasObjectContainer::deleteUnusedObjects()
+void CanvasObjectContainer::updateNewElements()
 {
     for(size_t i=0; i<m_toDelete.size(); ++i)
     {
@@ -108,9 +128,10 @@ void CanvasObjectContainer::deleteUnusedObjects()
     }
     m_toDelete.clear();
 
+    addObject_internal();
     for(size_t i=0; i<m_container.size(); ++i)
     {
-        m_container[i]->deleteUnusedObjects();
+        m_container[i]->updateNewElements();
     }
 }
 void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)
