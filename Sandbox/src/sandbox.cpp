@@ -2,7 +2,7 @@
 #include "ui_sandbox.h"
 #include "VisibleCamera.h"
 #include "BackgroundGrid.h"
-
+#include "LineChart.h"
 
 #include "VectorDisplayer.h"
 #include "AABBDisplayer.h"
@@ -78,6 +78,12 @@ SandBox::SandBox(QWidget *parent)
         m_canvas_2->addObject(aabb);
 
         m_canvas_2->addObject(cam);
+
+        LineChart *m_chart = new LineChart();
+        m_chart->setDataPoints({0,1,-1,0.5,-0.5,0});
+        m_chart->setOrigin(sf::Vector2f(50,50));
+        m_chart->setSize(sf::Vector2f(200,100));
+        m_canvas_1->addObject(m_chart);
     }
 }
 

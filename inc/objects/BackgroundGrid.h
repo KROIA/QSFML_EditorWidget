@@ -14,7 +14,7 @@ class BackgroundGrid: public CanvasObject
         BackgroundGrid(const std::string &name = "",
                        CanvasObject *parent = nullptr);
         BackgroundGrid(const BackgroundGrid &other);
-        virtual ~BackgroundGrid();
+        ~BackgroundGrid();
         CLONE_FUNC(BackgroundGrid)
 
         void setSize(const sf::IntRect &size);
