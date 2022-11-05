@@ -17,13 +17,11 @@ CanvasObjectContainer::~CanvasObjectContainer()
 void CanvasObjectContainer::addObject(CanvasObject *obj)
 {
     EASY_FUNCTION(profiler::colors::Orange);
-    //if(!objectExists(obj))
-    {
-        if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
-            obj->getCanvasParent()->removeObject(obj);
-        m_toAddContainer.push_back(obj);
-        obj->setCanvasParent(m_parent);
-    }
+
+    if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
+        obj->getCanvasParent()->removeObject(obj);
+    m_toAddContainer.push_back(obj);
+    obj->setCanvasParent(m_parent);
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
 {
