@@ -17,7 +17,7 @@ namespace VectorMath
     sf::Vector2f getRotated(const sf::Vector2f &vec, float rad)
     {
         float angle = getAngle(vec);
-        angle -= rad;
+        angle += rad;
         return sf::Vector2f(cos(angle), sin(angle)) * getLength(vec);
     }
     sf::Vector2f getRotated(const sf::Vector2f &vec, const sf::Vector2f &origin, float rad)
