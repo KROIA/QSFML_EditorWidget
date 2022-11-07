@@ -17,19 +17,19 @@ INCLUDEPATH += \
 #$$inc/utilities
 
 HEADERS += \
-    $$PWD/inc/SFML_EditorWidget.h \
-    $$PWD/inc/components/AbstractPressEvent.h \
-    $$PWD/inc/components/BoxCollider.h \
-    $$PWD/inc/components/Button.h \
-    $$PWD/inc/components/KeyPressEvent.h \
-    $$PWD/inc/components/Line.h \
-    $$PWD/inc/components/MouseFollower.h \
-    $$PWD/inc/components/MousePressEvent.h \
-    $$PWD/inc/components/Text.h \
-    $$PWD/inc/objects/DefaultEditor.h \
-    $$PWD/inc/objects/DrawableBoxCollider.h \
-    $$PWD/inc/objects/LineChart.h \
-    $$PWD/inc/utilities/VectorOperations.h \
+    $$inc/inc/SFML_EditorWidget.h \
+    $$inc/inc/components/AbstractPressEvent.h \
+    $$inc/inc/components/BoxCollider.h \
+    $$inc/inc/components/Button.h \
+    $$inc/inc/components/KeyPressEvent.h \
+    $$inc/inc/components/Line.h \
+    $$inc/inc/components/MouseFollower.h \
+    $$inc/inc/components/MousePressEvent.h \
+    $$inc/inc/components/Text.h \
+    $$inc/inc/objects/DefaultEditor.h \
+    $$inc/inc/objects/DrawableBoxCollider.h \
+    $$inc/inc/objects/LineChart.h \
+    $$inc/inc/utilities/VectorOperations.h \
     $$inc/canvas/Canvas.h \
     $$inc/canvas/CanvasSettings.h \
     $$inc/canvas/CanvasObjectContainer.h \
@@ -50,18 +50,18 @@ HEADERS += \
 
 
 SOURCES += \
-    $$PWD/src/components/AbstractPressEvent.cpp \
-    $$PWD/src/components/BoxCollider.cpp \
-    $$PWD/src/components/Button.cpp \
-    $$PWD/src/components/KeyPressEvent.cpp \
-    $$PWD/src/components/Line.cpp \
-    $$PWD/src/components/MouseFollower.cpp \
-    $$PWD/src/components/MousePressEvent.cpp \
-    $$PWD/src/components/Text.cpp \
-    $$PWD/src/objects/DefaultEditor.cpp \
-    $$PWD/src/objects/DrawableBoxCollider.cpp \
-    $$PWD/src/objects/LineChart.cpp \
-    $$PWD/src/utilities/VectorOperations.cpp \
+    $$src/src/components/AbstractPressEvent.cpp \
+    $$src/src/components/BoxCollider.cpp \
+    $$src/src/components/Button.cpp \
+    $$src/src/components/KeyPressEvent.cpp \
+    $$src/src/components/Line.cpp \
+    $$src/src/components/MouseFollower.cpp \
+    $$src/src/components/MousePressEvent.cpp \
+    $$src/src/components/Text.cpp \
+    $$src/src/objects/DefaultEditor.cpp \
+    $$src/src/objects/DrawableBoxCollider.cpp \
+    $$src/src/objects/LineChart.cpp \
+    $$src/src/utilities/VectorOperations.cpp \
     $$src/canvas/Canvas.cpp \
     $$src/canvas/CanvasObjectContainer.cpp \
     $$src/components/DrawableVector.cpp \
