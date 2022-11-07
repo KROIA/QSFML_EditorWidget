@@ -92,7 +92,7 @@ sf::Vector2f DrawableVector::getRotated(const sf::Vector2f &vec,
 {
     float c = cos(angle);
     float s = sin(angle);
-    return sf::Vector2(c * vec.x - s * vec.y,
+    return sf::Vector2f(c * vec.x - s * vec.y,
                        s * vec.x + c * vec.y);
 }
 float DrawableVector::getLength(const sf::Vector2f &vec) const
