@@ -11,12 +11,13 @@ include(extern/easy_profiler.pri)
 
 INCLUDEPATH += \
     $$inc \
-    $$inc/canvas \
-    $$inc/objects \
-    $$inc/components \
-    $$inc/utilities
+#$$inc/canvas \
+#$$inc/objects \
+#$$inc/components \
+#$$inc/utilities
 
 HEADERS += \
+    $$PWD/inc/SFML_EditorWidget.h \
     $$PWD/inc/components/AbstractPressEvent.h \
     $$PWD/inc/components/BoxCollider.h \
     $$PWD/inc/components/Button.h \
@@ -25,6 +26,7 @@ HEADERS += \
     $$PWD/inc/components/MouseFollower.h \
     $$PWD/inc/components/MousePressEvent.h \
     $$PWD/inc/components/Text.h \
+    $$PWD/inc/objects/DefaultEditor.h \
     $$PWD/inc/objects/DrawableBoxCollider.h \
     $$PWD/inc/objects/LineChart.h \
     $$PWD/inc/utilities/VectorOperations.h \
@@ -56,6 +58,7 @@ SOURCES += \
     $$PWD/src/components/MouseFollower.cpp \
     $$PWD/src/components/MousePressEvent.cpp \
     $$PWD/src/components/Text.cpp \
+    $$PWD/src/objects/DefaultEditor.cpp \
     $$PWD/src/objects/DrawableBoxCollider.cpp \
     $$PWD/src/objects/LineChart.cpp \
     $$PWD/src/utilities/VectorOperations.cpp \

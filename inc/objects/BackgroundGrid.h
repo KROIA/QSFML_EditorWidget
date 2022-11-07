@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CanvasObject.h"
-#include "Drawable.h"
+#include "objects/CanvasObject.h"
+#include "components/Drawable.h"
 
 namespace QSFML
 {

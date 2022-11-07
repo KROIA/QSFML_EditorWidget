@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <QDebug>
 #include <vector>
-#include "CanvasForwardDeclaration.h"
-#include "Component.h"
+#include "canvas/CanvasForwardDeclaration.h"
+#include "components/Component.h"
 #include <easy/profiler.h>
 
 namespace QSFML
@@ -148,7 +148,7 @@ namespace Objects
  *                 }
  *             }
  *             // A pointer to the parent to access the two member vectors
- *             VectorDisplayer *m_vec;
+ *             DrawableVector *m_vec;
  *     };
  * };
  * \endcode

@@ -1,4 +1,4 @@
-#include "BackgroundGrid.h"
+#include "objects/BackgroundGrid.h"
 
 using namespace QSFML::Objects;
 

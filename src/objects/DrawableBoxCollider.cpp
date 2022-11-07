@@ -1,4 +1,4 @@
-#include "DrawableBoxCollider.h"
+#include "objects/DrawableBoxCollider.h"
 namespace QSFML
 {
 namespace Objects

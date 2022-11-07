@@ -1,8 +1,6 @@
 #pragma once
 
-#include "CanvasObject.h"
-#include "DrawableVector.h"
-#include "SfEventHandle.h"
+#include "SFML_EditorWidget.h"
 
 class VectorDisplayer: public QSFML::Objects::CanvasObject
 {

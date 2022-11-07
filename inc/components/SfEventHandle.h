@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "Component.h"
+#include "components/Component.h"
 namespace QSFML
 {
 namespace Components

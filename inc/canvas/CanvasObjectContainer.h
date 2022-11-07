@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "CanvasObject.h"
-#include "Drawable.h"
-#include "CameraController.h"
+#include "objects/CanvasObject.h"
+#include "components/Drawable.h"
+#include "objects/CameraController.h"
 
 namespace QSFML
 {

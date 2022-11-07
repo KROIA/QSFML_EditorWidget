@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include "AABB.h"
-#include "MousePressEvent.h"
+#include "utilities/AABB.h"
+#include "components/MousePressEvent.h"
 
 namespace QSFML
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AABB.h"
-#include "Component.h"
+#include "utilities/AABB.h"
+#include "components/Component.h"
 
 namespace QSFML
 {

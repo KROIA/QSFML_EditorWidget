@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "DrawableVector.h"
+#include "components/DrawableVector.h"
 #include "math.h"
 
 using namespace QSFML::Components;

@@ -20,7 +20,7 @@ INCLUDEPATH += $$inc
 HEADERS += \
     $$inc/sandbox.h \
     inc/AABBDisplayer.h \
-    inc/VectorDisplayer.h
+    inc/DrawableVector.h
 
 SOURCES += \
     $$src/main.cpp \

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "CanvasForwardDeclaration.h"
+#include "canvas/CanvasForwardDeclaration.h"
 namespace QSFML
 {
 namespace Components

@@ -1,4 +1,4 @@
-#include "AbstractPressEvent.h"
+#include "components/AbstractPressEvent.h"
 
 namespace QSFML
 {

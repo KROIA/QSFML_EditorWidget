@@ -1,4 +1,4 @@
-#include "Component.h"
+#include "components/Component.h"
 
 using namespace QSFML::Components;
 using namespace QSFML::Objects;

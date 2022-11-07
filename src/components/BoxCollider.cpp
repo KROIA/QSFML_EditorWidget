@@ -1,4 +1,4 @@
-#include "BoxCollider.h"
+#include "components/BoxCollider.h"
 namespace QSFML
 {
 namespace Components

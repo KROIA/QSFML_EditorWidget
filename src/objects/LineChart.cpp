@@ -1,4 +1,4 @@
-#include "LineChart.h"
+#include "objects/LineChart.h"
 
 
 namespace QSFML

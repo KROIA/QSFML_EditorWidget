@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include "SfEventHandle.h"
+#include "components/SfEventHandle.h"
 
 namespace QSFML
 {

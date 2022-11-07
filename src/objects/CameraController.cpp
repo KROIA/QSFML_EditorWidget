@@ -1,5 +1,5 @@
-#include "CameraController.h"
-#include "Canvas.h"
+#include "objects/CameraController.h"
+#include "canvas/Canvas.h"
 #include <QDebug>
 
 using namespace QSFML::Objects;

@@ -1,10 +1,7 @@
 #include "sandbox.h"
 #include "ui_sandbox.h"
-#include "VisibleCamera.h"
-#include "BackgroundGrid.h"
-#include "LineChart.h"
 
-#include "VectorDisplayer.h"
+#include "DrawableVector.h"
 #include "AABBDisplayer.h"
 
 using namespace QSFML;
@@ -23,27 +20,14 @@ SandBox::SandBox(QWidget *parent)
         settings.contextSettings.antialiasingLevel = 8;
         m_canvas_1 = new Canvas(ui->canvasWidget_1,settings);
 
-        VisibleCamera *cam      = new VisibleCamera("Camera");
-        BackgroundGrid *grid    = new BackgroundGrid("Grid");
-        CanvasObject *obj       = new CanvasObject("Test");
-
-        grid->setSize(sf::IntRect(0,0,800,600));
-        grid->setLineColor({sf::Color(130,130,130),
-                            sf::Color(100,100,100),
-                            sf::Color(100,100,100),
-                            sf::Color(100,100,100),
-                            sf::Color(100,100,100)});
-        cam->setMaxMovingBounds(sf::FloatRect(grid->getSize()));
-
-        obj->addChild(grid);
-        obj->addChild(cam);
+        DefaultEditor *defaultEditor = new DefaultEditor();
 
         VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 
-        m_canvas_1->addObject(obj);
+        m_canvas_1->addObject(defaultEditor);
         m_canvas_1->addObject(m_vecDisplay);
         //m_canvas->addObject(grid);
-        qDebug() << obj->toString().c_str();
+        qDebug() << defaultEditor->toString().c_str();
         qDebug() << m_vecDisplay->toString().c_str();
     }
 
@@ -55,29 +39,13 @@ SandBox::SandBox(QWidget *parent)
         settings.contextSettings.antialiasingLevel = 8;
         m_canvas_2 = new Canvas(ui->canvasWidget_2,settings);
 
-        VisibleCamera *cam      = new VisibleCamera("Camera");
-        BackgroundGrid *grid    = new BackgroundGrid("Grid");
-        AABBDisplayer *aabb     = new AABBDisplayer("AABB");
-
-        grid->setSize(sf::IntRect(0,0,800,600));
-        grid->setLineColor({sf::Color(130,130,130),
-                            sf::Color(100,100,100),
-                            sf::Color(100,100,100),
-                            sf::Color(100,100,100),
-                            sf::Color(100,100,100)});
-        cam->setMaxMovingBounds(sf::FloatRect(grid->getSize()));
-
-       // obj->addChild(grid);
-       // obj->addChild(cam);
+       DefaultEditor *defaultEditor = new DefaultEditor();
 
         VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 
         //m_canvas_2->addObject(obj);
         //m_canvas_2->addObject(m_vecDisplay);
-        m_canvas_2->addObject(grid);
-        m_canvas_2->addObject(aabb);
-
-        m_canvas_2->addObject(cam);
+        m_canvas_2->addObject(defaultEditor);
 
         LineChart *m_chart = new LineChart();
         m_chart->setDataPoints({0,1,-1,0.5,-0.5,0});

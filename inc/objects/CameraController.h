@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "CanvasObject.h"
-#include "SfEventHandle.h"
+#include "objects/CanvasObject.h"
+#include "components/SfEventHandle.h"
 #include <QDebug>
 
 namespace QSFML

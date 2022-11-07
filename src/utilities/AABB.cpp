@@ -1,4 +1,4 @@
-#include "AABB.h"
+#include "utilities/AABB.h"
 #include <limits>
 
 namespace QSFML

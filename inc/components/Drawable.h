@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Color.hpp>
-#include "Component.h"
+#include "components/Component.h"
 namespace QSFML
 {
 namespace Components

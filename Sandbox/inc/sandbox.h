@@ -2,7 +2,7 @@
 #define SANDBOX_H
 
 #include <QMainWindow>
-#include "Canvas.h"
+#include "SFML_EditorWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SandBox; }

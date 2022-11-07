@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <SFML/Graphics.hpp>
-#include "AbstractPressEvent.h"
+#include "components/AbstractPressEvent.h"
 
 namespace QSFML
 {

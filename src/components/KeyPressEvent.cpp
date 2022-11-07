@@ -1,4 +1,4 @@
-#include "KeyPressEvent.h"
+#include "components/KeyPressEvent.h"
 namespace QSFML
 {
 namespace Components

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Drawable.h"
-#include "CameraController.h"
+#include "components/Drawable.h"
+#include "objects/CameraController.h"
 namespace QSFML
 {
 namespace Objects

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "CanvasObject.h"
-#include "Drawable.h"
-#include "BoxCollider.h"
-#include "DrawableVector.h"
+#include "components/Drawable.h"
+#include "components/BoxCollider.h"
+#include "components/DrawableVector.h"
 
 
 namespace QSFML

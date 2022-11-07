@@ -1,7 +1,7 @@
-#include "CanvasObject.h"
-#include "Canvas.h"
-#include "Drawable.h"
-#include "SfEventHandle.h"
+#include "objects/CanvasObject.h"
+#include "canvas/Canvas.h"
+#include "components/Drawable.h"
+#include "components/SfEventHandle.h"
 
 
 using namespace QSFML;

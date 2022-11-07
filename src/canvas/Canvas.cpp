@@ -1,4 +1,4 @@
-#include "Canvas.h"
+#include "canvas/Canvas.h"
 #include <QResizeEvent>
 #include <QHBoxLayout>
 #include <QDebug>

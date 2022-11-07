@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Drawable.h"
+#include "components/Drawable.h"
 #include "SFML/Graphics/Vertex.hpp"
 
 namespace QSFML

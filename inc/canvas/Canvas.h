@@ -3,9 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <QWidget>
 #include <QTimer>
-#include "CanvasSettings.h"
-#include "CameraController.h"
-#include "CanvasObjectContainer.h"
+#include "canvas/CanvasSettings.h"
+#include "canvas/CanvasObjectContainer.h"
 
 namespace QSFML
 {
