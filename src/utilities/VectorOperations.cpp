@@ -64,5 +64,12 @@ namespace VectorMath
         static const sf::Vector2f v(1,0);
         return v;
     }
+    sf::Vector2f getNormalized(const sf::Vector2f &vec)
+    {
+        float l = vec.x * vec.x + vec.y * vec.y;
+        if(l <= 0)
+            return vec;
+        return(vec / sqrt(l));
+    }
 }
 }

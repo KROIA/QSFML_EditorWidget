@@ -16,5 +16,6 @@ namespace VectorMath
     extern float dotProduct(const sf::Vector2f &vec1, const sf::Vector2f &vec2);
     extern float crossProduct(const sf::Vector2f &vec1, const sf::Vector2f &vec2);
     extern const sf::Vector2f &getUnitVector();
+    extern sf::Vector2f getNormalized(const sf::Vector2f &vec);
 }
 }
