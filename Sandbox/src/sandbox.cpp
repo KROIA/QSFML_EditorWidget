@@ -3,6 +3,7 @@
 
 #include "DrawableVector.h"
 #include "AABBDisplayer.h"
+#include "SandboxObject.h"
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -29,6 +30,9 @@ SandBox::SandBox(QWidget *parent)
         //m_canvas->addObject(grid);
         qDebug() << defaultEditor->toString().c_str();
         qDebug() << m_vecDisplay->toString().c_str();
+
+        SandboxObject *sbObj = new SandboxObject();
+        m_canvas_1->addObject(sbObj);
     }
 
     {

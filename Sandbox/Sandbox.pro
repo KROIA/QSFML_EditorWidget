@@ -20,11 +20,13 @@ INCLUDEPATH += $$inc
 HEADERS += \
     $$inc/sandbox.h \
     inc/AABBDisplayer.h \
-    inc/DrawableVector.h
+    inc/DrawableVector.h \
+    inc/SandboxObject.h
 
 SOURCES += \
     $$src/main.cpp \
     $$src/sandbox.cpp \
+    src/SandboxObject.cpp
 
 FORMS += \
     sandbox.ui \
