@@ -6,7 +6,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 inc = $$PWD/inc
 src = $$PWD/src
 
-CONFIG+=BUILD_WITH_EASY_PROFILER
+#CONFIG+=BUILD_WITH_EASY_PROFILER
 
 include(extern/SFML.pri)
 include(extern/easy_profiler.pri)
