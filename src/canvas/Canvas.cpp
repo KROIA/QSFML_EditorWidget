@@ -9,12 +9,23 @@
 
 using namespace QSFML;
 
+#ifdef BUILD_WITH_EASY_PROFILER
+Canvas* Canvas::m_profilerMaster = nullptr;
+#endif
+
 Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
   QWidget(parent),
  // DrawInterface(),
   CanvasObjectContainer(this)
   //sf::RenderWindow(),
 {
+#ifdef BUILD_WITH_EASY_PROFILER
+    if(!m_profilerMaster)
+    {
+        m_profilerMaster = this;
+        EASY_PROFILER_ENABLE;
+    }
+#endif
     m_window = nullptr;
     // Setup layout of this widget
     if(!parentWidget()->layout())
@@ -38,6 +49,13 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
 Canvas::~Canvas()
 {
     delete m_window;
+#ifdef BUILD_WITH_EASY_PROFILER
+    if(m_profilerMaster == this)
+    {
+        profiler::dumpBlocksToFile("profile.prof");
+        m_profilerMaster = nullptr;
+    }
+#endif
 }
 
 void Canvas::setSettings(const CanvasSettings &settings)
@@ -45,6 +63,7 @@ void Canvas::setSettings(const CanvasSettings &settings)
     setLayout(settings.layout);
     setTiming(settings.timing);
     setContextSettings(settings.contextSettings);
+    setUpdateControlls(settings.updateControlls);
 
     if(!m_textfont.loadFromFile(settings.fontPath))
     {
@@ -89,6 +108,14 @@ void Canvas::setContextSettings(const sf::ContextSettings &contextSettings)
 const sf::ContextSettings &Canvas::getContextSettings() const
 {
     return m_settings.contextSettings;
+}
+void Canvas::setUpdateControlls(const CanvasSettings::UpdateControlls &controlls)
+{
+    m_settings.updateControlls = controlls;
+}
+const CanvasSettings::UpdateControlls &Canvas::getUpdateControlls() const
+{
+    return m_settings.updateControlls;
 }
 
 void Canvas::setCameraView(const sf::View &view)
@@ -175,13 +202,14 @@ void Canvas::showEvent(QShowEvent*)
         OnInit();
 
         // Setup the timer to trigger a refresh at specified framerate
-        connect(&m_frameTimer, SIGNAL(timeout()), this, SLOT(repaint()));
+        connect(&m_frameTimer, SIGNAL(timeout()), this, SLOT(timedUpdate()));
         m_frameTimer.start();
         m_oldCanvasSize = getCanvasSize();
     }
 }
 void Canvas::paintEvent(QPaintEvent*)
 {
+    return;
     if(!m_window)return;
     EASY_FUNCTION(profiler::colors::Green); // Magenta block with name "foo"
     // Let the derived class do its specific stuff
@@ -255,6 +283,59 @@ void Canvas::resizeEvent(QResizeEvent *event)
     }
 }
 
+void Canvas::timedUpdate()
+{
+    if(!m_window)return;
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Green)); // Magenta block with name "foo"
+
+
+    QSFML_PROFILE_CANVAS(EASY_BLOCK("Delete unused objects",profiler::colors::Green200));
+    CanvasObjectContainer::updateNewElements();
+    QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+
+    sf::Event event;
+
+    if(m_settings.updateControlls.enableEventLoop)
+    {
+        QSFML_PROFILE_CANVAS(EASY_BLOCK("Process sf::Events",profiler::colors::Green200));
+
+        std::vector<sf::Event> events;
+        events.reserve(20);
+        while (m_window->pollEvent(event))
+        {
+            events.push_back(event);
+        }
+        sfEvent(events);
+        internal_event(events);
+        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+    }
+
+    if(m_settings.updateControlls.enableUpdateLoop)
+    {
+        QSFML_PROFILE_CANVAS(EASY_BLOCK("Process update",profiler::colors::Green400));
+        // Let the derived class do its specific stuff
+        OnUpdate();
+
+        CanvasObjectContainer::update();
+        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+    }
+
+    if(m_settings.updateControlls.enablePaintLoop)
+    {
+        QSFML_PROFILE_CANVAS(EASY_BLOCK("Clear Display",profiler::colors::Green500));
+        m_window->clear(m_settings.colors.defaultBackground);
+        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+
+        QSFML_PROFILE_CANVAS(EASY_BLOCK("Process draw",profiler::colors::Green600));
+        CanvasObjectContainer::draw(*m_window);
+        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+
+        QSFML_PROFILE_CANVAS(EASY_BLOCK("Process Display",profiler::colors::Green700));
+        // Display on screen
+        m_window->display();
+        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+    }
+}
 
 
 void Canvas::sfEvent(const std::vector<sf::Event> &events){}

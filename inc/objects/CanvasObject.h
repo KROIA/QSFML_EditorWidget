@@ -5,6 +5,8 @@
 #include <vector>
 #include "canvas/CanvasForwardDeclaration.h"
 #include "components/Component.h"
+#include "canvas/CanvasSettings.h"
+#include "QSFML_debugSettings.h"
 #include <easy/profiler.h>
 
 namespace QSFML
@@ -224,6 +226,9 @@ class CanvasObject
          */
         virtual void update();
 
+        const CanvasSettings::UpdateControlls &getUpdateControlls() const;
+        void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
+
         std::string toString() const;
         const static size_t npos = -1;
     protected:
@@ -263,6 +268,8 @@ class CanvasObject
         std::vector<Components::Component*> m_toDeleteComponents;
         std::vector<CanvasObject*> m_toRemoveChilds;
         std::vector<Components::Component*> m_toRemoveComponents;
+
+        CanvasSettings::UpdateControlls m_updateControlls;
 
         // Canvas Object Internal functions
         void setCanvasParent(Canvas *parent);

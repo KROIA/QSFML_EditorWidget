@@ -5,6 +5,7 @@
 #include <QTimer>
 #include "canvas/CanvasSettings.h"
 #include "canvas/CanvasObjectContainer.h"
+#include "QSFML_debugSettings.h"
 
 namespace QSFML
 {
@@ -13,6 +14,7 @@ class Canvas :
         public QWidget,
         public CanvasObjectContainer
 {
+        Q_OBJECT
     public :
 
         Canvas(QWidget* parent, const CanvasSettings &settings = CanvasSettings());
@@ -28,6 +30,8 @@ class Canvas :
         const CanvasSettings::Timing &getTiming() const;
         void setContextSettings(const sf::ContextSettings &contextSettings);
         const sf::ContextSettings &getContextSettings() const;
+        void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
+        const CanvasSettings::UpdateControlls &getUpdateControlls() const;
 
 
         void setCameraView(const sf::View &view);
@@ -54,10 +58,16 @@ class Canvas :
         void resizeEvent(QResizeEvent *event) override;
 
 
-    private:
 
         virtual void OnInit();
         virtual void OnUpdate();
+
+    private slots:
+        void timedUpdate();
+
+    private:
+
+
 
         void internal_event(const std::vector<sf::Event> &events);
 
@@ -70,5 +80,10 @@ class Canvas :
     sf::Vector2u m_oldCanvasSize;
     sf::Font m_textfont;
     sf::View m_view;
+
+#ifdef BUILD_WITH_EASY_PROFILER
+    static Canvas* m_profilerMaster;
+#endif
+
 };
 }

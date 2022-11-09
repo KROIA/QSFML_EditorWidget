@@ -55,12 +55,14 @@ SandBox::SandBox(QWidget *parent)
         m_chart->setDataPoints({0,1,-1,0.5,-0.5,0});
         m_chart->setOrigin(sf::Vector2f(50,50));
         m_chart->setSize(sf::Vector2f(200,100));
-        m_canvas_1->addObject(m_chart);
+        m_canvas_2->addObject(m_chart);
     }
 }
 
 SandBox::~SandBox()
 {
     delete ui;
+    delete m_canvas_2;
+    delete m_canvas_1;
 }
 

@@ -6,6 +6,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 inc = $$PWD/inc
 src = $$PWD/src
 
+CONFIG+=BUILD_WITH_EASY_PROFILER
+
 include(extern/SFML.pri)
 include(extern/easy_profiler.pri)
 
@@ -17,6 +19,7 @@ INCLUDEPATH += \
 #$$inc/utilities
 
 HEADERS += \
+    $$PWD/inc/QSFML_debugSettings.h \
     $$inc/SFML_EditorWidget.h \
     $$inc/components/AbstractPressEvent.h \
     $$inc/components/BoxCollider.h \

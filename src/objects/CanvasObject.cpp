@@ -361,7 +361,14 @@ void CanvasObject::update()
 {
 
 }
-
+const CanvasSettings::UpdateControlls &CanvasObject::getUpdateControlls() const
+{
+    return m_updateControlls;
+}
+void CanvasObject::setUpdateControlls(const CanvasSettings::UpdateControlls &controlls)
+{
+    m_updateControlls = controlls;
+}
 
 std::string CanvasObject::toString() const
 {
@@ -440,6 +447,7 @@ void CanvasObject::setCanvasParent(Canvas *parent)
 }
 void CanvasObject::updateNewElements()
 {
+    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange));
     removeChild_internal();
     deleteChild_internal();
     removeComponent_internal();
@@ -452,7 +460,8 @@ void CanvasObject::updateNewElements()
 }
 void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
 {
-    if(!m_enabled) return;
+    if(!m_enabled || !m_updateControlls.enableEventLoop) return;
+    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange100));
     for(size_t i=0; i<m_components.size(); ++i)
     {
         if(!m_components[i]->isEnabled())
@@ -472,7 +481,8 @@ void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
 }
 void CanvasObject::update_internal()
 {
-    if(!m_enabled) return;
+    if(!m_enabled || !m_updateControlls.enableUpdateLoop) return;
+    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange200));
     update();
     for(size_t i=0; i<m_components.size(); ++i)
     {
@@ -488,7 +498,8 @@ void CanvasObject::update_internal()
 }
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
-    if(!m_enabled) return;
+    if(!m_enabled || !m_updateControlls.enablePaintLoop) return;
+    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange300));
     for(size_t i=0; i<m_components.size(); ++i)
     {
         if(!m_components[i]->isEnabled())

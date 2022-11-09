@@ -81,6 +81,21 @@ struct CanvasSettings
      */
     std::string fontPath;
 
+    struct UpdateControlls
+    {
+        bool enableEventLoop;
+        bool enableUpdateLoop;
+        bool enablePaintLoop;
+
+        UpdateControlls()
+        {
+            enableEventLoop = true;
+            enableUpdateLoop = true;
+            enablePaintLoop = true;
+        }
+    };
+    UpdateControlls updateControlls;
+
     CanvasSettings()
     {
         fontPath = "C:\\Windows\\Fonts\\Arial.ttf";

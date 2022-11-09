@@ -4,6 +4,7 @@
 #include "objects/CanvasObject.h"
 #include "components/Drawable.h"
 #include "objects/CameraController.h"
+#include "QSFML_debugSettings.h"
 
 namespace QSFML
 {
@@ -109,7 +110,7 @@ T* CanvasObjectContainer::getFirstObject() const
 template<typename T>
 bool CanvasObjectContainer::objectExists(T *obj,const std::vector<T*> &list)
 {
-    EASY_FUNCTION(profiler::colors::Orange100);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange100));
     size_t num = list.size();
     if(!num) return false;
 
@@ -122,7 +123,7 @@ bool CanvasObjectContainer::objectExists(T *obj,const std::vector<T*> &list)
 template<typename T>
 size_t CanvasObjectContainer::getObjectIndex(T *obj,const std::vector<T*> &list)
 {
-    EASY_FUNCTION(profiler::colors::Orange200);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange200));
     size_t num = list.size();
     if(!num) return npos;
 
@@ -134,7 +135,7 @@ size_t CanvasObjectContainer::getObjectIndex(T *obj,const std::vector<T*> &list)
 template<typename T>
 void CanvasObjectContainer::addObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
 {
-    EASY_FUNCTION(profiler::colors::Orange300);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange300));
     T* transformed = dynamic_cast<T*>(obj);
     if(transformed)
     {
@@ -145,7 +146,7 @@ void CanvasObjectContainer::addObject(QSFML::Objects::CanvasObject *obj,std::vec
 template<typename T>
 void CanvasObjectContainer::removeObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
 {
-    EASY_FUNCTION(profiler::colors::Orange400);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange400));
     T* transformed = dynamic_cast<T*>(obj);
     if(transformed)
     {

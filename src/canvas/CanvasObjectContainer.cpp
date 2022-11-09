@@ -1,6 +1,7 @@
 #include "canvas/CanvasObjectContainer.h"
 #include "canvas/Canvas.h"
 
+
 using namespace QSFML::Objects;
 using namespace QSFML::Components;
 using namespace QSFML;
@@ -16,7 +17,7 @@ CanvasObjectContainer::~CanvasObjectContainer()
 
 void CanvasObjectContainer::addObject(CanvasObject *obj)
 {
-    EASY_FUNCTION(profiler::colors::Orange);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
 
     if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
         obj->getCanvasParent()->removeObject(obj);
@@ -25,7 +26,7 @@ void CanvasObjectContainer::addObject(CanvasObject *obj)
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
 {
-    EASY_FUNCTION(profiler::colors::Orange);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
     for(size_t i=0; i<objs.size(); ++i)
     {
         addObject(objs[i]);
@@ -45,7 +46,7 @@ void CanvasObjectContainer::addObject_internal()
 
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
 {
-    EASY_FUNCTION(profiler::colors::Orange);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
     size_t index = getObjectIndex(obj);
     if(index == npos) return;
     obj->setCanvasParent(nullptr);
@@ -53,7 +54,7 @@ void CanvasObjectContainer::removeObject(CanvasObject *obj)
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 {
-    EASY_FUNCTION(profiler::colors::Orange);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
     for(size_t i=0; i<objs.size(); ++i)
     {
         removeObject(objs[i]);
@@ -61,13 +62,13 @@ void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 }
 void CanvasObjectContainer::deleteObject(Objects::CanvasObject *obj)
 {
-    EASY_FUNCTION(profiler::colors::Orange);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
     removeObject(obj);
     delete obj;
 }
 void CanvasObjectContainer::deleteObject(const std::vector<Objects::CanvasObject*> &objs)
 {
-    EASY_FUNCTION(profiler::colors::Orange);
+    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
     removeObject(objs);
     for(size_t i=0; i<objs.size(); ++i)
     {
