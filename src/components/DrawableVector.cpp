@@ -4,6 +4,8 @@
 
 using namespace QSFML::Components;
 
+bool DrawableVector::m_flipYaxis = false;
+
 DrawableVector::DrawableVector(const std::string &name)
     :   Drawable(name)
 {
@@ -61,6 +63,12 @@ void DrawableVector::draw(sf::RenderTarget& target,
                           sf::RenderStates states) const
 {
     sf::Vector2f dir = getDirection();
+    sf::Vector2f end = m_end;
+    if(m_flipYaxis)
+    {
+        dir.y = -dir.y;
+        end.y = m_start.y + dir.y;
+    }
     float length = sqrt(dir.x*dir.x + dir.y*dir.y);
     float angle = getAngle(dir);
 
@@ -77,15 +85,19 @@ void DrawableVector::draw(sf::RenderTarget& target,
     sf::Vertex lines[] =
     {
         sf::Vertex(m_start,m_color),
-        sf::Vertex(m_end,m_color),
+        sf::Vertex(end,m_color),
 
-        sf::Vertex(m_end,m_color),
-        sf::Vertex(m_end+arrowLeft,m_color),
+        sf::Vertex(end,m_color),
+        sf::Vertex(end+arrowLeft,m_color),
 
-        sf::Vertex(m_end,m_color),
-        sf::Vertex(m_end+arrowRight,m_color),
+        sf::Vertex(end,m_color),
+        sf::Vertex(end+arrowRight,m_color),
     };
     target.draw(lines, 6, sf::Lines);
+}
+void DrawableVector::setInvertedYAxis(bool doInvert)
+{
+    m_flipYaxis = doInvert;
 }
 sf::Vector2f DrawableVector::getRotated(const sf::Vector2f &vec,
                                         float angle) const

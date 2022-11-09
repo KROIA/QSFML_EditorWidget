@@ -28,6 +28,8 @@ class DrawableVector: public Drawable
     void draw(sf::RenderTarget& target,
               sf::RenderStates states) const override;
 
+    static void setInvertedYAxis(bool doInvert);
+
     protected:
     inline sf::Vector2f getRotated(const sf::Vector2f &vec,
                                    float angle) const;
@@ -36,6 +38,7 @@ class DrawableVector: public Drawable
 
     sf::Vector2f m_start, m_end;
     sf::Color m_color;
+    static bool m_flipYaxis;
 };
 }
 }
