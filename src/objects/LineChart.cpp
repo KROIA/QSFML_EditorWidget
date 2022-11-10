@@ -93,6 +93,10 @@ const std::vector<float> &LineChart::getDataPoints() const
 {
     return m_dataPoints;
 }
+void LineChart::clear()
+{
+    m_dataPoints.clear();
+}
 
 void LineChart::update()
 {
@@ -101,7 +105,8 @@ void LineChart::update()
     m_dataPoints.push_back(sin(x));
     if(m_dataPoints.size() > 200)
         m_dataPoints.erase(m_dataPoints.begin());*/
-
+    if(m_dataPoints.size() == 0)
+       return;
     if(m_autoScale)
     {
         float min, max;

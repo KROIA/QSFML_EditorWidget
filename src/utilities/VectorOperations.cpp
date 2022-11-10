@@ -48,8 +48,10 @@ namespace VectorMath
         float prod = l1 * l2;
         if(prod == 0)
             return 0;
-
-        return acos(dotProduct(vec1, vec2) / (l1 *l2));
+        if(vec1.x > vec2.x)
+            return -acos(dotProduct(vec1, vec2) / (l1 *l2));
+        else
+            return acos(dotProduct(vec1, vec2) / (l1 *l2));
     }
     float dotProduct(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {

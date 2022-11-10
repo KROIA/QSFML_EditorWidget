@@ -39,6 +39,7 @@ namespace Objects
 
             void setDataPoints(const std::vector<float> &dataPoints);
             const std::vector<float> &getDataPoints() const;
+            void clear();
 
             void update() override;
 
