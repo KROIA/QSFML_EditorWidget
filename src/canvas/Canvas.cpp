@@ -209,6 +209,7 @@ void Canvas::showEvent(QShowEvent*)
 }
 void Canvas::paintEvent(QPaintEvent*)
 {
+    timedUpdate();
     return;
     if(!m_window)return;
     EASY_FUNCTION(profiler::colors::Green); // Magenta block with name "foo"

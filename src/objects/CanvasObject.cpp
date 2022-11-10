@@ -1,7 +1,7 @@
 #include "objects/CanvasObject.h"
 #include "canvas/Canvas.h"
-#include "components/Drawable.h"
-#include "components/SfEventHandle.h"
+
+
 
 
 using namespace QSFML;
@@ -19,6 +19,9 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     }
     m_canvasParent = nullptr;
     m_parent = parent;
+    m_objectsChanged = false;
+    m_thisNeedsDrawUpdate = false;
+  //  m_childNeedsDrawUpdate = false;
     setEnabled(true);
 }
 CanvasObject::CanvasObject(const CanvasObject &other)
@@ -27,6 +30,9 @@ CanvasObject::CanvasObject(const CanvasObject &other)
     m_name = other.m_name;
     m_canvasParent = nullptr;
     m_parent = nullptr;
+    m_objectsChanged = false;
+    m_thisNeedsDrawUpdate = false;
+   // m_childNeedsDrawUpdate = false;
 
     m_childs.reserve(other.m_childs.size());
     for(size_t i=0; i<other.m_childs.size(); ++i)
@@ -104,7 +110,7 @@ void CanvasObject::addChild(CanvasObject *child)
     if(!child)return;
 
     m_toAddChilds.push_back(child);
-
+    onObjectsChanged();
 
 }
 
@@ -139,6 +145,7 @@ void CanvasObject::removeChild(CanvasObject *child)
     for(size_t i=0; i<m_toDeleteChilds.size(); ++i)
         if(m_toDeleteChilds[i] == child)
             return;
+    onObjectsChanged();
     m_toRemoveChilds.push_back(child);
 }
 void CanvasObject::removeChild_internal()
@@ -166,6 +173,7 @@ void CanvasObject::deleteChild(CanvasObject *child)
             m_toAddChilds.erase(m_toAddChilds.begin() + i);
             break;
         }
+    onObjectsChanged();
     m_toDeleteChilds.push_back(child);
 }
 void CanvasObject::deleteChilds()
@@ -179,6 +187,7 @@ void CanvasObject::deleteChilds()
         if(!match)
             m_toDeleteChilds.push_back(m_childs[i]);
     }
+    onObjectsChanged();
 }
 void CanvasObject::deleteChild_internal()
 {
@@ -219,10 +228,8 @@ size_t CanvasObject::getChildCount() const
 void CanvasObject::addComponent(Component *comp)
 {
     if(!comp)return;
-
-
     m_toAddComponents.push_back(comp);
-
+    onObjectsChanged();
 }
 void CanvasObject::removeComponent(Component *comp)
 {
@@ -239,27 +246,91 @@ void CanvasObject::removeComponent(Component *comp)
             break;
         }
     m_toRemoveComponents.push_back(comp);
+    onObjectsChanged();
 }
 void CanvasObject::removeComponent_internal()
 {
-    for(size_t i=0; i<m_toDeleteComponents.size(); ++i)
+    for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
     {
-        size_t index = getComponentIndex(m_toDeleteComponents[i]);
+        size_t index = getComponentIndex(m_toRemoveComponents[i]);
         if(index != npos)
             m_components.erase(m_components.begin() + index);
+
+        SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(m_toRemoveComponents[i]);
+        if(evComp)
+        {
+            for(size_t j=0; j<m_eventComponents.size(); ++j)
+                if(m_eventComponents[j] == evComp)
+                {
+                    m_eventComponents.erase(m_eventComponents.begin() + j);
+                    break;
+                }
+            if(m_eventComponents.size() == 0)
+            {
+                needsEventUpdate(false);
+            }
+        }
+        Drawable *drawComp = dynamic_cast<Drawable*>(m_toRemoveComponents[i]);
+        if(drawComp)
+        {
+            for(size_t j=0; j<m_drawableComponents.size(); ++j)
+                if(m_drawableComponents[j] == drawComp)
+                {
+                    m_drawableComponents.erase(m_drawableComponents.begin() + j);
+                    break;
+                }
+            if(m_drawableComponents.size() == 0)
+            {
+                needsDrawUpdate(false);
+            }
+        }
     }
-    m_toDeleteComponents.clear();
+    m_toRemoveComponents.clear();
 }
 void CanvasObject::deleteComponent(Component *comp)
 {
     if(!comp)return;
     size_t index = getComponentIndex(comp);
     if(index == npos) return;
+    for(size_t i=0; i<m_toAddComponents.size(); ++i)
+        if(m_toAddComponents[i] == comp)
+        {
+            m_toAddComponents.erase(m_toAddComponents.begin() + i);
+            break;
+        }
     comp->setParent(nullptr);
     m_components.erase(m_components.begin() + index);
+    SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(comp);
+    if(evComp)
+    {
+        for(size_t j=0; j<m_eventComponents.size(); ++j)
+            if(m_eventComponents[j] == evComp)
+            {
+                m_eventComponents.erase(m_eventComponents.begin() + j);
+                break;
+            }
+        if(m_eventComponents.size() == 0)
+        {
+            needsEventUpdate(false);
+        }
+    }
+    Drawable *drawComp = dynamic_cast<Drawable*>(comp);
+    if(drawComp)
+    {
+        for(size_t j=0; j<m_drawableComponents.size(); ++j)
+            if(m_drawableComponents[j] == drawComp)
+            {
+                m_drawableComponents.erase(m_drawableComponents.begin() + j);
+                break;
+            }
+        if(m_drawableComponents.size() == 0)
+        {
+            needsDrawUpdate(false);
+        }
+    }
     delete comp;
 }
-void CanvasObject::deleteComponent_internal()
+/*void CanvasObject::deleteComponent_internal()
 {
     for(size_t i=0; i<m_toDeleteComponents.size(); ++i)
     {
@@ -269,7 +340,7 @@ void CanvasObject::deleteComponent_internal()
         delete m_toDeleteComponents[i];
     }
     m_toDeleteComponents.clear();
-}
+}*/
 void CanvasObject::addChild_internal()
 {
     for(size_t i=0; i<m_toAddChilds.size(); ++i)
@@ -291,8 +362,35 @@ void CanvasObject::addComponent_internal()
             continue;
         m_toAddComponents[i]->setParent(this);
         m_components.push_back(m_toAddComponents[i]);
+        SfEventHandle* eventComp = dynamic_cast<SfEventHandle*>(m_toAddComponents[i]);
+        if(eventComp)
+        {
+            m_eventComponents.push_back(eventComp);
+            if(m_eventComponents.size() && !m_thisNeedsEventUpdate)
+            {
+                needsEventUpdate(true);
+            }
+        }
+
+        Drawable* drawComp = dynamic_cast<Drawable*>(m_toAddComponents[i]);
+        if(drawComp)
+        {
+            m_drawableComponents.push_back(drawComp);
+            if(m_drawableComponents.size() && !m_thisNeedsDrawUpdate)
+            {
+                needsDrawUpdate(true);
+            }
+        }
     }
     m_toAddComponents.clear();
+}
+void CanvasObject::onObjectsChanged()
+{
+    m_objectsChanged = true;
+    if(m_parent)
+    {
+        m_parent->onObjectsChanged();
+    }
 }
 void CanvasObject::deleteComponents()
 {
@@ -301,6 +399,8 @@ void CanvasObject::deleteComponents()
         m_components[i]->setParent(nullptr);
         delete m_components[i];
     }
+    m_eventComponents.clear();
+    m_drawableComponents.clear();
     m_components.clear();
 }
 bool CanvasObject::componentExists(Component *comp) const
@@ -433,6 +533,81 @@ void CanvasObject::deleteThis()
 
 }
 
+
+void CanvasObject::needsEventUpdateChanged(bool needsEventUpdate)
+{
+    if(!m_thisNeedsEventUpdate && needsEventUpdate)
+    {
+        this->needsDrawUpdate(needsEventUpdate);
+        return;
+    }
+    if(m_thisNeedsEventUpdate && !needsEventUpdate)
+    {
+        if(m_drawableComponents.size() == 0)
+        {
+            bool needsUpdate = false;
+            for(size_t i=0; i<m_childs.size(); ++i)
+            {
+                if(m_childs[i]->m_thisNeedsEventUpdate)
+                {
+                    needsUpdate = true;
+                    break;
+                }
+            }
+            if(!needsUpdate)
+            {
+                this->needsDrawUpdate(needsEventUpdate);
+                return;
+            }
+        }
+    }
+}
+void CanvasObject::needsEventUpdate(bool needsEventUpdate)
+{
+    if(m_thisNeedsEventUpdate == needsEventUpdate)
+        return;
+    m_thisNeedsEventUpdate = needsEventUpdate;
+    if(m_parent)
+        m_parent->needsDrawUpdateChanged(m_thisNeedsEventUpdate);
+}
+
+void CanvasObject::needsDrawUpdateChanged(bool needsDrawUpdate)
+{
+    if(!m_thisNeedsDrawUpdate && needsDrawUpdate)
+    {
+        this->needsDrawUpdate(needsDrawUpdate);
+        return;
+    }
+    if(m_thisNeedsDrawUpdate && !needsDrawUpdate)
+    {
+        if(m_drawableComponents.size() == 0)
+        {
+            bool needsUpdate = false;
+            for(size_t i=0; i<m_childs.size(); ++i)
+            {
+                if(m_childs[i]->m_thisNeedsDrawUpdate)
+                {
+                    needsUpdate = true;
+                    break;
+                }
+            }
+            if(!needsUpdate)
+            {
+                this->needsDrawUpdate(needsDrawUpdate);
+                return;
+            }
+        }
+    }
+}
+void CanvasObject::needsDrawUpdate(bool needsDrawUpdate)
+{
+    if(m_thisNeedsDrawUpdate == needsDrawUpdate)
+        return;
+    m_thisNeedsDrawUpdate = needsDrawUpdate;
+    if(m_parent)
+        m_parent->needsDrawUpdateChanged(m_thisNeedsDrawUpdate);
+}
+
 void CanvasObject::setCanvasParent(Canvas *parent)
 {
     m_canvasParent = parent;
@@ -451,69 +626,82 @@ void CanvasObject::updateNewElements()
     removeChild_internal();
     deleteChild_internal();
     removeComponent_internal();
-    deleteComponent_internal();
+    //deleteComponent_internal();
     addChild_internal();
     addComponent_internal();
 
     for(size_t i=0; i<m_childs.size(); ++i)
         m_childs[i]->updateNewElements();
+    m_objectsChanged = false;
 }
 void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
 {
     if(!m_enabled || !m_updateControlls.enableEventLoop) return;
     QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange100));
-    for(size_t i=0; i<m_components.size(); ++i)
+    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components event", profiler::colors::Orange400));
+    for(size_t i=0; i<m_eventComponents.size(); ++i)
     {
-        if(!m_components[i]->isEnabled())
+        if(!m_eventComponents[i]->isEnabled())
             continue;
-        SfEventHandle* comp = dynamic_cast<SfEventHandle*>(m_components[i]);
-        if(comp)
-        {
-            for(size_t j=0; j<events.size(); ++j)
-                comp->sfEvent(events[j]);
-        }
+
+        for(size_t j=0; j<events.size(); ++j)
+            m_eventComponents[i]->sfEvent(events[j]);
+
     }
+    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+
+    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs event", profiler::colors::Orange500));
     for(size_t i=0; i<m_childs.size(); ++i)
     {
         if(m_childs[i]->m_enabled)
             m_childs[i]->sfEvent(events);
     }
+    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 }
 void CanvasObject::update_internal()
 {
     if(!m_enabled || !m_updateControlls.enableUpdateLoop) return;
-    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange200));
+    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange600));
+    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("This update", profiler::colors::Orange700));
     update();
+    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+
+    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components update", profiler::colors::Orange800));
     for(size_t i=0; i<m_components.size(); ++i)
     {
         if(!m_components[i]->isEnabled())
             continue;
         m_components[i]->update();
     }
+    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+
+    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs update", profiler::colors::Orange800));
     for(size_t i=0; i<m_childs.size(); ++i)
     {
         if(m_childs[i]->m_enabled)
             m_childs[i]->update_internal();
     }
+    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 }
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
     if(!m_enabled || !m_updateControlls.enablePaintLoop) return;
-    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange300));
-    for(size_t i=0; i<m_components.size(); ++i)
+    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange900));
+    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components draw", profiler::colors::OrangeA100));
+    for(size_t i=0; i<m_drawableComponents.size(); ++i)
     {
-        if(!m_components[i]->isEnabled())
+        if(!m_drawableComponents[i]->isEnabled())
             continue;
-        Drawable* comp = dynamic_cast<Drawable*>(m_components[i]);
-        if(comp)
-        {
-            window.draw(*comp);
-        }
+        window.draw(*m_drawableComponents[i]);
     }
+    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+
+    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs draw", profiler::colors::OrangeA200));
     for(size_t i=0; i<m_childs.size(); ++i)
     {
-        if(m_childs[i]->m_enabled)
+        if(m_childs[i]->m_enabled && m_childs[i]->m_thisNeedsDrawUpdate)
             m_childs[i]->draw(window);
     }
+    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 }
 

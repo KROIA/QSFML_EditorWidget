@@ -6,6 +6,8 @@
 #include "canvas/CanvasForwardDeclaration.h"
 #include "components/Component.h"
 #include "canvas/CanvasSettings.h"
+#include "components/SfEventHandle.h"
+#include "components/Drawable.h"
 #include "QSFML_debugSettings.h"
 #include <easy/profiler.h>
 
@@ -249,9 +251,10 @@ class CanvasObject
         void removeChild_internal();
         void removeComponent_internal();
         void deleteChild_internal();
-        void deleteComponent_internal();
+        //void deleteComponent_internal();
         void addChild_internal();
         void addComponent_internal();
+        void onObjectsChanged();
 
         static size_t m_objNameCounter;
 
@@ -259,13 +262,34 @@ class CanvasObject
         std::string m_name;
         Canvas *m_canvasParent;
         CanvasObject *m_parent;
+
+        bool m_objectsChanged;
         std::vector<CanvasObject*> m_childs;
         std::vector<CanvasObject*> m_toAddChilds;
+
+        /*struct ComponentMetadata
+        {
+            Components::Component* component;
+
+        };*/
+
         std::vector<Components::Component*> m_components;
         std::vector<Components::Component*> m_toAddComponents;
 
+        // Will send a signal to the parent to notify, the new status
+        void needsEventUpdateChanged(bool needsEventUpdate);
+        void needsEventUpdate(bool needsEventUpdate);
+        bool m_thisNeedsEventUpdate;
+        std::vector<Components::SfEventHandle*> m_eventComponents;
+
+        // Will send a signal to the parent to notify, the new status
+        void needsDrawUpdateChanged(bool needsDrawUpdate);
+        void needsDrawUpdate(bool needsDrawUpdate);
+        bool m_thisNeedsDrawUpdate;
+        std::vector<Components::Drawable*> m_drawableComponents;
+
         std::vector<CanvasObject*> m_toDeleteChilds;
-        std::vector<Components::Component*> m_toDeleteComponents;
+        //std::vector<Components::Component*> m_toDeleteComponents;
         std::vector<CanvasObject*> m_toRemoveChilds;
         std::vector<Components::Component*> m_toRemoveComponents;
 
@@ -277,7 +301,6 @@ class CanvasObject
         void sfEvent(const std::vector<sf::Event> &events);
         void update_internal();
         void draw(sf::RenderWindow &window) const;
-
 };
 
 template<typename T>
@@ -288,11 +311,19 @@ void CanvasObject::deleteChilds()
         T* child = dynamic_cast<T*>(m_childs[i]);
         if(child)
         {
-            m_childs.erase(m_childs.begin() + i);
+           /* m_childs.erase(m_childs.begin() + i);
             --i;
-            delete child;
+            delete child;*/
+
+            bool match = false;
+            for(size_t j=0; j<m_toDeleteChilds.size(); ++j)
+                if(m_toDeleteChilds[j] == child)
+                    match = true;
+            if(!match)
+                m_toDeleteChilds.push_back(child);
         }
     }
+    m_objectsChanged = true;
 }
 template<typename T>
 std::vector<T*> CanvasObject::getChilds() const
@@ -331,6 +362,34 @@ void CanvasObject::deleteComponents()
             m_components.erase(m_components.begin() + i);
             --i;
             delete comp;
+        }
+        Components::SfEventHandle *evComp = dynamic_cast<Components::SfEventHandle*>(comp);
+        if(evComp)
+        {
+            for(size_t j=0; j<m_eventComponents.size(); ++j)
+                if(m_eventComponents[j] == evComp)
+                {
+                    m_eventComponents.erase(m_eventComponents.begin() + j);
+                    break;
+                }
+            if(m_eventComponents.size() == 0)
+            {
+                needsEventUpdate(false);
+            }
+        }
+        Components::Drawable *drawComp = dynamic_cast<Components::Drawable*>(comp);
+        if(drawComp)
+        {
+            for(size_t j=0; j<m_drawableComponents.size(); ++j)
+                if(m_drawableComponents[j] == drawComp)
+                {
+                    m_drawableComponents.erase(m_drawableComponents.begin() + j);
+                    break;
+                }
+            if(m_drawableComponents.size() == 0)
+            {
+                needsDrawUpdate(false);
+            }
         }
     }
 }

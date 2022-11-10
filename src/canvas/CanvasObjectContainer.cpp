@@ -43,6 +43,14 @@ void CanvasObjectContainer::addObject_internal()
     }
     m_toAddContainer.clear();
 }
+void CanvasObjectContainer::deleteObject_internal()
+{
+    for(size_t i=0; i<m_toDelete.size(); ++i)
+    {
+        deleteObject(m_toDelete[i]);
+    }
+    m_toDelete.clear();
+}
 
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
 {
@@ -121,16 +129,12 @@ void CanvasObjectContainer::deleteLater(Objects::CanvasObject *obj)
 
 void CanvasObjectContainer::updateNewElements()
 {
-    for(size_t i=0; i<m_toDelete.size(); ++i)
-    {
-        deleteObject(m_toDelete[i]);
-    }
-    m_toDelete.clear();
-
+    deleteObject_internal();
     addObject_internal();
     for(size_t i=0; i<m_container.size(); ++i)
     {
-        m_container[i]->updateNewElements();
+        if(m_container[i]->m_objectsChanged)
+            m_container[i]->updateNewElements();
     }
 }
 void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)
@@ -151,7 +155,8 @@ void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {
     for(size_t i=0; i<m_container.size(); ++i)
     {
-        m_container[i]->draw(window);
+        if(m_container[i]->m_thisNeedsDrawUpdate)
+            m_container[i]->draw(window);
     }
 }
 

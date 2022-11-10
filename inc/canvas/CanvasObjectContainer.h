@@ -62,6 +62,7 @@ class CanvasObjectContainer
         void removeObject(Objects::CanvasObject *obj,std::vector<T*> &list);
 
         void addObject_internal();
+        void deleteObject_internal();
 
         // All objects will be contained in this list
         std::vector<Objects::CanvasObject*> m_container;
