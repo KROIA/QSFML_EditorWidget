@@ -117,7 +117,9 @@ void LineChart::update()
 
         if(minSQ > maxSQ)
             divisor = minSQ;
-        if(divisor != 0)
+        if(divisor < 0.1) // min y scale
+            divisor = 0.1;
+        //if(divisor != 0)
         {
             m_yScale = m_size.y / (2*divisor);
         }
