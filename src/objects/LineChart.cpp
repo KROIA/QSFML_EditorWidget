@@ -85,6 +85,15 @@ float LineChart::getScale() const
 // void setXSpacing(float spacing);
 // float getXSpacing() const;
 
+void LineChart::addDataPoint(float value)
+{
+    m_dataPoints.push_back(value);
+}
+void LineChart::removeFirstDataPoint()
+{
+    if(m_dataPoints.size() > 0)
+    m_dataPoints.erase(m_dataPoints.begin());
+}
 void LineChart::setDataPoints(const std::vector<float> &dataPoints)
 {
     m_dataPoints = dataPoints;
@@ -92,10 +101,6 @@ void LineChart::setDataPoints(const std::vector<float> &dataPoints)
 const std::vector<float> &LineChart::getDataPoints() const
 {
     return m_dataPoints;
-}
-void LineChart::clear()
-{
-    m_dataPoints.clear();
 }
 
 void LineChart::update()
@@ -105,8 +110,7 @@ void LineChart::update()
     m_dataPoints.push_back(sin(x));
     if(m_dataPoints.size() > 200)
         m_dataPoints.erase(m_dataPoints.begin());*/
-    if(m_dataPoints.size() == 0)
-       return;
+
     if(m_autoScale)
     {
         float min, max;
@@ -117,9 +121,7 @@ void LineChart::update()
 
         if(minSQ > maxSQ)
             divisor = minSQ;
-        if(divisor < 0.1) // min y scale
-            divisor = 0.1;
-        //if(divisor != 0)
+        if(divisor != 0)
         {
             m_yScale = m_size.y / (2*divisor);
         }

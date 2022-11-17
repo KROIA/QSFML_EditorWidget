@@ -17,10 +17,15 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
         m_objNameCounter++;
         m_name = "CanvasObject_"+std::to_string(m_objNameCounter);
     }
+    m_updateControlls.enableUpdateLoop = true;
+    m_updateControlls.enableEventLoop = true;
+    m_updateControlls.enablePaintLoop = true;
+
     m_canvasParent = nullptr;
     m_parent = parent;
     m_objectsChanged = false;
     m_thisNeedsDrawUpdate = false;
+    m_enabled = true;
   //  m_childNeedsDrawUpdate = false;
     setEnabled(true);
 }
@@ -32,6 +37,7 @@ CanvasObject::CanvasObject(const CanvasObject &other)
     m_parent = nullptr;
     m_objectsChanged = false;
     m_thisNeedsDrawUpdate = false;
+    m_updateControlls = other.m_updateControlls;
    // m_childNeedsDrawUpdate = false;
 
     m_childs.reserve(other.m_childs.size());

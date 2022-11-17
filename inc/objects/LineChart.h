@@ -37,9 +37,10 @@ namespace Objects
            // void setXSpacing(float spacing);
            // float getXSpacing() const;
 
+            void addDataPoint(float value);
+            void removeFirstDataPoint();
             void setDataPoints(const std::vector<float> &dataPoints);
             const std::vector<float> &getDataPoints() const;
-            void clear();
 
             void update() override;
 
