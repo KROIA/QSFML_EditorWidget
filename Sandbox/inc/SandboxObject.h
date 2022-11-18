@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SFML_EditorWidget.h"
+#include "QSFML_EditorWidget.h"
 
 class SandboxObject: public QSFML::Objects::CanvasObject
 {

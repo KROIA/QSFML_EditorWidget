@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SFML_EditorWidget.h"
+#include "QSFML_EditorWidget.h"
 
 class AABBDisplayer: public QSFML::Objects::CanvasObject
 {

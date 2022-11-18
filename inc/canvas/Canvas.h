@@ -5,7 +5,6 @@
 #include <QTimer>
 #include "canvas/CanvasSettings.h"
 #include "canvas/CanvasObjectContainer.h"
-#include "QSFML_debugSettings.h"
 
 namespace QSFML
 {

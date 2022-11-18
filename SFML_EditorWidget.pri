@@ -19,8 +19,8 @@ INCLUDEPATH += \
 #$$inc/utilities
 
 HEADERS += \
-    $$PWD/inc/QSFML_debugSettings.h \
-    $$inc/SFML_EditorWidget.h \
+    $$inc/QSFML_debugSettings.h \
+    $$inc/QSFML_EditorWidget.h \
     $$inc/components/AbstractPressEvent.h \
     $$inc/components/BoxCollider.h \
     $$inc/components/Button.h \

@@ -2,6 +2,8 @@
 #include <QResizeEvent>
 #include <QHBoxLayout>
 #include <QDebug>
+#include "QSFML_debugSettings.h"
+
 #ifdef Q_WS_X11
     #include <Qt/qx11info_x11.h>
     #include <X11/Xlib.h>
