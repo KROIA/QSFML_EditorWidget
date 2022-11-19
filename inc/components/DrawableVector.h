@@ -1,5 +1,5 @@
 #pragma once
-
+#include <SFML/Graphics.hpp>
 #include "components/Drawable.h"
 
 namespace QSFML
@@ -11,6 +11,7 @@ class DrawableVector: public Drawable
     public:
     DrawableVector(const std::string &name = "DrawableVector");
     DrawableVector(const DrawableVector &other);
+    ~DrawableVector();
     CLONE_FUNC(DrawableVector)
 
     void setPoints(const sf::Vector2f &begin, const sf::Vector2f &end);
@@ -25,12 +26,14 @@ class DrawableVector: public Drawable
     const sf::Color &getColor() const;
 
 
+
     void draw(sf::RenderTarget& target,
               sf::RenderStates states) const override;
 
     static void setInvertedYAxis(bool doInvert);
 
     protected:
+    void updateArrow();
     inline sf::Vector2f getRotated(const sf::Vector2f &vec,
                                    float angle) const;
     inline float getLength(const sf::Vector2f &vec) const;
@@ -39,6 +42,8 @@ class DrawableVector: public Drawable
     sf::Vector2f m_start, m_end;
     sf::Color m_color;
     static bool m_flipYaxis;
+
+    sf::Vertex *m_lines;
 };
 }
 }

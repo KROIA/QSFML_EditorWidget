@@ -86,12 +86,26 @@ struct CanvasSettings
         bool enableEventLoop;
         bool enableUpdateLoop;
         bool enablePaintLoop;
+        bool enableMultithreading;
+        struct ThreadSettings
+        {
+            size_t threadCount;
+            size_t objectGroups;
+
+            ThreadSettings()
+            {
+                threadCount = 4;
+                objectGroups = 8;
+            }
+        };
+        ThreadSettings threadSettings;
 
         UpdateControlls()
         {
             enableEventLoop = true;
             enableUpdateLoop = true;
             enablePaintLoop = true;
+            enableMultithreading = false;
         }
     };
     UpdateControlls updateControlls;

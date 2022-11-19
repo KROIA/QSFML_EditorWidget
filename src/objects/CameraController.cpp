@@ -268,15 +268,15 @@ void CameraController::SfEventComponent::sfEvent(const sf::Event &e)
     }
 
 }
-
-void CameraController::internalOnCanvasParentChange(Canvas *newParent)
+/*
+void CameraController::internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent)
 {
 
 }
-void CameraController::internalOnParentChange(CanvasObject *newParent)
+void CameraController::internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent)
 {
 
-}
+}*/
 
 void CameraController::positionCheck(sf::View &view)
 {

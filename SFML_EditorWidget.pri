@@ -11,6 +11,9 @@ src = $$PWD/src
 include(extern/SFML.pri)
 include(extern/easy_profiler.pri)
 
+QMAKE_CFLAGS_RELEASE += -O3  -mtune=intel
+QMAKE_CXXFLAGS_RELEASE += -O3  -mtune=intel
+
 INCLUDEPATH += \
     $$inc \
 #$$inc/canvas \
@@ -19,8 +22,11 @@ INCLUDEPATH += \
 #$$inc/utilities
 
 HEADERS += \
+    $$PWD/inc/canvas/CanvasObjectGroup.h \
+    $$PWD/inc/canvas/CanvasThreadWorker.h \
+    $$PWD/inc/canvas/RenderLayer.h \
     $$inc/QSFML_debugSettings.h \
-    $$inc/QSFML_EditorWidget.h \
+    $$inc/QQSFML_EditorWidget.h \
     $$inc/components/AbstractPressEvent.h \
     $$inc/components/BoxCollider.h \
     $$inc/components/Button.h \
@@ -45,7 +51,8 @@ HEADERS += \
     $$inc/objects/BackgroundGrid.h \
     $$inc/objects/CameraController.h \
     $$inc/objects/VisibleCamera.h \
-    $$inc/utilities/AABB.h
+    $$inc/utilities/AABB.h \
+    $$PWD/extern/CPP11_ThreadPool-master/thread_pool.h
 
 
 
@@ -53,6 +60,8 @@ HEADERS += \
 
 
 SOURCES += \
+    $$PWD/src/canvas/CanvasObjectGroup.cpp \
+    $$PWD/src/canvas/CanvasThreadWorker.cpp \
     $$src/components/AbstractPressEvent.cpp \
     $$src/components/BoxCollider.cpp \
     $$src/components/Button.cpp \
@@ -74,7 +83,8 @@ SOURCES += \
     $$src/objects/CanvasObject.cpp \
     $$src/objects/BackgroundGrid.cpp \
     $$src/objects/CameraController.cpp \
-    $$src/utilities/AABB.cpp
+    $$src/utilities/AABB.cpp \
+    $$PWD/extern/CPP11_ThreadPool-master/thread_pool.cpp
 
 
 

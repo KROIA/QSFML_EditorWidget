@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <vector>
 #include "canvas/CanvasForwardDeclaration.h"
+#include "canvas/RenderLayer.h"
 #include "components/Component.h"
 #include "canvas/CanvasSettings.h"
 #include "components/SfEventHandle.h"
@@ -161,6 +162,7 @@ namespace Objects
 class CanvasObject
 {
         friend Canvas;
+        friend CanvasObjectGroup;
         friend CanvasObjectContainer;
     public:
         CanvasObject(const std::string &name = "",
@@ -170,6 +172,12 @@ class CanvasObject
 
         virtual CanvasObject* clone() const;
 
+        /**
+         * \brief update will be called once per frame
+         */
+        virtual void update();
+
+
         void setParent(CanvasObject *parent);
         CanvasObject *getParent() const;
 
@@ -178,6 +186,9 @@ class CanvasObject
 
         void setName(const std::string &name);
         const std::string getName() const;
+
+        void setRenderLayer(RenderLayer layer);
+        RenderLayer getRenderLayer() const;
 
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;
@@ -223,10 +234,7 @@ class CanvasObject
 
         const sf::Font &getTextFont() const;
 
-        /**
-         * \brief update will be called once per frame
-         */
-        virtual void update();
+
 
         const CanvasSettings::UpdateControlls &getUpdateControlls() const;
         void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
@@ -237,11 +245,11 @@ class CanvasObject
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
 
 
-        virtual void onCanvasParentChange(Canvas *newParent);
-        virtual void onParentChange(CanvasObject *newParent);
+        virtual void onCanvasParentChange(Canvas *oldParent, Canvas *newParent);
+        virtual void onParentChange(CanvasObject *oldParent, CanvasObject *newParent);
 
-        virtual void internalOnCanvasParentChange(Canvas *newParent);
-        virtual void internalOnParentChange(CanvasObject *newParent);
+        virtual void internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent);
+        virtual void internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent);
 
         Canvas *getCanvasParent() const;
 
@@ -253,6 +261,8 @@ class CanvasObject
         void deleteChild_internal();
         //void deleteComponent_internal();
         void addChild_internal();
+        inline void addChild_internal(CanvasObject *obj);
+        inline void setParent_internal(CanvasObject *parent, Canvas *canvasParent);
         void addComponent_internal();
         void onObjectsChanged();
 
@@ -295,11 +305,97 @@ class CanvasObject
 
         CanvasSettings::UpdateControlls m_updateControlls;
 
+        RenderLayer m_renderLayer;
+
         // Canvas Object Internal functions
         void setCanvasParent(Canvas *parent);
-        void updateNewElements();
+        inline void updateNewElements()
+        {
+            QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange));
+            removeChild_internal();
+            deleteChild_internal();
+            removeComponent_internal();
+            //deleteComponent_internal();
+            addChild_internal();
+            addComponent_internal();
+
+            for(size_t i=0; i<m_childs.size(); ++i)
+                m_childs[i]->updateNewElements();
+            m_objectsChanged = false;
+        }
+        inline void sfEvent(const std::vector<sf::Event> &events)
+        {
+            if(!m_enabled || !m_updateControlls.enableEventLoop || !m_thisNeedsEventUpdate) return;
+            QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange100));
+            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components event", profiler::colors::Orange400));
+            for(size_t i=0; i<m_eventComponents.size(); ++i)
+            {
+                if(!m_eventComponents[i]->isEnabled())
+                    continue;
+
+                for(size_t j=0; j<events.size(); ++j)
+                    m_eventComponents[i]->sfEvent(events[j]);
+
+            }
+            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+
+            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs event", profiler::colors::Orange500));
+            for(size_t i=0; i<m_childs.size(); ++i)
+            {
+                if(m_childs[i]->m_enabled)
+                    m_childs[i]->sfEvent(events);
+            }
+            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+        }
+        inline void update_internal()
+        {
+            if(!m_enabled || !m_updateControlls.enableUpdateLoop) return;
+            QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange600));
+            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("This update", profiler::colors::Orange700));
+            update();
+            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+
+            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components update", profiler::colors::Orange800));
+            for(size_t i=0; i<m_components.size(); ++i)
+            {
+                if(!m_components[i]->isEnabled())
+                    continue;
+                m_components[i]->update();
+            }
+            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+
+            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs update", profiler::colors::Orange800));
+            for(size_t i=0; i<m_childs.size(); ++i)
+            {
+                if(m_childs[i]->m_enabled)
+                    m_childs[i]->update_internal();
+            }
+            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+        }
+        /*inline void draw(sf::RenderWindow &window) const
+        {
+            if(!m_enabled || !m_updateControlls.enablePaintLoop) return;
+            QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange900));
+            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components draw", profiler::colors::OrangeA100));
+            for(size_t i=0; i<m_drawableComponents.size(); ++i)
+            {
+                if(!m_drawableComponents[i]->isEnabled())
+                    continue;
+                window.draw(*m_drawableComponents[i]);
+            }
+            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+
+            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs draw", profiler::colors::OrangeA200));
+            for(size_t i=0; i<m_childs.size(); ++i)
+            {
+                if(m_childs[i]->m_enabled && m_childs[i]->m_thisNeedsDrawUpdate)
+                    m_childs[i]->draw(window);
+            }
+            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+        }*/
+        /*void updateNewElements();
         void sfEvent(const std::vector<sf::Event> &events);
-        void update_internal();
+        void update_internal();*/
         void draw(sf::RenderWindow &window) const;
 };
 

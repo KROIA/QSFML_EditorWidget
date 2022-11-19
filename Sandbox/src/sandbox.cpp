@@ -19,6 +19,10 @@ SandBox::SandBox(QWidget *parent)
         //settings.layout.autoAjustSize = false;
         settings.layout.fixedSize = sf::Vector2u(300,100);
         settings.contextSettings.antialiasingLevel = 8;
+        //settings.updateControlls.enableMultithreading = false;
+        //settings.updateControlls.enablePaintLoop = false;
+        //settings.updateControlls.enableEventLoop = false;
+        //settings.updateControlls.enableUpdateLoop = false;
         m_canvas_1 = new Canvas(ui->canvasWidget_1,settings);
 
         DefaultEditor *defaultEditor = new DefaultEditor();
@@ -41,9 +45,14 @@ SandBox::SandBox(QWidget *parent)
         //settings.layout.autoAjustSize = false;
         settings.layout.fixedSize = sf::Vector2u(300,100);
         settings.contextSettings.antialiasingLevel = 8;
+       //settings.updateControlls.enableMultithreading = false;
+       //settings.updateControlls.enablePaintLoop = false;
+       //settings.updateControlls.enableEventLoop = false;
+       //settings.updateControlls.enableUpdateLoop = false;
         m_canvas_2 = new Canvas(ui->canvasWidget_2,settings);
 
        DefaultEditor *defaultEditor = new DefaultEditor();
+       defaultEditor->setRenderLayer(RenderLayer::layer_1);
 
         VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 
