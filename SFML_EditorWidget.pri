@@ -52,9 +52,6 @@ HEADERS += \
     $$inc/objects/CameraController.h \
     $$inc/objects/VisibleCamera.h \
     $$inc/utilities/AABB.h \
-    $$PWD/extern/CPP11_ThreadPool-master/thread_pool.h
-
-
 
 
 
@@ -84,7 +81,6 @@ SOURCES += \
     $$src/objects/BackgroundGrid.cpp \
     $$src/objects/CameraController.cpp \
     $$src/utilities/AABB.cpp \
-    $$PWD/extern/CPP11_ThreadPool-master/thread_pool.cpp
 
 
 
