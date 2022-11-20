@@ -25,14 +25,10 @@ namespace QSFML
 
             std::vector<CanvasObjectGroup*> *m_groups;
 
-            //size_t m_nextGroupIndex;
-
             std::condition_variable m_cv;
             std::vector<std::thread*> m_threads;
 
 
-
-            //std::vector<CanvasObjectGroup*> m_threadGroups;
             bool *m_threadFinished;
             bool *m_threadFinishedCheckingBuffer;
             bool m_threadExit;

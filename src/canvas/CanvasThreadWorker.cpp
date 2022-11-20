@@ -9,7 +9,6 @@ CanvasThreadWorker::CanvasThreadWorker(size_t threadCount,
                                        std::vector<CanvasObjectGroup*> *group)
 {
     m_groups = group;
-    //m_nextGroupIndex = 0;
     setupThreads(threadCount);
 }
 CanvasThreadWorker::~CanvasThreadWorker()
@@ -36,9 +35,8 @@ void CanvasThreadWorker::process()
     size_t cpyCount = m_threads.size() * sizeof(bool);
     memset(m_threadFinished, 0, cpyCount);
 
-    //qDebug() << "start threads";
 
-    m_threadReleaseToWork = true;
+    m_threadReleaseToWork = !m_threadReleaseToWork;
     m_cv.notify_all();
 
     bool anyRunning;
@@ -54,9 +52,7 @@ void CanvasThreadWorker::process()
         {
             anyRunning |= !m_threadFinishedCheckingBuffer[i];
         }
-       // qDebug() << "waiting for threads to finish...";
     }while(anyRunning);
-    //qDebug() << "threads finished";
 
 }
 void CanvasThreadWorker::setupThreads(size_t count)
@@ -94,17 +90,19 @@ void CanvasThreadWorker::setupThreads(size_t count)
 void CanvasThreadWorker::threadFunc(ThreadsData data)
 {
     bool doExit = false;
+    bool releaseThreadToWorkComp = true;
     while(!doExit)
     {
         {
-            bool *releaseToWork= data.threadReleaseToWork;
+            bool *releaseToWork = data.threadReleaseToWork;
             std::unique_lock<std::mutex> lk(*data.mutex);
 
-            data.cv->wait(lk, [releaseToWork]
+            data.cv->wait(lk, [releaseToWork, releaseThreadToWorkComp]
             {
-                return *releaseToWork;
+                return *releaseToWork == releaseThreadToWorkComp;
             });
         }
+        releaseThreadToWorkComp = !releaseThreadToWorkComp;
         bool workOnGroups = true;
         CanvasObjectGroup *currentGroup = nullptr;
         while(workOnGroups)
