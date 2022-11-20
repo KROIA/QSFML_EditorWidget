@@ -34,7 +34,7 @@ void CanvasThreadWorker::process()
     m_threadNextIndex = 0;
     m_threadMaxIndex = m_groups->size();
     size_t cpyCount = m_threads.size() * sizeof(bool);
-    std::memset(m_threadFinished, 0, cpyCount);
+    memset(m_threadFinished, 0, cpyCount);
 
     //qDebug() << "start threads";
 
@@ -47,7 +47,7 @@ void CanvasThreadWorker::process()
         anyRunning = false;
         {
             std::unique_lock<std::mutex> lk(m_finishedMutex);
-            std::memcpy(m_threadFinishedCheckingBuffer, m_threadFinished, cpyCount);
+            memcpy(m_threadFinishedCheckingBuffer, m_threadFinished, cpyCount);
         }
 
         for(size_t i=0; i<m_threads.size(); ++i)
@@ -69,8 +69,8 @@ void CanvasThreadWorker::setupThreads(size_t count)
     m_threadFinished = new bool[count];
     m_threadFinishedCheckingBuffer = new bool[count];
     m_threadExit = false;
-    std::memset(m_threadFinished, 0, count * sizeof(bool));
-    std::memset(m_threadFinishedCheckingBuffer, 0, count * sizeof(bool));
+    memset(m_threadFinished, 0, count * sizeof(bool));
+    memset(m_threadFinishedCheckingBuffer, 0, count * sizeof(bool));
 
     ThreadsData dataPreset;
     dataPreset.cv = &m_cv;
