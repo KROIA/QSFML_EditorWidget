@@ -8,6 +8,7 @@ using namespace QSFML;
 
 CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, const CanvasSettings &settings)
 {
+    m_updateCount = 0;
     m_parent = parent;
     m_allObjects = new CanvasObjectGroup(m_parent);
     for(size_t i=0; i<RenderLayer::count; ++i)
@@ -224,6 +225,10 @@ void CanvasObjectContainer::renderLayerSwitch(Objects::CanvasObject *obj, Render
     if(to < RenderLayer::count)
         m_renderLayerGroups[obj->getRenderLayer()]->addObject(obj);
 }
+size_t CanvasObjectContainer::getUpdateCount() const
+{
+    return m_updateCount;
+}
 
 void CanvasObjectContainer::updateNewElements()
 {
@@ -261,6 +266,7 @@ void CanvasObjectContainer::update()
     {
         m_allObjects->update();
     }
+    ++m_updateCount;
 
     /*for(size_t i=0; i<m_container.size(); ++i)
     {

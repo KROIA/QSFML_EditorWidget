@@ -234,6 +234,8 @@ class CanvasObject
 
         const sf::Font &getTextFont() const;
 
+        size_t getUpdateCount() const;
+
 
 
         const CanvasSettings::UpdateControlls &getUpdateControlls() const;

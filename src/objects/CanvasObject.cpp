@@ -494,7 +494,11 @@ const sf::Font &CanvasObject::getTextFont() const
     if(!m_canvasParent) return dummy;
     return m_canvasParent->getTextFont();
 }
-
+size_t CanvasObject::getUpdateCount() const
+{
+    if(!m_canvasParent) return 0;
+    return m_canvasParent->getUpdateCount();
+}
 void CanvasObject::update()
 {
 

@@ -42,6 +42,8 @@ class CanvasObjectContainer
 
         void renderLayerSwitch(Objects::CanvasObject *obj, RenderLayer from, RenderLayer to);
 
+        size_t getUpdateCount() const;
+
         const static size_t npos = -1;
 
     protected:
@@ -80,6 +82,7 @@ class CanvasObjectContainer
         Canvas *m_parent;
 
         CanvasThreadWorker *m_threadWorker;
+        size_t m_updateCount;
 };
 template<typename T>
 size_t CanvasObjectContainer::getObjectsCount() const
