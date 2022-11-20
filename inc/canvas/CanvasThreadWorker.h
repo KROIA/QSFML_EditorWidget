@@ -26,13 +26,15 @@ namespace QSFML
             std::vector<CanvasObjectGroup*> *m_groups;
 
             std::condition_variable m_cv;
+
             std::vector<std::thread*> m_threads;
 
 
-            bool *m_threadFinished;
-            bool *m_threadFinishedCheckingBuffer;
+            size_t *m_threadFinishedCycleCount;
+            size_t *m_threadFinishedCheckingBuffer;
+            size_t m_cycleCount;
             bool m_threadExit;
-            bool m_threadReleaseToWork;
+            //bool m_threadReleaseToWork;
             size_t m_threadNextIndex;
             size_t m_threadMaxIndex;
             std::mutex m_mutex;
@@ -40,9 +42,9 @@ namespace QSFML
             struct ThreadsData
             {
                 std::vector<CanvasObjectGroup*> *groupsList;
-                bool *finished;
+                size_t *finishedCycleCount;
                 bool *exit;
-                bool *threadReleaseToWork;
+                size_t *threadReleaseToWork;
                 size_t *nextIndex;
                 size_t *maxIndex;
                 std::mutex *mutex;
