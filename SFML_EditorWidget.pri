@@ -22,11 +22,11 @@ INCLUDEPATH += \
 #$$inc/utilities
 
 HEADERS += \
-    $$PWD/inc/canvas/CanvasObjectGroup.h \
-    $$PWD/inc/canvas/CanvasThreadWorker.h \
-    $$PWD/inc/canvas/RenderLayer.h \
+    $$inc/canvas/CanvasObjectGroup.h \
+    $$inc/canvas/CanvasThreadWorker.h \
+    $$inc/canvas/RenderLayer.h \
     $$inc/QSFML_debugSettings.h \
-    $$inc/QQSFML_EditorWidget.h \
+    $$inc/QSFML_EditorWidget.h \
     $$inc/components/AbstractPressEvent.h \
     $$inc/components/BoxCollider.h \
     $$inc/components/Button.h \
