@@ -3,6 +3,7 @@
 #include <thread>
 #include <condition_variable>
 #include "CanvasObjectGroup.h"
+#include <atomic>
 
 
 namespace QSFML
@@ -30,11 +31,12 @@ namespace QSFML
             std::vector<std::thread*> m_threads;
 
 
-            size_t *m_threadFinishedCycleCount;
-            size_t *m_threadFinishedCheckingBuffer;
+            std::atomic<bool> *m_threadRunning;
+            //size_t *m_threadFinishedCheckingBuffer;
             size_t m_cycleCount;
             bool m_threadExit;
             //bool m_threadReleaseToWork;
+            std::atomic<bool> m_threadReleaseToWork;
             size_t m_threadNextIndex;
             size_t m_threadMaxIndex;
             std::mutex m_mutex;
@@ -42,9 +44,9 @@ namespace QSFML
             struct ThreadsData
             {
                 std::vector<CanvasObjectGroup*> *groupsList;
-                size_t *finishedCycleCount;
+                std::atomic<bool> *running;
                 bool *exit;
-                size_t *threadReleaseToWork;
+                std::atomic<bool> *threadReleaseToWork;
                 size_t *nextIndex;
                 size_t *maxIndex;
                 std::mutex *mutex;
