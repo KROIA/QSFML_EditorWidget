@@ -53,8 +53,8 @@ class CameraController: public CanvasObject
 
 
     private:
-        void internalOnCanvasParentChange(Canvas *newParent) override;
-        void internalOnParentChange(CanvasObject *newParent) override;
+        //void internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent) override;
+        //void internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent) override;
         void positionCheck(sf::View &view);
 
         float m_currentZoom;

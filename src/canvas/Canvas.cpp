@@ -18,7 +18,7 @@ Canvas* Canvas::m_profilerMaster = nullptr;
 Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
   QWidget(parent),
  // DrawInterface(),
-  CanvasObjectContainer(this)
+  CanvasObjectContainer(this, settings)
   //sf::RenderWindow(),
 {
 #ifdef BUILD_WITH_EASY_PROFILER
@@ -288,6 +288,7 @@ void Canvas::resizeEvent(QResizeEvent *event)
 
 void Canvas::timedUpdate()
 {
+
     if(!m_window)return;
     QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Green)); // Magenta block with name "foo"
 

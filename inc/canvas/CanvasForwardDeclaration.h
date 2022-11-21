@@ -3,7 +3,9 @@
 namespace QSFML
 {
     class Canvas;
+    class CanvasObjectGroup;
     class CanvasObjectContainer;
+    class CanvasThreadWorker;
     namespace Objects
     {
         class CanvasObject;

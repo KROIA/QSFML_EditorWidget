@@ -14,7 +14,9 @@ class Canvas :
         public CanvasObjectContainer
 {
         Q_OBJECT
+        friend CanvasObjectContainer;
     public :
+
 
         Canvas(QWidget* parent, const CanvasSettings &settings = CanvasSettings());
 

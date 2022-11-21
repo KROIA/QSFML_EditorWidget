@@ -26,8 +26,7 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     m_objectsChanged = false;
     m_thisNeedsDrawUpdate = false;
     m_enabled = true;
-  //  m_childNeedsDrawUpdate = false;
-    setEnabled(true);
+    m_renderLayer = RenderLayer::layer_0;
 }
 CanvasObject::CanvasObject(const CanvasObject &other)
 {
@@ -38,7 +37,7 @@ CanvasObject::CanvasObject(const CanvasObject &other)
     m_objectsChanged = false;
     m_thisNeedsDrawUpdate = false;
     m_updateControlls = other.m_updateControlls;
-   // m_childNeedsDrawUpdate = false;
+    m_renderLayer = other.m_renderLayer;
 
     m_childs.reserve(other.m_childs.size());
     for(size_t i=0; i<other.m_childs.size(); ++i)
@@ -52,6 +51,7 @@ CanvasObject::CanvasObject(const CanvasObject &other)
         Component *obj = other.m_components[i]->clone();
         addComponent(obj);
     }
+    updateNewElements();
 }
 CanvasObject::~CanvasObject()
 {
@@ -73,21 +73,16 @@ CanvasObject* CanvasObject::clone() const
 }
 void CanvasObject::setParent(CanvasObject *parent)
 {
-    if(m_parent)
+    if(parent && parent != this && parent != m_parent)
     {
-        size_t index = m_parent->getChildIndex(this);
-        if(index == npos) return;
-        m_parent->m_childs.erase(m_parent->m_childs.begin() + index);
+        parent->addChild_internal(this);
+        return;
     }
-    m_parent = parent;
-    for(size_t i=0; i<m_components.size(); ++i)
-        m_components[i]->setParent(this);
+    if(!parent)
+    {
+        m_parent->removeChild(this);
+    }
 
-    for(size_t i=0; i<m_childs.size(); ++i)
-        m_childs[i]->setCanvasParent(m_canvasParent);
-
-    internalOnParentChange(m_parent);
-    onParentChange(m_parent);
 }
 void CanvasObject::setEnabled(bool enable)
 {
@@ -109,6 +104,19 @@ void CanvasObject::setName(const std::string &name)
 const std::string CanvasObject::getName() const
 {
     return m_name;
+}
+void CanvasObject::setRenderLayer(RenderLayer layer)
+{
+    if(m_renderLayer == layer)
+        return;
+    RenderLayer oldLayer = m_renderLayer;
+    m_renderLayer = layer;
+    if(m_canvasParent)
+        m_canvasParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
+}
+RenderLayer CanvasObject::getRenderLayer() const
+{
+    return m_renderLayer;
 }
 
 void CanvasObject::addChild(CanvasObject *child)
@@ -353,12 +361,36 @@ void CanvasObject::addChild_internal()
     {
         if(childExists(m_toAddChilds[i]))
             continue;
-
-        m_toAddChilds[i]->setParent(this);
-        m_toAddChilds[i]->setCanvasParent(m_canvasParent);
-        m_childs.push_back(m_toAddChilds[i]);
+        addChild_internal(m_toAddChilds[i]);
     }
     m_toAddChilds.clear();
+}
+void CanvasObject::addChild_internal(CanvasObject *obj)
+{
+    m_childs.push_back(obj);
+    obj->setParent_internal(this, m_canvasParent);
+}
+void CanvasObject::setParent_internal(CanvasObject *parent, Canvas *canvasParent)
+{
+    if(m_parent != nullptr && m_parent == this)
+        return;
+    if(m_parent)
+    {
+        size_t index = m_parent->getChildIndex(this);
+        if(index == npos) return;
+        m_parent->m_childs.erase(m_parent->m_childs.begin() + index);
+    }
+    CanvasObject *oldParent = m_parent;
+    m_parent = parent;
+    setCanvasParent(canvasParent);
+    for(size_t i=0; i<m_components.size(); ++i)
+        m_components[i]->setParent(this);
+
+   // for(size_t i=0; i<m_childs.size(); ++i)
+   //     m_childs[i]->setCanvasParent(m_canvasParent);
+
+    internalOnParentChange(oldParent, m_parent);
+    onParentChange(oldParent, m_parent);
 }
 void CanvasObject::addComponent_internal()
 {
@@ -462,7 +494,11 @@ const sf::Font &CanvasObject::getTextFont() const
     if(!m_canvasParent) return dummy;
     return m_canvasParent->getTextFont();
 }
-
+size_t CanvasObject::getUpdateCount() const
+{
+    if(!m_canvasParent) return 0;
+    return m_canvasParent->getUpdateCount();
+}
 void CanvasObject::update()
 {
 
@@ -519,10 +555,10 @@ std::vector<std::string> CanvasObject::toStringInternal(const std::string &preSt
     return lines;
 }
 
-void CanvasObject::onCanvasParentChange(Canvas *newParent) {}
-void CanvasObject::onParentChange(CanvasObject *newParent) {}
-void CanvasObject::internalOnCanvasParentChange(Canvas *newParent) {}
-void CanvasObject::internalOnParentChange(CanvasObject *newParent) {}
+void CanvasObject::onCanvasParentChange(Canvas *oldParent, Canvas *newParent) {}
+void CanvasObject::onParentChange(CanvasObject *oldParent, CanvasObject *newParent) {}
+void CanvasObject::internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent) {}
+void CanvasObject::internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent) {}
 
 Canvas *CanvasObject::getCanvasParent() const
 {
@@ -544,12 +580,12 @@ void CanvasObject::needsEventUpdateChanged(bool needsEventUpdate)
 {
     if(!m_thisNeedsEventUpdate && needsEventUpdate)
     {
-        this->needsDrawUpdate(needsEventUpdate);
+        this->needsEventUpdate(needsEventUpdate);
         return;
     }
     if(m_thisNeedsEventUpdate && !needsEventUpdate)
     {
-        if(m_drawableComponents.size() == 0)
+        if(m_eventComponents.size() == 0)
         {
             bool needsUpdate = false;
             for(size_t i=0; i<m_childs.size(); ++i)
@@ -562,7 +598,7 @@ void CanvasObject::needsEventUpdateChanged(bool needsEventUpdate)
             }
             if(!needsUpdate)
             {
-                this->needsDrawUpdate(needsEventUpdate);
+                this->needsEventUpdate(needsEventUpdate);
                 return;
             }
         }
@@ -574,7 +610,7 @@ void CanvasObject::needsEventUpdate(bool needsEventUpdate)
         return;
     m_thisNeedsEventUpdate = needsEventUpdate;
     if(m_parent)
-        m_parent->needsDrawUpdateChanged(m_thisNeedsEventUpdate);
+        m_parent->needsEventUpdateChanged(m_thisNeedsEventUpdate);
 }
 
 void CanvasObject::needsDrawUpdateChanged(bool needsDrawUpdate)
@@ -616,16 +652,20 @@ void CanvasObject::needsDrawUpdate(bool needsDrawUpdate)
 
 void CanvasObject::setCanvasParent(Canvas *parent)
 {
+    if(m_canvasParent == parent)
+        return;
+    Canvas *oldParent = m_canvasParent;
     m_canvasParent = parent;
-    for(size_t i=0; i<m_components.size(); ++i)
-        m_components[i]->setParent(this);
+    //for(size_t i=0; i<m_components.size(); ++i)
+    //    m_components[i]->setParent(this);
 
     for(size_t i=0; i<m_childs.size(); ++i)
         m_childs[i]->setCanvasParent(parent);
 
-    internalOnCanvasParentChange(m_canvasParent);
-    onCanvasParentChange(m_canvasParent);
+    internalOnCanvasParentChange(oldParent, m_canvasParent);
+    onCanvasParentChange(oldParent, m_canvasParent);
 }
+/*
 void CanvasObject::updateNewElements()
 {
     QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange));
@@ -688,10 +728,10 @@ void CanvasObject::update_internal()
             m_childs[i]->update_internal();
     }
     QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-}
+}*/
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
-    if(!m_enabled || !m_updateControlls.enablePaintLoop) return;
+    if(!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate) return;
     QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange900));
     QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components draw", profiler::colors::OrangeA100));
     for(size_t i=0; i<m_drawableComponents.size(); ++i)
@@ -705,7 +745,7 @@ void CanvasObject::draw(sf::RenderWindow &window) const
     QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs draw", profiler::colors::OrangeA200));
     for(size_t i=0; i<m_childs.size(); ++i)
     {
-        if(m_childs[i]->m_enabled && m_childs[i]->m_thisNeedsDrawUpdate)
+        if(m_childs[i]->m_enabled)
             m_childs[i]->draw(window);
     }
     QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);

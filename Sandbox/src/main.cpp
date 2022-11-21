@@ -4,6 +4,7 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include <QDebug>
 
 using std::string;
 using std::vector;
@@ -11,9 +12,15 @@ using std::vector;
 void benchmark();
 void printTime(const string &msg, const std::chrono::duration<long long, std::ratio<1,1000000000>> &duration);
 
+
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+   // thread_pool.Schedule(f4);
+
+
    // EASY_PROFILER_ENABLE;
     SandBox w;
     w.show();

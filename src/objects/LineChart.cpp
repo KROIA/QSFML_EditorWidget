@@ -102,6 +102,10 @@ const std::vector<float> &LineChart::getDataPoints() const
 {
     return m_dataPoints;
 }
+void LineChart::clear()
+{
+    m_dataPoints.clear();
+}
 
 void LineChart::update()
 {
