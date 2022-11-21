@@ -23,6 +23,9 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
 
     m_canvasParent = nullptr;
     m_parent = parent;
+    m_rootParent = this;
+    if(m_parent)
+        m_rootParent = m_parent->m_rootParent;
     m_objectsChanged = false;
     m_thisNeedsDrawUpdate = false;
     m_enabled = true;
@@ -34,6 +37,7 @@ CanvasObject::CanvasObject(const CanvasObject &other)
     m_name = other.m_name;
     m_canvasParent = nullptr;
     m_parent = nullptr;
+    m_rootParent = this;
     m_objectsChanged = false;
     m_thisNeedsDrawUpdate = false;
     m_updateControlls = other.m_updateControlls;
@@ -62,6 +66,12 @@ CanvasObject::~CanvasObject()
     for(size_t i=0; i<m_components.size(); ++i)
         delete m_components[i];
     m_components.clear();
+    m_toAddComponents.clear();
+    m_updatableComponents.clear();
+    m_drawableComponents.clear();
+    m_toRemoveComponents.clear();
+    m_toDeleteChilds.clear();
+    m_toRemoveChilds.clear();
     if(m_canvasParent)
         m_canvasParent->removeObject(this);
 }
@@ -73,15 +83,18 @@ CanvasObject* CanvasObject::clone() const
 }
 void CanvasObject::setParent(CanvasObject *parent)
 {
-    if(parent && parent != this && parent != m_parent)
+    if(parent == m_parent)
+        return;
+    if(m_parent)
+    {
+        m_parent->removeChild(this);
+    }
+    if(parent && parent != this)
     {
         parent->addChild_internal(this);
         return;
     }
-    if(!parent)
-    {
-        m_parent->removeChild(this);
-    }
+
 
 }
 void CanvasObject::setEnabled(bool enable)
@@ -95,6 +108,10 @@ bool CanvasObject::isEnabled() const
 CanvasObject *CanvasObject::getParent() const
 {
     return m_parent;
+}
+CanvasObject *CanvasObject::getRootParent() const
+{
+    return m_rootParent;
 }
 
 void CanvasObject::setName(const std::string &name)
@@ -266,11 +283,13 @@ void CanvasObject::removeComponent_internal()
 {
     for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
     {
-        size_t index = getComponentIndex(m_toRemoveComponents[i]);
+        Components::Component *toRemove = m_toRemoveComponents[i];
+        size_t index = getComponentIndex(toRemove);
         if(index != npos)
             m_components.erase(m_components.begin() + index);
 
-        SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(m_toRemoveComponents[i]);
+        // Check for sfEventHandles
+        SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(toRemove);
         if(evComp)
         {
             for(size_t j=0; j<m_eventComponents.size(); ++j)
@@ -284,7 +303,9 @@ void CanvasObject::removeComponent_internal()
                 needsEventUpdate(false);
             }
         }
-        Drawable *drawComp = dynamic_cast<Drawable*>(m_toRemoveComponents[i]);
+
+        // Check for Drawables
+        Drawable *drawComp = dynamic_cast<Drawable*>(toRemove);
         if(drawComp)
         {
             for(size_t j=0; j<m_drawableComponents.size(); ++j)
@@ -297,6 +318,18 @@ void CanvasObject::removeComponent_internal()
             {
                 needsDrawUpdate(false);
             }
+        }
+
+        // Check for Updatables
+        Utilities::Updatable *updatable = dynamic_cast<Utilities::Updatable*>(toRemove);
+        if(updatable)
+        {
+            for(size_t j=0; j<m_updatableComponents.size(); ++j)
+                if(m_updatableComponents[j] == updatable)
+                {
+                    m_updatableComponents.erase(m_updatableComponents.begin() + j);
+                    break;
+                }
         }
     }
     m_toRemoveComponents.clear();
@@ -314,6 +347,8 @@ void CanvasObject::deleteComponent(Component *comp)
         }
     comp->setParent(nullptr);
     m_components.erase(m_components.begin() + index);
+
+    // Check for sfEventHandles
     SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(comp);
     if(evComp)
     {
@@ -328,6 +363,8 @@ void CanvasObject::deleteComponent(Component *comp)
             needsEventUpdate(false);
         }
     }
+
+    // Check for Drawables
     Drawable *drawComp = dynamic_cast<Drawable*>(comp);
     if(drawComp)
     {
@@ -341,6 +378,18 @@ void CanvasObject::deleteComponent(Component *comp)
         {
             needsDrawUpdate(false);
         }
+    }
+
+    // Check for Updatables
+    Utilities::Updatable *updatable = dynamic_cast<Utilities::Updatable*>(comp);
+    if(updatable)
+    {
+        for(size_t j=0; j<m_updatableComponents.size(); ++j)
+            if(m_updatableComponents[j] == updatable)
+            {
+                m_updatableComponents.erase(m_updatableComponents.begin() + j);
+                break;
+            }
     }
     delete comp;
 }
@@ -368,9 +417,11 @@ void CanvasObject::addChild_internal()
 void CanvasObject::addChild_internal(CanvasObject *obj)
 {
     m_childs.push_back(obj);
-    obj->setParent_internal(this, m_canvasParent);
+    obj->setParent_internal(this, m_rootParent, m_canvasParent);
 }
-void CanvasObject::setParent_internal(CanvasObject *parent, Canvas *canvasParent)
+void CanvasObject::setParent_internal(CanvasObject *parent,
+                                      CanvasObject *rootParent,
+                                      Canvas *canvasParent)
 {
     if(m_parent != nullptr && m_parent == this)
         return;
@@ -382,6 +433,7 @@ void CanvasObject::setParent_internal(CanvasObject *parent, Canvas *canvasParent
     }
     CanvasObject *oldParent = m_parent;
     m_parent = parent;
+    m_rootParent = rootParent;
     setCanvasParent(canvasParent);
     for(size_t i=0; i<m_components.size(); ++i)
         m_components[i]->setParent(this);
@@ -396,11 +448,15 @@ void CanvasObject::addComponent_internal()
 {
     for(size_t i=0; i<m_toAddComponents.size(); ++i)
     {
-        if(componentExists(m_toAddComponents[i]))
+        Components::Component *toAdd = m_toAddComponents[i];
+        if(componentExists(toAdd))
             continue;
-        m_toAddComponents[i]->setParent(this);
-        m_components.push_back(m_toAddComponents[i]);
-        SfEventHandle* eventComp = dynamic_cast<SfEventHandle*>(m_toAddComponents[i]);
+
+        toAdd->setParent(this);
+        m_components.push_back(toAdd);
+
+        // Check for sfEventHandles
+        SfEventHandle* eventComp = dynamic_cast<SfEventHandle*>(toAdd);
         if(eventComp)
         {
             m_eventComponents.push_back(eventComp);
@@ -410,7 +466,8 @@ void CanvasObject::addComponent_internal()
             }
         }
 
-        Drawable* drawComp = dynamic_cast<Drawable*>(m_toAddComponents[i]);
+        // Check for Drawables
+        Drawable* drawComp = dynamic_cast<Drawable*>(toAdd);
         if(drawComp)
         {
             m_drawableComponents.push_back(drawComp);
@@ -418,6 +475,13 @@ void CanvasObject::addComponent_internal()
             {
                 needsDrawUpdate(true);
             }
+        }
+
+        // Check for Updatables
+        Utilities::Updatable *updatable = dynamic_cast<Utilities::Updatable*>(toAdd);
+        if(updatable)
+        {
+            m_updatableComponents.push_back(updatable);
         }
     }
     m_toAddComponents.clear();
@@ -437,7 +501,8 @@ void CanvasObject::deleteComponents()
         m_components[i]->setParent(nullptr);
         delete m_components[i];
     }
-    m_eventComponents.clear();
+    m_updatableComponents.clear();
+    m_eventComponents.clear();    
     m_drawableComponents.clear();
     m_components.clear();
 }
@@ -458,6 +523,10 @@ size_t CanvasObject::getComponentIndex(Component *comp) const
 const std::vector<Component*> &CanvasObject::getComponents() const
 {
     return m_components;
+}
+const std::vector<Components::Collider*> &CanvasObject::getCollider() const
+{
+    return m_colliders;
 }
 
 size_t CanvasObject::getComponentCount() const

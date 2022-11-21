@@ -9,6 +9,8 @@
 #include "canvas/CanvasSettings.h"
 #include "components/SfEventHandle.h"
 #include "components/Drawable.h"
+#include "components/physics/Collider.h"
+#include "utilities/Updatable.h"
 #include "QSFML_debugSettings.h"
 #include <easy/profiler.h>
 
@@ -159,7 +161,7 @@ namespace Objects
  * \endcode
  */
 
-class CanvasObject
+class CanvasObject: protected Utilities::Updatable
 {
         friend Canvas;
         friend CanvasObjectGroup;
@@ -172,14 +174,10 @@ class CanvasObject
 
         virtual CanvasObject* clone() const;
 
-        /**
-         * \brief update will be called once per frame
-         */
-        virtual void update();
-
 
         void setParent(CanvasObject *parent);
         CanvasObject *getParent() const;
+        CanvasObject *getRootParent() const;
 
         void setEnabled(bool enable);
         bool isEnabled() const;
@@ -226,6 +224,7 @@ class CanvasObject
         size_t getComponentCount() const;
         template<typename T>
         size_t getComponentCount() const;
+        const std::vector<Components::Collider*> &getCollider() const;
 
         const sf::View getCameraView() const;
         const sf::View &getDefaultCameraView() const;
@@ -244,7 +243,12 @@ class CanvasObject
         std::string toString() const;
         const static size_t npos = -1;
     protected:
-        std::vector<std::string> toStringInternal(const std::string &preStr) const;
+        /**
+         * \brief update will be called once per frame
+         */
+        void update() override;
+
+
 
 
         virtual void onCanvasParentChange(Canvas *oldParent, Canvas *newParent);
@@ -258,13 +262,18 @@ class CanvasObject
         void deleteThis();
 
     private:
+
+        std::vector<std::string> toStringInternal(const std::string &preStr) const;
+
         void removeChild_internal();
         void removeComponent_internal();
         void deleteChild_internal();
         //void deleteComponent_internal();
         void addChild_internal();
         inline void addChild_internal(CanvasObject *obj);
-        inline void setParent_internal(CanvasObject *parent, Canvas *canvasParent);
+        inline void setParent_internal(CanvasObject *parent,
+                                       CanvasObject *rootParent,
+                                       Canvas *canvasParent);
         void addComponent_internal();
         void onObjectsChanged();
 
@@ -274,6 +283,7 @@ class CanvasObject
         std::string m_name;
         Canvas *m_canvasParent;
         CanvasObject *m_parent;
+        CanvasObject *m_rootParent;
 
         bool m_objectsChanged;
         std::vector<CanvasObject*> m_childs;
@@ -285,8 +295,14 @@ class CanvasObject
 
         };*/
 
+
         std::vector<Components::Component*> m_components;
         std::vector<Components::Component*> m_toAddComponents;
+
+
+        std::vector<Utilities::Updatable*> m_updatableComponents;
+
+        std::vector<Components::Collider*> m_colliders;
 
         // Will send a signal to the parent to notify, the new status
         void needsEventUpdateChanged(bool needsEventUpdate);
@@ -301,7 +317,6 @@ class CanvasObject
         std::vector<Components::Drawable*> m_drawableComponents;
 
         std::vector<CanvasObject*> m_toDeleteChilds;
-        //std::vector<Components::Component*> m_toDeleteComponents;
         std::vector<CanvasObject*> m_toRemoveChilds;
         std::vector<Components::Component*> m_toRemoveComponents;
 
@@ -344,8 +359,9 @@ class CanvasObject
             QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs event", profiler::colors::Orange500));
             for(size_t i=0; i<m_childs.size(); ++i)
             {
-                if(m_childs[i]->m_enabled)
-                    m_childs[i]->sfEvent(events);
+                CanvasObject *obj = m_childs[i];
+                if(obj->m_enabled)
+                    obj->sfEvent(events);
             }
             QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
         }
@@ -358,19 +374,22 @@ class CanvasObject
             QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 
             QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components update", profiler::colors::Orange800));
-            for(size_t i=0; i<m_components.size(); ++i)
+            for(size_t i=0; i<m_updatableComponents.size(); ++i)
             {
-                if(!m_components[i]->isEnabled())
+                Utilities::Updatable* comp = m_updatableComponents[i];
+                Components::Component* comp1 = dynamic_cast<Components::Component*>(comp);
+                if(!comp1->isEnabled())
                     continue;
-                m_components[i]->update();
+                comp->update();
             }
             QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 
             QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs update", profiler::colors::Orange800));
             for(size_t i=0; i<m_childs.size(); ++i)
             {
-                if(m_childs[i]->m_enabled)
-                    m_childs[i]->update_internal();
+                CanvasObject *obj = m_childs[i];
+                if(obj->m_enabled)
+                    obj->update_internal();
             }
             QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
         }
@@ -455,12 +474,10 @@ void CanvasObject::deleteComponents()
     for(size_t i=0; i<m_components.size(); ++i)
     {
         T* comp = dynamic_cast<T*>(m_components[i]);
-        if(comp)
-        {
-            m_components.erase(m_components.begin() + i);
-            --i;
-            delete comp;
-        }
+        if(!comp)
+            continue;
+
+        // Check for sfEventHandles
         Components::SfEventHandle *evComp = dynamic_cast<Components::SfEventHandle*>(comp);
         if(evComp)
         {
@@ -475,6 +492,8 @@ void CanvasObject::deleteComponents()
                 needsEventUpdate(false);
             }
         }
+
+        // Check for Drawables
         Components::Drawable *drawComp = dynamic_cast<Components::Drawable*>(comp);
         if(drawComp)
         {
@@ -489,6 +508,23 @@ void CanvasObject::deleteComponents()
                 needsDrawUpdate(false);
             }
         }
+
+        // Check for Updatables
+        Utilities::Updatable *updatable = dynamic_cast<Utilities::Updatable*>(comp);
+        if(updatable)
+        {
+            for(size_t j=0; j<m_updatableComponents.size(); ++j)
+                if(m_updatableComponents[j] == comp)
+                {
+                    m_updatableComponents.erase(m_updatableComponents.begin() + j);
+                    break;
+                }
+        }
+
+
+        m_components.erase(m_components.begin() + i);
+        --i;
+        delete comp;
     }
 }
 

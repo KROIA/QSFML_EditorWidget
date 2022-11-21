@@ -4,7 +4,6 @@
 
 #include "components/Drawable.h"
 #include "components/AbstractPressEvent.h"
-#include "components/BoxCollider.h"
 #include "components/Button.h"
 #include "components/DrawableVector.h"
 #include "components/KeyPressEvent.h"

@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "CanvasObject.h"
 #include "components/Drawable.h"
@@ -35,3 +35,4 @@ class DrawableBoxCollider: public CanvasObject
 };
 }
 }
+*/

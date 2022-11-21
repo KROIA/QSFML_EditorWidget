@@ -10,6 +10,10 @@ namespace QSFML
     {
         class CanvasObject;
     }
+    namespace Utilities
+    {
+        class Updatable;
+    }
 
 #define CLONE_FUNC(classNameVal) \
     classNameVal* clone() const override \

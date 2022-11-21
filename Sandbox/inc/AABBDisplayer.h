@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "QSFML_EditorWidget.h"
 
@@ -73,3 +73,4 @@ class AABBDisplayer: public QSFML::Objects::CanvasObject
                 AABBDisplayer *m_AABB;
         };
 };
+*/

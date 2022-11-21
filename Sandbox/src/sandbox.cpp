@@ -60,6 +60,8 @@ SandBox::SandBox(QWidget *parent)
         //m_canvas_2->addObject(m_vecDisplay);
         m_canvas_2->addObject(defaultEditor);
 
+
+
         LineChart *m_chart = new LineChart();
         m_chart->setDataPoints({0,1,-1,0.5,-0.5,0});
         m_chart->setOrigin(sf::Vector2f(50,50));

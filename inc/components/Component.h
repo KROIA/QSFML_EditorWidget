@@ -48,7 +48,7 @@ class Component
          * \brief getParent
          * \return returns the parent CanvasObject, this component belongs to
          */
-        Objects::CanvasObject *getParent() const;
+        inline Objects::CanvasObject *getParent() const { return m_parent; }
 
         /**
          * \brief setName
@@ -60,7 +60,7 @@ class Component
          * \brief getName
          * \param returns the name of this Component
          */
-        const std::string getName() const;
+        inline const std::string getName() const { return m_name; }
 
         /**
          * \brief setEnabled
@@ -73,12 +73,8 @@ class Component
          * \brief isEnabled
          * \param return true if this component is enabled, otherwise false
          */
-        bool isEnabled() const;
+        inline bool isEnabled() const { return m_enabled; }
 
-        /**
-         * \brief update will be called once per frame
-         */
-        virtual void update();
 
     protected:
 

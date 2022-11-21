@@ -2,8 +2,9 @@
 
 #include "QSFML_EditorWidget.h"
 
-class SandboxObject: public QSFML::Objects::CanvasObject
+class SandboxObject: public QObject, public QSFML::Objects::CanvasObject
 {
+        Q_OBJECT
     public:
     SandboxObject(const std::string &name = "SandboxObject");
     SandboxObject(const SandboxObject &other);
@@ -12,6 +13,8 @@ class SandboxObject: public QSFML::Objects::CanvasObject
 
     void update() override;
 
+    private slots:
+    void onButtonPress();
 
     protected:
 

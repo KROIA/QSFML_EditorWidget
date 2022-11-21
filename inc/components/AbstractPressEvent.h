@@ -3,11 +3,13 @@
 #include <QObject>
 #include <SFML/Graphics.hpp>
 #include "components/Component.h"
+#include "utilities/Updatable.h"
+
 namespace QSFML
 {
 namespace Components
 {
-class AbstractPressEvent : public QObject,  public Component
+class AbstractPressEvent : public QObject,  public Component, public Utilities::Updatable
 {
         Q_OBJECT
     public:
@@ -19,17 +21,17 @@ class AbstractPressEvent : public QObject,  public Component
         AbstractPressEvent(const std::string &name = "AbstractPressEvent");
         AbstractPressEvent(const AbstractPressEvent &other);
 
-        /**
-         * \brief update will be called once per frame
-         */
-        void update() final;
-
     signals:
         void fallingEdge();
         void down();
         void risingEdge();
 
     protected:
+        /**
+         * \brief update will be called once per frame
+         */
+        void update() final;
+
         virtual bool getCurrentValue() = 0;
     private:
         bool m_fallingEdge;

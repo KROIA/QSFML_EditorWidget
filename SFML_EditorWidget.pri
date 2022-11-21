@@ -22,13 +22,13 @@ INCLUDEPATH += \
 #$$inc/utilities
 
 HEADERS += \
+    $$PWD/inc/utilities/Updatable.h \
     $$inc/canvas/CanvasObjectGroup.h \
     $$inc/canvas/CanvasThreadWorker.h \
     $$inc/canvas/RenderLayer.h \
     $$inc/QSFML_debugSettings.h \
     $$inc/QSFML_EditorWidget.h \
     $$inc/components/AbstractPressEvent.h \
-    $$inc/components/BoxCollider.h \
     $$inc/components/Button.h \
     $$inc/components/KeyPressEvent.h \
     $$inc/components/Line.h \
@@ -52,6 +52,7 @@ HEADERS += \
     $$inc/objects/CameraController.h \
     $$inc/objects/VisibleCamera.h \
     $$inc/utilities/AABB.h \
+    $$inc/components/physics/Collider.h
 
 
 
@@ -60,7 +61,6 @@ SOURCES += \
     $$PWD/src/canvas/CanvasObjectGroup.cpp \
     $$PWD/src/canvas/CanvasThreadWorker.cpp \
     $$src/components/AbstractPressEvent.cpp \
-    $$src/components/BoxCollider.cpp \
     $$src/components/Button.cpp \
     $$src/components/KeyPressEvent.cpp \
     $$src/components/Line.cpp \
@@ -81,6 +81,7 @@ SOURCES += \
     $$src/objects/BackgroundGrid.cpp \
     $$src/objects/CameraController.cpp \
     $$src/utilities/AABB.cpp \
+    $$src/components/physics/Collider.cpp
 
 
 
