@@ -32,7 +32,7 @@ void Collider::checkCollision(const std::vector<Objects::CanvasObject*> &objs,
         if(!obj1->isEnabled())
             continue;
         if(getParent()->getRootParent() == obj1->getRootParent())
-            continue; // Don't check collision on objects chich are
+            continue; // Don't check collision on objects which are
                       // contained within the same root object.
         std::vector<Components::Collider*> coll = obj1->getCollider();
 
