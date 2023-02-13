@@ -3,6 +3,9 @@
 #include "math.h"
 
 using namespace QSFML::Components;
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 bool DrawableVector::m_flipYaxis = false;
 

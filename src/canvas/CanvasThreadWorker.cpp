@@ -3,6 +3,7 @@
 #include <QDebug>
 #include "QSFML_debugSettings.h"
 
+
 namespace QSFML
 {
 CanvasThreadWorker::CanvasThreadWorker(size_t threadCount,

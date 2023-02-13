@@ -1,5 +1,5 @@
 QT += core gui
-CONFIG += c++11
+CONFIG += c++17
 #CONFIG -= app_bundle
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
