@@ -337,8 +337,8 @@ void CanvasObject::removeComponent_internal()
 void CanvasObject::deleteComponent(Component *comp)
 {
     if(!comp)return;
-    size_t index = getComponentIndex(comp);
-    if(index == npos) return;
+
+
     for(size_t i=0; i<m_toAddComponents.size(); ++i)
         if(m_toAddComponents[i] == comp)
         {
@@ -346,6 +346,9 @@ void CanvasObject::deleteComponent(Component *comp)
             break;
         }
     comp->setParent(nullptr);
+
+    size_t index = getComponentIndex(comp);
+    if(index == npos) return;
     m_components.erase(m_components.begin() + index);
 
     // Check for sfEventHandles
@@ -496,6 +499,11 @@ void CanvasObject::onObjectsChanged()
 }
 void CanvasObject::deleteComponents()
 {
+    for(size_t i=0; i<m_toAddComponents.size(); ++i)
+    {
+        m_toAddComponents[i]->setParent(nullptr);
+        delete m_toAddComponents[i];
+    }
     for(size_t i=0; i<m_components.size(); ++i)
     {
         m_components[i]->setParent(nullptr);
@@ -504,6 +512,7 @@ void CanvasObject::deleteComponents()
     m_updatableComponents.clear();
     m_eventComponents.clear();    
     m_drawableComponents.clear();
+    m_toAddComponents.clear();
     m_components.clear();
 }
 bool CanvasObject::componentExists(Component *comp) const

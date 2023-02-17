@@ -157,47 +157,47 @@ sf::Vector2f AABB::getTop() const
     return sf::Vector2f(m_size.x, 0);
 }
 
-bool AABB::contains(const sf::Vector2f &point)
+bool AABB::contains(const sf::Vector2f &point) const
 {
     return contains(*this,point);
 }
-bool AABB::intersects(const AABB &b)
+bool AABB::intersects(const AABB &b) const
 {
     return intersects(*this,b);
 }
-bool AABB::intersectsInverseOf(const AABB &b)
+bool AABB::intersectsInverseOf(const AABB &b) const
 {
     return intersectsInverseOf(*this,b);
 }
-bool AABB::isLeftOf(const AABB &b)
+bool AABB::isLeftOf(const AABB &b) const
 {
     return isLeftOf(*this,b);
 }
-bool AABB::isRightOf(const AABB &b)
+bool AABB::isRightOf(const AABB &b) const
 {
      return isRightOf(*this,b);
 }
-bool AABB::isOnTopOf(const AABB &b)
+bool AABB::isOnTopOf(const AABB &b) const
 {
     return isOnTopOf(*this,b);
 }
-bool AABB::isBelowOf(const AABB &b)
+bool AABB::isBelowOf(const AABB &b) const
 {
     return isBelowOf(*this,b);
 }
-bool AABB::intersectsTopOf(const AABB &b)
+bool AABB::intersectsTopOf(const AABB &b) const
 {
     return intersectsTopOf(*this,b);
 }
-bool AABB::intersectsLeftOf(const AABB &b)
+bool AABB::intersectsLeftOf(const AABB &b) const
 {
     return intersectsLeftOf(*this,b);
 }
-bool AABB::intersectsBottomOf(const AABB &b)
+bool AABB::intersectsBottomOf(const AABB &b) const
 {
     return intersectsBottomOf(*this,b);
 }
-bool AABB::intersectsRightOf(const AABB &b)
+bool AABB::intersectsRightOf(const AABB &b) const
 {
     return intersectsRightOf(*this,b);
 }

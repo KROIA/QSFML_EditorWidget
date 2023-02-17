@@ -45,17 +45,17 @@ class AABB
         sf::Vector2f getLeft() const;              //!<\return the left edges vector.
         sf::Vector2f getTop() const;               //!<\return the top edges vector.
 
-        bool contains(const sf::Vector2f &point);  //!<\return true if the point is inside the rectangle.
-        bool intersects(const AABB &b);            //!<\return true if there is any intersection of this and b.
-        bool intersectsInverseOf(const AABB &b);   //!<\return true if b is not fully contained in this.
-        bool isLeftOf(const AABB &b);              //!<\return true if this is on the left side of b.
-        bool isRightOf(const AABB &b);             //!<\return true if this is on the right side of b.
-        bool isOnTopOf(const AABB &b);             //!<\return true if this is on top of b.
-        bool isBelowOf(const AABB &b);             //!<\return true if this is below b.
-        bool intersectsTopOf(const AABB &b);       //!<\return true if this intersects the top edge of b. This will be true even if both may not intersect.
-        bool intersectsLeftOf(const AABB &b);      //!<\return true if this intersects the left edge of b. This will be true even if both may not intersect.
-        bool intersectsBottomOf(const AABB &b);    //!<\return true if this intersects the bottom edge of b. This will be true even if both may not intersect.
-        bool intersectsRightOf(const AABB &b);     //!<\return true if this intersects the right edge of b. This will be true even if both may not intersect.
+        bool contains(const sf::Vector2f &point) const;  //!<\return true if the point is inside the rectangle.
+        bool intersects(const AABB &b) const;            //!<\return true if there is any intersection of this and b.
+        bool intersectsInverseOf(const AABB &b) const;   //!<\return true if b is not fully contained in this.
+        bool isLeftOf(const AABB &b) const;              //!<\return true if this is on the left side of b.
+        bool isRightOf(const AABB &b) const;             //!<\return true if this is on the right side of b.
+        bool isOnTopOf(const AABB &b) const;             //!<\return true if this is on top of b.
+        bool isBelowOf(const AABB &b) const;             //!<\return true if this is below b.
+        bool intersectsTopOf(const AABB &b) const;       //!<\return true if this intersects the top edge of b. This will be true even if both may not intersect.
+        bool intersectsLeftOf(const AABB &b) const;      //!<\return true if this intersects the left edge of b. This will be true even if both may not intersect.
+        bool intersectsBottomOf(const AABB &b) const;    //!<\return true if this intersects the bottom edge of b. This will be true even if both may not intersect.
+        bool intersectsRightOf(const AABB &b) const;     //!<\return true if this intersects the right edge of b. This will be true even if both may not intersect.
 
         static bool contains(const AABB &a, const sf::Vector2f &point);    //!<\return true if the point is inside the rectangle.
         static bool intersects(const AABB &a, const AABB &b);              //!<\return true if there is any intersection of a and b.

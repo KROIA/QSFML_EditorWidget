@@ -471,6 +471,16 @@ size_t CanvasObject::getChildCount() const
 template<typename T>
 void CanvasObject::deleteComponents()
 {
+    for(int i=0; i<(int)m_toAddComponents.size(); ++i)
+    {
+        T* comp = dynamic_cast<T*>(m_toAddComponents[i]);
+        if(!comp)
+            continue;
+        delete comp;
+        m_toAddComponents.erase(m_toAddComponents.begin() + i);
+
+        --i;
+    }
     for(size_t i=0; i<m_components.size(); ++i)
     {
         T* comp = dynamic_cast<T*>(m_components[i]);
