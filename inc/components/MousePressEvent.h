@@ -25,10 +25,15 @@ class MousePressEvent : public AbstractPressEvent
         void setTriggerButton(sf::Mouse::Button button);
         sf::Mouse::Button getTriggerButton() const;
 
+        const sf::Vector2f &getLastPressedWorldPos() const;
+        const sf::Vector2i &getLastPressedPixelPos() const;
+
     protected:
         bool getCurrentValue() override;
     private:
         sf::Mouse::Button m_button;
+        sf::Vector2f m_currentPressedWorldPosition;
+        sf::Vector2i m_currentPressedPixelPosition;
 };
 }
 }

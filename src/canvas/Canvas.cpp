@@ -29,6 +29,7 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
     }
 #endif
     m_window = nullptr;
+    m_deltaT = 0;
     // Setup layout of this widget
     if(!parentWidget()->layout())
     {
@@ -171,6 +172,10 @@ sf::Vector2i Canvas::getInScreenSpace(const sf::Vector2f &worldSpace)
     return m_window->mapCoordsToPixel(worldSpace);
 
 }
+float Canvas::getDeltaT() const
+{
+    return m_deltaT;
+}
 
 void Canvas::OnInit()
 {
@@ -206,6 +211,7 @@ void Canvas::showEvent(QShowEvent*)
         // Setup the timer to trigger a refresh at specified framerate
         connect(&m_frameTimer, SIGNAL(timeout()), this, SLOT(timedUpdate()));
         m_frameTimer.start();
+        m_deltaT_t1 = std::chrono::high_resolution_clock::now();
         m_oldCanvasSize = getCanvasSize();
     }
 }
@@ -292,6 +298,11 @@ void Canvas::timedUpdate()
     if(!m_window)return;
     QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Green)); // Magenta block with name "foo"
 
+
+    std::chrono::system_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
+    m_deltaT_t1 = t2;
+    m_deltaT = elapsed.count();
 
     QSFML_PROFILE_CANVAS(EASY_BLOCK("Delete unused objects",profiler::colors::Green200));
     CanvasObjectContainer::updateNewElements();

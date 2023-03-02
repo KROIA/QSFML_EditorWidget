@@ -234,7 +234,7 @@ class CanvasObject: protected Utilities::Updatable
         const sf::Font &getTextFont() const;
 
         size_t getUpdateCount() const;
-
+        float getDeltaT() const; // Returns delta Time since last update in seconds
 
 
         const CanvasSettings::UpdateControlls &getUpdateControlls() const;

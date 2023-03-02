@@ -5,6 +5,7 @@
 #include <QTimer>
 #include "canvas/CanvasSettings.h"
 #include "canvas/CanvasObjectContainer.h"
+#include <chrono>
 
 namespace QSFML
 {
@@ -46,6 +47,8 @@ class Canvas :
         sf::Vector2f getInWorldSpace(const sf::Vector2i &pixelSpace);
         sf::Vector2i getInScreenSpace(const sf::Vector2f &worldSpace);
 
+        float getDeltaT() const; // Gets delta Time in seconds
+
 
         void sfEvent(const std::vector<sf::Event> &events);
 
@@ -74,17 +77,19 @@ class Canvas :
 
 
 
-    QTimer m_frameTimer;
+        QTimer m_frameTimer;
+        std::chrono::system_clock::time_point m_deltaT_t1;
+        float m_deltaT;
 
-    CanvasSettings m_settings;
-    sf::RenderWindow *m_window;
-    sf::Vector2u m_oldCanvasSize;
-    sf::Font m_textfont;
-    sf::View m_view;
+        CanvasSettings m_settings;
+        sf::RenderWindow *m_window;
+        sf::Vector2u m_oldCanvasSize;
+        sf::Font m_textfont;
+        sf::View m_view;
 
-#ifdef BUILD_WITH_EASY_PROFILER
-    static Canvas* m_profilerMaster;
-#endif
+    #ifdef BUILD_WITH_EASY_PROFILER
+        static Canvas* m_profilerMaster;
+    #endif
 
 };
 }

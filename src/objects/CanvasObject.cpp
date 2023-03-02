@@ -577,6 +577,11 @@ size_t CanvasObject::getUpdateCount() const
     if(!m_canvasParent) return 0;
     return m_canvasParent->getUpdateCount();
 }
+float CanvasObject::getDeltaT() const
+{
+    if(!m_canvasParent) return 0;
+    return m_canvasParent->getDeltaT();
+}
 void CanvasObject::update()
 {
 
