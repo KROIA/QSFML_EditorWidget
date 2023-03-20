@@ -166,7 +166,7 @@ void LineChart::LineChartPainter::draw(sf::RenderTarget& target,
         sf::Vertex(origin),
         sf::Vertex(xMax),
     };
-    target.draw(axis, 4, sf::Lines);
+    target.draw(axis, 4, sf::PrimitiveType::Lines);
 
     // Draw content
     size_t count = m_chart->m_dataPoints.size();
@@ -185,7 +185,7 @@ void LineChart::LineChartPainter::draw(sf::RenderTarget& target,
         currentX += xSpacing;
     }
 
-    target.draw(vertecies, count, sf::LineStrip);
+    target.draw(vertecies, count, sf::PrimitiveType::LineStrip);
     delete[] vertecies;
 }
 }
