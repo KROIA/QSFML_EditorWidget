@@ -150,7 +150,7 @@ LineChart::LineChartPainter::LineChartPainter(const std::string &name)
     m_chart = nullptr;
 }
 void LineChart::LineChartPainter::draw(sf::RenderTarget& target,
-                                       sf::RenderStates states) const
+                                       const sf::RenderStates &states) const
 {
     if(!m_chart)
         return;

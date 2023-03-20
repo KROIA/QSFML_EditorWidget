@@ -31,7 +31,7 @@ namespace Components
  *
  *     }
  *
- *     void draw(sf::RenderTarget& target, sf::RenderStates states) const override
+ *     void draw(sf::RenderTarget& target, const sf::RenderStates &states) const override
  *     {
  *          // target.draw(...) draw stuff
  *     }
@@ -60,7 +60,7 @@ class Drawable : public Component, public sf::Drawable
          * \param target to draw on
          * \param states
          */
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
+        //void draw(sf::RenderTarget& target, const sf::RenderStates &states) const override = 0;
 };
 }
 }

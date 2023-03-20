@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8C99AE69-42A6-415B-AA22-51F3EA12464E}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.22000.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.22000.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>6.2.0_msvc2019_64</QtInstall>
+    <QtModules>core widgets</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>6.2.0_msvc2019_64</QtInstall>
+    <QtModules>core widgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <IncludePath>inc;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>
+    </ExternalIncludePath>
+    <LibraryPath>Submodules\SFML\lib\$(Configuration);$(LibraryPath);Submodules\EasyProfiler\bin\$(Configuration)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <IncludePath>inc;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>
+    </ExternalIncludePath>
+    <LibraryPath>Submodules\SFML\lib\$(Configuration);$(LibraryPath);Submodules\EasyProfiler\bin\$(Configuration)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_);Submodules/SFML/git/include;Submodules/EasyProfiler/git/easy_profiler_core/include;$(ExternalIncludePath);inc</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_);Submodules/SFML/git/include;Submodules/EasyProfiler/git/easy_profiler_core/include;$(ExternalIncludePath);inc</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>SFML_STATIC ;SFML_EDITORWIDGET_LIB;BUILD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>SFML_STATIC ;SFML_EDITORWIDGET_LIB;BUILD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\canvas\Canvas.cpp" />
+    <ClCompile Include="src\canvas\CanvasObjectContainer.cpp" />
+    <ClCompile Include="src\canvas\CanvasObjectGroup.cpp" />
+    <ClCompile Include="src\canvas\CanvasThreadWorker.cpp" />
+    <ClCompile Include="src\components\AbstractPressEvent.cpp" />
+    <ClCompile Include="src\components\Button.cpp" />
+    <ClCompile Include="src\components\Component.cpp" />
+    <ClCompile Include="src\components\Drawable.cpp" />
+    <ClCompile Include="src\components\DrawableVector.cpp" />
+    <ClCompile Include="src\components\KeyPressEvent.cpp" />
+    <ClCompile Include="src\components\Line.cpp" />
+    <ClCompile Include="src\components\MouseFollower.cpp" />
+    <ClCompile Include="src\components\MousePressEvent.cpp" />
+    <ClCompile Include="src\components\physics\Collider.cpp" />
+    <ClCompile Include="src\components\SfEventHandle.cpp" />
+    <ClCompile Include="src\components\Text.cpp" />
+    <ClCompile Include="src\objects\BackgroundGrid.cpp" />
+    <ClCompile Include="src\objects\CameraController.cpp" />
+    <ClCompile Include="src\objects\CanvasObject.cpp" />
+    <ClCompile Include="src\objects\DefaultEditor.cpp" />
+    <ClCompile Include="src\objects\DrawableBoxCollider.cpp" />
+    <ClCompile Include="src\objects\LineChart.cpp" />
+    <ClCompile Include="src\utilities\AABB.cpp" />
+    <ClCompile Include="src\utilities\VectorOperations.cpp" />
+    <QtMoc Include="SFML_EditorWidget.h" />
+    <ClCompile Include="SFML_EditorWidget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="inc\components\MouseFollower.h" />
+    <QtMoc Include="inc\components\KeyPressEvent.h" />
+    <ClInclude Include="inc\canvas\CanvasObjectContainer.h" />
+    <ClInclude Include="inc\canvas\CanvasObjectGroup.h" />
+    <ClInclude Include="inc\canvas\CanvasSettings.h" />
+    <ClInclude Include="inc\canvas\CanvasThreadWorker.h" />
+    <ClInclude Include="inc\canvas\RenderLayer.h" />
+    <ClInclude Include="inc\components\Button.h" />
+    <ClInclude Include="inc\components\Drawable.h" />
+    <ClInclude Include="inc\components\DrawableVector.h" />
+    <ClInclude Include="inc\components\Line.h" />
+    <ClInclude Include="inc\components\SfEventHandle.h" />
+    <ClInclude Include="inc\components\Text.h" />
+    <ClInclude Include="inc\objects\BackgroundGrid.h" />
+    <ClInclude Include="inc\objects\CameraController.h" />
+    <ClInclude Include="inc\objects\DefaultEditor.h" />
+    <ClInclude Include="inc\objects\LineChart.h" />
+    <ClInclude Include="inc\objects\VisibleCamera.h" />
+    <ClInclude Include="inc\QSFML_debugSettings.h" />
+    <ClInclude Include="inc\utilities\Time.h" />
+    <ClInclude Include="inc\utilities\Updatable.h" />
+    <ClInclude Include="inc\utilities\VectorOperations.h" />
+    <QtMoc Include="inc\components\AbstractPressEvent.h" />
+    <QtMoc Include="inc\canvas\Canvas.h" />
+    <ClInclude Include="inc\canvas\CanvasForwardDeclaration.h" />
+    <ClInclude Include="inc\components\Component.h" />
+    <QtMoc Include="inc\components\MousePressEvent.h" />
+    <ClInclude Include="inc\components\physics\Collider.h" />
+    <ClInclude Include="inc\objects\CanvasObject.h" />
+    <ClInclude Include="inc\objects\DrawableBoxCollider.h" />
+    <ClInclude Include="inc\QSFML_EditorWidget.h" />
+    <ClInclude Include="inc\sfml_editorwidget_global.h" />
+    <ClInclude Include="inc\utilities\AABB.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

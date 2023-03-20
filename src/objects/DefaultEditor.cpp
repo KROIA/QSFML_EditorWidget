@@ -11,7 +11,7 @@ DefaultEditor::DefaultEditor(const std::string &name,
     m_cam     = new VisibleCamera("Camera");
     m_grid    = new BackgroundGrid("Grid");
 
-    m_grid->setSize(sf::IntRect(0,0,size.x,size.y));
+    m_grid->setSize(sf::IntRect(sf::Vector2i(0,0),sf::Vector2i(size.x,size.y)));
     m_grid->setLineColor({sf::Color(130,130,130),
                         sf::Color(100,100,100),
                         sf::Color(100,100,100),

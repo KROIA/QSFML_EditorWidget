@@ -8,7 +8,7 @@ namespace Components
 Text::Text(const std::string &name)
     :   Drawable(name)
 {
-    m_text.setScale(0.1f,0.1f);
+    m_text.setScale(sf::Vector2f(0.1f,0.1f));
     setText(name);
 
 }
@@ -56,7 +56,7 @@ void Text::setParent(Objects::CanvasObject *parent)
     }
 }
 
-void Text::draw(sf::RenderTarget& target, sf::RenderStates) const
+void Text::draw(sf::RenderTarget& target, const sf::RenderStates&) const
 {
     target.draw(m_text);
 }

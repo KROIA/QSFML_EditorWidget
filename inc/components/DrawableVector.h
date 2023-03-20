@@ -28,7 +28,7 @@ class DrawableVector: public Drawable
 
 
     void draw(sf::RenderTarget& target,
-              sf::RenderStates states) const override;
+              const sf::RenderStates &states) const override;
 
     static void setInvertedYAxis(bool doInvert);
 

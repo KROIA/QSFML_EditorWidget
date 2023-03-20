@@ -62,7 +62,7 @@ namespace Objects
             {
                 public:
                     LineChartPainter(const std::string &name = "LineChartPainter");
-                    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+                    void draw(sf::RenderTarget& target, const sf::RenderStates &states) const override;
 
                     LineChart *m_chart;
             };

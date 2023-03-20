@@ -1,0 +1,6 @@
+[submodule "Submodules/EasyProfiler/git"]
+	path = Submodules/EasyProfiler/git
+	url = https://github.com/yse/easy_profiler
+[submodule "Submodules/SFML/git"]
+	path = Submodules/SFML/git
+	url = https://github.com/SFML/SFML/tree/2.5.1

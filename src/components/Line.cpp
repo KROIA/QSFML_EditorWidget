@@ -18,6 +18,8 @@ Line::Line(const Line &other)
     m_vertices[1] = other.m_vertices[1];
     m_vertices[2] = other.m_vertices[2];
     m_vertices[3] = other.m_vertices[3];
+    m_vertices[4] = other.m_vertices[5];
+    m_vertices[5] = other.m_vertices[6];
     m_thickness = other.m_thickness;
     m_color = other.m_color;
     m_begin = other.m_begin;
@@ -77,18 +79,20 @@ void Line::updateShape()
     m_vertices[0].position = m_begin + offset;
     m_vertices[1].position = m_end + offset;
     m_vertices[2].position = m_end - offset;
-    m_vertices[3].position = m_begin - offset;
+    m_vertices[3].position = m_end - offset;
+    m_vertices[4].position = m_begin - offset;
+    m_vertices[5].position = m_begin + offset;
 }
 void Line::updateColor()
 {
-    for (int i=0; i<4; ++i)
+    for (int i=0; i<6; ++i)
         m_vertices[i].color = m_color;
 }
 
 void Line::draw(sf::RenderTarget& target,
-                sf::RenderStates) const
+                const sf::RenderStates &) const
 {
-     target.draw(m_vertices,4,sf::Quads);
+     target.draw(m_vertices,6,sf::PrimitiveType::Triangles);
 }
 }
 }

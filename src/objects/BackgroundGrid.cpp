@@ -8,7 +8,7 @@ BackgroundGrid::BackgroundGrid(const std::string &name,
 {
     m_draw = new DrawableComp();
     m_draw->m_grid = this;
-    setSize(sf::IntRect(0,0,500,500));
+    setSize(sf::IntRect(sf::Vector2i(0,0), sf::Vector2i(500,500)));
     setGridSpacing(10);
     setLineColor({sf::Color(130,130,130),sf::Color(100,100,100)});
     addComponent(m_draw);
@@ -67,7 +67,7 @@ BackgroundGrid::DrawableComp::DrawableComp(const Drawable &other)
     m_grid = nullptr;
 }
 void BackgroundGrid::DrawableComp::draw(sf::RenderTarget& target,
-                                        sf::RenderStates states) const
+                                        const sf::RenderStates &states) const
 {
     drawGrid(target,m_grid->m_gridArea,m_grid->m_gridSpacing,
              m_grid->m_alternatingColors);
@@ -149,7 +149,7 @@ void BackgroundGrid::DrawableComp::drawGrid(sf::RenderTarget& target,
         VcurrentStart.x += spacing;
         VcurrentEnd.x   += spacing;
 
-        target.draw(line, 2, sf::Lines);
+        target.draw(line, 2, sf::PrimitiveType::Lines);
 
     }
     colorIndex = 0;
@@ -165,7 +165,7 @@ void BackgroundGrid::DrawableComp::drawGrid(sf::RenderTarget& target,
         HcurrentStart.y += spacing;
         HcurrentEnd.y   += spacing;
 
-        target.draw(line, 2, sf::Lines);
+        target.draw(line, 2, sf::PrimitiveType::Lines);
 
     }
 }

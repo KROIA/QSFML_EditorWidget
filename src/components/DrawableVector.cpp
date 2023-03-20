@@ -76,7 +76,7 @@ sf::Vector2f DrawableVector::getDirection() const
 
 
 void DrawableVector::draw(sf::RenderTarget& target,
-                          sf::RenderStates states) const
+                          const sf::RenderStates &states) const
 {
     /*sf::Vector2f dir = getDirection();
     sf::Vector2f end = m_end;
@@ -109,7 +109,7 @@ void DrawableVector::draw(sf::RenderTarget& target,
         sf::Vertex(end,m_color),
         sf::Vertex(end+arrowRight,m_color),
     };*/
-    target.draw(m_lines, 6, sf::Lines);
+    target.draw(m_lines, 6, sf::PrimitiveType::Lines);
 }
 void DrawableVector::setInvertedYAxis(bool doInvert)
 {

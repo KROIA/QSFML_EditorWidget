@@ -43,7 +43,7 @@ class BackgroundGrid::DrawableComp: public Components::Drawable
     public:
         DrawableComp(const std::string &name = "DrawableComp");
         DrawableComp(const Drawable &other);
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
+        void draw(sf::RenderTarget& target, const sf::RenderStates &states) const final;
 
         void drawGrid(sf::RenderTarget& target,
                       const sf::IntRect &area,

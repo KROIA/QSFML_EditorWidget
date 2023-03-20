@@ -27,13 +27,13 @@ class Line : public Drawable
         const sf::Color &getColor() const;
 
         void draw(sf::RenderTarget& target,
-                  sf::RenderStates states) const override;
+                  const sf::RenderStates &states) const override;
 
     private:
         void updateShape();
         void updateColor();
 
-        sf::Vertex m_vertices[4];
+        sf::Vertex m_vertices[6];
         float m_thickness;
         sf::Color m_color;
         sf::Vector2f m_begin;

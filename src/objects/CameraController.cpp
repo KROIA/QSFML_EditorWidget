@@ -12,7 +12,7 @@ CameraController::CameraController(const std::string &name,
     m_currentZoom = 1;
     setMinZoom(0.1);
     setMaxZoom(3);
-    setMaxMovingBounds(sf::FloatRect(-200,-200,900,900));
+    setMaxMovingBounds(sf::FloatRect(sf::Vector2f(- 200, -200), sf::Vector2f( 900, 900)));
 
     m_eventHandleComponent = new SfEventComponent();
     m_eventHandleComponent->setController(this);
@@ -106,6 +106,7 @@ void CameraController::rotate(float angle)
 {
     if(!getCanvasParent()) return;
     sf::View view = getCanvasParent()->getCameraView();
+    sf::Angle a(angle);
     view.rotate(angle);
     getCanvasParent()->setCameraView(view);
 }

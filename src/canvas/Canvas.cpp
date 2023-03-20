@@ -299,7 +299,7 @@ void Canvas::timedUpdate()
     QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Green)); // Magenta block with name "foo"
 
 
-    std::chrono::system_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    TimePoint t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
     m_deltaT_t1 = t2;
     m_deltaT = elapsed.count();

@@ -40,7 +40,7 @@ class Text : public Drawable
          * \param target to draw on
          * \param states
          */
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void draw(sf::RenderTarget& target, const sf::RenderStates &states) const override;
 
     protected:
         void updateCenter(const sf::Vector2f &pos);

@@ -5,6 +5,7 @@
 #include <QTimer>
 #include "canvas/CanvasSettings.h"
 #include "canvas/CanvasObjectContainer.h"
+#include "utilities/Time.h"
 #include <chrono>
 
 namespace QSFML
@@ -78,7 +79,7 @@ class Canvas :
 
 
         QTimer m_frameTimer;
-        std::chrono::system_clock::time_point m_deltaT_t1;
+        TimePoint m_deltaT_t1;
         float m_deltaT;
 
         CanvasSettings m_settings;

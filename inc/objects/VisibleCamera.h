@@ -53,7 +53,7 @@ class VisibleCamera : public CameraController
                     m_cam = cam;
                 }
             protected:
-                void draw(sf::RenderTarget& target, sf::RenderStates states) const final
+                void draw(sf::RenderTarget& target, const sf::RenderStates &states) const final
                 {
                     sf::View view = m_cam->getCameraView();
                     sf::FloatRect viewRect = sf::FloatRect(view.getCenter()-view.getSize()/2.f,view.getSize());
@@ -87,7 +87,7 @@ class VisibleCamera : public CameraController
                         sf::Vertex(BL,color),
                         sf::Vertex(TL,color),
                     };
-                    target.draw(line, 5, sf::LineStrip);
+                    target.draw(line, 5, sf::PrimitiveType::LineStrip);
                 }
 
 
