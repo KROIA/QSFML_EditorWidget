@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 *.user
+*.vs
 
 # Compiled Object files
 *.slo
@@ -32,8 +33,9 @@
 *.out
 *.app
 
+
 # Paths
-#bin
+bin
 Sandbox/bin
 UnitTests/bin
 extern/SFML-2.5.1/doc
