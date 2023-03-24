@@ -6,9 +6,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_AUTOMOC ON) 
 set(CMAKE_AUTORCC ON)
-#set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON) 
+set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR})
 
+include(../QtLocator.cmake)
 find_package(Qt5Widgets REQUIRED)
 
 set(H_Files 
@@ -26,9 +28,9 @@ set ( UIS
 	sandbox.ui
 )
 
- qt5_wrap_ui(UIS_HDRS
+qt5_wrap_ui(UIS_HDRS
      ${UIS} 
- )
+)
 
 set(Files 
 	${H_Files}

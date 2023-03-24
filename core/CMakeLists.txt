@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1.0)
-
+# core 
 
 
 set(CMAKE_CXX_STANDARD 11)
@@ -10,14 +10,14 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_PREFIX_PATH C:/Qt)
-include(QtLocator.cmake)
+include(../QtLocator.cmake)
 # finally, use Qt5 + COMPONENTS technique, compatible with Qt_DIR
-MESSAGE("Qt5Config.cmake path: "${Qt5_DIR})
+MESSAGE("Qt5Config.cmake path:  ${Qt5_DIR}")
 #FIND_PACKAGE(Qt5 COMPONENTS Core Widgets REQUIRED)
 #find_package(Qt5 REQUIRED COMPONENTS Widgets Core)
 find_package(Qt5Widgets REQUIRED)
 if (Qt5Widgets_FOUND)
-    message(STATUS "Using Qt v${Qt5Widgets_VERSION}")
+    message(STATUS "Using Qt v ${Qt5Widgets_VERSION}")
 else()
     message(STATUS "INFO\n\n\tQt5 not found!\n")
 endif()
@@ -78,11 +78,12 @@ set(SOURCES
     ${H_FILES}
 )
 
- FOREACH(file ${SOURCES})
-    message("File: "${file})
- ENDFOREACH()
 
-message("Create library with files: \n${${SOURCES}}")
+
+message("Create library with files:")
+ FOREACH(file ${SOURCES})
+    message("  File: " ${file})
+ ENDFOREACH()
 if(BUILD_STATIC)
     message("Building SFML_EditorWidget static\n")
     add_library(SFML_EditorWidget STATIC ${SOURCES})
