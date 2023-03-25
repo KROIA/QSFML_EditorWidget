@@ -16,7 +16,7 @@ namespace QSFML
     }
 
 #define CLONE_FUNC(classNameVal) \
-    classNameVal* clone() const override \
+    inline classNameVal* clone() const override \
     { \
         return new classNameVal(*this); \
     }

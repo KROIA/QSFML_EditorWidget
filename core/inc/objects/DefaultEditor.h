@@ -3,12 +3,13 @@
 #include "objects/CanvasObject.h"
 #include "objects/VisibleCamera.h"
 #include "objects/BackgroundGrid.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Objects
 {
-class DefaultEditor: public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public CanvasObject
 {
     public:
     DefaultEditor(const std::string &name = "DefaultEditor",

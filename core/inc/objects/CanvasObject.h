@@ -13,6 +13,7 @@
 #include "utilities/Updatable.h"
 #include "QSFML_debugSettings.h"
 #include <easy/profiler.h>
+#include "QSFML_global.h"
 
 namespace QSFML
 {
@@ -161,7 +162,7 @@ namespace Objects
  * \endcode
  */
 
-class CanvasObject: protected Utilities::Updatable
+class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
 {
         friend Canvas;
         friend CanvasObjectGroup;

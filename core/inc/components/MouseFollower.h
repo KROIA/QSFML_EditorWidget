@@ -2,13 +2,14 @@
 
 #include <QObject>
 #include "components/SfEventHandle.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Components
 {
 
-class MouseFollower : public QObject, public SfEventHandle
+class QSFML_EDITOR_WIDGET_EXPORT MouseFollower : public QObject, public SfEventHandle
 {
         Q_OBJECT
     public:

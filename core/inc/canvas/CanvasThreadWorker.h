@@ -4,11 +4,12 @@
 #include <condition_variable>
 #include "CanvasObjectGroup.h"
 #include <atomic>
+#include "QSFML_global.h"
 
 
 namespace QSFML
 {
-    class CanvasThreadWorker
+    class QSFML_EDITOR_WIDGET_EXPORT CanvasThreadWorker
     {
         public:
             CanvasThreadWorker(size_t threadCount,

@@ -2,12 +2,13 @@
 
 #include "components/Drawable.h"
 #include "SFML/Graphics/Vertex.hpp"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Components
 {
-class Line : public Drawable
+class QSFML_EDITOR_WIDGET_EXPORT Line : public Drawable
 {
     public:
         Line(const std::string &name = "Line");

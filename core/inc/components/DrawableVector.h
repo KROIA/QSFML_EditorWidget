@@ -1,12 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "components/Drawable.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Components
 {
-class DrawableVector: public Drawable
+class QSFML_EDITOR_WIDGET_EXPORT DrawableVector: public Drawable
 {
     public:
     DrawableVector(const std::string &name = "DrawableVector");

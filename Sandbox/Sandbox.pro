@@ -12,6 +12,8 @@ CONFIG += c++11
 
 include(../SFML_EditorWidget.pri)
 
+
+
 inc = inc
 src = src
 
@@ -19,14 +21,14 @@ INCLUDEPATH += $$inc
 
 HEADERS += \
     $$inc/sandbox.h \
-    inc/AABBDisplayer.h \
-    inc/DrawableVector.h \
-    inc/SandboxObject.h
+    $$inc/AABBDisplayer.h \
+    $$inc/DrawableVector.h \
+    $$inc/SandboxObject.h
 
 SOURCES += \
     $$src/main.cpp \
     $$src/sandbox.cpp \
-    src/SandboxObject.cpp
+    $$src/SandboxObject.cpp
 
 FORMS += \
     sandbox.ui \

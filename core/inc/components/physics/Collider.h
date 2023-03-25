@@ -3,20 +3,21 @@
 #include "components/Component.h"
 #include "canvas/CanvasForwardDeclaration.h"
 #include <vector>
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Components
 {
     class Collider;
-    class Collisioninfo
+    class QSFML_EDITOR_WIDGET_EXPORT Collisioninfo
     {
         public:
         Collider *collider1;
         Collider *collider2;
     };
 
-    class Collider: public Component
+    class QSFML_EDITOR_WIDGET_EXPORT Collider: public Component
     {
         public:
             explicit Collider(const std::string &name = "Collider");

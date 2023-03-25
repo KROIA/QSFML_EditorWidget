@@ -3,12 +3,13 @@
 #include <QObject>
 #include <SFML/Graphics.hpp>
 #include "components/AbstractPressEvent.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Components
 {
-class MousePressEvent : public AbstractPressEvent
+class QSFML_EDITOR_WIDGET_EXPORT MousePressEvent : public AbstractPressEvent
 {
         Q_OBJECT
     public:

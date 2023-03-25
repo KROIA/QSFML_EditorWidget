@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.12)
 
 SET(QT_MISSING True)
 
+#if(EXISTS ${QT_PATH})
+#	set(QT_MISSING False)
+#endif()
 
 # Function to extract the version number from a path
 function(get_version_number out path)
@@ -98,10 +101,11 @@ ENDIF()
 # use Qt_DIR approach so you can find Qt after cmake has been invoked
 IF(NOT QT_MISSING)
     MESSAGE("-- Qt found: ${QT_PATH}")
+	
     
     SET(Qt5_DIR "${QT_PATH}/lib/cmake/Qt5")
     SET(Qt5Widgets_DIR  "${QT_PATH}/lib/cmake/Qt5Widgets")
     SET(Qt5Test_DIR "${QT_PATH}/lib/cmake/Qt5Test")
 
-    
+    MESSAGE("Qt5Config.cmake path:  ${Qt5_DIR}")
 ENDIF()

@@ -2,12 +2,14 @@
 
 #include "components/Drawable.h"
 #include "SFML/Graphics/Text.hpp"
+#include "QSFML_global.h"
+
 namespace QSFML
 {
 namespace Components
 {
 
-class Text : public Drawable
+class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
 {
     public:
         /**

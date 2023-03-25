@@ -4,13 +4,14 @@
 #include "objects/CanvasObject.h"
 #include "components/SfEventHandle.h"
 #include <QDebug>
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Objects
 {
 
-class CameraController: public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
 {
         class SfEventComponent;
     public:

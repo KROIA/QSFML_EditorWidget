@@ -1,11 +1,12 @@
 #pragma once
 #include "canvas/CanvasForwardDeclaration.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Utilities
 {
-    class Updatable
+    class QSFML_EDITOR_WIDGET_EXPORT Updatable
     {
             friend Objects::CanvasObject;
         protected:

@@ -3,13 +3,14 @@
 #include <vector>
 #include "objects/CanvasObject.h"
 #include "components/Drawable.h"
+#include "QSFML_global.h"
 
 
 namespace QSFML
 {
 namespace Objects
 {
-    class LineChart: public CanvasObject
+    class QSFML_EDITOR_WIDGET_EXPORT LineChart: public CanvasObject
     {
             class LineChartPainter;
             friend LineChartPainter;

@@ -7,10 +7,11 @@
 #include "CanvasObjectGroup.h"
 #include "QSFML_debugSettings.h"
 #include "CanvasThreadWorker.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
-class CanvasObjectContainer
+class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
 {
     public:
         CanvasObjectContainer(Canvas *parent, const CanvasSettings &settings);

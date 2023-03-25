@@ -17,7 +17,6 @@
 #include "objects/DefaultEditor.h"
 #include "objects/BackgroundGrid.h"
 #include "objects/CameraController.h"
-#include "objects/DrawableBoxCollider.h"
 #include "objects/LineChart.h"
 
 

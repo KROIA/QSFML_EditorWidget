@@ -2,12 +2,13 @@
 
 #include "objects/CanvasObject.h"
 #include "components/Drawable.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Objects
 {
-class BackgroundGrid: public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public CanvasObject
 {
         class DrawableComp;
     public:

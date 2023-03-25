@@ -4,12 +4,13 @@
 #include <SFML/Graphics.hpp>
 #include "components/Component.h"
 #include "utilities/Updatable.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Components
 {
-class AbstractPressEvent : public QObject,  public Component, public Utilities::Updatable
+class QSFML_EDITOR_WIDGET_EXPORT AbstractPressEvent : public QObject,  public Component, public Utilities::Updatable
 {
         Q_OBJECT
     public:

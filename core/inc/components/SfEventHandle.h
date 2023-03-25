@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include "components/Component.h"
+#include "QSFML_global.h"
+
 namespace QSFML
 {
 namespace Components
@@ -42,7 +44,7 @@ namespace Components
  * };
  * \endcode
  */
-class SfEventHandle :   public Component
+class QSFML_EDITOR_WIDGET_EXPORT SfEventHandle :   public Component
 {
     public:
         /**

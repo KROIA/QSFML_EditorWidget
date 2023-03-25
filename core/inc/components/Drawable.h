@@ -3,6 +3,8 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include "components/Component.h"
+#include "QSFML_global.h"
+
 namespace QSFML
 {
 namespace Components
@@ -39,7 +41,7 @@ namespace Components
  * \endcode
  *
  */
-class Drawable : public Component, public sf::Drawable
+class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawable
 {
     public:
         /**

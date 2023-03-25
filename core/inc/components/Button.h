@@ -3,12 +3,13 @@
 #include <QObject>
 #include "utilities/AABB.h"
 #include "components/MousePressEvent.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 namespace Components
 {
-class Button : public MousePressEvent, public Utilities::AABB
+class QSFML_EDITOR_WIDGET_EXPORT Button : public MousePressEvent, public Utilities::AABB
 {
     public:
         explicit Button(const std::string &name = "BoxCollider");

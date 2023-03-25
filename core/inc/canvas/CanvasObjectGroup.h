@@ -2,11 +2,12 @@
 
 #include "CanvasForwardDeclaration.h"
 #include "objects/CanvasObject.h"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
 
-class CanvasObjectGroup
+class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectGroup
 {
         friend CanvasObjectContainer;
         friend CanvasThreadWorker;

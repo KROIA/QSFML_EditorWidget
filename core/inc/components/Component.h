@@ -2,6 +2,8 @@
 
 #include <string>
 #include "canvas/CanvasForwardDeclaration.h"
+#include "QSFML_global.h"
+
 namespace QSFML
 {
 namespace Components
@@ -21,7 +23,7 @@ namespace Components
  *           See predefined Components
  *
  */
-class Component
+class QSFML_EDITOR_WIDGET_EXPORT Component
 {
     public:
         /**

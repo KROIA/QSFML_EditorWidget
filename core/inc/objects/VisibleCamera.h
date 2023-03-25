@@ -2,11 +2,13 @@
 
 #include "components/Drawable.h"
 #include "objects/CameraController.h"
+#include "QSFML_global.h"
+
 namespace QSFML
 {
 namespace Objects
 {
-class VisibleCamera : public CameraController
+class QSFML_EDITOR_WIDGET_EXPORT VisibleCamera : public CameraController
 {
         class DrawableComp;
     public:

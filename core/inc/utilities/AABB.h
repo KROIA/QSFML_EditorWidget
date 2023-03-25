@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
+#include "QSFML_global.h"
 
 namespace QSFML
 {
@@ -10,7 +11,7 @@ namespace Utilities
 //!<\def If this is set, it will check if the rectangle has a negative size and if so it will be corrected so,
 //!      that the rectangle stays at the same position and size but the coordinates of the top left corner will have changed.
 #define AABB_VALID_RECT_CHECK
-class AABB
+class QSFML_EDITOR_WIDGET_EXPORT AABB
 {
     public:
         AABB();
