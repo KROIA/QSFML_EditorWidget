@@ -3,6 +3,7 @@ using namespace QSFML;
 using namespace QSFML::Objects;
 using namespace QSFML::Components;
 
+OBJECT_IMPL(SandboxObject)
 SandboxObject::SandboxObject(const std::string &name)
     : CanvasObject(name)
 {

@@ -6,6 +6,7 @@ namespace QSFML
 {
 namespace Components
 {
+COMPONENT_IMPL(Line)
 Line::Line(const std::string &name)
     : Drawable(name)
 {

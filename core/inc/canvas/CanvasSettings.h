@@ -6,12 +6,12 @@
 
 namespace QSFML
 {
-struct CanvasSettings
+struct QSFML_EDITOR_WIDGET_EXPORT CanvasSettings
 {
     /**
      * \brief The layout of the Canvas, how it will behave on the screen
      */
-    struct Layout
+    struct QSFML_EDITOR_WIDGET_EXPORT Layout
     {
         bool autoAjustSize;         /*!< If set to true, the canvas will automatically
                                          resizes based on its parent widget. */
@@ -22,7 +22,7 @@ struct CanvasSettings
          * \details This will define how many pixels in each direction the
          *          canvas will be spaced inside of the parent widget.
          */
-        struct Margin
+        struct QSFML_EDITOR_WIDGET_EXPORT Margin
         {
             unsigned int left;
             unsigned int top;
@@ -51,7 +51,7 @@ struct CanvasSettings
     /**
      * \brief The Colors of different parts on the canvas
      */
-    struct Colors
+    struct QSFML_EDITOR_WIDGET_EXPORT Colors
     {
         sf::Color defaultBackground; //!< Background color of parts on which nothing was painted
 
@@ -65,7 +65,7 @@ struct CanvasSettings
     /**
      * \brief The time related settings
      */
-    struct Timing
+    struct QSFML_EDITOR_WIDGET_EXPORT Timing
     {
         unsigned int frameTime;  //!< Time between each frame
 
@@ -82,7 +82,7 @@ struct CanvasSettings
      */
     std::string fontPath;
 
-    struct UpdateControlls
+    struct QSFML_EDITOR_WIDGET_EXPORT UpdateControlls
     {
         bool enableEventLoop;
         bool enableUpdateLoop;

@@ -15,7 +15,7 @@ class QSFML_EDITOR_WIDGET_EXPORT MouseFollower : public QObject, public SfEventH
     public:
     MouseFollower(const std::string &name = "MouseFollower");
     MouseFollower(const MouseFollower &other);
-    CLONE_FUNC(MouseFollower)
+    COMPONENT_DECL(MouseFollower)
 
     void sfEvent(const sf::Event &e) override;
 

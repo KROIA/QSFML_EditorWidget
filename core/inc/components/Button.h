@@ -17,7 +17,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Button : public MousePressEvent, public Utiliti
         Button(const Button &other);
         ~Button();
 
-        CLONE_FUNC(Button)
+        COMPONENT_DECL(Button)
 
     protected:
         bool getCurrentValue() override;

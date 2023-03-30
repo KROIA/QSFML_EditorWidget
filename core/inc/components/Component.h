@@ -8,6 +8,11 @@ namespace QSFML
 {
 namespace Components
 {
+#define COMPONENT_DECL(className) \
+    CLONE_FUNC_DEC(className) override;
+
+#define COMPONENT_IMPL(className) \
+    CLONE_FUNC_IMPL(className)
 
 /**
  * \brief Component class for CanvasObjects
@@ -35,7 +40,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component
         Component(const Component &other);
         virtual ~Component();
 
-        virtual Component *clone() const;
+        virtual CLONE_FUNC_DEC(Component);
 
         /**
          * \brief setParent

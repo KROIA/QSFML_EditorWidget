@@ -7,7 +7,7 @@ namespace QSFML
 {
 namespace Components
 {
-
+COMPONENT_IMPL(Collider)
 Collider::Collider(const std::string &name)
     :   Component(name)
 {

@@ -5,6 +5,7 @@ namespace QSFML
 {
 namespace Components
 {
+COMPONENT_IMPL(Text)
 Text::Text(const std::string &name)
     :   Drawable(name)
 {

@@ -19,6 +19,11 @@ namespace QSFML
 {
 namespace Objects
 {
+#define OBJECT_DECL(className) \
+    CLONE_FUNC_DEC(className) override;
+
+#define OBJECT_IMPL(className) \
+    CLONE_FUNC_IMPL(className)
 /**
  * \brief The CanvasObject class
  *
@@ -173,7 +178,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         CanvasObject(const CanvasObject &other);
         virtual ~CanvasObject();
 
-        virtual CanvasObject* clone() const;
+        virtual CLONE_FUNC_DEC(CanvasObject);
 
 
         void setParent(CanvasObject *parent);

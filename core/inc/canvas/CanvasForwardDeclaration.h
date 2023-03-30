@@ -15,9 +15,13 @@ namespace QSFML
         class Updatable;
     }
 
-#define CLONE_FUNC(classNameVal) \
-    inline classNameVal* clone() const override \
+#define CLONE_FUNC_DEC(className) \
+    className *clone() const
+
+#define CLONE_FUNC_IMPL(className) \
+    className* className::clone() const \
     { \
-        return new classNameVal(*this); \
+        return new className(*this); \
     }
+
 }

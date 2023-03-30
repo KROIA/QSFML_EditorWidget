@@ -19,7 +19,7 @@ namespace Objects
                          CanvasObject *parent = nullptr);
             LineChart(const LineChart &other);
             ~LineChart();
-            CLONE_FUNC(LineChart)
+            OBJECT_DECL(LineChart)
 
             void setOrigin(const sf::Vector2f &pos);
             const sf::Vector2f &getOrigin() const;

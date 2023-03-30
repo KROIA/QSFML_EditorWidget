@@ -4,6 +4,7 @@ namespace QSFML
 {
 namespace Components
 {
+COMPONENT_IMPL(Button)
 Button::Button(const std::string &name)
     :   MousePressEvent(name)
     ,   Utilities::AABB()

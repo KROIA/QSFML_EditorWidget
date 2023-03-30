@@ -5,6 +5,7 @@ namespace QSFML
 {
 namespace Components
 {
+COMPONENT_IMPL(MouseFollower)
 MouseFollower::MouseFollower(const std::string &name)
     : QObject()
     , SfEventHandle(name)

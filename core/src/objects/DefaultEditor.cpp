@@ -4,6 +4,7 @@ namespace QSFML
 {
 namespace Objects
 {
+OBJECT_IMPL(DefaultEditor)
 DefaultEditor::DefaultEditor(const std::string &name,
                              const sf::Vector2f &size)
     : CanvasObject(name)

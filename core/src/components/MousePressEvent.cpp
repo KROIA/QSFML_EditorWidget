@@ -4,6 +4,7 @@ namespace QSFML
 {
 namespace Components
 {
+COMPONENT_IMPL(MousePressEvent)
 MousePressEvent::MousePressEvent(const std::string &name,
                                  sf::Mouse::Button button)
     : AbstractPressEvent(name)

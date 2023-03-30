@@ -3,6 +3,8 @@
 using namespace QSFML::Components;
 using namespace QSFML::Objects;
 
+COMPONENT_IMPL(Component)
+
 Component::Component(const std::string &name)
 {
     m_name = name;
@@ -18,10 +20,8 @@ Component::~Component()
 {
 
 }
-Component *Component::clone() const
-{
-    return new Component(*this);
-}
+
+
 
 void Component::setParent(CanvasObject *parent)
 {

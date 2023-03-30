@@ -3,6 +3,7 @@ namespace QSFML
 {
 namespace Components
 {
+COMPONENT_IMPL(KeyPressEvent)
 KeyPressEvent::KeyPressEvent(const std::string &name,
                              sf::Keyboard::Key key)
     : AbstractPressEvent(name)

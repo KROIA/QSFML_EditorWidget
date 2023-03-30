@@ -13,7 +13,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DrawableVector: public Drawable
     DrawableVector(const std::string &name = "DrawableVector");
     DrawableVector(const DrawableVector &other);
     ~DrawableVector();
-    CLONE_FUNC(DrawableVector)
+    COMPONENT_DECL(DrawableVector)
 
     void setPoints(const sf::Vector2f &begin, const sf::Vector2f &end);
     void setStart(const sf::Vector2f &begin);

@@ -19,7 +19,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
                          CanvasObject *parent = nullptr);
         CameraController(const CameraController &other);
         ~CameraController();
-        CLONE_FUNC(CameraController)
+        COMPONENT_DECL(CameraController)
 
         void setDragButton(sf::Mouse::Button button);
         sf::Mouse::Button getDragButton() const;

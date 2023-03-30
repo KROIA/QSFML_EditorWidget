@@ -5,7 +5,7 @@ namespace QSFML
 {
 namespace Objects
 {
-
+OBJECT_IMPL(LineChart)
 LineChart::LineChart(const std::string &name,
                      CanvasObject *parent)
     : CanvasObject(name, parent)

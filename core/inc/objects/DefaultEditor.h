@@ -16,7 +16,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public CanvasObject
                   const sf::Vector2f &size = sf::Vector2f(800,600));
     DefaultEditor(const DefaultEditor &other);
     ~DefaultEditor();
-    CLONE_FUNC(DefaultEditor)
+    OBJECT_DECL(DefaultEditor)
 
     //void update() override;
 

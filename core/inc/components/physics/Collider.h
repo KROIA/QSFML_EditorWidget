@@ -23,7 +23,7 @@ namespace Components
             explicit Collider(const std::string &name = "Collider");
             Collider(const Collider &other);
 
-            CLONE_FUNC(Collider)
+            COMPONENT_DECL(Collider)
 
 
         protected:

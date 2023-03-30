@@ -8,6 +8,8 @@ using namespace QSFML;
 using namespace QSFML::Objects;
 using namespace QSFML::Components;
 
+OBJECT_IMPL(CanvasObject)
+
 size_t CanvasObject::m_objNameCounter = 0;
 CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
 {
@@ -76,11 +78,8 @@ CanvasObject::~CanvasObject()
         m_canvasParent->removeObject(this);
 }
 
-CanvasObject* CanvasObject::clone() const
-{
-    CanvasObject *obj = new CanvasObject(*this);
-    return obj;
-}
+
+
 void CanvasObject::setParent(CanvasObject *parent)
 {
     if(parent == m_parent)

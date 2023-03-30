@@ -37,7 +37,11 @@ set(Files
 	${SRC_Files}
 	${UIS_HDRS})
 
+if(${BUILD_STATIC})
+	add_compile_definitions(BUILD_STATIC)
+else()
 
+endif()
 
 add_executable(Sandbox ${Files})
 target_link_libraries(Sandbox SFML_EditorWidget)

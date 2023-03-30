@@ -7,6 +7,7 @@ using namespace QSFML::Components;
 #define M_PI 3.14159265358979323846
 #endif
 
+COMPONENT_IMPL(DrawableVector)
 bool DrawableVector::m_flipYaxis = false;
 
 DrawableVector::DrawableVector(const std::string &name)

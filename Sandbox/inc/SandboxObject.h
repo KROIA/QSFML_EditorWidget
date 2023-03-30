@@ -9,7 +9,7 @@ class SandboxObject: public QObject, public QSFML::Objects::CanvasObject
     SandboxObject(const std::string &name = "SandboxObject");
     SandboxObject(const SandboxObject &other);
     ~SandboxObject();
-    CLONE_FUNC(SandboxObject)
+    OBJECT_DECL(SandboxObject)
 
     void update() override;
 

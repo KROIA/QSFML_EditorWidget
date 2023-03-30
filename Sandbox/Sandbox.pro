@@ -10,6 +10,7 @@ CONFIG += c++11
 
 #CONFIG+=BUILD_WITH_EASY_PROFILER
 
+
 include(../SFML_EditorWidget.pri)
 
 

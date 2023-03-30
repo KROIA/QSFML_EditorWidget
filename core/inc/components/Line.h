@@ -13,7 +13,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Line : public Drawable
     public:
         Line(const std::string &name = "Line");
         Line(const Line &other);
-        CLONE_FUNC(Line)
+        COMPONENT_DECL(Line)
 
         void setStartPos(const sf::Vector2f &pos);
         const sf::Vector2f &getStartPos() const;

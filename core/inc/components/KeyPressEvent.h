@@ -21,7 +21,7 @@ class QSFML_EDITOR_WIDGET_EXPORT KeyPressEvent : public AbstractPressEvent
         KeyPressEvent(const std::string &name = "KeyPressEvent",
                       const sf::Keyboard::Key key = sf::Keyboard::Key::Space);
         KeyPressEvent(const KeyPressEvent &other);
-        CLONE_FUNC(KeyPressEvent)
+        COMPONENT_DECL(KeyPressEvent)
 
         void setTriggerKey(sf::Keyboard::Key key);
         sf::Keyboard::Key getTriggerKey() const;

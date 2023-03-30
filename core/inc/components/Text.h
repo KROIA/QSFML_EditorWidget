@@ -19,7 +19,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
          */
         Text(const std::string &name = "Text");
         Text(const Text &other);
-        CLONE_FUNC(Text)
+        COMPONENT_DECL(Text)
 
         void setText(const std::string &text);
         std::string getText() const;

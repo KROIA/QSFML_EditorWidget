@@ -16,7 +16,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public CanvasObject
                        CanvasObject *parent = nullptr);
         BackgroundGrid(const BackgroundGrid &other);
         ~BackgroundGrid();
-        CLONE_FUNC(BackgroundGrid)
+        COMPONENT_DECL(BackgroundGrid)
 
         void setSize(const sf::IntRect &size);
         const sf::IntRect &getSize() const;
