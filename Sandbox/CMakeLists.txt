@@ -28,20 +28,23 @@ set ( UIS
 	sandbox.ui
 )
 
-qt5_wrap_ui(UIS_HDRS
-     ${UIS} 
-)
+qt5_wrap_ui(UIS_HDRS ${UIS})
+
+qt_wrap_cpp(SRC_HDRS ${H_Files})
 
 set(Files 
 	${H_Files}
 	${SRC_Files}
-	${UIS_HDRS})
-
-if(${BUILD_STATIC})
-	add_compile_definitions(BUILD_STATIC)
-else()
-
-endif()
+	${UIS_HDRS}
+	${SRC_HDRS})
 
 add_executable(Sandbox ${Files})
-target_link_libraries(Sandbox SFML_EditorWidget)
+if(${BUILD_STATIC})
+	#add_compile_definitions(BUILD_STATIC)
+	target_link_libraries(Sandbox SFML_EditorWidget_static)
+	target_compile_definitions(Sandbox PUBLIC BUILD_STATIC)
+else()
+	target_link_libraries(Sandbox SFML_EditorWidget_shared)
+endif()
+
+

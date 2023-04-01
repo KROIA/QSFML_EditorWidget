@@ -33,14 +33,31 @@ FetchContent_Declare(
 message("Download dependency: ${SFML_GIT_REPO}")
 FetchContent_MakeAvailable(SFML)
 
-set(EASY_PROFILER_NO_GUI True)
+set(EASY_PROFILER_NO_GUI False)
 FetchContent_Declare(
  EASY_PROFILER
  GIT_REPOSITORY ${EASY_GIT_REPO}
  GIT_TAG ${EASY_GIT_TAG}
 )
 message("Download dependency: ${EASY_GIT_REPO}")
+
 FetchContent_MakeAvailable(EASY_PROFILER)
+
+
+
+#add_custom_command(
+#    TARGET easy_profiler POST_BUILD VERBATIM
+#    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${easy_profiler}>" ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+#)
+
+#install(TARGETS easy_profiler DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
+set_target_properties(easy_profiler PROPERTIES CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+set_target_properties(easy_profiler PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+set_target_properties(easy_profiler PROPERTIES CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+#set_target_properties(easy_profiler PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+#set_target_properties(easy_profiler PROPERTIES CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+
 #FetchContent_Populate(EASY_PROFILER)
 #add_subdirectory(${depname_SOURCE_DIR} ${depname_BINARY_DIR})
 
@@ -67,35 +84,7 @@ ENDMACRO()
 
 set(CMAKE_AUTOMOC ON) 
 
-# Project sources
-#    set(PRJ_HEADERS
-#        inc/canvas/CanvasForwardDeclaration.h 
-#        inc/canvas/CanvasObjectContainer.h 
-#        inc/canvas/CanvasObjectGroup.h 
-#        inc/canvas/CanvasSettings.h 
-#        inc/canvas/CanvasThreadWorker.h 
-#        inc/canvas/RenderLayer.h 
-#    
-#        inc/components/physik/Collider.h 
-#        inc/components/Button.h 
-#        inc/components/Component.h 
-#        inc/components/Drawable.h 
-#        inc/components/DrawableVector.h 
-#        inc/components/Line.h 
-#        inc/components/SfEventHandle.h 
-#        
-#    
-#    
-#    
-#       )
-#    
-#    set(PRJ_QOBJECT_HEADERS
-#        inc/canvas/Cabvas.h
-#        inc/components/physik/AbstractPressEvent.h 
-#        inc/components/KeyPressEvent.h 
-#        inc/components/MouseFollower.h 
-#        inc/components/MousePressEvent.h 
-#    )
+
 
 
 FILE_DIRECTORIES(H_FILES *.h)
@@ -129,23 +118,38 @@ message("Create library with files:")
  ENDFOREACH()
 
  set(SFML_EditorWidget_filename "SFML_EditorWidget")
- add_compile_definitions(QSFML_EDITOR_WIDGET_LIB PRIVATE)
+ #add_compile_definitions(QSFML_EDITOR_WIDGET_LIB PRIVATE)
  #message(${BUILD_STATIC})
 if(${BUILD_STATIC})
-    message("Building SFML_EditorWidget static\n")
-    set(SFML_EditorWidget_filename "${SFML_EditorWidget_filename}-s")
-	add_compile_definitions(BUILD_STATIC)
-    add_library(SFML_EditorWidget STATIC ${SOURCES})
-else()
-    message("Building SFML_EditorWidget shared\n")
-    add_library(SFML_EditorWidget SHARED ${SOURCES})
+    target_compile_definitions(easy_profiler PRIVATE  BUILD_SHARED_LIBS)
+    #message("Building SFML_EditorWidget static\n")
+    #set(SFML_EditorWidget_filename "${SFML_EditorWidget_filename}-s")
+	#add_compile_definitions(BUILD_STATIC)
+    #add_library(SFML_EditorWidget_static STATIC ${SOURCES})
+    #target_compile_definitions(SFML_EditorWidget_static BUILD_STATIC)
+
+#else()
+    #message("Building SFML_EditorWidget shared\n")
+    #add_library(SFML_EditorWidget SHARED ${SOURCES})
 endif()
-message("Buildtype: ${CMAKE_BUILD_TYPE}")
+#message("Buildtype: ${CMAKE_BUILD_TYPE}")
+
+set(DebugFileExtention "")
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    set(SFML_EditorWidget_filename "${SFML_EditorWidget_filename}-d")
+    set(DebugFileExtention "-d")
 endif()
-set_target_properties(SFML_EditorWidget PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME ${SFML_EditorWidget_filename})
-target_link_libraries(SFML_EditorWidget 
+
+add_library(SFML_EditorWidget_shared SHARED ${SOURCES})
+add_library(SFML_EditorWidget_static STATIC ${SOURCES})
+
+target_compile_definitions(SFML_EditorWidget_shared PRIVATE  QSFML_EDITOR_WIDGET_LIB)
+target_compile_definitions(SFML_EditorWidget_static PRIVATE  BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
+
+
+set_target_properties(SFML_EditorWidget_shared PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}${DebugFileExtention}")
+set_target_properties(SFML_EditorWidget_static PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}-s${DebugFileExtention}")
+
+set(SFML_EditorWidget_dependencies 
     Qt5::Widgets
     sfml-graphics
     sfml-audio
@@ -154,7 +158,39 @@ target_link_libraries(SFML_EditorWidget
     sfml-window
     easy_profiler)
 
+
+target_link_libraries(SFML_EditorWidget_shared ${SFML_EditorWidget_dependencies})
+target_link_libraries(SFML_EditorWidget_static ${SFML_EditorWidget_dependencies})
+
 target_include_directories(easy_profiler PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
     $<INSTALL_INTERFACE:inc>  # <prefix>/inc
 )
+
+#install(
+#    TARGETS
+#    easy_profiler
+#    EXPORT
+#    ${targets_export_name}
+#    LIBRARY DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+#)
+
+#get_property(easy_profiler_path TARGET easy_profiler PROPERTY LOCATION)
+#install(
+#    EXPORT 
+#        "${easy_profiler_path}/*.dll"
+#        "${easy_profiler_path}/*.lib"
+#    DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+#)
+
+#install(
+#    TARGETS
+#    easy_profiler
+#    EXPORT
+#    LIBRARY DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} COMPONENT Runtime
+#    ARCHIVE DESTINATION ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} COMPONENT Development
+#    RUNTIME DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} COMPONENT Runtime
+#    BUNDLE DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} COMPONENT Runtime
+#    PUBLIC_HEADER DESTINATION include COMPONENT Development
+#    BUNDLE DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} COMPONENT Runtime
+#)
