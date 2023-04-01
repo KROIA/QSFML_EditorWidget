@@ -36,11 +36,5 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 
 add_subdirectory(core)
-
-
 add_subdirectory(Sandbox)
-
-
-#add_executable(SFML_EditorWidget_test main.cpp)
-#target_link_libraries(SFML_EditorWidget_test SFML_EditorWidget)
 
