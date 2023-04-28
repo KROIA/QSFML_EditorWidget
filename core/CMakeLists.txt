@@ -171,6 +171,8 @@ target_include_directories(SFML_EditorWidget_static PUBLIC
 	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
 )
 # Define the install path
+message("Installation to path: ${CMAKE_INSTALL_PREFIX}/bin")
+message("Installation to path: ${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
 install(TARGETS SFML_EditorWidget_shared DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
 install(TARGETS SFML_EditorWidget_shared DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
 install(TARGETS SFML_EditorWidget_static DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
