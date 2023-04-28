@@ -1,6 +1,25 @@
 
 project(Sandbox)
 
+
+# Macro to search for files with given file ending.
+# call:
+#   FILE_DIRECTORIES(H_FILES *.h)
+#
+# all *.h files will be saved in the H_FILES variable
+MACRO(FILE_DIRECTORIES return_list ending)
+    FILE(GLOB_RECURSE new_list ${ending})
+    SET(dir_list "")
+    FOREACH(file_path ${new_list})
+        GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
+        SET(dir_list ${dir_list} ${file_path})
+    ENDFOREACH()
+    LIST(REMOVE_DUPLICATES dir_list)
+    SET(${return_list} ${dir_list})
+ENDMACRO()
+
+
+
 include_directories(inc)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -13,38 +32,41 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR})
 include(../QtLocator.cmake)
 find_package(Qt5Widgets REQUIRED)
 
-set(H_Files 
-	inc/AABBDisplayer.h 
-	inc/DrawableVector.h 
-	inc/sandbox.h 
-	inc/SandboxObject.h)
+# Get all source files
+FILE_DIRECTORIES(H_FILES *.h)
+FILE_DIRECTORIES(CPP_FILES *.cpp)
+FILE_DIRECTORIES(UI_FILES *.ui)
 
-set(SRC_Files 
-	src/main.cpp 
-	src/sandbox.cpp 
-	src/SandboxObject.cpp)
 
-set ( UIS
-	sandbox.ui
-)
-
-qt5_wrap_ui(UIS_HDRS ${UIS})
-
-qt_wrap_cpp(SRC_HDRS ${H_Files})
+qt5_wrap_ui(UIS_HDRS ${UI_FILES})
+qt_wrap_cpp(SRC_HDRS ${H_FILES})
 
 set(Files 
-	${H_Files}
-	${SRC_Files}
+	${H_FILES}
+	${CPP_FILES}
 	${UIS_HDRS}
 	${SRC_HDRS})
 
 add_executable(Sandbox ${Files})
-if(${BUILD_STATIC})
-	#add_compile_definitions(BUILD_STATIC)
-	target_link_libraries(Sandbox SFML_EditorWidget_static)
-	target_compile_definitions(Sandbox PUBLIC BUILD_STATIC)
-else()
-	target_link_libraries(Sandbox SFML_EditorWidget_shared)
+
+
+target_link_libraries(Sandbox SFML_EditorWidget_static)
+target_compile_definitions(Sandbox PUBLIC BUILD_STATIC)
+
+
+install(TARGETS Sandbox DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+if(WIN32)
+    add_custom_command(TARGET Sandbox POST_BUILD
+        COMMAND "${QT_PATH}/bin/windeployqt.exe"
+            --no-compiler-runtime
+            --no-translations
+            --no-system-d3d-compiler
+            --no-opengl-sw
+            --no-angle
+            --no-webkit2
+            --dir "${CMAKE_INSTALL_PREFIX}/bin"
+            --pdb
+            "$<TARGET_FILE:Sandbox>"
+		COMMENT "Running windeployqt..."
+    )
 endif()
-
-

@@ -10,7 +10,9 @@ set(CMAKE_AUTOUIC ON)
 
 
 include(../QtLocator.cmake)
+message("Search for QT5 finished")
 find_package(Qt5Widgets REQUIRED)
+message("find_package for Qt5Widgets finished")
 
 if (Qt5Widgets_FOUND)
     message(STATUS "Using Qt v ${Qt5Widgets_VERSION}")
@@ -23,7 +25,7 @@ include(FetchContent)
 # SFML Shared Lib
 set(BUILD_SHARED_LIBS ON)
 
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/Dependencies")
+set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies")
 
 FetchContent_Declare(
  SFML
@@ -32,6 +34,7 @@ FetchContent_Declare(
 )
 message("Download dependency: ${SFML_GIT_REPO}")
 FetchContent_MakeAvailable(SFML)
+message("Download dependency: ${SFML_GIT_REPO} done")
 
 set(EASY_PROFILER_NO_GUI False)
 FetchContent_Declare(
@@ -52,9 +55,11 @@ FetchContent_MakeAvailable(EASY_PROFILER)
 
 #install(TARGETS easy_profiler DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
-set_target_properties(easy_profiler PROPERTIES CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
-set_target_properties(easy_profiler PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
-set_target_properties(easy_profiler PROPERTIES CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+
+set_target_properties(easy_profiler PROPERTIES CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
+set_target_properties(easy_profiler PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
+set_target_properties(easy_profiler PROPERTIES CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
+
 #set_target_properties(easy_profiler PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 #set_target_properties(easy_profiler PROPERTIES CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
@@ -134,11 +139,6 @@ if(${BUILD_STATIC})
 endif()
 #message("Buildtype: ${CMAKE_BUILD_TYPE}")
 
-set(DebugFileExtention "")
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    set(DebugFileExtention "-d")
-endif()
-
 add_library(SFML_EditorWidget_shared SHARED ${SOURCES})
 add_library(SFML_EditorWidget_static STATIC ${SOURCES})
 
@@ -146,8 +146,8 @@ target_compile_definitions(SFML_EditorWidget_shared PRIVATE  QSFML_EDITOR_WIDGET
 target_compile_definitions(SFML_EditorWidget_static PRIVATE  BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
 
 
-set_target_properties(SFML_EditorWidget_shared PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}${DebugFileExtention}")
-set_target_properties(SFML_EditorWidget_static PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}-s${DebugFileExtention}")
+set_target_properties(SFML_EditorWidget_shared PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}" DEBUG_POSTFIX "-d")
+set_target_properties(SFML_EditorWidget_static PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}-s" DEBUG_POSTFIX "-d")
 
 set(SFML_EditorWidget_dependencies 
     Qt5::Widgets
@@ -162,35 +162,17 @@ set(SFML_EditorWidget_dependencies
 target_link_libraries(SFML_EditorWidget_shared ${SFML_EditorWidget_dependencies})
 target_link_libraries(SFML_EditorWidget_static ${SFML_EditorWidget_dependencies})
 
-target_include_directories(easy_profiler PUBLIC
+target_include_directories(SFML_EditorWidget_shared PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
-    $<INSTALL_INTERFACE:inc>  # <prefix>/inc
+	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
 )
-
-#install(
-#    TARGETS
-#    easy_profiler
-#    EXPORT
-#    ${targets_export_name}
-#    LIBRARY DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-#)
-
-#get_property(easy_profiler_path TARGET easy_profiler PROPERTY LOCATION)
-#install(
-#    EXPORT 
-#        "${easy_profiler_path}/*.dll"
-#        "${easy_profiler_path}/*.lib"
-#    DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-#)
-
-#install(
-#    TARGETS
-#    easy_profiler
-#    EXPORT
-#    LIBRARY DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} COMPONENT Runtime
-#    ARCHIVE DESTINATION ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} COMPONENT Development
-#    RUNTIME DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} COMPONENT Runtime
-#    BUNDLE DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} COMPONENT Runtime
-#    PUBLIC_HEADER DESTINATION include COMPONENT Development
-#    BUNDLE DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} COMPONENT Runtime
-#)
+target_include_directories(SFML_EditorWidget_static PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
+)
+# Define the install path
+install(TARGETS SFML_EditorWidget_shared DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+install(TARGETS SFML_EditorWidget_shared DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
+install(TARGETS SFML_EditorWidget_static DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
+install(TARGETS easy_profiler DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
+install(TARGETS sfml-graphics sfml-audio sfml-network sfml-system sfml-window DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
