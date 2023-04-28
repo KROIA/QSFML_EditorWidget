@@ -106,6 +106,7 @@ IF(NOT QT_MISSING)
     SET(Qt5_DIR "${QT_PATH}/lib/cmake/Qt5")
     SET(Qt5Widgets_DIR  "${QT_PATH}/lib/cmake/Qt5Widgets")
     SET(Qt5Test_DIR "${QT_PATH}/lib/cmake/Qt5Test")
+	set(CMAKE_PREFIX_PATH "${QT_PATH}/lib/cmake")
 
     MESSAGE("Qt5Config.cmake path:  ${Qt5_DIR}")
 ENDIF()
