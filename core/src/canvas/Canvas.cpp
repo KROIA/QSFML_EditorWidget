@@ -309,7 +309,6 @@ void Canvas::timedUpdate()
     QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
 
     sf::Event event;
-
     if(m_settings.updateControlls.enableEventLoop)
     {
         QSFML_PROFILE_CANVAS(EASY_BLOCK("Process sf::Events",profiler::colors::Green200));

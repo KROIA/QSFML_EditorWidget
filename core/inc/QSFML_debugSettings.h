@@ -1,8 +1,10 @@
 #pragma once
 
-
+#ifdef _DEBUG
 #define QSFML_PROFILE_CANVAS_ENABLE
 #define QSFML_PROFILE_CANVASOBJECT_ENABLE
+#endif
+
 
 // Canvas is green
 #ifdef QSFML_PROFILE_CANVAS_ENABLE
