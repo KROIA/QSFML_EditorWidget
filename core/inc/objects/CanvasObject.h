@@ -375,7 +375,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         {
             if(!m_enabled || !m_updateControlls.enableUpdateLoop) return;
             QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange600));
-            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("This update", profiler::colors::Orange700));
+            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Object update", profiler::colors::Orange700));
             update();
             QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 

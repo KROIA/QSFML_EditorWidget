@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
 # SFML_EditorWidget core 
+set(SFML_EditorWidget_filename "SFML_EditorWidget")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,11 +23,14 @@ endif()
 
 
 include(FetchContent)
-# SFML Shared Lib
-set(BUILD_SHARED_LIBS ON)
+
 
 set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies")
 
+# SFML Static Lib
+set(SFML_STATIC_LIBRARIES TRUE)
+set(BUILD_SHARED_LIBS OFF)
+set(SFML_USE_STATIC_LIBS ON)
 FetchContent_Declare(
  SFML
  GIT_REPOSITORY ${SFML_GIT_REPO}
@@ -34,7 +38,7 @@ FetchContent_Declare(
 )
 message("Download dependency: ${SFML_GIT_REPO}")
 FetchContent_MakeAvailable(SFML)
-message("Download dependency: ${SFML_GIT_REPO} done")
+
 
 set(EASY_PROFILER_NO_GUI False)
 FetchContent_Declare(
@@ -54,6 +58,7 @@ FetchContent_MakeAvailable(EASY_PROFILER)
 #)
 
 #install(TARGETS easy_profiler DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
 
 
 set_target_properties(easy_profiler PROPERTIES CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
@@ -94,20 +99,9 @@ set(CMAKE_AUTOMOC ON)
 
 FILE_DIRECTORIES(H_FILES *.h)
 FILE_DIRECTORIES(CPP_FILES *.cpp)
+qt5_wrap_cpp(CPP_MOC_FILES ${H_FILES})
 
-qt5_wrap_cpp(CPP_MOC_FILES
-     ${H_FILES} 
-)
-# Sources
-#file(GLOB CPP_FILES
-#     "src/*.cpp"
-#)
-
-# Headers
 set(SFML_EditorWidget_Include "inc")
-#file(GLOB H_FILES
-#     "${SFML_EditorWidget_Include}/*.h"
-#)
 
 set(SOURCES
     ${CPP_MOC_FILES}
@@ -122,30 +116,24 @@ message("Create library with files:")
     message("  File: " ${file})
  ENDFOREACH()
 
- set(SFML_EditorWidget_filename "SFML_EditorWidget")
- #add_compile_definitions(QSFML_EDITOR_WIDGET_LIB PRIVATE)
- #message(${BUILD_STATIC})
-if(${BUILD_STATIC})
-    target_compile_definitions(easy_profiler PRIVATE  BUILD_SHARED_LIBS)
-    #message("Building SFML_EditorWidget static\n")
-    #set(SFML_EditorWidget_filename "${SFML_EditorWidget_filename}-s")
-	#add_compile_definitions(BUILD_STATIC)
-    #add_library(SFML_EditorWidget_static STATIC ${SOURCES})
-    #target_compile_definitions(SFML_EditorWidget_static BUILD_STATIC)
+ 
 
-#else()
-    #message("Building SFML_EditorWidget shared\n")
-    #add_library(SFML_EditorWidget SHARED ${SOURCES})
-endif()
-#message("Buildtype: ${CMAKE_BUILD_TYPE}")
 
 add_library(SFML_EditorWidget_shared SHARED ${SOURCES})
 add_library(SFML_EditorWidget_static STATIC ${SOURCES})
 
+
+target_compile_definitions(sfml-graphics PRIVATE  SFML_STATIC)
+target_compile_definitions(sfml-audio PRIVATE  SFML_STATIC)
+target_compile_definitions(sfml-network PRIVATE  SFML_STATIC)
+target_compile_definitions(sfml-system PRIVATE  SFML_STATIC)
+target_compile_definitions(sfml-window PRIVATE  SFML_STATIC)
+target_compile_definitions(easy_profiler PRIVATE  EASY_PROFILER_STATIC)
 target_compile_definitions(SFML_EditorWidget_shared PRIVATE  QSFML_EDITOR_WIDGET_LIB)
 target_compile_definitions(SFML_EditorWidget_static PRIVATE  BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
 
 
+set_target_properties(easy_profiler PROPERTIES DEBUG_POSTFIX "-d")
 set_target_properties(SFML_EditorWidget_shared PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}" DEBUG_POSTFIX "-d")
 set_target_properties(SFML_EditorWidget_static PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}-s" DEBUG_POSTFIX "-d")
 
