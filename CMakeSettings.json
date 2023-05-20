@@ -5,23 +5,11 @@
       "generator": "Visual Studio 17 2022 Win64",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x64_x64" ],
-      "buildRoot": "${projectDir}\\build\\${name}",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\build\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "intelliSenseMode": "windows-msvc-x64",
-      "installRoot": "${projectDir}"
-    },
-    {
-      "name": "x64-Release",
-      "generator": "Visual Studio 17 2022 Win64",
-      "configurationType": "Release",
-      "buildRoot": "${projectDir}\\build\\${name}",
-      "installRoot": "${projectDir}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
-      "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
       "intelliSenseMode": "windows-msvc-x64"
     }
   ]

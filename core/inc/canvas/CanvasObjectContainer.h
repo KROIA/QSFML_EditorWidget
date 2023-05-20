@@ -43,7 +43,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
 
         void renderLayerSwitch(Objects::CanvasObject *obj, RenderLayer from, RenderLayer to);
 
-        size_t getUpdateCount() const;
+        size_t getTick() const; // returns the count of updates done
 
         const static size_t npos = -1;
 

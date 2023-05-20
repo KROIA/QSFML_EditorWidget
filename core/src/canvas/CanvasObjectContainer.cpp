@@ -225,7 +225,7 @@ void CanvasObjectContainer::renderLayerSwitch(Objects::CanvasObject *obj, Render
     if(to < RenderLayer::count)
         m_renderLayerGroups[obj->getRenderLayer()]->addObject(obj);
 }
-size_t CanvasObjectContainer::getUpdateCount() const
+size_t CanvasObjectContainer::getTick() const
 {
     return m_updateCount;
 }

@@ -4,6 +4,7 @@
 #include "DrawableVector.h"
 #include "AABBDisplayer.h"
 #include "SandboxObject.h"
+#include <iostream>
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -69,6 +70,14 @@ SandBox::SandBox(QWidget *parent)
         m_chart->setSize(sf::Vector2f(200,100));
         m_canvas_2->addObject(m_chart);
     }
+
+    QSFML::Utilities::Ray func1(sf::Vector2f(0, 0), sf::Vector2f(0, 1));
+    sf::Vector2f point = sf::Vector2f(2, 1);
+    float factor = func1.getShortestDistanceFactor(point);
+    sf::Vector2f pos = func1.getPoint(factor);
+    float distance = func1.getShortestDistance(point);
+    std::cout << "PosFactor: " << factor << " pos: " << pos.x << " " << pos.y << " distance: "<< distance<<"\n";
+    
 }
 
 SandBox::~SandBox()

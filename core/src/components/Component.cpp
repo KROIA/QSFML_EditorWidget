@@ -1,4 +1,5 @@
 #include "components/Component.h"
+#include "objects/CanvasObject.h"
 
 using namespace QSFML::Components;
 using namespace QSFML::Objects;
@@ -18,14 +19,19 @@ Component::Component(const Component &other)
 }
 Component::~Component()
 {
-
+    if (m_parent)
+    {
+        CanvasObject* parent = m_parent;
+        m_parent = nullptr;
+        parent->removeComponent(this);
+    }
 }
 
 
 
 void Component::setParent(CanvasObject *parent)
 {
-    m_parent=parent;
+    m_parent = parent;
 }
 void Component::setName(const std::string &name)
 {
@@ -36,4 +42,14 @@ void Component::setName(const std::string &name)
 void Component::setEnabled(bool enable)
 {
     m_enabled = enable;
+}
+
+void Component::deleteThis()
+{
+    if (m_parent)
+    {
+        CanvasObject* parent = m_parent;
+        m_parent = nullptr;
+        parent->deleteComponent(this);
+    }
 }

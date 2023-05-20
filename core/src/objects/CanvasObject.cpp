@@ -22,7 +22,7 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     m_updateControlls.enableUpdateLoop = true;
     m_updateControlls.enableEventLoop = true;
     m_updateControlls.enablePaintLoop = true;
-
+   
     m_canvasParent = nullptr;
     m_parent = parent;
     m_rootParent = this;
@@ -31,12 +31,15 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     m_objectsChanged = false;
     m_thisNeedsDrawUpdate = false;
     m_enabled = true;
+    m_position = sf::Vector2f(0, 0);
     m_renderLayer = RenderLayer::layer_0;
+    
 }
 CanvasObject::CanvasObject(const CanvasObject &other)
 {
     m_enabled = other.m_enabled;
     m_name = other.m_name;
+    m_position = other.m_position;
     m_canvasParent = nullptr;
     m_parent = nullptr;
     m_rootParent = this;
@@ -121,6 +124,33 @@ const std::string CanvasObject::getName() const
 {
     return m_name;
 }
+void CanvasObject::setPositionRelative(const sf::Vector2f& pos)
+{
+    m_position = pos;
+}
+void CanvasObject::setPositionAbsolute(const sf::Vector2f& pos)
+{
+    if (m_parent)
+    {
+        sf::Vector2f parentPos = m_parent->getPositionAbsolute();
+        m_position = pos - parentPos;
+        return;
+    }
+    m_position = pos;
+}
+const sf::Vector2f& CanvasObject::getPositionRelative() const
+{
+    return m_position;
+}
+sf::Vector2f CanvasObject::getPositionAbsolute() const
+{
+    if (m_parent)
+    {
+        sf::Vector2f parentPos = m_parent->getPositionAbsolute();
+        return m_position + parentPos;
+    }
+    return m_position;
+}
 void CanvasObject::setRenderLayer(RenderLayer layer)
 {
     if(m_renderLayer == layer)
@@ -135,6 +165,7 @@ RenderLayer CanvasObject::getRenderLayer() const
     return m_renderLayer;
 }
 
+// Childs operations
 void CanvasObject::addChild(CanvasObject *child)
 {
     if(!child)return;
@@ -143,29 +174,16 @@ void CanvasObject::addChild(CanvasObject *child)
     onObjectsChanged();
 
 }
-
-
-sf::Vector2i CanvasObject::getMousePosition() const
+void CanvasObject::addChilds(const std::vector<CanvasObject*>& childs)
 {
-    if(!m_canvasParent) return sf::Vector2i(0,0);
-    return m_canvasParent->getMousePosition();
+    for (size_t i = 0; i < childs.size(); ++i)
+    {
+        CanvasObject* child = childs[i];
+        if(child)
+            m_toAddChilds.push_back(child);
+    }
+    onObjectsChanged();
 }
-sf::Vector2f CanvasObject::getMouseWorldPosition() const
-{
-    if(!m_canvasParent) return sf::Vector2f(0,0);
-    return m_canvasParent->getMouseWorldPosition();
-}
-sf::Vector2f CanvasObject::getInWorldSpace(const sf::Vector2i &pixelSpace) const
-{
-    if(!m_canvasParent) return sf::Vector2f(0,0);
-    return m_canvasParent->getInWorldSpace(pixelSpace);
-}
-sf::Vector2i CanvasObject::getInScreenSpace(const sf::Vector2f &worldSpace) const
-{
-    if(!m_canvasParent) return sf::Vector2i(0,0);
-    return m_canvasParent->getInScreenSpace(worldSpace);
-}
-
 
 void CanvasObject::removeChild(CanvasObject *child)
 {
@@ -178,6 +196,31 @@ void CanvasObject::removeChild(CanvasObject *child)
     onObjectsChanged();
     m_toRemoveChilds.push_back(child);
 }
+void CanvasObject::removeChilds(const std::vector<CanvasObject*>& childs)
+{
+    for (size_t j = 0; j < childs.size(); ++j)
+    {
+        CanvasObject* child = childs[j];
+        if (!child)
+            continue;
+        size_t index = getChildIndex(child);
+        if (index == npos) 
+            continue;
+        for (size_t i = 0; i < m_toDeleteChilds.size(); ++i)
+            if (m_toDeleteChilds[i] == child)
+                break;
+        
+        m_toRemoveChilds.push_back(child);
+    }
+    onObjectsChanged();
+}
+void CanvasObject::removeChilds()
+{
+    //m_toDeleteChilds = m_childs;
+    m_toRemoveChilds = m_childs;
+    m_toAddChilds.clear();
+    onObjectsChanged();
+}
 void CanvasObject::removeChild_internal()
 {
     for(size_t i=0; i<m_toRemoveChilds.size(); ++i)
@@ -188,6 +231,7 @@ void CanvasObject::removeChild_internal()
     }
     m_toRemoveChilds.clear();
 }
+
 void CanvasObject::deleteChild(CanvasObject *child)
 {
     if(!child)return;
@@ -206,9 +250,34 @@ void CanvasObject::deleteChild(CanvasObject *child)
     onObjectsChanged();
     m_toDeleteChilds.push_back(child);
 }
+void CanvasObject::deleteChilds(const std::vector<CanvasObject*>& childs)
+{
+    for (size_t j = 0; j < childs.size(); ++j)
+    {
+        CanvasObject* child = childs[j];
+        if (!child)
+            continue;
+
+        for (size_t i = 0; i < m_toDeleteChilds.size(); ++i)
+            if (m_toDeleteChilds[i] == child)
+                continue;
+        for (size_t i = 0; i < m_toAddChilds.size(); ++i)
+            if (m_toAddChilds[i] == child)
+            {
+                m_toAddChilds.erase(m_toAddChilds.begin() + i);
+                break;
+            }
+        m_toDeleteChilds.push_back(child);
+    }
+    onObjectsChanged();
+}
 void CanvasObject::deleteChilds()
 {
-    for(size_t i=0; i<m_childs.size(); ++i)
+    m_toDeleteChilds = m_childs;
+    m_toRemoveChilds.clear();
+    m_toAddChilds.clear();
+    onObjectsChanged();
+    /*for (size_t i = 0; i<m_childs.size(); ++i)
     {
         bool match = false;
         for(size_t j=0; j<m_toDeleteChilds.size(); ++j)
@@ -217,7 +286,7 @@ void CanvasObject::deleteChilds()
         if(!match)
             m_toDeleteChilds.push_back(m_childs[i]);
     }
-    onObjectsChanged();
+    onObjectsChanged();*/
 }
 void CanvasObject::deleteChild_internal()
 {
@@ -261,6 +330,16 @@ void CanvasObject::addComponent(Component *comp)
     m_toAddComponents.push_back(comp);
     onObjectsChanged();
 }
+void CanvasObject::addComponents(const std::vector<Components::Component*>& components)
+{
+    for (size_t i = 0; i < components.size(); ++i)
+    {
+        Components::Component* comp = components[i];
+        if (comp)
+            m_toAddComponents.push_back(comp);
+    }
+    onObjectsChanged();
+}
 void CanvasObject::removeComponent(Component *comp)
 {
     if(!comp)return;
@@ -276,6 +355,24 @@ void CanvasObject::removeComponent(Component *comp)
             break;
         }
     m_toRemoveComponents.push_back(comp);
+    onObjectsChanged();
+}
+void CanvasObject::removeComponents(const std::vector<Components::Component*>& components)
+{
+    for (size_t j = 0; j < components.size(); ++j)
+    {
+        Components::Component* comp = components[j];
+        for (size_t i = 0; i < m_toRemoveComponents.size(); ++i)
+            if (m_toRemoveComponents[i] == comp)
+                return;
+        for (size_t i = 0; i < m_toAddComponents.size(); ++i)
+            if (m_toAddComponents[i] == comp)
+            {
+                m_toAddComponents.erase(m_toAddComponents.begin() + i);
+                break;
+            }
+        m_toRemoveComponents.push_back(comp);
+    }
     onObjectsChanged();
 }
 void CanvasObject::removeComponent_internal()
@@ -395,6 +492,14 @@ void CanvasObject::deleteComponent(Component *comp)
     }
     delete comp;
 }
+void CanvasObject::deleteComponents(const std::vector<Components::Component*>& components)
+{
+    for (size_t j = 0; j < components.size(); ++j)
+    {
+        Components::Component* comp = components[j];
+        deleteComponent(comp);
+    }
+}
 /*void CanvasObject::deleteComponent_internal()
 {
     for(size_t i=0; i<m_toDeleteComponents.size(); ++i)
@@ -485,6 +590,13 @@ void CanvasObject::addComponent_internal()
         {
             m_updatableComponents.push_back(updatable);
         }
+
+        // Check for Updatables
+        Collider* collider = dynamic_cast<Collider*>(toAdd);
+        if (collider)
+        {
+            m_colliders.push_back(collider);
+        }
     }
     m_toAddComponents.clear();
 }
@@ -536,12 +648,56 @@ const std::vector<Components::Collider*> &CanvasObject::getCollider() const
 {
     return m_colliders;
 }
+bool CanvasObject::checkCollision(const CanvasObject* other) const
+{
+    std::vector<Collisioninfo> collisions;
+    for (size_t i = 0; i < m_colliders.size(); ++i)
+    {
+        m_colliders[i]->checkCollision(other, collisions);
+    }
+    if (collisions.size() > 0)
+        return true;
+    return false;
+}
+bool CanvasObject::checkCollision(const CanvasObject* other, 
+    std::vector<Collisioninfo>& collisions, 
+    bool onlyFirstCollision) const
+{
+    for (size_t i = 0; i < m_colliders.size(); ++i)
+    {
+        m_colliders[i]->checkCollision(other, collisions, onlyFirstCollision);
+    }
+    if (collisions.size() > 0)
+        return true;
+    return false;
+}
+
 
 size_t CanvasObject::getComponentCount() const
 {
     return m_components.size();
 }
 
+sf::Vector2i CanvasObject::getMousePosition() const
+{
+    if (!m_canvasParent) return sf::Vector2i(0, 0);
+    return m_canvasParent->getMousePosition();
+}
+sf::Vector2f CanvasObject::getMouseWorldPosition() const
+{
+    if (!m_canvasParent) return sf::Vector2f(0, 0);
+    return m_canvasParent->getMouseWorldPosition();
+}
+sf::Vector2f CanvasObject::getInWorldSpace(const sf::Vector2i& pixelSpace) const
+{
+    if (!m_canvasParent) return sf::Vector2f(0, 0);
+    return m_canvasParent->getInWorldSpace(pixelSpace);
+}
+sf::Vector2i CanvasObject::getInScreenSpace(const sf::Vector2f& worldSpace) const
+{
+    if (!m_canvasParent) return sf::Vector2i(0, 0);
+    return m_canvasParent->getInScreenSpace(worldSpace);
+}
 const sf::View CanvasObject::getCameraView() const
 {
     static const sf::View dummy;
@@ -571,20 +727,17 @@ const sf::Font &CanvasObject::getTextFont() const
     if(!m_canvasParent) return dummy;
     return m_canvasParent->getTextFont();
 }
-size_t CanvasObject::getUpdateCount() const
+size_t CanvasObject::getTick() const
 {
     if(!m_canvasParent) return 0;
-    return m_canvasParent->getUpdateCount();
+    return m_canvasParent->getTick();
 }
 float CanvasObject::getDeltaT() const
 {
     if(!m_canvasParent) return 0;
     return m_canvasParent->getDeltaT();
 }
-void CanvasObject::update()
-{
 
-}
 const CanvasSettings::UpdateControlls &CanvasObject::getUpdateControlls() const
 {
     return m_updateControlls;
@@ -593,6 +746,7 @@ void CanvasObject::setUpdateControlls(const CanvasSettings::UpdateControlls &con
 {
     m_updateControlls = controlls;
 }
+
 
 std::string CanvasObject::toString() const
 {
@@ -605,6 +759,10 @@ std::string CanvasObject::toString() const
     }
 
     return msg;
+}
+void CanvasObject::update()
+{
+
 }
 std::vector<std::string> CanvasObject::toStringInternal(const std::string &preStr) const
 {
@@ -650,7 +808,8 @@ void CanvasObject::deleteThis()
 {
     if(m_parent)
     {
-        m_parent->deleteChild(this);
+       // m_parent->deleteChild(this);
+        m_parent->removeChild(this);
     }
     else if(m_canvasParent)
         m_canvasParent->CanvasObjectContainer::deleteLater(this);
@@ -747,7 +906,7 @@ void CanvasObject::setCanvasParent(Canvas *parent)
     internalOnCanvasParentChange(oldParent, m_canvasParent);
     onCanvasParentChange(oldParent, m_canvasParent);
 }
-/*
+
 void CanvasObject::updateNewElements()
 {
     QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange));
@@ -758,59 +917,63 @@ void CanvasObject::updateNewElements()
     addChild_internal();
     addComponent_internal();
 
-    for(size_t i=0; i<m_childs.size(); ++i)
+    for (size_t i = 0; i < m_childs.size(); ++i)
         m_childs[i]->updateNewElements();
     m_objectsChanged = false;
 }
-void CanvasObject::sfEvent(const std::vector<sf::Event> &events)
+void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
 {
-    if(!m_enabled || !m_updateControlls.enableEventLoop) return;
+    if (!m_enabled || !m_updateControlls.enableEventLoop || !m_thisNeedsEventUpdate) return;
     QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange100));
     QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components event", profiler::colors::Orange400));
-    for(size_t i=0; i<m_eventComponents.size(); ++i)
+    for (size_t i = 0; i < m_eventComponents.size(); ++i)
     {
-        if(!m_eventComponents[i]->isEnabled())
+        if (!m_eventComponents[i]->isEnabled())
             continue;
 
-        for(size_t j=0; j<events.size(); ++j)
+        for (size_t j = 0; j < events.size(); ++j)
             m_eventComponents[i]->sfEvent(events[j]);
 
     }
     QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 
     QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs event", profiler::colors::Orange500));
-    for(size_t i=0; i<m_childs.size(); ++i)
+    for (size_t i = 0; i < m_childs.size(); ++i)
     {
-        if(m_childs[i]->m_enabled)
-            m_childs[i]->sfEvent(events);
+        CanvasObject* obj = m_childs[i];
+        if (obj->m_enabled)
+            obj->sfEvent(events);
     }
     QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 }
 void CanvasObject::update_internal()
 {
-    if(!m_enabled || !m_updateControlls.enableUpdateLoop) return;
+    if (!m_enabled || !m_updateControlls.enableUpdateLoop) return;
     QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange600));
-    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("This update", profiler::colors::Orange700));
+    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Object update", profiler::colors::Orange700));
     update();
     QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 
     QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components update", profiler::colors::Orange800));
-    for(size_t i=0; i<m_components.size(); ++i)
+    for (size_t i = 0; i < m_updatableComponents.size(); ++i)
     {
-        if(!m_components[i]->isEnabled())
+        Utilities::Updatable* comp = m_updatableComponents[i];
+        Components::Component* comp1 = dynamic_cast<Components::Component*>(comp);
+        if (!comp1->isEnabled())
             continue;
-        m_components[i]->update();
+        comp->update();
     }
     QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
 
     QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs update", profiler::colors::Orange800));
-    for(size_t i=0; i<m_childs.size(); ++i)
+    for (size_t i = 0; i < m_childs.size(); ++i)
     {
-        if(m_childs[i]->m_enabled)
-            m_childs[i]->update_internal();
+        CanvasObject* obj = m_childs[i];
+        if (obj->m_enabled)
+            obj->update_internal();
     }
     QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-}*/
+}
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
     if(!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate) return;

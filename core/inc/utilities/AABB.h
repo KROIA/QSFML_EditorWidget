@@ -70,9 +70,10 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
         static bool intersectsBottomOf(const AABB &a, const AABB &b);      //!<\return true if a intersects the bottom edge of b. a will be true even if both may not intersect.
         static bool intersectsRightOf(const AABB &a, const AABB &b);       //!<\return true if a intersects the right edge of b. a will be true even if both may not intersect.
 
-        static AABB getFrame(const std::vector<AABB> &list); //!<\return a AABB with the position and size, so that all AABB's in the list would fit in it.
-                                                             //!<        Its a frame around all rects from the list.
-
+        static AABB getFrame(const std::vector<AABB> &list);               //!<\return a AABB with the position and size, so that all AABB's in the list would fit in it.
+                                                                           //!<        Its a frame around all rects from the list.
+        static AABB getFrame(const std::vector<sf::Vector2f>& points);     //!<\return a AABB with the position and size, so that all points in the list would fit in it.
+                                                                           //!<        Its a frame around all points from the list.
     private:
         sf::Vector2f m_pos;
         sf::Vector2f m_size;

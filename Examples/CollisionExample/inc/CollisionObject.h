@@ -1,0 +1,16 @@
+#pragma once
+#include "QSFML_EditorWidget.h"
+
+
+class CollisionObject : public QSFML::Objects::CanvasObject
+{
+public:
+	CollisionObject(const std::string& name = "MyObject",
+					CanvasObject* parent = nullptr);
+    ~CollisionObject();
+
+	virtual CLONE_FUNC_DEC(CollisionObject);
+
+private:
+	QSFML::Components::Collider* m_collider;
+};

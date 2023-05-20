@@ -191,17 +191,27 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         void setName(const std::string &name);
         const std::string getName() const;
 
+        void setPositionRelative(const sf::Vector2f& pos); // Sets the position relative to its parent
+        void setPositionAbsolute(const sf::Vector2f& pos); // Sets the position in the absolute world coords.
+        const sf::Vector2f& getPositionRelative() const;   // Gets the position relative to its parent
+        sf::Vector2f getPositionAbsolute() const;          // Gets the position in absolute world coords
+
         void setRenderLayer(RenderLayer layer);
         RenderLayer getRenderLayer() const;
 
-        sf::Vector2i getMousePosition() const;
-        sf::Vector2f getMouseWorldPosition() const;
-        sf::Vector2f getInWorldSpace(const sf::Vector2i &pixelSpace) const;
-        sf::Vector2i getInScreenSpace(const sf::Vector2f &worldSpace) const;
-
+        
+        // Childs operations
         void addChild(CanvasObject *child);
+        void addChilds(const std::vector<CanvasObject*> &childs);
+
         void removeChild(CanvasObject *child);
+        void removeChilds(const std::vector<CanvasObject*>& childs);
+        void removeChilds();
+        template<typename T>
+        void removeChilds();
+
         void deleteChild(CanvasObject *child);
+        void deleteChilds(const std::vector<CanvasObject*>& childs);
         void deleteChilds();
         template<typename T>
         void deleteChilds();
@@ -214,10 +224,19 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         size_t getChildCount() const;
         template<typename T>
         size_t getChildCount() const;
+        // ---------
 
+        // Component operations
         void addComponent(Components::Component *comp);
+        void addComponents(const std::vector<Components::Component*>& components);
+
         void removeComponent(Components::Component *comp);
+        void removeComponents(const std::vector<Components::Component*>& components);
+        template<typename T>
+        void removeComponents();
+
         void deleteComponent(Components::Component *comp);
+        void deleteComponents(const std::vector<Components::Component*>& components);
         void deleteComponents();
         template<typename T>
         void deleteComponents();
@@ -231,6 +250,15 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         template<typename T>
         size_t getComponentCount() const;
         const std::vector<Components::Collider*> &getCollider() const;
+        bool checkCollision(const CanvasObject* other) const;
+        bool checkCollision(const CanvasObject* other, std::vector<Components::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+        // ---------
+
+        // Canvas operations
+        sf::Vector2i getMousePosition() const;
+        sf::Vector2f getMouseWorldPosition() const;
+        sf::Vector2f getInWorldSpace(const sf::Vector2i& pixelSpace) const;
+        sf::Vector2i getInScreenSpace(const sf::Vector2f& worldSpace) const;
 
         const sf::View getCameraView() const;
         const sf::View &getDefaultCameraView() const;
@@ -239,9 +267,9 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
 
         const sf::Font &getTextFont() const;
 
-        size_t getUpdateCount() const;
+        size_t getTick() const;
         float getDeltaT() const; // Returns delta Time since last update in seconds
-
+        // ---------
 
         const CanvasSettings::UpdateControlls &getUpdateControlls() const;
         void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
@@ -287,13 +315,15 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
 
         bool m_enabled;
         std::string m_name;
+        sf::Vector2f m_position;
+
         Canvas *m_canvasParent;
         CanvasObject *m_parent;
         CanvasObject *m_rootParent;
 
         bool m_objectsChanged;
         std::vector<CanvasObject*> m_childs;
-        std::vector<CanvasObject*> m_toAddChilds;
+        std::vector<Components::Component*> m_components;
 
         /*struct ComponentMetadata
         {
@@ -302,12 +332,9 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         };*/
 
 
-        std::vector<Components::Component*> m_components;
-        std::vector<Components::Component*> m_toAddComponents;
-
+        
 
         std::vector<Utilities::Updatable*> m_updatableComponents;
-
         std::vector<Components::Collider*> m_colliders;
 
         // Will send a signal to the parent to notify, the new status
@@ -322,8 +349,11 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         bool m_thisNeedsDrawUpdate;
         std::vector<Components::Drawable*> m_drawableComponents;
 
+        std::vector<CanvasObject*> m_toAddChilds;
         std::vector<CanvasObject*> m_toDeleteChilds;
         std::vector<CanvasObject*> m_toRemoveChilds;
+        
+        std::vector<Components::Component*> m_toAddComponents;
         std::vector<Components::Component*> m_toRemoveComponents;
 
         CanvasSettings::UpdateControlls m_updateControlls;
@@ -332,121 +362,21 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
 
         // Canvas Object Internal functions
         void setCanvasParent(Canvas *parent);
-        inline void updateNewElements()
-        {
-            QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange));
-            removeChild_internal();
-            deleteChild_internal();
-            removeComponent_internal();
-            //deleteComponent_internal();
-            addChild_internal();
-            addComponent_internal();
-
-            for(size_t i=0; i<m_childs.size(); ++i)
-                m_childs[i]->updateNewElements();
-            m_objectsChanged = false;
-        }
-        inline void sfEvent(const std::vector<sf::Event> &events)
-        {
-            if(!m_enabled || !m_updateControlls.enableEventLoop || !m_thisNeedsEventUpdate) return;
-            QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange100));
-            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components event", profiler::colors::Orange400));
-            for(size_t i=0; i<m_eventComponents.size(); ++i)
-            {
-                if(!m_eventComponents[i]->isEnabled())
-                    continue;
-
-                for(size_t j=0; j<events.size(); ++j)
-                    m_eventComponents[i]->sfEvent(events[j]);
-
-            }
-            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-
-            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs event", profiler::colors::Orange500));
-            for(size_t i=0; i<m_childs.size(); ++i)
-            {
-                CanvasObject *obj = m_childs[i];
-                if(obj->m_enabled)
-                    obj->sfEvent(events);
-            }
-            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-        }
-        inline void update_internal()
-        {
-            if(!m_enabled || !m_updateControlls.enableUpdateLoop) return;
-            QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange600));
-            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Object update", profiler::colors::Orange700));
-            update();
-            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-
-            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components update", profiler::colors::Orange800));
-            for(size_t i=0; i<m_updatableComponents.size(); ++i)
-            {
-                Utilities::Updatable* comp = m_updatableComponents[i];
-                Components::Component* comp1 = dynamic_cast<Components::Component*>(comp);
-                if(!comp1->isEnabled())
-                    continue;
-                comp->update();
-            }
-            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-
-            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs update", profiler::colors::Orange800));
-            for(size_t i=0; i<m_childs.size(); ++i)
-            {
-                CanvasObject *obj = m_childs[i];
-                if(obj->m_enabled)
-                    obj->update_internal();
-            }
-            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-        }
-        /*inline void draw(sf::RenderWindow &window) const
-        {
-            if(!m_enabled || !m_updateControlls.enablePaintLoop) return;
-            QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange900));
-            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components draw", profiler::colors::OrangeA100));
-            for(size_t i=0; i<m_drawableComponents.size(); ++i)
-            {
-                if(!m_drawableComponents[i]->isEnabled())
-                    continue;
-                window.draw(*m_drawableComponents[i]);
-            }
-            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-
-            QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs draw", profiler::colors::OrangeA200));
-            for(size_t i=0; i<m_childs.size(); ++i)
-            {
-                if(m_childs[i]->m_enabled && m_childs[i]->m_thisNeedsDrawUpdate)
-                    m_childs[i]->draw(window);
-            }
-            QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
-        }*/
-        /*void updateNewElements();
+        
+        void updateNewElements();
         void sfEvent(const std::vector<sf::Event> &events);
-        void update_internal();*/
+        void update_internal();
         void draw(sf::RenderWindow &window) const;
 };
-
+template<typename T>
+void CanvasObject::removeChilds()
+{
+    removeChilds(getChilds<T>());
+}
 template<typename T>
 void CanvasObject::deleteChilds()
 {
-    for(size_t i=0; i<m_childs.size(); ++i)
-    {
-        T* child = dynamic_cast<T*>(m_childs[i]);
-        if(child)
-        {
-           /* m_childs.erase(m_childs.begin() + i);
-            --i;
-            delete child;*/
-
-            bool match = false;
-            for(size_t j=0; j<m_toDeleteChilds.size(); ++j)
-                if(m_toDeleteChilds[j] == child)
-                    match = true;
-            if(!match)
-                m_toDeleteChilds.push_back(child);
-        }
-    }
-    m_objectsChanged = true;
+    deleteChilds(getChilds<T>());
 }
 template<typename T>
 std::vector<T*> CanvasObject::getChilds() const
@@ -473,75 +403,16 @@ size_t CanvasObject::getChildCount() const
     }
     return counter;
 }
+template<typename T>
+void CanvasObject::removeComponents()
+{
+    removeComponent(getComponents<T>());
+}
 
 template<typename T>
 void CanvasObject::deleteComponents()
 {
-    for(int i=0; i<(int)m_toAddComponents.size(); ++i)
-    {
-        T* comp = dynamic_cast<T*>(m_toAddComponents[i]);
-        if(!comp)
-            continue;
-        delete comp;
-        m_toAddComponents.erase(m_toAddComponents.begin() + i);
-
-        --i;
-    }
-    for(size_t i=0; i<m_components.size(); ++i)
-    {
-        T* comp = dynamic_cast<T*>(m_components[i]);
-        if(!comp)
-            continue;
-
-        // Check for sfEventHandles
-        Components::SfEventHandle *evComp = dynamic_cast<Components::SfEventHandle*>(comp);
-        if(evComp)
-        {
-            for(size_t j=0; j<m_eventComponents.size(); ++j)
-                if(m_eventComponents[j] == evComp)
-                {
-                    m_eventComponents.erase(m_eventComponents.begin() + j);
-                    break;
-                }
-            if(m_eventComponents.size() == 0)
-            {
-                needsEventUpdate(false);
-            }
-        }
-
-        // Check for Drawables
-        Components::Drawable *drawComp = dynamic_cast<Components::Drawable*>(comp);
-        if(drawComp)
-        {
-            for(size_t j=0; j<m_drawableComponents.size(); ++j)
-                if(m_drawableComponents[j] == drawComp)
-                {
-                    m_drawableComponents.erase(m_drawableComponents.begin() + j);
-                    break;
-                }
-            if(m_drawableComponents.size() == 0)
-            {
-                needsDrawUpdate(false);
-            }
-        }
-
-        // Check for Updatables
-        Utilities::Updatable *updatable = dynamic_cast<Utilities::Updatable*>(comp);
-        if(updatable)
-        {
-            for(size_t j=0; j<m_updatableComponents.size(); ++j)
-                if(m_updatableComponents[j] == comp)
-                {
-                    m_updatableComponents.erase(m_updatableComponents.begin() + j);
-                    break;
-                }
-        }
-
-
-        m_components.erase(m_components.begin() + i);
-        --i;
-        delete comp;
-    }
+    deleteComponents(getComponents<T>());
 }
 
 template<typename T>

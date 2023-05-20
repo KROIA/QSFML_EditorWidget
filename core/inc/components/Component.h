@@ -84,6 +84,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component
 
 
     protected:
+        void deleteThis();
 
     private:
         bool m_enabled;
