@@ -297,7 +297,6 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         void deleteThis();
 
     private:
-
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
 
         void removeChild_internal();
@@ -311,17 +310,18 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         void addComponent_internal();
         void onObjectsChanged();
 
-        static size_t m_objNameCounter;
+        
 
         bool m_enabled;
         std::string m_name;
         sf::Vector2f m_position;
 
+        // Hirarchy
         Canvas *m_canvasParent;
         CanvasObject *m_parent;
         CanvasObject *m_rootParent;
 
-        bool m_objectsChanged;
+        
         std::vector<CanvasObject*> m_childs;
         std::vector<Components::Component*> m_components;
        
@@ -341,6 +341,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         bool m_thisNeedsDrawUpdate;
         std::vector<Components::Drawable*> m_drawableComponents;
 
+        bool m_objectsChanged;
         std::vector<CanvasObject*> m_toAddChilds;
         std::vector<CanvasObject*> m_toDeleteChilds;
         std::vector<CanvasObject*> m_toRemoveChilds;
@@ -353,12 +354,16 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         RenderLayer m_renderLayer;
 
         // Canvas Object Internal functions
+        virtual void inCanvasAdded();
         void setCanvasParent(Canvas *parent);
         
         void updateNewElements();
         void sfEvent(const std::vector<sf::Event> &events);
         void update_internal();
         void draw(sf::RenderWindow &window) const;
+
+        // Static
+        static size_t s_objNameCounter;
 };
 template<typename T>
 void CanvasObject::removeChilds()

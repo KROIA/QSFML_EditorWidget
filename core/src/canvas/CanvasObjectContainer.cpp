@@ -86,7 +86,10 @@ void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
 }
 void CanvasObjectContainer::addObject_internal()
 {
+    for (auto obj : m_allObjects->getObjectsToAdd())
+        obj->inCanvasAdded();
     m_allObjects->addObject_internal();
+    
     if(m_threadWorker)
     {
         for(size_t i=0; i<m_threadGroups.size(); ++i)

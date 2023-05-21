@@ -32,6 +32,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectGroup
         template<typename T>
         size_t getObjectsCount() const;
         const std::vector<Objects::CanvasObject*> &getObjects() const;
+        const std::vector<Objects::CanvasObject*> &getObjectsToAdd() const;
+        const std::vector<Objects::CanvasObject*> &getObjectsToDelete() const;
         template<typename T>
         std::vector<T*> getObjects() const;
         template<typename T>

@@ -49,6 +49,7 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
         bool contains(const sf::Vector2f &point) const;  //!<\return true if the point is inside the rectangle.
         bool intersects(const AABB &b) const;            //!<\return true if there is any intersection of this and b.
         bool intersectsInverseOf(const AABB &b) const;   //!<\return true if b is not fully contained in this.
+        bool contains(const AABB &b) const;              //!<\return true if b is fully contained in this.
         bool isLeftOf(const AABB &b) const;              //!<\return true if this is on the left side of b.
         bool isRightOf(const AABB &b) const;             //!<\return true if this is on the right side of b.
         bool isOnTopOf(const AABB &b) const;             //!<\return true if this is on top of b.
@@ -61,6 +62,7 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
         static bool contains(const AABB &a, const sf::Vector2f &point);    //!<\return true if the point is inside the rectangle.
         static bool intersects(const AABB &a, const AABB &b);              //!<\return true if there is any intersection of a and b.
         static bool intersectsInverseOf(const AABB &a, const AABB &b);     //!<\return true if b is not fully contained in a.
+        static bool contains(const AABB &a, const AABB &b);                //!<\return true if b is fully contained in a.
         static bool isLeftOf(const AABB &a, const AABB &b);                //!<\return true if a is on the left side of b.
         static bool isRightOf(const AABB &a, const AABB &b);               //!<\return true if a is on the right side of b.
         static bool isOnTopOf(const AABB &a, const AABB &b);               //!<\return true if a is on top of b.

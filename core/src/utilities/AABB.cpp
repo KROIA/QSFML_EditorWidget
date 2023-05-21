@@ -159,47 +159,55 @@ sf::Vector2f AABB::getTop() const
 
 bool AABB::contains(const sf::Vector2f &point) const
 {
-    return contains(*this,point);
+    return (m_pos.x <= point.x && m_pos.x + m_size.x >= point.x) &&
+           (m_pos.y <= point.y && m_pos.y + m_size.y >= point.y);
 }
 bool AABB::intersects(const AABB &b) const
 {
-    return intersects(*this,b);
+    return (m_pos.x <= b.m_pos.x + b.m_size.x && m_pos.x + m_size.x >= b.m_pos.x) &&
+           (m_pos.y <= b.m_pos.y + b.m_size.y && m_pos.y + m_size.y >= b.m_pos.y);
 }
 bool AABB::intersectsInverseOf(const AABB &b) const
 {
-    return intersectsInverseOf(*this,b);
+    return !(m_pos.x > b.m_pos.x && m_pos.x + m_size.x < b.m_pos.x + b.m_size.x &&
+             m_pos.y > b.m_pos.y && m_pos.y + m_size.y < b.m_pos.y + b.m_size.y);
+}
+bool AABB::contains(const AABB& b) const
+{
+    return (m_pos.x > b.m_pos.x && m_pos.x + m_size.x < b.m_pos.x + b.m_size.x &&
+            m_pos.y > b.m_pos.y && m_pos.y + m_size.y < b.m_pos.y + b.m_size.y);
 }
 bool AABB::isLeftOf(const AABB &b) const
 {
-    return isLeftOf(*this,b);
+    return b.m_pos.x > m_pos.x + m_size.x;
 }
 bool AABB::isRightOf(const AABB &b) const
 {
-     return isRightOf(*this,b);
+     return m_pos.x > b.m_pos.x + b.m_size.x;
 }
 bool AABB::isOnTopOf(const AABB &b) const
 {
-    return isOnTopOf(*this,b);
+    return b.m_pos.y > m_pos.y + m_size.y;
 }
 bool AABB::isBelowOf(const AABB &b) const
 {
-    return isBelowOf(*this,b);
+    return m_pos.y > b.m_pos.y + b.m_size.y;
 }
 bool AABB::intersectsTopOf(const AABB &b) const
 {
-    return intersectsTopOf(*this,b);
+    return m_pos.y < b.m_pos.y && m_pos.y + m_size.y > b.m_pos.y;
 }
 bool AABB::intersectsLeftOf(const AABB &b) const
 {
-    return intersectsLeftOf(*this,b);
+    return m_pos.x < b.m_pos.x && m_pos.x + m_size.x > b.m_pos.x;
 }
 bool AABB::intersectsBottomOf(const AABB &b) const
 {
-    return intersectsBottomOf(*this,b);
+    return m_pos.y < b.m_pos.y + b.m_size.y && m_pos.y + m_size.y > b.m_pos.y + b.m_size.y;
 }
 bool AABB::intersectsRightOf(const AABB &b) const
 {
-    return intersectsRightOf(*this,b);
+    return m_pos.x < b.m_pos.x + b.m_size.x && m_pos.x + m_size.x > b.m_pos.x + b.m_size.x;
 }
 
 bool AABB::contains(const AABB &a, const sf::Vector2f &point)
@@ -216,6 +224,12 @@ bool AABB::intersectsInverseOf(const AABB &a, const AABB &b)
 {
     return !(a.m_pos.x > b.m_pos.x && a.m_pos.x + a.m_size.x < b.m_pos.x + b.m_size.x &&
              a.m_pos.y > b.m_pos.y && a.m_pos.y + a.m_size.y < b.m_pos.y + b.m_size.y);
+}
+bool AABB::contains(const AABB& a, const AABB& b)
+{
+    return (a.m_pos.x > b.m_pos.x && a.m_pos.x + a.m_size.x < b.m_pos.x + b.m_size.x &&
+            a.m_pos.y > b.m_pos.y && a.m_pos.y + a.m_size.y < b.m_pos.y + b.m_size.y);
+
 }
 bool AABB::isLeftOf(const AABB &a, const AABB &b)
 {

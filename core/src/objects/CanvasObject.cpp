@@ -10,14 +10,14 @@ using namespace QSFML::Components;
 
 OBJECT_IMPL(CanvasObject)
 
-size_t CanvasObject::m_objNameCounter = 0;
+size_t CanvasObject::s_objNameCounter = 0;
 CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
 {
     m_name = name;
     if(m_name.size() == 0)
     {
-        m_objNameCounter++;
-        m_name = "CanvasObject_"+std::to_string(m_objNameCounter);
+        s_objNameCounter++;
+        m_name = "CanvasObject_"+std::to_string(s_objNameCounter);
     }
     m_updateControlls.enableUpdateLoop = true;
     m_updateControlls.enableEventLoop = true;
@@ -84,7 +84,10 @@ CanvasObject::~CanvasObject()
 }
 
 
+void CanvasObject::inCanvasAdded()
+{
 
+}
 void CanvasObject::setParent(CanvasObject *parent)
 {
     if(parent == m_parent)

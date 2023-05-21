@@ -46,6 +46,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	
 
 	m_pointPainter = new QSFML::Components::PointPainter();
+	m_pointPainter->setColor(sf::Color::Yellow);
 	addComponent(m_pointPainter);
 
 	m_mouseFollower = new QSFML::Components::MouseFollower();

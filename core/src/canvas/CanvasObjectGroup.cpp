@@ -110,6 +110,14 @@ const std::vector<CanvasObject*> &CanvasObjectGroup::getObjects() const
 {
     return m_container;
 }
+const std::vector<Objects::CanvasObject*>& CanvasObjectGroup::getObjectsToAdd() const
+{
+    return m_toAddContainer;
+}
+const std::vector<Objects::CanvasObject*>& CanvasObjectGroup::getObjectsToDelete() const
+{
+    return m_toDelete;
+}
 
 bool CanvasObjectGroup::objectExists(CanvasObject *obj)
 {

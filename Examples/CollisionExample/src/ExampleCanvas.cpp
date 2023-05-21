@@ -26,12 +26,15 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
 
     DefaultEditor *defaultEditor = new DefaultEditor();
     m_canvas->addObject(defaultEditor);
-    qDebug() << defaultEditor->toString().c_str();
+    
 
     m_collisionChecker = new CollisionChecker();
     m_canvas->addObject(m_collisionChecker);
 
     m_canvas->applyObjectChanges();
+
+    qDebug() << defaultEditor->toString().c_str();
+    qDebug() << m_collisionChecker->toString().c_str();
     
 
     QTimer* timer = new QTimer(this);

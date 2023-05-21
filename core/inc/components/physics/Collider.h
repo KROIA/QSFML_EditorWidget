@@ -30,6 +30,7 @@ namespace Components
 
     class QSFML_EDITOR_WIDGET_EXPORT Collider: public Component
     {
+            
         public:
             class QSFML_EDITOR_WIDGET_EXPORT Painter;
             friend Painter;
