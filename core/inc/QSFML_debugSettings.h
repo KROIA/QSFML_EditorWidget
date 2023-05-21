@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDebug>
-#include <easy/profiler.h>
 
 #ifdef _DEBUG
 #define QSFML_PROFILING
@@ -9,7 +8,8 @@
 
 // Profiling
 #ifdef QSFML_PROFILING
-	
+	#include <easy/profiler.h>
+
 	#define QSFMLP_BLOCK(text, color) EASY_BLOCK(text, profiler::colors:: color)
 	#define QSFMLP_END_BLOCK EASY_END_BLOCK
 	#define QSFMLP_FUNCTION(color) EASY_FUNCTION(profiler::colors:: color)

@@ -25,8 +25,9 @@ namespace QSFML
 
 		sf::Vector2f RandomEngine::getVector(const sf::Vector2f& minRange, const sf::Vector2f& maxRange)
 		{
-			return sf::Vector2f(Utilities::RandomEngine::getFloat(minRange.x, maxRange.x),
-		                        Utilities::RandomEngine::getFloat(minRange.y, maxRange.y));
+			sf::Vector2f randVec(Utilities::RandomEngine::getFloat(minRange.x, maxRange.x),
+								 Utilities::RandomEngine::getFloat(minRange.y, maxRange.y));
+			return randVec;
 		}
 
 	}

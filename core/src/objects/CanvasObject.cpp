@@ -138,9 +138,9 @@ void CanvasObject::setPositionAbsolute(const sf::Vector2f& pos)
     {
         sf::Vector2f parentPos = m_parent->getPositionAbsolute();
         m_position = pos - parentPos;
-        return;
     }
-    m_position = pos;
+    else
+        m_position = pos;
     for (size_t i = 0; i < m_colliders.size(); ++i)
         m_colliders[i]->setPos(m_position);
 }
@@ -934,7 +934,7 @@ void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
             component->sfEvent(event);
 
     }
-    EASY_END_BLOCK;
+    QSFMLP_END_BLOCK;
 
     QSFMLP_BLOCK("Childs event", QSFMLP_OBJECT_COLOR_3);
     for (auto obj : m_childs)
@@ -942,7 +942,7 @@ void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
         if (obj->m_enabled)
             obj->sfEvent(events);
     }
-    EASY_END_BLOCK;
+    QSFMLP_END_BLOCK;
 }
 void CanvasObject::update_internal()
 {
@@ -950,7 +950,7 @@ void CanvasObject::update_internal()
     QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
     QSFMLP_BLOCK("Object update", QSFMLP_OBJECT_COLOR_2);
     update();
-    EASY_END_BLOCK;
+    QSFMLP_END_BLOCK;
 
     QSFMLP_BLOCK("Components update", QSFMLP_OBJECT_COLOR_3);
     for (size_t i = 0; i < m_updatableComponents.size(); ++i)
@@ -961,7 +961,7 @@ void CanvasObject::update_internal()
             continue;
         comp->update();
     }
-    EASY_END_BLOCK;
+    QSFMLP_END_BLOCK;
 
     QSFMLP_BLOCK("Childs update", QSFMLP_OBJECT_COLOR_4);
     for (size_t i = 0; i < m_childs.size(); ++i)
@@ -970,7 +970,7 @@ void CanvasObject::update_internal()
         if (obj->m_enabled)
             obj->update_internal();
     }
-    EASY_END_BLOCK;
+    QSFMLP_END_BLOCK;
 }
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
@@ -983,7 +983,7 @@ void CanvasObject::draw(sf::RenderWindow &window) const
             continue;
         window.draw(*m_drawableComponents[i]);
     }
-    EASY_END_BLOCK;
+    QSFMLP_END_BLOCK;
 
     QSFMLP_BLOCK("Childs draw", QSFMLP_OBJECT_COLOR_3);
     for(size_t i=0; i<m_childs.size(); ++i)
@@ -991,6 +991,6 @@ void CanvasObject::draw(sf::RenderWindow &window) const
         if(m_childs[i]->m_enabled)
             m_childs[i]->draw(window);
     }
-    EASY_END_BLOCK;
+    QSFMLP_END_BLOCK;
 }
 

@@ -2,7 +2,7 @@
 #include "QSFML_EditorWidget.h"
 #include "MouseCollider.h"
 #include "CollisionObject.h"
-
+#include "PerformanceObject.h"
 
 class CollisionChecker : public QObject, public QSFML::Objects::CanvasObject
 {
@@ -11,7 +11,8 @@ public:
 	enum Mode
 	{
 		intersecting,
-		contains
+		contains,
+		performanceTest
 	};
 
 	CollisionChecker(const std::string& name = "CollisionChecker",
@@ -31,6 +32,7 @@ private:
 	void update() override;
 	void update_intersecting();
 	void update_contains();
+	void update_performanceTest();
 
 	Mode m_mode;
 
@@ -40,6 +42,10 @@ private:
 	//CollisionObject* m_collisionObject;
 	QSFML::Components::MouseFollower* m_mouseFollower;
 	sf::Vector2f m_mousePos;
+	QSFML::Objects::CanvasObject* m_colliderContainer;
 	std::vector<QSFML::Objects::CanvasObject*> m_objs;
 	std::vector<QSFML::Objects::CanvasObject*> m_collisionObjs;
+
+	QSFML::Objects::CanvasObject* m_performanceContainer;
+	std::vector<QSFML::Objects::CanvasObject*> m_performanceObjs;
 };

@@ -324,7 +324,9 @@ const std::string& Canvas::getProfilerOutputFileName()
 }
 void Canvas::saveProfilerFile()
 {
+#ifdef QSFML_PROFILING
     profiler::dumpBlocksToFile(m_profilerOutputFile.c_str());
+#endif
 }
 void Canvas::saveProfilerFile(const std::string& fileName)
 {

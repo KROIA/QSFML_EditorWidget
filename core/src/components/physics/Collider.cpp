@@ -122,15 +122,17 @@ void Collider::checkCollision(const std::vector<Components::Collider*>& other,
 
 bool Collider::checkCollision(Collider* other, std::vector<Collisioninfo>& collisions, bool onlyFirstCollision) const
 { 
-    if (!other)
-        return false;
+    QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
     Canvas* canvasParent = getCanvasParent();
     StatsManager::addBoundingBoxCollisionCheck(canvasParent);
+    QSFMLP_BLOCK("AABB check", QSFMLP_PHYSICS_COLOR_4)
     if (!m_boundingBox.intersects(other->m_boundingBox))
     {
+        QSFMLP_END_BLOCK;
         return false;
     }
-    QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
+    QSFMLP_END_BLOCK;
+    QSFMLP_BLOCK("Intersection checks", QSFMLP_PHYSICS_COLOR_5)
 
     
 
@@ -169,6 +171,7 @@ bool Collider::checkCollision(Collider* other, std::vector<Collisioninfo>& colli
                         
                         StatsManager::addCollisionCheck(canvasParent, i*o);
                         StatsManager::addCollision(canvasParent);
+                        QSFMLP_END_BLOCK;
                         return true;
                     }
                 }
@@ -178,7 +181,7 @@ bool Collider::checkCollision(Collider* other, std::vector<Collisioninfo>& colli
     StatsManager::addCollisionCheck(canvasParent, m_vertices.size() * other->m_vertices.size());
     StatsManager::addCollision(canvasParent, collisions.size() - currentCollisionCount);
 
-    
+    QSFMLP_END_BLOCK;
     return collision;
 }
 bool Collider::contains(const sf::Vector2f& point)

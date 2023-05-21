@@ -20,6 +20,7 @@ class ExampleCanvas : public QMainWindow
 private slots:
     void on_intersecting_radioButton_clicked();
     void on_containing_radioButton_clicked();
+    void on_performanceTest_radioButton_clicked();
     void onTimerFinished();
     private:
         Ui::ExampleCanvas *ui;

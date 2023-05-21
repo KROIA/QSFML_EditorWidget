@@ -44,8 +44,8 @@
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>107</width>
-         <height>70</height>
+         <width>141</width>
+         <height>81</height>
         </rect>
        </property>
        <property name="frameShape">
@@ -69,6 +69,13 @@
          <widget class="QRadioButton" name="containing_radioButton">
           <property name="text">
            <string>Containing</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="performanceTest_radioButton">
+          <property name="text">
+           <string>Performance Test</string>
           </property>
          </widget>
         </item>

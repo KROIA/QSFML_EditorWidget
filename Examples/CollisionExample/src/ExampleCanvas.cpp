@@ -54,6 +54,10 @@ void ExampleCanvas::on_containing_radioButton_clicked()
 {
     m_collisionChecker->setMode(CollisionChecker::Mode::contains);
 }
+void ExampleCanvas::on_performanceTest_radioButton_clicked()
+{
+    m_collisionChecker->setMode(CollisionChecker::Mode::performanceTest);
+}
 void ExampleCanvas::onTimerFinished()
 {
     QSFML::Stats stats = QSFML::StatsManager::getStats(m_canvas);
