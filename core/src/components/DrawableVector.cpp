@@ -10,24 +10,25 @@ using namespace QSFML::Components;
 COMPONENT_IMPL(DrawableVector)
 bool DrawableVector::m_flipYaxis = false;
 
-DrawableVector::DrawableVector(const std::string &name)
-    :   Drawable(name)
+DrawableVector::DrawableVector(const std::string& name)
+    : Drawable(name)
+    , m_start(0, 0)
+    , m_end(1, 1)
+    , m_color(sf::Color::Green)
 {
-    m_lines = new sf::Vertex[6];
+    updateArrow();
 }
 DrawableVector::DrawableVector(const DrawableVector &other)
-    :   Drawable(other)
+    : Drawable(other)
+    , m_start(other.m_start)
+    , m_end(other.m_end)
+    , m_color(other.m_color)
 {
-    m_lines = new sf::Vertex[6];
-
-    m_start = other.m_start;
-    m_end = other.m_end;
-    m_color = other.m_color;
     updateArrow();
 }
 DrawableVector::~DrawableVector()
 {
-    delete[] m_lines;
+
 }
 
 void DrawableVector::setPoints(const sf::Vector2f &begin, const sf::Vector2f &end)
@@ -79,37 +80,6 @@ sf::Vector2f DrawableVector::getDirection() const
 void DrawableVector::draw(sf::RenderTarget& target,
                           sf::RenderStates states) const
 {
-    /*sf::Vector2f dir = getDirection();
-    sf::Vector2f end = m_end;
-    if(m_flipYaxis)
-    {
-        dir.y = -dir.y;
-        end.y = m_start.y + dir.y;
-    }
-    float length = sqrt(dir.x*dir.x + dir.y*dir.y);
-    float angle = getAngle(dir);
-
-    static const float arrowTipAngle = M_PI *4.f / 5.f;
-
-    if(length < 30)
-        length = 30;
-    else if(length > 200)
-        length = 200;
-    sf::Vector2f arrowTip(0.1f*length,0);
-    sf::Vector2f arrowLeft = getRotated(arrowTip,angle - arrowTipAngle);
-    sf::Vector2f arrowRight = getRotated(arrowTip,angle+ arrowTipAngle);
-
-    sf::Vertex lines[] =
-    {
-        sf::Vertex(m_start,m_color),
-        sf::Vertex(end,m_color),
-
-        sf::Vertex(end,m_color),
-        sf::Vertex(end+arrowLeft,m_color),
-
-        sf::Vertex(end,m_color),
-        sf::Vertex(end+arrowRight,m_color),
-    };*/
     target.draw(m_lines, 6, sf::Lines);
 }
 void DrawableVector::setInvertedYAxis(bool doInvert)

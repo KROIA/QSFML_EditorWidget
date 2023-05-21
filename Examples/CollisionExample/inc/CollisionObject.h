@@ -11,6 +11,8 @@ public:
 
 	virtual CLONE_FUNC_DEC(CollisionObject);
 
+	//QSFML::Components::Collider* getCollider() const;
+
 private:
 	QSFML::Components::Collider* m_collider;
 };

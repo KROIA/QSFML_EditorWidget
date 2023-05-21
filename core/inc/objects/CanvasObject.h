@@ -1,7 +1,6 @@
 #pragma once
-
+#include "QSFML_base.h"
 #include <SFML/Graphics.hpp>
-#include <QDebug>
 #include <vector>
 #include "canvas/CanvasForwardDeclaration.h"
 #include "canvas/RenderLayer.h"
@@ -11,9 +10,7 @@
 #include "components/Drawable.h"
 #include "components/physics/Collider.h"
 #include "utilities/Updatable.h"
-#include "QSFML_debugSettings.h"
-#include <easy/profiler.h>
-#include "QSFML_global.h"
+
 
 namespace QSFML
 {
@@ -252,6 +249,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         const std::vector<Components::Collider*> &getCollider() const;
         bool checkCollision(const CanvasObject* other) const;
         bool checkCollision(const CanvasObject* other, std::vector<Components::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+        void solveCollision(CanvasObject* other);
         // ---------
 
         // Canvas operations
@@ -275,6 +273,9 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
 
         std::string toString() const;
+
+        Canvas* getCanvasParent() const;
+
         const static size_t npos = -1;
     protected:
         /**
@@ -291,7 +292,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         virtual void internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent);
         virtual void internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent);
 
-        Canvas *getCanvasParent() const;
+        
 
         void deleteThis();
 
@@ -302,7 +303,6 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         void removeChild_internal();
         void removeComponent_internal();
         void deleteChild_internal();
-        //void deleteComponent_internal();
         void addChild_internal();
         inline void addChild_internal(CanvasObject *obj);
         inline void setParent_internal(CanvasObject *parent,
@@ -324,15 +324,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         bool m_objectsChanged;
         std::vector<CanvasObject*> m_childs;
         std::vector<Components::Component*> m_components;
-
-        /*struct ComponentMetadata
-        {
-            Components::Component* component;
-
-        };*/
-
-
-        
+       
 
         std::vector<Utilities::Updatable*> m_updatableComponents;
         std::vector<Components::Collider*> m_colliders;

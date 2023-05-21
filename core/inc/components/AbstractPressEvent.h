@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "components/Component.h"
 #include "utilities/Updatable.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {

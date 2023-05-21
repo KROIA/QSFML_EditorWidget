@@ -1,6 +1,7 @@
 #pragma once
 // #include "utilities/AABB.h"
 #include <qobject.h>
+#include "QSFML_base.h"
 #include "components/Component.h"
 #include "components/Drawable.h"
 #include "canvas/CanvasForwardDeclaration.h"
@@ -24,6 +25,7 @@ namespace Components
             size_t index2;
         };
         VertexIndex vertexIndex; // Vector from this vertex to the next had a collision 
+        sf::Vector2f collisionPos;
     };
 
     class QSFML_EDITOR_WIDGET_EXPORT Collider: public Component
@@ -56,18 +58,30 @@ namespace Components
             void checkCollision(const std::vector<Objects::CanvasObject*>& objs,
                                 std::vector<Collisioninfo>& collisions,
                                 bool onlyFirstCollisionPerObject = true) const;
-            void checkCollision(const Objects::CanvasObject* obj,
+            void checkCollision(const std::vector<Components::Collider*> &other,
                 std::vector<Collisioninfo>& collisions,
-                bool onlyFirstCollisionPerObject = true)const;
+                bool onlyFirstCollisionPerObject = true) const;
 
             bool checkCollision(Collider* other, std::vector<Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+            bool contains(const sf::Vector2f& point);
+
+            static bool contains(const std::vector<sf::Vector2f>& polygon, 
+                                 const sf::Vector2f& point,
+                                 const sf::Vector2f& polygonPos = sf::Vector2f(0,0));
 
             Painter* createPainter();
 
+            void resolveCollision(Collider* other);
+            void resolveCollision(const std::vector<Collider*>& other);
 
-            class QSFML_EDITOR_WIDGET_EXPORT Painter : /*public QObject, */public Components::Drawable
+            static bool isSeparatingAxis(const std::vector<sf::Vector2f>& polygonA, const std::vector<sf::Vector2f>& polygonB, const sf::Vector2f& axis);
+            static sf::Vector2f getMinimumTranslationVector(const std::vector<sf::Vector2f>& polygonA, const std::vector<sf::Vector2f>& polygonB, const sf::Vector2f& axis);
+            static sf::Vector2f normalize(const sf::Vector2f& vector);
+            static sf::Vector2f resolveCollision(std::vector<sf::Vector2f>& polygonA, std::vector<sf::Vector2f>& polygonB);
+
+
+            class QSFML_EDITOR_WIDGET_EXPORT Painter : public Components::Drawable
             {
-                //Q_OBJECT
                 friend Collider;
                 Painter(Collider* collider, const std::string& name = "ColliderPainter");
                 Painter(const Painter& other);
@@ -87,8 +101,6 @@ namespace Components
                 const sf::Color& getColorAABB() const;
                 void setColorCollider(const sf::Color& color);
                 const sf::Color& getColorCollider() const;
-            //signals:
-            //    void colliderDeleted(const Collider* collider);
 
             private:
                 void onColliderDelete();

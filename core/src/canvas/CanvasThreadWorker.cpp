@@ -1,8 +1,6 @@
+#include "QSFML_base.h"
 #include "canvas/CanvasThreadWorker.h"
 #include <string>
-#include <QDebug>
-#include "QSFML_debugSettings.h"
-
 
 namespace QSFML
 {
@@ -24,63 +22,49 @@ CanvasThreadWorker::~CanvasThreadWorker()
         m_threads[i] = nullptr;
     }
     delete[] m_threadRunning;
-    //delete[] m_threadFinishedCheckingBuffer;
     m_groups = nullptr;
 }
 
 void CanvasThreadWorker::process()
 {
-    QSFML_PROFILE_CANVAS(EASY_BLOCK("Process threaded update",profiler::colors::Green400))
+    QSFMLP_BLOCK("Process threaded update", QSFMLP_THREAD_COLOR_1);
     m_threadNextIndex = 0;
     size_t threadCount = m_threads.size();
     m_threadMaxIndex = m_groups->size();
-    //size_t cpyCount = threadCount * sizeof(size_t);
-    //memset(m_threadFinishedCycleCount, 0, cpyCount);
-
 
     for(size_t i=0; i<threadCount; ++i)
         m_threadRunning[i] = true;
     ++m_cycleCount;
     m_threadReleaseToWork = !m_threadReleaseToWork.load();
-    //m_cv.notify_all();
+
     using namespace std::chrono_literals;
 
 
     bool anyRunning = false;
     do
     {
-        std::this_thread::sleep_for(50us);
+        std::this_thread::sleep_for(5us);
         anyRunning = false;
-        /*{
-            std::lock_guard<std::mutex> lk(m_finishedMutex);
-            memcpy(m_threadFinishedCheckingBuffer, m_threadFinishedCycleCount, cpyCount);
-        }*/
-
         for(size_t i=0; i<threadCount; ++i)
         {
             anyRunning |= m_threadRunning[i].load();
-            //if(m_threadFinishedCheckingBuffer[i] != m_cycleCount)
-             //   anyRunning = true;
-            //anyRunning &= m_threadFinishedCheckingBuffer[i];
         }
     }while(anyRunning);
-
+    QSFMLP_END_BLOCK;
 }
 void CanvasThreadWorker::setupThreads(size_t count)
 {
     if(m_threads.size() > 0)
         return;
+    QSFMLP_FUNCTION(QSFMLP_THREAD_COLOR_1);
     m_cycleCount = 0;
     m_threadReleaseToWork = false;
     m_threadMaxIndex = m_groups->size();
     m_threadNextIndex = -1;
     m_threadRunning = new std::atomic<bool>[count];
-   // m_threadFinishedCheckingBuffer = new size_t[count];
     m_threadExit = false;
     for(size_t i=0; i<count; ++i)
         m_threadRunning[i] = false;
-    //memset(m_threadFinishedCycleCount, 0, count * sizeof(size_t));
-    //memset(m_threadFinishedCheckingBuffer, 0, count * sizeof(size_t));
 
     ThreadsData dataPreset;
     dataPreset.cv = &m_cv;
@@ -90,7 +74,6 @@ void CanvasThreadWorker::setupThreads(size_t count)
     dataPreset.maxIndex = &m_threadMaxIndex;
     dataPreset.mutex = &m_mutex;
     dataPreset.finishedMutex = &m_finishedMutex;
-    //dataPreset.threadReleaseToWork = &m_threadReleaseToWork;
     dataPreset.threadReleaseToWork = &m_threadReleaseToWork;
     m_threads.reserve(count);
     for(size_t i=0; i<count; ++i)
@@ -110,25 +93,11 @@ void CanvasThreadWorker::threadFunc(ThreadsData data)
     bool releaseThreadToWorkComp = true;
     while(!doExit)
     {
+        while(data.threadReleaseToWork->load() != releaseThreadToWorkComp)
         {
-            //std::atomic<bool> *releaseToWork = data.threadReleaseToWork;
-
-            while(data.threadReleaseToWork->load() != releaseThreadToWorkComp)
-            {
-                std::this_thread::sleep_for(5us);
-            }
-            //std::atomic<bool> *current = data.finished;
-            /*std::unique_lock<std::mutex> lk(*data.mutex);
-
-          //  data.cv->wait(lk);
-
-
-            data.cv->wait(lk, [releaseToWork, releaseThreadToWorkComp]
-            {
-                return *releaseToWork == releaseThreadToWorkComp;
-            });*/
-
+            std::this_thread::sleep_for(5us);
         }
+        QSFMLP_BLOCK("Threaded update", QSFMLP_THREAD_COLOR_2);
         releaseThreadToWorkComp = !releaseThreadToWorkComp;
         bool workOnGroups = true;
         CanvasObjectGroup *currentGroup = nullptr;
@@ -152,7 +121,7 @@ void CanvasThreadWorker::threadFunc(ThreadsData data)
         }
 
 
-
+        QSFMLP_END_BLOCK;
         {
             std::lock_guard<std::mutex> lk(*data.finishedMutex);
             doExit = *data.exit;

@@ -7,8 +7,7 @@ namespace QSFML
     namespace Objects
     {
         OBJECT_IMPL(BackgroundGrid)
-        BackgroundGrid::BackgroundGrid(const std::string& name,
-            CanvasObject* parent)
+        BackgroundGrid::BackgroundGrid(const std::string& name, CanvasObject* parent)
             : CanvasObject(name, parent)
         {
             m_draw = new DrawableComp();
@@ -76,48 +75,6 @@ namespace QSFML
         {
             drawGrid(target, m_grid->m_gridArea, m_grid->m_gridSpacing,
                 m_grid->m_alternatingColors);
-            /*sf::Vector2f start(m_grid->m_gridArea.left,m_grid->m_gridArea.top);
-            sf::Vector2f end(m_grid->m_gridArea.left,
-                             m_grid->m_gridArea.top+m_grid->m_gridArea.height);
-            sf::Vector2f VcurrentStart = start;
-            sf::Vector2f VcurrentEnd = end;
-
-            sf::Vector2f HcurrentStart = start;
-            sf::Vector2f HcurrentEnd = start + sf::Vector2f(m_grid->m_gridArea.width,0);
-
-            size_t spacing = m_grid->m_gridSpacing;
-
-            size_t verticalCount = m_grid->m_gridArea.height  / spacing;
-            size_t horizontalCount = m_grid->m_gridArea.width / spacing;
-
-            for(size_t x=0; x<=horizontalCount; ++x)
-            {
-
-                sf::Vertex line[] =
-                {
-                    sf::Vertex(VcurrentStart),
-                    sf::Vertex(VcurrentEnd)
-                };
-
-
-                VcurrentStart.x += spacing;
-                VcurrentEnd.x   += spacing;
-
-                target.draw(line, 2, sf::Lines);
-            }
-            for(size_t y=0; y<=verticalCount; ++y)
-            {
-                sf::Vertex line[] =
-                {
-                    sf::Vertex(HcurrentStart),
-                    sf::Vertex(HcurrentEnd)
-                };
-                HcurrentStart.y += spacing;
-                HcurrentEnd.y   += spacing;
-
-                target.draw(line, 2, sf::Lines);
-
-            }*/
         }
         void BackgroundGrid::DrawableComp::drawGrid(sf::RenderTarget& target,
             const sf::IntRect& area,

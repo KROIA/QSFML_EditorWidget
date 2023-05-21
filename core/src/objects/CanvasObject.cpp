@@ -1,6 +1,6 @@
 #include "objects/CanvasObject.h"
 #include "canvas/Canvas.h"
-
+#include "canvas/Stats.h"
 
 
 
@@ -68,6 +68,8 @@ CanvasObject::~CanvasObject()
         delete m_childs[i];
     m_childs.clear();
 
+    StatsManager::removeCanvasObject(m_canvasParent);
+    StatsManager::removeComponent(m_canvasParent, m_components.size());
     for(size_t i=0; i<m_components.size(); ++i)
         delete m_components[i];
     m_components.clear();
@@ -127,6 +129,8 @@ const std::string CanvasObject::getName() const
 void CanvasObject::setPositionRelative(const sf::Vector2f& pos)
 {
     m_position = pos;
+    for (size_t i = 0; i < m_colliders.size(); ++i)
+        m_colliders[i]->setPos(m_position);
 }
 void CanvasObject::setPositionAbsolute(const sf::Vector2f& pos)
 {
@@ -137,6 +141,8 @@ void CanvasObject::setPositionAbsolute(const sf::Vector2f& pos)
         return;
     }
     m_position = pos;
+    for (size_t i = 0; i < m_colliders.size(); ++i)
+        m_colliders[i]->setPos(m_position);
 }
 const sf::Vector2f& CanvasObject::getPositionRelative() const
 {
@@ -216,7 +222,6 @@ void CanvasObject::removeChilds(const std::vector<CanvasObject*>& childs)
 }
 void CanvasObject::removeChilds()
 {
-    //m_toDeleteChilds = m_childs;
     m_toRemoveChilds = m_childs;
     m_toAddChilds.clear();
     onObjectsChanged();
@@ -235,8 +240,6 @@ void CanvasObject::removeChild_internal()
 void CanvasObject::deleteChild(CanvasObject *child)
 {
     if(!child)return;
-    /*size_t index = getChildIndex(child);
-    if(index == npos) return;*/
 
     for(size_t i=0; i<m_toDeleteChilds.size(); ++i)
         if(m_toDeleteChilds[i] == child)
@@ -277,16 +280,6 @@ void CanvasObject::deleteChilds()
     m_toRemoveChilds.clear();
     m_toAddChilds.clear();
     onObjectsChanged();
-    /*for (size_t i = 0; i<m_childs.size(); ++i)
-    {
-        bool match = false;
-        for(size_t j=0; j<m_toDeleteChilds.size(); ++j)
-            if(m_toDeleteChilds[j] == m_childs[i])
-                match = true;
-        if(!match)
-            m_toDeleteChilds.push_back(m_childs[i]);
-    }
-    onObjectsChanged();*/
 }
 void CanvasObject::deleteChild_internal()
 {
@@ -343,8 +336,6 @@ void CanvasObject::addComponents(const std::vector<Components::Component*>& comp
 void CanvasObject::removeComponent(Component *comp)
 {
     if(!comp)return;
-    /*size_t index = getComponentIndex(comp);
-    if(index == npos) return;*/
     for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
         if(m_toRemoveComponents[i] == comp)
             return;
@@ -377,12 +368,15 @@ void CanvasObject::removeComponents(const std::vector<Components::Component*>& c
 }
 void CanvasObject::removeComponent_internal()
 {
+    size_t removedCount = 0;
     for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
     {
         Components::Component *toRemove = m_toRemoveComponents[i];
         size_t index = getComponentIndex(toRemove);
-        if(index != npos)
-            m_components.erase(m_components.begin() + index);
+        if (index == npos)
+            continue;
+        m_components.erase(m_components.begin() + index);
+        ++removedCount;
 
         // Check for sfEventHandles
         SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(toRemove);
@@ -429,6 +423,8 @@ void CanvasObject::removeComponent_internal()
         }
     }
     m_toRemoveComponents.clear();
+    StatsManager::removeComponent(m_canvasParent, removedCount);
+
 }
 void CanvasObject::deleteComponent(Component *comp)
 {
@@ -446,6 +442,7 @@ void CanvasObject::deleteComponent(Component *comp)
     size_t index = getComponentIndex(comp);
     if(index == npos) return;
     m_components.erase(m_components.begin() + index);
+    StatsManager::removeComponent(m_canvasParent);
 
     // Check for sfEventHandles
     SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(comp);
@@ -500,17 +497,6 @@ void CanvasObject::deleteComponents(const std::vector<Components::Component*>& c
         deleteComponent(comp);
     }
 }
-/*void CanvasObject::deleteComponent_internal()
-{
-    for(size_t i=0; i<m_toDeleteComponents.size(); ++i)
-    {
-        size_t index = getComponentIndex(m_toDeleteComponents[i]);
-        if(index != npos)
-            m_components.erase(m_components.begin() + index);
-        delete m_toDeleteComponents[i];
-    }
-    m_toDeleteComponents.clear();
-}*/
 void CanvasObject::addChild_internal()
 {
     for(size_t i=0; i<m_toAddChilds.size(); ++i)
@@ -545,9 +531,6 @@ void CanvasObject::setParent_internal(CanvasObject *parent,
     for(size_t i=0; i<m_components.size(); ++i)
         m_components[i]->setParent(this);
 
-   // for(size_t i=0; i<m_childs.size(); ++i)
-   //     m_childs[i]->setCanvasParent(m_canvasParent);
-
     internalOnParentChange(oldParent, m_parent);
     onParentChange(oldParent, m_parent);
 }
@@ -560,6 +543,7 @@ void CanvasObject::addComponent_internal()
             continue;
 
         toAdd->setParent(this);
+        StatsManager::addComponent(m_canvasParent);
         m_components.push_back(toAdd);
 
         // Check for sfEventHandles
@@ -596,6 +580,7 @@ void CanvasObject::addComponent_internal()
         if (collider)
         {
             m_colliders.push_back(collider);
+            collider->setPos(m_position);
         }
     }
     m_toAddComponents.clear();
@@ -615,6 +600,7 @@ void CanvasObject::deleteComponents()
         m_toAddComponents[i]->setParent(nullptr);
         delete m_toAddComponents[i];
     }
+    StatsManager::removeComponent(m_canvasParent, m_components.size());
     for(size_t i=0; i<m_components.size(); ++i)
     {
         m_components[i]->setParent(nullptr);
@@ -651,25 +637,27 @@ const std::vector<Components::Collider*> &CanvasObject::getCollider() const
 bool CanvasObject::checkCollision(const CanvasObject* other) const
 {
     std::vector<Collisioninfo> collisions;
-    for (size_t i = 0; i < m_colliders.size(); ++i)
-    {
-        m_colliders[i]->checkCollision(other, collisions);
-    }
-    if (collisions.size() > 0)
-        return true;
-    return false;
+    return checkCollision(other, collisions);
 }
 bool CanvasObject::checkCollision(const CanvasObject* other, 
     std::vector<Collisioninfo>& collisions, 
     bool onlyFirstCollision) const
 {
-    for (size_t i = 0; i < m_colliders.size(); ++i)
+    std::vector<Components::Collider*> otherColliders = other->getCollider();
+    for (auto thisCollider : m_colliders)
     {
-        m_colliders[i]->checkCollision(other, collisions, onlyFirstCollision);
+        thisCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
     }
     if (collisions.size() > 0)
         return true;
     return false;
+}
+void CanvasObject::solveCollision(CanvasObject* other)
+{
+    for (size_t i = 0; i < m_colliders.size(); ++i)
+    {
+        m_colliders[i]->resolveCollision(other->getCollider());
+    }
 }
 
 
@@ -760,6 +748,10 @@ std::string CanvasObject::toString() const
 
     return msg;
 }
+Canvas* CanvasObject::getCanvasParent() const
+{
+    return m_canvasParent;
+}
 void CanvasObject::update()
 {
 
@@ -800,10 +792,7 @@ void CanvasObject::onParentChange(CanvasObject *oldParent, CanvasObject *newPare
 void CanvasObject::internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent) {}
 void CanvasObject::internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent) {}
 
-Canvas *CanvasObject::getCanvasParent() const
-{
-    return m_canvasParent;
-}
+
 void CanvasObject::deleteThis()
 {
     if(m_parent)
@@ -897,6 +886,17 @@ void CanvasObject::setCanvasParent(Canvas *parent)
         return;
     Canvas *oldParent = m_canvasParent;
     m_canvasParent = parent;
+    if (m_canvasParent == nullptr)
+    {
+        StatsManager::removeCanvasObject(oldParent);
+        StatsManager::removeComponent(oldParent, m_components.size());
+    }
+    else if (oldParent == nullptr)
+    {
+        StatsManager::addCanvesObject(m_canvasParent);
+        StatsManager::addComponent(m_canvasParent, m_components.size());
+    }
+
     //for(size_t i=0; i<m_components.size(); ++i)
     //    m_components[i]->setParent(this);
 
@@ -909,11 +909,10 @@ void CanvasObject::setCanvasParent(Canvas *parent)
 
 void CanvasObject::updateNewElements()
 {
-    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
     removeChild_internal();
     deleteChild_internal();
     removeComponent_internal();
-    //deleteComponent_internal();
     addChild_internal();
     addComponent_internal();
 
@@ -924,37 +923,36 @@ void CanvasObject::updateNewElements()
 void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
 {
     if (!m_enabled || !m_updateControlls.enableEventLoop || !m_thisNeedsEventUpdate) return;
-    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange100));
-    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components event", profiler::colors::Orange400));
-    for (size_t i = 0; i < m_eventComponents.size(); ++i)
+    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
+    QSFMLP_BLOCK("Components event", QSFMLP_OBJECT_COLOR_2);
+    for (auto component : m_eventComponents)
     {
-        if (!m_eventComponents[i]->isEnabled())
+        if (!component->isEnabled())
             continue;
 
-        for (size_t j = 0; j < events.size(); ++j)
-            m_eventComponents[i]->sfEvent(events[j]);
+        for (const auto &event : events)
+            component->sfEvent(event);
 
     }
-    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+    EASY_END_BLOCK;
 
-    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs event", profiler::colors::Orange500));
-    for (size_t i = 0; i < m_childs.size(); ++i)
+    QSFMLP_BLOCK("Childs event", QSFMLP_OBJECT_COLOR_3);
+    for (auto obj : m_childs)
     {
-        CanvasObject* obj = m_childs[i];
         if (obj->m_enabled)
             obj->sfEvent(events);
     }
-    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+    EASY_END_BLOCK;
 }
 void CanvasObject::update_internal()
 {
     if (!m_enabled || !m_updateControlls.enableUpdateLoop) return;
-    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange600));
-    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Object update", profiler::colors::Orange700));
+    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
+    QSFMLP_BLOCK("Object update", QSFMLP_OBJECT_COLOR_2);
     update();
-    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+    EASY_END_BLOCK;
 
-    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components update", profiler::colors::Orange800));
+    QSFMLP_BLOCK("Components update", QSFMLP_OBJECT_COLOR_3);
     for (size_t i = 0; i < m_updatableComponents.size(); ++i)
     {
         Utilities::Updatable* comp = m_updatableComponents[i];
@@ -963,36 +961,36 @@ void CanvasObject::update_internal()
             continue;
         comp->update();
     }
-    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+    EASY_END_BLOCK;
 
-    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs update", profiler::colors::Orange800));
+    QSFMLP_BLOCK("Childs update", QSFMLP_OBJECT_COLOR_4);
     for (size_t i = 0; i < m_childs.size(); ++i)
     {
         CanvasObject* obj = m_childs[i];
         if (obj->m_enabled)
             obj->update_internal();
     }
-    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+    EASY_END_BLOCK;
 }
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
     if(!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate) return;
-    QSFML_PROFILE_CANVASOBJECT(EASY_FUNCTION(profiler::colors::Orange900));
-    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Components draw", profiler::colors::OrangeA100));
+    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
+    QSFMLP_BLOCK("Components draw", QSFMLP_OBJECT_COLOR_2);
     for(size_t i=0; i<m_drawableComponents.size(); ++i)
     {
         if(!m_drawableComponents[i]->isEnabled())
             continue;
         window.draw(*m_drawableComponents[i]);
     }
-    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+    EASY_END_BLOCK;
 
-    QSFML_PROFILE_CANVASOBJECT(EASY_BLOCK("Childs draw", profiler::colors::OrangeA200));
+    QSFMLP_BLOCK("Childs draw", QSFMLP_OBJECT_COLOR_3);
     for(size_t i=0; i<m_childs.size(); ++i)
     {
         if(m_childs[i]->m_enabled)
             m_childs[i]->draw(window);
     }
-    QSFML_PROFILE_CANVASOBJECT(EASY_END_BLOCK);
+    EASY_END_BLOCK;
 }
 

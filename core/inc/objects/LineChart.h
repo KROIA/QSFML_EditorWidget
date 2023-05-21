@@ -3,7 +3,7 @@
 #include <vector>
 #include "objects/CanvasObject.h"
 #include "components/Drawable.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 
 namespace QSFML
@@ -35,9 +35,6 @@ namespace Objects
             void setScale(float yScale);
             float getScale() const;
 
-           // void setXSpacing(float spacing);
-           // float getXSpacing() const;
-
             void addDataPoint(float value);
             void removeFirstDataPoint();
             void setDataPoints(const std::vector<float> &dataPoints);
@@ -50,7 +47,7 @@ namespace Objects
             void getMinMax(float &min, float &max);
 
             std::vector<float> m_dataPoints;
-            //float m_xSpacing;
+            
             sf::Vector2f m_origin;
             sf::Vector2f m_size;
             sf::Color m_color;

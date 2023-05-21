@@ -7,14 +7,15 @@ namespace Components
 {
 COMPONENT_IMPL(Text)
 Text::Text(const std::string &name)
-    :   Drawable(name)
+    : Drawable(name)
+    , m_pos(0,0)
 {
     m_text.setScale(0.1f,0.1f);
     setText(name);
-
 }
 Text::Text(const Text &other)
-    :   Drawable(other)
+    : Drawable(other)
+    , m_pos(other.m_pos)
 {
     m_text = other.m_text;
     updateCenter(other.m_pos);
@@ -65,14 +66,9 @@ void Text::draw(sf::RenderTarget& target, sf::RenderStates) const
 void Text::updateCenter(const sf::Vector2f &pos)
 {
     sf::FloatRect bounds = m_text.getLocalBounds();
-    //sf::Transform trans = m_text.getTransform();
-    //bounds = trans.transformRect(bounds);
     m_text.setOrigin(sf::Vector2f(bounds.left + bounds.width/2.f,bounds.top + bounds.height/2.f));
 
-    //m_text.setOrigin(bounds.left + (m_text.getScale().x)*bounds.width/(2.f),
-    //                 bounds.top + (m_text.getScale().y)*bounds.height/(2.f));
     m_text.setPosition(pos);
-   // qDebug() << bounds.width << " " <<bounds.height << " "<<std::string(m_text.getString()).c_str();
 }
 
 }

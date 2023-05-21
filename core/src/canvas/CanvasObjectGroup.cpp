@@ -26,7 +26,7 @@ CanvasObjectGroup::~CanvasObjectGroup()
 
 void CanvasObjectGroup::addObject(CanvasObject *obj)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
 
     if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
         obj->getCanvasParent()->removeObject(obj);
@@ -35,7 +35,7 @@ void CanvasObjectGroup::addObject(CanvasObject *obj)
 }
 void CanvasObjectGroup::addObject(const std::vector<CanvasObject*> &objs)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
     for(size_t i=0; i<objs.size(); ++i)
     {
         addObject(objs[i]);
@@ -47,7 +47,6 @@ void CanvasObjectGroup::addObject_internal()
     {
         if(objectExists(m_toAddContainer[i]))
             continue;
-        //m_toAddContainer[i]->setCanvasParent(m_parent);
         m_container.push_back(m_toAddContainer[i]);
     }
     m_toAddContainer.clear();
@@ -63,7 +62,7 @@ void CanvasObjectGroup::deleteObject_internal()
 
 void CanvasObjectGroup::removeObject(CanvasObject *obj)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
     size_t index = getObjectIndex(obj);
     if(index == npos) return;
     obj->setCanvasParent(nullptr);
@@ -71,7 +70,7 @@ void CanvasObjectGroup::removeObject(CanvasObject *obj)
 }
 void CanvasObjectGroup::removeObject(const std::vector<CanvasObject*> &objs)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
     for(size_t i=0; i<objs.size(); ++i)
     {
         removeObject(objs[i]);
@@ -79,13 +78,13 @@ void CanvasObjectGroup::removeObject(const std::vector<CanvasObject*> &objs)
 }
 void CanvasObjectGroup::deleteObject(Objects::CanvasObject *obj)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
     removeObject(obj);
     delete obj;
 }
 void CanvasObjectGroup::deleteObject(const std::vector<Objects::CanvasObject*> &objs)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
     removeObject(objs);
     for(size_t i=0; i<objs.size(); ++i)
     {
@@ -130,10 +129,6 @@ void CanvasObjectGroup::deleteLater(Objects::CanvasObject *obj)
             break;
         }
     }
-    /*if(objectExists(obj))
-    {
-        m_toDelete.push_back(obj);
-    }*/
     m_toDelete.push_back(obj);
 }
 
@@ -165,8 +160,7 @@ void CanvasObjectGroup::draw(sf::RenderWindow &window)
 {
     for(size_t i=0; i<m_container.size(); ++i)
     {
-        if(m_container[i]->m_thisNeedsDrawUpdate)
-            m_container[i]->draw(window);
+        m_container[i]->draw(window);
     }
 }
 

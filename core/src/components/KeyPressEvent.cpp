@@ -7,13 +7,15 @@ COMPONENT_IMPL(KeyPressEvent)
 KeyPressEvent::KeyPressEvent(const std::string &name,
                              sf::Keyboard::Key key)
     : AbstractPressEvent(name)
+    , m_key(key)
 {
-    setTriggerKey(key);
+ 
 }
 KeyPressEvent::KeyPressEvent(const KeyPressEvent &other)
     : AbstractPressEvent(other)
+    , m_key(other.m_key)
 {
-    m_key = other.m_key;
+
 }
 void KeyPressEvent::setTriggerKey(sf::Keyboard::Key key)
 {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "canvas/Canvas.h"
+#include "canvas/Stats.h"
 
 #include "components/Drawable.h"
 #include "components/AbstractPressEvent.h"
@@ -8,6 +9,7 @@
 #include "components/DrawableVector.h"
 #include "components/KeyPressEvent.h"
 #include "components/Line.h"
+#include "components/PointPainter.h"
 #include "components/MouseFollower.h"
 #include "components/MousePressEvent.h"
 #include "components/SfEventHandle.h"
@@ -25,5 +27,6 @@
 #include "utilities/Ray.h"
 #include "utilities/Updatable.h"
 #include "utilities/VectorOperations.h"
+#include "utilities/RandomEngine.h"
 
 

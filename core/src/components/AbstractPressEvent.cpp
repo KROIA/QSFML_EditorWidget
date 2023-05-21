@@ -7,18 +7,20 @@ namespace Components
 AbstractPressEvent::AbstractPressEvent(const std::string &name)
     : QObject()
     , Component(name)
+    , m_fallingEdge(false)
+    , m_down(false)
+    , m_risingEdge(false)
 {
-    m_fallingEdge = false;
-    m_down = false;
-    m_risingEdge = false;
+
 }
 AbstractPressEvent::AbstractPressEvent(const AbstractPressEvent &other)
     : QObject()
     , Component(other)
+    , m_fallingEdge(other.m_fallingEdge)
+    , m_down(other.m_down)
+    , m_risingEdge(other.m_risingEdge)
 {
-    m_fallingEdge = other.m_fallingEdge;
-    m_down = other.m_down;
-    m_risingEdge = other.m_risingEdge;
+
 }
 void AbstractPressEvent::update()
 {

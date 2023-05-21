@@ -2,7 +2,7 @@
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/Color.hpp>
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {

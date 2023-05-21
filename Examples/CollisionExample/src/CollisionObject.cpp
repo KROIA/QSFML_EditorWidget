@@ -8,6 +8,7 @@ CollisionObject::CollisionObject(const std::string& name, CanvasObject* parent)
 	m_collider->setVertecies({
 			sf::Vector2f(0,0),
 			sf::Vector2f(10,10),
+			sf::Vector2f(15,8),
 			sf::Vector2f(5,20)
 		});
 
@@ -18,3 +19,8 @@ CollisionObject::~CollisionObject()
 {
 
 }
+
+/*QSFML::Components::Collider* CollisionObject::getCollider() const
+{
+	return m_collider;
+}*/

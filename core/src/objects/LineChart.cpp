@@ -82,9 +82,6 @@ float LineChart::getScale() const
     return m_yScale;
 }
 
-// void setXSpacing(float spacing);
-// float getXSpacing() const;
-
 void LineChart::addDataPoint(float value)
 {
     m_dataPoints.push_back(value);
@@ -109,12 +106,6 @@ void LineChart::clear()
 
 void LineChart::update()
 {
-   /* static float x = 0;
-    x += 0.05;
-    m_dataPoints.push_back(sin(x));
-    if(m_dataPoints.size() > 200)
-        m_dataPoints.erase(m_dataPoints.begin());*/
-
     if(m_autoScale)
     {
         float min, max;
@@ -176,7 +167,7 @@ void LineChart::LineChartPainter::draw(sf::RenderTarget& target,
     sf::Vertex *vertecies = new sf::Vertex[count];
 
     float currentX = m_chart->m_origin.x;
-    float yOffset = m_chart->m_origin.y;// - m_chart->m_size.y/2.f;
+    float yOffset = m_chart->m_origin.y;
     for(size_t i=0; i<count; ++i)
     {
         vertecies[i].position = {currentX,

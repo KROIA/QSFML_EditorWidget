@@ -1,6 +1,6 @@
 #pragma once
 #include "canvas/CanvasForwardDeclaration.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {

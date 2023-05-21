@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include "components/SfEventHandle.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -15,7 +15,7 @@ class QSFML_EDITOR_WIDGET_EXPORT MouseFollower : public QObject, public SfEventH
     public:
     MouseFollower(const std::string &name = "MouseFollower");
     MouseFollower(const MouseFollower &other);
-    COMPONENT_DECL(MouseFollower)
+    COMPONENT_DECL(MouseFollower);
 
     void sfEvent(const sf::Event &e) override;
 

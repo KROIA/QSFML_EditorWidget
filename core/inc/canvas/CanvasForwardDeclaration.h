@@ -14,6 +14,10 @@ namespace QSFML
     {
         class Updatable;
     }
+    namespace Components
+    {
+        class Collider;
+    }
 
 #define CLONE_FUNC_DEC(className) \
     className *clone() const

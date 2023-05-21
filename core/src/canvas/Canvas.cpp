@@ -1,30 +1,29 @@
 #include "canvas/Canvas.h"
+#include "canvas/Stats.h"
 #include <QResizeEvent>
 #include <QHBoxLayout>
-#include <QDebug>
-#include "QSFML_debugSettings.h"
 
+/*
 #ifdef Q_WS_X11
     #include <Qt/qx11info_x11.h>
     #include <X11/Xlib.h>
-#endif
+#endif*/
 
 using namespace QSFML;
 
-#ifdef BUILD_WITH_EASY_PROFILER
-Canvas* Canvas::m_profilerMaster = nullptr;
-#endif
+
+std::vector<Canvas*> Canvas::s_instances;
+std::string Canvas::m_profilerOutputFile = "profile.prof";
 
 Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
   QWidget(parent),
- // DrawInterface(),
   CanvasObjectContainer(this, settings)
-  //sf::RenderWindow(),
 {
-#ifdef BUILD_WITH_EASY_PROFILER
-    if(!m_profilerMaster)
+    s_instances.push_back(this);
+    StatsManager::createStats(this);
+#ifdef QSFML_PROFILING
+    if(s_instances.size() == 1)
     {
-        m_profilerMaster = this;
         EASY_PROFILER_ENABLE;
     }
 #endif
@@ -52,14 +51,22 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
 Canvas::~Canvas()
 {
     delete m_window;
-#ifdef BUILD_WITH_EASY_PROFILER
-    if(m_profilerMaster == this)
+#ifdef QSFML_PROFILING
+    if (s_instances.size() == 1)
     {
-        profiler::dumpBlocksToFile("profile.prof");
-        m_profilerMaster = nullptr;
+        saveProfilerFile();
     }
 #endif
+    for (size_t i = 0; i < s_instances.size(); ++i)
+    {
+        if (s_instances[i] == this)
+        {
+            s_instances.erase(s_instances.begin() + i);
+        }
+    }
 }
+
+
 
 void Canvas::setSettings(const CanvasSettings &settings)
 {
@@ -132,7 +139,6 @@ const sf::View &Canvas::getCameraView() const
     static sf::View dummy;
     if(!m_window) return dummy;
     return m_view;
-    //return m_window->getView();
 }
 const sf::View &Canvas::getDefaultCameraView() const
 {
@@ -203,7 +209,7 @@ void Canvas::showEvent(QShowEvent*)
 
         // Create the SFML window with the widget handle
         m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(),m_settings.contextSettings);
-         //   m_window->setSize(sf::Vector2u(QWidget::geometry().size().width(),QWidget::geometry().size().height()));
+        
         m_view = m_window->getView();
         // Let the derived class do its specific stuff
         OnInit();
@@ -218,43 +224,6 @@ void Canvas::showEvent(QShowEvent*)
 void Canvas::paintEvent(QPaintEvent*)
 {
     timedUpdate();
-    return;
-    if(!m_window)return;
-    EASY_FUNCTION(profiler::colors::Green); // Magenta block with name "foo"
-    // Let the derived class do its specific stuff
-    OnUpdate();
-
-    EASY_BLOCK("Delete unused objects",profiler::colors::Green200);
-    CanvasObjectContainer::updateNewElements();
-    EASY_END_BLOCK;
-
-    sf::Event event;
-
-    EASY_BLOCK("Process sf::Events",profiler::colors::Green200);
-
-    std::vector<sf::Event> events;
-    events.reserve(20);
-    while (m_window->pollEvent(event))
-    {
-        events.push_back(event);
-    }
-    sfEvent(events);
-    internal_event(events);
-    EASY_END_BLOCK;
-
-    EASY_BLOCK("Process update",profiler::colors::Green400);
-    CanvasObjectContainer::update();
-    EASY_END_BLOCK;
-
-    EASY_BLOCK("Process draw",profiler::colors::Green500);
-    m_window->clear(m_settings.colors.defaultBackground);
-    CanvasObjectContainer::draw(*m_window);
-    EASY_END_BLOCK;
-
-    EASY_BLOCK("Process display",profiler::colors::Green600);
-    // Display on screen
-    m_window->display();
-    EASY_END_BLOCK;
 }
 
 void Canvas::resizeEvent(QResizeEvent *event)
@@ -263,27 +232,7 @@ void Canvas::resizeEvent(QResizeEvent *event)
     if(m_settings.layout.autoAjustSize)
     {
        QSize size = event->size();
-
        m_oldCanvasSize = getCanvasSize();
-       //setCameraView(getCameraView());
-       //m_window->setSize(sf::Vector2u(QWidget::geometry().size().width(),QWidget::geometry().size().height()));
-       //m_window->setSize(sf::Vector2u(size.width(),size.height()));
-       //m_window->setSize(sf::Vector2u(m_oldCanvasSize.x,m_oldCanvasSize.y));
-      /* sf::View view = getCameraView();
-
-       sf::Vector2u oldWindowSize(event->oldSize().width(),event->oldSize().height());
-       sf::Vector2u newWindowSize(size.width(),size.height());
-       sf::FloatRect viewRect = sf::FloatRect(view.getCenter()-view.getSize()/2.f,view.getSize());
-       //viewPort.width = size.width()
-       //sf::View view2(sf::Vector2f(size.width(), size.height())/2.f, sf::Vector2f(size.width(), size.height()));
-       //m_window->setView(view2);
-
-       viewRect.width = viewRect.width/oldWindowSize.x * newWindowSize.x;
-       viewRect.height = viewRect.height/oldWindowSize.y * newWindowSize.y;
-
-       view.setSize(viewRect.width,viewRect.height);
-       view.setCenter(viewRect.left+viewRect.width/2.f,viewRect.top+viewRect.height/2.f);
-       m_window->setView(view);*/
     }
     else
     {
@@ -294,24 +243,25 @@ void Canvas::resizeEvent(QResizeEvent *event)
 
 void Canvas::timedUpdate()
 {
-
-    if(!m_window)return;
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Green)); // Magenta block with name "foo"
+    if(!m_window)
+        return;
+    QSFMLP_FUNCTION(QSFMLP_CANVAS_COLOR_1); // Magenta block with name "foo"
 
 
     TimePoint t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
     m_deltaT_t1 = t2;
     m_deltaT = elapsed.count();
+    StatsManager::resetCollisionStats(this);
 
-    QSFML_PROFILE_CANVAS(EASY_BLOCK("Delete unused objects",profiler::colors::Green200));
+    QSFMLP_BLOCK("Delete unused objects", QSFMLP_CANVAS_COLOR_2);
     CanvasObjectContainer::updateNewElements();
-    QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+    QSFMLP_END_BLOCK;
 
     sf::Event event;
     if(m_settings.updateControlls.enableEventLoop)
     {
-        QSFML_PROFILE_CANVAS(EASY_BLOCK("Process sf::Events",profiler::colors::Green200));
+        QSFMLP_BLOCK("Process sf::Events", QSFMLP_CANVAS_COLOR_3);
 
         std::vector<sf::Event> events;
         events.reserve(20);
@@ -321,38 +271,41 @@ void Canvas::timedUpdate()
         }
         sfEvent(events);
         internal_event(events);
-        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+        QSFMLP_END_BLOCK;
     }
 
     if(m_settings.updateControlls.enableUpdateLoop)
     {
-        QSFML_PROFILE_CANVAS(EASY_BLOCK("Process update",profiler::colors::Green400));
+        QSFMLP_BLOCK("Process update", QSFMLP_CANVAS_COLOR_4);
         // Let the derived class do its specific stuff
         OnUpdate();
 
         CanvasObjectContainer::update();
-        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+        QSFMLP_END_BLOCK;
     }
 
     if(m_settings.updateControlls.enablePaintLoop)
     {
-        QSFML_PROFILE_CANVAS(EASY_BLOCK("Clear Display",profiler::colors::Green500));
+        QSFMLP_BLOCK("Clear Display", QSFMLP_CANVAS_COLOR_5);
         m_window->clear(m_settings.colors.defaultBackground);
-        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+        QSFMLP_END_BLOCK;
 
-        QSFML_PROFILE_CANVAS(EASY_BLOCK("Process draw",profiler::colors::Green600));
+        QSFMLP_BLOCK("Process draw", QSFMLP_CANVAS_COLOR_6);
         CanvasObjectContainer::draw(*m_window);
-        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+        QSFMLP_END_BLOCK;
 
-        QSFML_PROFILE_CANVAS(EASY_BLOCK("Process Display",profiler::colors::Green700));
+        QSFMLP_BLOCK("Process Display", QSFMLP_CANVAS_COLOR_7);
         // Display on screen
         m_window->display();
-        QSFML_PROFILE_CANVAS(EASY_END_BLOCK);
+        QSFMLP_END_BLOCK;
     }
 }
 
 
-void Canvas::sfEvent(const std::vector<sf::Event> &events){}
+void Canvas::sfEvent(const std::vector<sf::Event> &events)
+{
+
+}
 void Canvas::internal_event(const std::vector<sf::Event> &events)
 {
     CanvasObjectContainer::sfEvent(events);
@@ -360,4 +313,21 @@ void Canvas::internal_event(const std::vector<sf::Event> &events)
 const sf::Font &Canvas::getTextFont() const
 {
     return m_textfont;
+}
+void Canvas::setProfilerOutputFileName(const std::string& fileName)
+{
+    m_profilerOutputFile = fileName;
+}
+const std::string& Canvas::getProfilerOutputFileName()
+{
+    return m_profilerOutputFile;
+}
+void Canvas::saveProfilerFile()
+{
+    profiler::dumpBlocksToFile(m_profilerOutputFile.c_str());
+}
+void Canvas::saveProfilerFile(const std::string& fileName)
+{
+    setProfilerOutputFileName(fileName);
+    saveProfilerFile();
 }

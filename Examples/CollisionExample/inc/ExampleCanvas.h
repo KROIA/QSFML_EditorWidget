@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "QSFML_EditorWidget.h"
+#include "CollisionChecker.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ExampleCanvas; }
@@ -16,9 +17,15 @@ class ExampleCanvas : public QMainWindow
         ExampleCanvas(QWidget *parent = nullptr);
         ~ExampleCanvas();
 
+private slots:
+    void on_intersecting_radioButton_clicked();
+    void on_containing_radioButton_clicked();
+    void onTimerFinished();
     private:
         Ui::ExampleCanvas *ui;
 
         QSFML::Canvas *m_canvas;
+
+        CollisionChecker* m_collisionChecker;
 };
 #endif // SANDBOX_H

@@ -1,4 +1,5 @@
 #include "utilities/VectorOperations.h"
+#include "utilities/RandomEngine.h"
 #include <math.h>
 
 namespace QSFML

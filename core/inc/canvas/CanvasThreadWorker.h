@@ -4,7 +4,7 @@
 #include <condition_variable>
 #include "CanvasObjectGroup.h"
 #include <atomic>
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 
 namespace QSFML
@@ -33,10 +33,8 @@ namespace QSFML
 
 
             std::atomic<bool> *m_threadRunning;
-            //size_t *m_threadFinishedCheckingBuffer;
             size_t m_cycleCount;
             bool m_threadExit;
-            //bool m_threadReleaseToWork;
             std::atomic<bool> m_threadReleaseToWork;
             size_t m_threadNextIndex;
             size_t m_threadMaxIndex;

@@ -3,7 +3,7 @@
 #include "objects/CanvasObject.h"
 #include "objects/VisibleCamera.h"
 #include "objects/BackgroundGrid.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -16,9 +16,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public CanvasObject
                   const sf::Vector2f &size = sf::Vector2f(800,600));
     DefaultEditor(const DefaultEditor &other);
     ~DefaultEditor();
-    OBJECT_DECL(DefaultEditor)
-
-    //void update() override;
+    OBJECT_DECL(DefaultEditor);
 
     VisibleCamera *getCamera() const;
     BackgroundGrid *getGrid() const;
@@ -26,6 +24,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public CanvasObject
     protected:
 
     private:
+    void setup(const sf::Vector2f& size);
     VisibleCamera *m_cam;
     BackgroundGrid *m_grid;
 

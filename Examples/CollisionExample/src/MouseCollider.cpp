@@ -9,7 +9,9 @@ MouseCollider::MouseCollider(const std::string& name, CanvasObject* parent)
 	m_collider->setVertecies({
 			sf::Vector2f(0,0),
 			sf::Vector2f(10,10),
-			sf::Vector2f(5,20)
+			sf::Vector2f(5,20),
+			sf::Vector2f(-15,35),
+			sf::Vector2f(-20,15)
 		});
 
 	addComponent(m_collider);
@@ -19,6 +21,7 @@ MouseCollider::MouseCollider(const std::string& name, CanvasObject* parent)
 	connect(m_mouseFollower, &QSFML::Components::MouseFollower::mousePosChanged,
 			this, &MouseCollider::onMousePosChanged);
 	addComponent(m_mouseFollower);
+
 }
 MouseCollider::MouseCollider(const MouseCollider& other)
 	: CanvasObject(other)

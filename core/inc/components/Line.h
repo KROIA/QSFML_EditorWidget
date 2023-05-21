@@ -2,7 +2,7 @@
 
 #include "components/Drawable.h"
 #include "SFML/Graphics/Vertex.hpp"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -13,7 +13,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Line : public Drawable
     public:
         Line(const std::string &name = "Line");
         Line(const Line &other);
-        COMPONENT_DECL(Line)
+        COMPONENT_DECL(Line);
 
         void setStartPos(const sf::Vector2f &pos);
         const sf::Vector2f &getStartPos() const;

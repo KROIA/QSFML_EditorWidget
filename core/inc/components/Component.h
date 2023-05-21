@@ -2,7 +2,7 @@
 
 #include <string>
 #include "canvas/CanvasForwardDeclaration.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -55,7 +55,13 @@ class QSFML_EDITOR_WIDGET_EXPORT Component
          * \brief getParent
          * \return returns the parent CanvasObject, this component belongs to
          */
-        inline Objects::CanvasObject *getParent() const { return m_parent; }
+        Objects::CanvasObject* getParent() const;
+
+        /**
+         * \brief getCanvasParent
+         * \return returns the Canvas, this component belongs to
+         */
+        Canvas* getCanvasParent() const;
 
         /**
          * \brief setName

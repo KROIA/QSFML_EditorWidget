@@ -3,8 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "objects/CanvasObject.h"
 #include "components/SfEventHandle.h"
-#include <QDebug>
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -19,7 +18,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
                          CanvasObject *parent = nullptr);
         CameraController(const CameraController &other);
         ~CameraController();
-        COMPONENT_DECL(CameraController)
+        COMPONENT_DECL(CameraController);
 
         void setDragButton(sf::Mouse::Button button);
         sf::Mouse::Button getDragButton() const;

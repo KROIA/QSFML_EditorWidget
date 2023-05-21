@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "components/Drawable.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -44,7 +44,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DrawableVector: public Drawable
     sf::Color m_color;
     static bool m_flipYaxis;
 
-    sf::Vertex *m_lines;
+    sf::Vertex m_lines[6];
 };
 }
 }

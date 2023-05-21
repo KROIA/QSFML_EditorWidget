@@ -191,11 +191,6 @@ namespace QSFML
 										   float& outDistanceFactorA,
 										   float& outDistanceFactorB)
 		{
-			/*
-
-				a = ((−(pointA.x*directionB.y-pointA.y*directionB.x-pointB.x*directionB.y+pointB.y*directionB.x))/(directionA.x*directionB.y-directionA.y*directionB.x))
-			and b = ((−(pointA.x*directionA.y-pointA.y*directionA.x+directionA.x*pointB.y-directionA.y*pointB.x))/(directionA.x*directionB.y-directionA.y*directionB.x))
-			*/
 			float divisor = directionA.x * directionB.y - directionA.y * directionB.x;
 
 			if (divisor == 0)

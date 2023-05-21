@@ -1,12 +1,13 @@
 #pragma once
 
+#include "QSFML_base.h"
 #include <SFML/Graphics.hpp>
 #include <QWidget>
 #include <QTimer>
 #include "canvas/CanvasSettings.h"
 #include "canvas/CanvasObjectContainer.h"
 #include <chrono>
-#include "QSFML_global.h"
+
 
 namespace QSFML
 {
@@ -54,6 +55,10 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         void sfEvent(const std::vector<sf::Event> &events);
 
         const sf::Font &getTextFont() const;
+        static void setProfilerOutputFileName(const std::string& fileName);
+        static const std::string& getProfilerOutputFileName();
+        static void saveProfilerFile();
+        static void saveProfilerFile(const std::string &fileName);
 
     protected:
         QPaintEngine* paintEngine() const override;
@@ -87,10 +92,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         sf::Vector2u m_oldCanvasSize;
         sf::Font m_textfont;
         sf::View m_view;
+        static std::string m_profilerOutputFile;
 
-    #ifdef BUILD_WITH_EASY_PROFILER
-        static Canvas* m_profilerMaster;
-    #endif
-
+        static std::vector<Canvas*> s_instances;
 };
 }

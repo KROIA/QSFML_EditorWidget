@@ -3,7 +3,7 @@
 #include <QObject>
 #include <SFML/Graphics.hpp>
 #include "components/AbstractPressEvent.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -21,7 +21,7 @@ class QSFML_EDITOR_WIDGET_EXPORT KeyPressEvent : public AbstractPressEvent
         KeyPressEvent(const std::string &name = "KeyPressEvent",
                       const sf::Keyboard::Key key = sf::Keyboard::Key::Space);
         KeyPressEvent(const KeyPressEvent &other);
-        COMPONENT_DECL(KeyPressEvent)
+        COMPONENT_DECL(KeyPressEvent);
 
         void setTriggerKey(sf::Keyboard::Key key);
         sf::Keyboard::Key getTriggerKey() const;

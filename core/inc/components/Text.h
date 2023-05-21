@@ -2,7 +2,7 @@
 
 #include "components/Drawable.h"
 #include "SFML/Graphics/Text.hpp"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -19,7 +19,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
          */
         Text(const std::string &name = "Text");
         Text(const Text &other);
-        COMPONENT_DECL(Text)
+        COMPONENT_DECL(Text);
 
         void setText(const std::string &text);
         std::string getText() const;

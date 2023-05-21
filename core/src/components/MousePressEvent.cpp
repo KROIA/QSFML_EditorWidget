@@ -8,17 +8,19 @@ COMPONENT_IMPL(MousePressEvent)
 MousePressEvent::MousePressEvent(const std::string &name,
                                  sf::Mouse::Button button)
     : AbstractPressEvent(name)
+    , m_button(button)
+    , m_currentPressedWorldPosition(0,0)
+    , m_currentPressedPixelPosition(0,0)
 {
-    setTriggerButton(button);
-    m_currentPressedPixelPosition = sf::Vector2i(0,0);
-    m_currentPressedWorldPosition = sf::Vector2f(0,0);
+
 }
 MousePressEvent::MousePressEvent(const MousePressEvent &other)
     : AbstractPressEvent(other)
+    , m_button(other.m_button)
+    , m_currentPressedWorldPosition(other.m_currentPressedWorldPosition)
+    , m_currentPressedPixelPosition(other.m_currentPressedPixelPosition)
 {
-    m_button = other.m_button;
-    m_currentPressedPixelPosition = other.m_currentPressedPixelPosition;
-    m_currentPressedWorldPosition = other.m_currentPressedWorldPosition;
+
 }
 void MousePressEvent::setTriggerButton(sf::Mouse::Button button)
 {

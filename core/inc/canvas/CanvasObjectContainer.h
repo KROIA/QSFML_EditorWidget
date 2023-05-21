@@ -1,13 +1,12 @@
 #pragma once
 
 #include <vector>
+#include "QSFML_base.h"
 #include "objects/CanvasObject.h"
 #include "components/Drawable.h"
 #include "objects/CameraController.h"
 #include "CanvasObjectGroup.h"
-#include "QSFML_debugSettings.h"
 #include "CanvasThreadWorker.h"
-#include "QSFML_global.h"
 
 namespace QSFML
 {
@@ -16,6 +15,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
     public:
         CanvasObjectContainer(Canvas *parent, const CanvasSettings &settings);
         ~CanvasObjectContainer();
+
+        void applyObjectChanges(); // Will be called automaticly if not manual
 
         void addObject(Objects::CanvasObject *obj);
         void addObject(const std::vector<Objects::CanvasObject*> &objs);
@@ -57,18 +58,6 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         void setupThreads(size_t threadCount);
 
 
-        /*template<typename T>
-        bool objectExists(T *obj,const std::vector<T*> &list);
-
-        template<typename T>
-        size_t getObjectIndex(T *obj,const std::vector<T*> &list);
-
-        template<typename T>
-        void addObject(Objects::CanvasObject *obj,std::vector<T*> &list);
-
-        template<typename T>
-        void removeObject(Objects::CanvasObject *obj,std::vector<T*> &list);*/
-
         void addObject_internal();
         void deleteObject_internal();
 
@@ -100,48 +89,7 @@ T* CanvasObjectContainer::getFirstObject() const
 {
     return m_allObjects->getFirstObject<T>();
 }
-/*template<typename T>
-bool CanvasObjectContainer::objectExists(T *obj,const std::vector<T*> &list)
-{
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange100));
-    return m_allObjects->objectExists<T>(obj, list);
-}
 
-template<typename T>
-size_t CanvasObjectContainer::getObjectIndex(T *obj,const std::vector<T*> &list)
-{
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange200));
-    size_t num = list.size();
-    if(!num) return npos;
-
-    for(auto it = list.begin(); it != list.end(); ++it) {
-        if(obj == *it) return it - list.begin();
-    }
-    return npos;
-}
-template<typename T>
-void CanvasObjectContainer::addObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
-{
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange300));
-    T* transformed = dynamic_cast<T*>(obj);
-    if(transformed)
-    {
-        list.push_back(transformed);
-    }
-}
-
-template<typename T>
-void CanvasObjectContainer::removeObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
-{
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange400));
-    T* transformed = dynamic_cast<T*>(obj);
-    if(transformed)
-    {
-        size_t index = getObjectIndex<T>(transformed,list);
-        if(index != npos)
-            list.erase(list.begin()+index);
-    }
-}*/
 
 
 }

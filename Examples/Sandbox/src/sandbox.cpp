@@ -6,6 +6,8 @@
 #include "SandboxObject.h"
 #include <iostream>
 
+#include <QTimer>
+
 using namespace QSFML;
 using namespace QSFML::Objects;
 
@@ -78,6 +80,15 @@ SandBox::SandBox(QWidget *parent)
     float distance = func1.getShortestDistance(point);
     std::cout << "PosFactor: " << factor << " pos: " << pos.x << " " << pos.y << " distance: "<< distance<<"\n";
     
+    QTimer* timer = new QTimer(this);
+    m_pointPainter = new QSFML::Components::PointPainter();
+    QSFML::Objects::CanvasObject* canvasObject = new QSFML::Objects::CanvasObject();
+    canvasObject->addComponent(m_pointPainter);
+    m_canvas_1->addObject(canvasObject);
+    connect(timer, &QTimer::timeout, this, &SandBox::onTimerFinished);
+    timer->start(1000);
+
+    
 }
 
 SandBox::~SandBox()
@@ -87,3 +98,13 @@ SandBox::~SandBox()
     delete m_canvas_1;
 }
 
+void SandBox::onTimerFinished()
+{
+    std::vector<sf::Vector2f> points;
+    
+    for (size_t i = 0; i < 20; ++i)
+    {
+        points.push_back(QSFML::Utilities::RandomEngine::getVector({ 0,0 }, { 100,100 }));
+    }
+    m_pointPainter->setPoints(points);
+}

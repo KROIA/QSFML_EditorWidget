@@ -1,5 +1,5 @@
 #pragma once
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 #include <SFML/System/Vector2.hpp>
 
 

@@ -3,7 +3,7 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include "components/Component.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -52,8 +52,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
         Drawable(const std::string &name = "Drawable");
         Drawable(const Drawable &other);
         ~Drawable();
-
-
 
         /**
          * \brief draw

@@ -9,20 +9,21 @@ namespace Components
 COMPONENT_IMPL(Line)
 Line::Line(const std::string &name)
     : Drawable(name)
+    , m_thickness(1)
+    , m_color(sf::Color::Green)
+    , m_begin(0,0)
+    , m_end(1,1)
 {
-    setColor(sf::Color::Cyan);
+
 }
 Line::Line(const Line &other)
     : Drawable(other)
+    , m_thickness(other.m_thickness)
+    , m_color(other.m_color)
+    , m_begin(other.m_begin)
+    , m_end(other.m_end)
 {
-    m_vertices[0] = other.m_vertices[0];
-    m_vertices[1] = other.m_vertices[1];
-    m_vertices[2] = other.m_vertices[2];
-    m_vertices[3] = other.m_vertices[3];
-    m_thickness = other.m_thickness;
-    m_color = other.m_color;
-    m_begin = other.m_begin;
-    m_end = other.m_end;
+    updateShape();
 }
 
 void Line::setStartPos(const sf::Vector2f &pos)

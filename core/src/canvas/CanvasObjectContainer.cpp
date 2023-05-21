@@ -1,6 +1,6 @@
 #include "canvas/CanvasObjectContainer.h"
 #include "canvas/Canvas.h"
-
+#include "canvas/Stats.h"
 
 using namespace QSFML::Objects;
 using namespace QSFML::Components;
@@ -11,6 +11,7 @@ CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, const CanvasSetting
     m_updateCount = 0;
     m_parent = parent;
     m_allObjects = new CanvasObjectGroup(m_parent);
+    StatsManager::setRootCanvesObject(m_parent, m_allObjects->getObjectsCount());
     for(size_t i=0; i<RenderLayer::count; ++i)
     {
         m_renderLayerGroups.push_back(new CanvasObjectGroup(m_parent));
@@ -25,12 +26,17 @@ CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, const CanvasSetting
 }
 CanvasObjectContainer::~CanvasObjectContainer()
 {
+    StatsManager::setRootCanvesObject(m_parent, 0);
     delete m_allObjects;
     for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
     {
         m_renderLayerGroups[i]->clearObjects();
         delete m_renderLayerGroups[i];
     }
+}
+void CanvasObjectContainer::applyObjectChanges()
+{
+    updateNewElements();
 }
 
 void CanvasObjectContainer::setupThreads(size_t threadCount)
@@ -55,7 +61,7 @@ void CanvasObjectContainer::setupThreads(size_t threadCount)
 
 void CanvasObjectContainer::addObject(CanvasObject *obj)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
 
     if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
         obj->getCanvasParent()->removeObject(obj);
@@ -67,12 +73,12 @@ void CanvasObjectContainer::addObject(CanvasObject *obj)
     }
     if(obj->getRenderLayer() < RenderLayer::count)
         m_renderLayerGroups[obj->getRenderLayer()]->addObject(obj);
-    //m_toAddContainer.push_back(obj);
+  
     obj->setCanvasParent(m_parent);
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
     for(size_t i=0; i<objs.size(); ++i)
     {
         addObject(objs[i]);
@@ -92,14 +98,7 @@ void CanvasObjectContainer::addObject_internal()
     {
         m_renderLayerGroups[i]->addObject_internal();
     }
-   /* for(size_t i=0; i<m_toAddContainer.size(); ++i)
-    {
-        if(objectExists(m_toAddContainer[i]))
-            continue;
-        //m_toAddContainer[i]->setCanvasParent(m_parent);
-        m_container.push_back(m_toAddContainer[i]);
-    }
-    m_toAddContainer.clear();*/
+    StatsManager::setRootCanvesObject(m_parent, m_allObjects->getObjectsCount());
 }
 void CanvasObjectContainer::deleteObject_internal()
 {
@@ -108,16 +107,12 @@ void CanvasObjectContainer::deleteObject_internal()
     {
         m_renderLayerGroups[i]->deleteObject_internal();
     }
-    /*for(size_t i=0; i<m_toDelete.size(); ++i)
-    {
-        deleteObject(m_toDelete[i]);
-    }
-    m_toDelete.clear();*/
+    StatsManager::setRootCanvesObject(m_parent, m_allObjects->getObjectsCount());
 }
 
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
     m_allObjects->removeObject(obj);
     if(m_threadWorker)
     {
@@ -128,15 +123,11 @@ void CanvasObjectContainer::removeObject(CanvasObject *obj)
     }
     if(obj->getRenderLayer() < RenderLayer::count)
         m_renderLayerGroups[obj->getRenderLayer()]->removeObject(obj);
-
-   /* size_t index = getObjectIndex(obj);
-    if(index == npos) return;
-    obj->setCanvasParent(nullptr);
-    m_container.erase(m_container.begin() + index);*/
+    StatsManager::setRootCanvesObject(m_parent, m_allObjects->getObjectsCount());
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
     for(size_t i=0; i<objs.size(); ++i)
     {
         removeObject(objs[i]);
@@ -144,13 +135,13 @@ void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 }
 void CanvasObjectContainer::deleteObject(Objects::CanvasObject *obj)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
     removeObject(obj);
     delete obj;
 }
 void CanvasObjectContainer::deleteObject(const std::vector<Objects::CanvasObject*> &objs)
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
     removeObject(objs);
     for(size_t i=0; i<objs.size(); ++i)
     {
@@ -164,6 +155,7 @@ void CanvasObjectContainer::clearObjects()
     {
         m_renderLayerGroups[i]->clearObjects();
     }
+    StatsManager::setRootCanvesObject(m_parent, m_allObjects->getObjectsCount());
 }
 
 void CanvasObjectContainer::reserveObjectsCount(size_t size)
@@ -203,16 +195,6 @@ void CanvasObjectContainer::deleteLater(Objects::CanvasObject *obj)
     m_allObjects->deleteLater(obj);
     if(obj->getRenderLayer() < RenderLayer::count)
         m_renderLayerGroups[obj->getRenderLayer()]->removeObject(obj);
-
-    /*for(size_t i=0; i<m_toAddContainer.size(); ++i)
-    {
-        if(m_toAddContainer[i] == obj)
-        {
-            m_toAddContainer.erase(m_toAddContainer.begin() + i);
-            break;
-        }
-    }
-    m_toDelete.push_back(obj);*/
 }
 void CanvasObjectContainer::renderLayerSwitch(Objects::CanvasObject *obj, RenderLayer from, RenderLayer to)
 {
@@ -232,7 +214,7 @@ size_t CanvasObjectContainer::getTick() const
 
 void CanvasObjectContainer::updateNewElements()
 {
-    QSFML_PROFILE_CANVAS(EASY_FUNCTION(profiler::colors::Orange));
+    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
     deleteObject_internal();
     addObject_internal();
     m_allObjects->updateNewElements();
@@ -240,19 +222,10 @@ void CanvasObjectContainer::updateNewElements()
     {
         m_renderLayerGroups[i]->updateNewElements();
     }
-    /*for(size_t i=0; i<m_container.size(); ++i)
-    {
-        if(m_container[i]->m_objectsChanged)
-            m_container[i]->updateNewElements();
-    }*/
 }
 void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)
 {
     m_allObjects->sfEvent(events);
-    /*for(size_t i=0; i<m_container.size(); ++i)
-    {
-        m_container[i]->sfEvent(events);
-    }*/
 }
 void CanvasObjectContainer::update()
 {
@@ -267,23 +240,14 @@ void CanvasObjectContainer::update()
         m_allObjects->update();
     }
     ++m_updateCount;
-
-    /*for(size_t i=0; i<m_container.size(); ++i)
-    {
-        m_container[i]->update_internal();
-    }*/
 }
 void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {
     for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
     {
+        QSFMLP_BLOCK("Draw layer", QSFMLP_CANVASCONTAINER_COLOR_1);
         m_renderLayerGroups[i]->draw(window);
+        QSFMLP_END_BLOCK;
     }
-    /*
-    for(size_t i=0; i<m_container.size(); ++i)
-    {
-        if(m_container[i]->m_thisNeedsDrawUpdate)
-            m_container[i]->draw(window);
-    }*/
 }
 

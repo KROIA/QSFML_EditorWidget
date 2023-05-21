@@ -1,7 +1,7 @@
 #include "ExampleCanvas.h"
 #include "ui_exampleCanvas.h"
 #include <iostream>
-#include "CollisionChecker.h"
+#include <QTimer>
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -28,7 +28,15 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
     m_canvas->addObject(defaultEditor);
     qDebug() << defaultEditor->toString().c_str();
 
-    m_canvas->addObject(new CollisionChecker());
+    m_collisionChecker = new CollisionChecker();
+    m_canvas->addObject(m_collisionChecker);
+
+    m_canvas->applyObjectChanges();
+    
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &ExampleCanvas::onTimerFinished);
+    timer->start(100);
     
 }
 
@@ -38,3 +46,17 @@ ExampleCanvas::~ExampleCanvas()
     delete m_canvas;
 }
 
+void ExampleCanvas::on_intersecting_radioButton_clicked()
+{
+    m_collisionChecker->setMode(CollisionChecker::Mode::intersecting);
+}
+void ExampleCanvas::on_containing_radioButton_clicked()
+{
+    m_collisionChecker->setMode(CollisionChecker::Mode::contains);
+}
+void ExampleCanvas::onTimerFinished()
+{
+    QSFML::Stats stats = QSFML::StatsManager::getStats(m_canvas);
+    system("cls");
+    stats.print();
+}

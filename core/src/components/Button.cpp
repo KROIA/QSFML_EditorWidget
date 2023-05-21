@@ -4,24 +4,28 @@ namespace QSFML
 {
 namespace Components
 {
-COMPONENT_IMPL(Button)
+COMPONENT_IMPL(Button);
 Button::Button(const std::string &name)
-    :   MousePressEvent(name)
-    ,   Utilities::AABB()
+    : MousePressEvent(name)
+    , Utilities::AABB()
+    , m_wasInside(false)
+    , m_wasPressed(false)
 {
-    m_wasInside = false;
-    m_wasPressed = false;
+
 }
 Button::Button(const std::string &name, const Utilities::AABB &box)
-    :   MousePressEvent(name)
-    ,   Utilities::AABB(box)
+    : MousePressEvent(name)
+    , Utilities::AABB(box)
+    , m_wasInside(false)
+    , m_wasPressed(false)
 {
-    m_wasInside = false;
-    m_wasPressed = false;
+
 }
 Button::Button(const Button &other)
-    :   MousePressEvent(other)
-    ,   Utilities::AABB(other)
+    : MousePressEvent(other)
+    , Utilities::AABB(other)
+    , m_wasInside(other.m_wasInside)
+    , m_wasPressed(other.m_wasPressed)
 {
 
 }
@@ -46,11 +50,6 @@ bool Button::getCurrentValue()
     m_wasInside = isInside;
     m_wasPressed = isPressed;
 
-   /* if(contains(pos))
-    {
-        m_wasPressed = true;
-        return true;
-    }*/
     return false;
 }
 }

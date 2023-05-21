@@ -3,7 +3,7 @@
 #include <QObject>
 #include <SFML/Graphics.hpp>
 #include "components/AbstractPressEvent.h"
-#include "QSFML_global.h"
+#include "QSFML_base.h"
 
 namespace QSFML
 {
@@ -21,7 +21,7 @@ class QSFML_EDITOR_WIDGET_EXPORT MousePressEvent : public AbstractPressEvent
         MousePressEvent(const std::string &name = "MousePressEvent",
                         sf::Mouse::Button button = sf::Mouse::Button::Left);
         MousePressEvent(const MousePressEvent &other);
-        COMPONENT_DECL(MousePressEvent)
+        COMPONENT_DECL(MousePressEvent);
 
         void setTriggerButton(sf::Mouse::Button button);
         sf::Mouse::Button getTriggerButton() const;
