@@ -3,14 +3,20 @@
 #include <QtCore/qglobal.h>
 #include <chrono>
 
-#ifndef BUILD_STATIC
-# if defined(QSFML_EDITOR_WIDGET_LIB)
-#  define QSFML_EDITOR_WIDGET_EXPORT Q_DECL_EXPORT
-# else
-#  define QSFML_EDITOR_WIDGET_EXPORT Q_DECL_IMPORT
-# endif
+#ifdef BUILD_STATIC
+#define QSFML_EDITOR_WIDGET_STATIC
+#endif
+
+#ifndef QSFML_EDITOR_WIDGET_STATIC
+	#if defined(QSFML_EDITOR_WIDGET_LIB)
+		#define QSFML_EDITOR_WIDGET_EXPORT Q_DECL_EXPORT
+	#else
+		#define QSFML_EDITOR_WIDGET_EXPORT Q_DECL_IMPORT
+	#endif
 #else
-# define QSFML_EDITOR_WIDGET_EXPORT
+	#define SFML_STATIC
+	#define EASY_PROFILER_STATIC
+	#define QSFML_EDITOR_WIDGET_EXPORT
 #endif
 
 

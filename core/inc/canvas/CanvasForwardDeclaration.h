@@ -28,4 +28,12 @@ namespace QSFML
         return new className(*this); \
     }
 
+
+#define CLONE_FUNC_TEMPLATE_IMPL(className) \
+    template<typename templateType> \
+    className<templateType>* className<templateType>::clone() const \
+    { \
+        return new className<templateType>(*this); \
+    }
+
 }

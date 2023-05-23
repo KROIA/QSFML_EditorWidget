@@ -21,6 +21,9 @@ namespace Objects
 
 #define OBJECT_IMPL(className) \
     CLONE_FUNC_IMPL(className)
+
+#define OBJECT_TEMPLATE_IMPL(className) \
+    CLONE_FUNC_TEMPLATE_IMPL(className)
 /**
  * \brief The CanvasObject class
  *
@@ -170,7 +173,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         friend CanvasObjectGroup;
         friend CanvasObjectContainer;
     public:
-        CanvasObject(const std::string &name = "",
+        CanvasObject(const std::string &name = "CanvasObject",
                      CanvasObject *parent = nullptr);
         CanvasObject(const CanvasObject &other);
         virtual ~CanvasObject();
