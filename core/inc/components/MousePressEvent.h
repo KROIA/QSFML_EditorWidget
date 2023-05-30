@@ -1,9 +1,10 @@
 #pragma once
 
+#include "QSFML_base.h"
+#include "components/base/AbstractPressEvent.h"
+
 #include <QObject>
 #include <SFML/Graphics.hpp>
-#include "components/AbstractPressEvent.h"
-#include "QSFML_base.h"
 
 namespace QSFML
 {

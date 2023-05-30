@@ -1,6 +1,8 @@
 #pragma once
 
-#include <cstddef>
+#include "QSFML_base.h"
+//#include <cstddef>
+
 namespace QSFML
 {
 

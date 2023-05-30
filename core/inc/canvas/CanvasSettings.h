@@ -1,8 +1,10 @@
 #pragma once
 
+#include "QSFML_base.h"
+
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/Color.hpp>
-#include "QSFML_base.h"
+
 
 namespace QSFML
 {

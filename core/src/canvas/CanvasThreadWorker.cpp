@@ -1,6 +1,8 @@
-#include "QSFML_base.h"
 #include "canvas/CanvasThreadWorker.h"
+#include "canvas/CanvasObjectGroup.h"
+
 #include <string>
+#include <thread>
 
 namespace QSFML
 {

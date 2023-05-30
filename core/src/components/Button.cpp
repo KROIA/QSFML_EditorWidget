@@ -1,5 +1,6 @@
 #include "components/Button.h"
-#include "objects/CanvasObject.h"
+#include "objects/base/CanvasObject.h"
+
 namespace QSFML
 {
 namespace Components

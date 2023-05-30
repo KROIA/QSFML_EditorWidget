@@ -1,7 +1,6 @@
 #pragma once
-#include "QSFML_base.h"
-#include <SFML/System/Vector2.hpp>
 
+#include "QSFML_base.h"
 
 namespace QSFML
 {

@@ -7,6 +7,7 @@
 #define QSFML_EDITOR_WIDGET_STATIC
 #endif
 
+//#define SFML_STATIC
 #ifndef QSFML_EDITOR_WIDGET_STATIC
 	#if defined(QSFML_EDITOR_WIDGET_LIB)
 		#define QSFML_EDITOR_WIDGET_EXPORT Q_DECL_EXPORT
@@ -14,8 +15,8 @@
 		#define QSFML_EDITOR_WIDGET_EXPORT Q_DECL_IMPORT
 	#endif
 #else
-	#define SFML_STATIC
-	#define EASY_PROFILER_STATIC
+	
+	//#define EASY_PROFILER_STATIC
 	#define QSFML_EDITOR_WIDGET_EXPORT
 #endif
 
@@ -28,3 +29,6 @@
 	typedef std::chrono::system_clock::time_point TimePoint;
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif

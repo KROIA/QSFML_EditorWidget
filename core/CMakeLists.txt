@@ -117,10 +117,17 @@ message("Create library with files:")
  ENDFOREACH()
 
  
-
+ set(SFML_EditorWidget_dependencies 
+    Qt5::Widgets
+    sfml-graphics
+    sfml-audio
+    sfml-network
+    sfml-system
+    sfml-window)
 
 add_library(SFML_EditorWidget_shared SHARED ${SOURCES})
 add_library(SFML_EditorWidget_static STATIC ${SOURCES})
+add_library(SFML_EditorWidget_static_profile STATIC ${SOURCES})
 
 
 target_compile_definitions(sfml-graphics PRIVATE  SFML_STATIC)
@@ -131,24 +138,27 @@ target_compile_definitions(sfml-window PRIVATE  SFML_STATIC)
 target_compile_definitions(easy_profiler PRIVATE  EASY_PROFILER_STATIC)
 target_compile_definitions(SFML_EditorWidget_shared PRIVATE  QSFML_EDITOR_WIDGET_LIB)
 target_compile_definitions(SFML_EditorWidget_static PRIVATE  BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
+target_compile_definitions(SFML_EditorWidget_static_profile PRIVATE QSFML_PROFILING BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
+#if(QSFML_PROFILING)
+#    target_compile_definitions(SFML_EditorWidget_shared PRIVATE  QSFML_PROFILING)
+#    target_compile_definitions(SFML_EditorWidget_static PRIVATE  QSFML_PROFILING)
+#    set(SFML_EditorWidget_dependencies 
+#        ${SFML_EditorWidget_dependencies}
+#        easy_profiler)
+#ENDIF()
 
 
 set_target_properties(easy_profiler PROPERTIES DEBUG_POSTFIX "-d")
 set_target_properties(SFML_EditorWidget_shared PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}" DEBUG_POSTFIX "-d")
 set_target_properties(SFML_EditorWidget_static PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}-s" DEBUG_POSTFIX "-d")
+set_target_properties(SFML_EditorWidget_static_profile PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}-s-p" DEBUG_POSTFIX "-d")
 
-set(SFML_EditorWidget_dependencies 
-    Qt5::Widgets
-    sfml-graphics
-    sfml-audio
-    sfml-network
-    sfml-system
-    sfml-window
-    easy_profiler)
+
 
 
 target_link_libraries(SFML_EditorWidget_shared ${SFML_EditorWidget_dependencies})
 target_link_libraries(SFML_EditorWidget_static ${SFML_EditorWidget_dependencies})
+target_link_libraries(SFML_EditorWidget_static_profile ${SFML_EditorWidget_dependencies} easy_profiler)
 
 target_include_directories(SFML_EditorWidget_shared PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
@@ -158,11 +168,16 @@ target_include_directories(SFML_EditorWidget_static PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
 	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
 )
+target_include_directories(SFML_EditorWidget_static_profile PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
+)
 # Define the install path
 message("Installation to path: ${CMAKE_INSTALL_PREFIX}/bin")
 message("Installation to path: ${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
 install(TARGETS SFML_EditorWidget_shared DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
 install(TARGETS SFML_EditorWidget_shared DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
 install(TARGETS SFML_EditorWidget_static DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
+install(TARGETS SFML_EditorWidget_static_profile DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
 install(TARGETS easy_profiler DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
 install(TARGETS sfml-graphics sfml-audio sfml-network sfml-system sfml-window DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")

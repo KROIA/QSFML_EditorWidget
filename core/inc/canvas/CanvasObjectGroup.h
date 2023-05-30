@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CanvasForwardDeclaration.h"
-#include "objects/CanvasObject.h"
 #include "QSFML_base.h"
+
+#include "SFML/Graphics.hpp"
 
 namespace QSFML
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "components/Drawable.h"
+#include "components/base/Drawable.h"
 #include "objects/CameraController.h"
 #include "QSFML_base.h"
 

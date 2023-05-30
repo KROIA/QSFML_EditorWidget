@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QObject>
-#include "components/SfEventHandle.h"
 #include "QSFML_base.h"
+#include "components/base/SfEventHandle.h"
+
+#include <QObject>
 
 namespace QSFML
 {

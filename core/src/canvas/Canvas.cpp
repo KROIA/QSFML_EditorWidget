@@ -1,5 +1,5 @@
 #include "canvas/Canvas.h"
-#include "canvas/Stats.h"
+#include "utilities/Stats.h"
 #include <QResizeEvent>
 #include <QHBoxLayout>
 

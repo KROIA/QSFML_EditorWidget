@@ -1,5 +1,5 @@
-#include "components/Component.h"
-#include "objects/CanvasObject.h"
+#include "components/base/Component.h"
+#include "objects/base/CanvasObject.h"
 
 using namespace QSFML::Components;
 using namespace QSFML::Objects;

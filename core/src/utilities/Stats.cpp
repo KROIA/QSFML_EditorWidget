@@ -1,4 +1,4 @@
-#include "canvas/Stats.h"
+#include "utilities/Stats.h"
 #include "canvas/Canvas.h"
 namespace QSFML
 {

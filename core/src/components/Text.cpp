@@ -1,5 +1,5 @@
 #include "components/Text.h"
-#include "objects/CanvasObject.h"
+#include "objects/base/CanvasObject.h"
 
 namespace QSFML
 {

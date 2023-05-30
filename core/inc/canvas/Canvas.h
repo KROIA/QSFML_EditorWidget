@@ -1,12 +1,12 @@
 #pragma once
 
 #include "QSFML_base.h"
+#include "canvas/CanvasSettings.h"
+#include "canvas/CanvasObjectContainer.h"
+
 #include <SFML/Graphics.hpp>
 #include <QWidget>
 #include <QTimer>
-#include "canvas/CanvasSettings.h"
-#include "canvas/CanvasObjectContainer.h"
-#include <chrono>
 
 
 namespace QSFML

@@ -1,10 +1,10 @@
 #pragma once
-#include <mutex>
-#include <thread>
-#include <condition_variable>
-#include "CanvasObjectGroup.h"
-#include <atomic>
+
 #include "QSFML_base.h"
+
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
 
 
 namespace QSFML

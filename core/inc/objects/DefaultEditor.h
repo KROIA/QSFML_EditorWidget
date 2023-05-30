@@ -1,6 +1,6 @@
 #pragma once
 
-#include "objects/CanvasObject.h"
+#include "objects/base/CanvasObject.h"
 #include "objects/VisibleCamera.h"
 #include "objects/BackgroundGrid.h"
 #include "QSFML_base.h"

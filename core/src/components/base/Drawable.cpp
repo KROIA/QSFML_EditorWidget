@@ -1,4 +1,4 @@
-#include "components/Drawable.h"
+#include "components/base/Drawable.h"
 #include "canvas/Canvas.h"
 
 using namespace QSFML::Components;

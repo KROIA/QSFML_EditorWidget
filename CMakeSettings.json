@@ -5,8 +5,8 @@
       "generator": "Visual Studio 17 2022 Win64",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x64_x64" ],
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
-      "installRoot": "${projectDir}\\build\\${name}",
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "installRoot": "${projectDir}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -15,24 +15,35 @@
     {
       "name": "x64-Release",
       "generator": "Visual Studio 17 2022 Win64",
-      "configurationType": "MinSizeRel",
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
-      "installRoot": "${projectDir}\\build\\${name}",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "installRoot": "${projectDir}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ]
     },
     {
-      "name": "x64-ReleaseD",
+      "name": "x64-Release-Profile",
       "generator": "Visual Studio 17 2022 Win64",
-      "configurationType": "RelWithDebInfo",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "installRoot": "${projectDir}",
+      "cmakeCommandArgs": "-DQSFML_PROFILING=1",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ]
+    },
+    {
+      "name": "x64-Debug-Profile",
+      "generator": "Visual Studio 17 2022 Win64",
+      "configurationType": "Debug",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
-      "installRoot": "${projectDir}\\build\\${name}",
-      "cmakeCommandArgs": "",
+      "installRoot": "${projectDir}",
+      "cmakeCommandArgs": "-DQSFML_PROFILING=1",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x64" ]
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "intelliSenseMode": "windows-msvc-x64"
     }
   ]
 }

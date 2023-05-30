@@ -1,8 +1,9 @@
 #pragma once
 
-#include "components/Drawable.h"
-#include "SFML/Graphics/Vertex.hpp"
 #include "QSFML_base.h"
+#include "components/base/Drawable.h"
+
+#include "SFML/Graphics/Vertex.hpp"
 
 namespace QSFML
 {

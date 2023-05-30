@@ -1,8 +1,9 @@
 #pragma once
 
 #include "QSFML_base.h"
+#include "QSFML_ForwardDeclaration.h"
+
 #include "utilities/Singelton.h"
-#include "CanvasForwardDeclaration.h"
 #include <unordered_map>
 
 namespace QSFML

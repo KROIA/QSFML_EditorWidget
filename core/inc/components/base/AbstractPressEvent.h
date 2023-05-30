@@ -1,10 +1,11 @@
 #pragma once
 
+#include "QSFML_base.h"
+#include "components/base/Component.h"
+#include "utilities/Updatable.h"
+
 #include <QObject>
 #include <SFML/Graphics.hpp>
-#include "components/Component.h"
-#include "utilities/Updatable.h"
-#include "QSFML_base.h"
 
 namespace QSFML
 {

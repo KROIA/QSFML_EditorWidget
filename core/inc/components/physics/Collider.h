@@ -1,32 +1,22 @@
 #pragma once
-// #include "utilities/AABB.h"
-#include <qobject.h>
+
 #include "QSFML_base.h"
-#include "components/Component.h"
-#include "components/Drawable.h"
-#include "canvas/CanvasForwardDeclaration.h"
-#include <vector>
+#include "components/base/Component.h"
+#include "components/base/Drawable.h"
+
 #include "utilities/Ray.h"
 #include "utilities/AABB.h"
+#include "utilities/CollisionInfo.h"
 
+#include <qobject.h>
+#include <vector>
 
 namespace QSFML
 {
 namespace Components
 {
     class Collider;
-    struct QSFML_EDITOR_WIDGET_EXPORT Collisioninfo
-    {
-        const Collider *collider1;
-        const Collider *collider2;
-        struct QSFML_EDITOR_WIDGET_EXPORT VertexIndex
-        {
-            size_t index1;
-            size_t index2;
-        };
-        VertexIndex vertexIndex; // Vector from this vertex to the next had a collision 
-        sf::Vector2f collisionPos;
-    };
+    
 
     class QSFML_EDITOR_WIDGET_EXPORT Collider: public Component
     {
@@ -57,13 +47,13 @@ namespace Components
             const sf::Vector2f& getPos() const;
 
             void checkCollision(const std::vector<Objects::CanvasObject*>& objs,
-                                std::vector<Collisioninfo>& collisions,
+                                std::vector<Utilities::Collisioninfo>& collisions,
                                 bool onlyFirstCollisionPerObject = true) const;
             void checkCollision(const std::vector<Components::Collider*> &other,
-                std::vector<Collisioninfo>& collisions,
+                std::vector<Utilities::Collisioninfo>& collisions,
                 bool onlyFirstCollisionPerObject = true) const;
 
-            bool checkCollision(Collider* other, std::vector<Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+            bool checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
             bool contains(const sf::Vector2f& point);
 
             static bool contains(const std::vector<sf::Vector2f>& polygon, 

@@ -1,16 +1,15 @@
 #pragma once
+
 #include "QSFML_base.h"
-#include <SFML/Graphics.hpp>
-#include <vector>
-#include "canvas/CanvasForwardDeclaration.h"
 #include "canvas/RenderLayer.h"
-#include "components/Component.h"
 #include "canvas/CanvasSettings.h"
-#include "components/SfEventHandle.h"
-#include "components/Drawable.h"
-#include "components/physics/Collider.h"
+
+#include "utilities/CollisionInfo.h"
 #include "utilities/Updatable.h"
 
+#include <vector>
+#include "SFML/Graphics/Font.hpp"
+#include "SFML/Graphics/RenderWindow.hpp"
 
 namespace QSFML
 {
@@ -251,7 +250,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         size_t getComponentCount() const;
         const std::vector<Components::Collider*> &getCollider() const;
         bool checkCollision(const CanvasObject* other) const;
-        bool checkCollision(const CanvasObject* other, std::vector<Components::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+        bool checkCollision(const CanvasObject* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
         void solveCollision(CanvasObject* other);
         // ---------
 

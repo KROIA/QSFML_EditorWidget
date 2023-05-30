@@ -1,8 +1,11 @@
-﻿#include "components/physics/Collider.h"
-#include "objects/CanvasObject.h"
+﻿#include "utilities/Stats.h"
+
+#include "objects/base/CanvasObject.h"
+
+#include "components/physics/Collider.h"
+
 #include "utilities/VectorOperations.h"
 #include "utilities/Ray.h"
-#include "canvas/Stats.h"
 
 namespace QSFML
 {
@@ -97,7 +100,7 @@ const sf::Vector2f& Collider::getPos() const
 }
 
 void Collider::checkCollision(const std::vector<Objects::CanvasObject*>& objs,
-    std::vector<Collisioninfo>& collisions,
+    std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_1);
@@ -109,7 +112,7 @@ void Collider::checkCollision(const std::vector<Objects::CanvasObject*>& objs,
     }
 }
 void Collider::checkCollision(const std::vector<Components::Collider*>& other,
-    std::vector<Collisioninfo>& collisions,
+    std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_2);
@@ -120,7 +123,7 @@ void Collider::checkCollision(const std::vector<Components::Collider*>& other,
 }
 
 
-bool Collider::checkCollision(Collider* other, std::vector<Collisioninfo>& collisions, bool onlyFirstCollision) const
+bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 { 
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
     Canvas* canvasParent = getCanvasParent();
@@ -158,7 +161,7 @@ bool Collider::checkCollision(Collider* other, std::vector<Collisioninfo>& colli
                 {
                     collision = true;
                     sf::Vector2f collisionPoint = otherRay.getPoint(otherDistance);
-                    Collisioninfo info;
+                    Utilities::Collisioninfo info;
                     info.collider1 = this;
                     info.collider2 = other;
                     info.collisionPos = collisionPoint;

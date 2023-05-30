@@ -1,6 +1,12 @@
-#include "objects/CanvasObject.h"
+#include "objects/base/CanvasObject.h"
 #include "canvas/Canvas.h"
-#include "canvas/Stats.h"
+#include "utilities/Stats.h"
+
+#include "components/base/Component.h"
+#include "components/base/SfEventHandle.h"
+#include "components/base/Drawable.h"
+#include "components/physics/Collider.h"
+
 
 
 
@@ -639,11 +645,11 @@ const std::vector<Components::Collider*> &CanvasObject::getCollider() const
 }
 bool CanvasObject::checkCollision(const CanvasObject* other) const
 {
-    std::vector<Collisioninfo> collisions;
+    std::vector<Utilities::Collisioninfo> collisions;
     return checkCollision(other, collisions);
 }
 bool CanvasObject::checkCollision(const CanvasObject* other, 
-    std::vector<Collisioninfo>& collisions, 
+    std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollision) const
 {
     std::vector<Components::Collider*> otherColliders = other->getCollider();

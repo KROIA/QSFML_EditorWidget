@@ -1,8 +1,9 @@
 #pragma once
 
-#include "objects/CanvasObject.h"
-#include "components/Drawable.h"
 #include "QSFML_base.h"
+#include "objects/base/CanvasObject.h"
+#include "components/base/Drawable.h"
+
 
 namespace QSFML
 {

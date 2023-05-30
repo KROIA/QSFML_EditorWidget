@@ -1,6 +1,15 @@
 #include "canvas/CanvasObjectContainer.h"
 #include "canvas/Canvas.h"
-#include "canvas/Stats.h"
+#include "utilities/Stats.h"
+#include "canvas/CanvasObjectGroup.h"
+#include "canvas/CanvasThreadWorker.h"
+
+#include "objects/base/CanvasObject.h"
+#include "objects/CameraController.h"
+
+#include "components/base/Drawable.h"
+
+
 
 using namespace QSFML::Objects;
 using namespace QSFML::Components;

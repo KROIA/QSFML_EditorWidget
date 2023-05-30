@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #ifdef _DEBUG
-#define QSFML_PROFILING
+//#define QSFML_PROFILING
 #endif
 
 // Profiling

@@ -1,12 +1,10 @@
 #pragma once
 
-#include <vector>
 #include "QSFML_base.h"
-#include "objects/CanvasObject.h"
-#include "components/Drawable.h"
-#include "objects/CameraController.h"
-#include "CanvasObjectGroup.h"
-#include "CanvasThreadWorker.h"
+#include "RenderLayer.h"
+
+#include "SFML/Graphics.hpp"
+#include <vector>
 
 namespace QSFML
 {

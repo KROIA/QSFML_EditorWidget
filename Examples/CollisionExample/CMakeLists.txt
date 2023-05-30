@@ -1,6 +1,9 @@
 
 cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME PROJECT_NAME)   
 string(REPLACE " " "_" ProjectId ${PROJECT_NAME})
+if(QSFML_PROFILING)
+    set(PROJECT_NAME ${PROJECT_NAME}_profile)
+endif()
 project(${PROJECT_NAME})
 
 
@@ -51,8 +54,11 @@ set(Files
 
 add_executable(${PROJECT_NAME} ${Files})
 
-
-target_link_libraries(${PROJECT_NAME} SFML_EditorWidget_static)
+if(QSFML_PROFILING)
+    target_link_libraries(${PROJECT_NAME} SFML_EditorWidget_static_profile)
+else()
+    target_link_libraries(${PROJECT_NAME} SFML_EditorWidget_static)
+endif()
 target_compile_definitions(${PROJECT_NAME} PUBLIC BUILD_STATIC)
 
 

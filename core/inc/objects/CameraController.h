@@ -1,9 +1,10 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include "objects/CanvasObject.h"
-#include "components/SfEventHandle.h"
 #include "QSFML_base.h"
+#include "objects/base/CanvasObject.h"
+#include "components/base/SfEventHandle.h"
+
+#include <SFML/Graphics.hpp>
 
 namespace QSFML
 {

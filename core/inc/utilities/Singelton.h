@@ -1,4 +1,5 @@
 #pragma once
+
 #include "QSFML_base.h"
 
 namespace QSFML

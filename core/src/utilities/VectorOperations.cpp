@@ -72,7 +72,7 @@ namespace VectorMath
         float l = vec.x * vec.x + vec.y * vec.y;
         if(l <= 0)
             return vec;
-        return(vec / sqrt(l));
+        return(vec / (float)sqrt(l));
     }
 }
 }

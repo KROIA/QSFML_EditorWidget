@@ -141,7 +141,7 @@ void CollisionChecker::update_intersecting()
 	{
 		for (size_t j = i + 1; j < m_objs.size(); ++j)
 		{
-			std::vector<QSFML::Components::Collisioninfo> collisions;
+			std::vector<QSFML::Utilities::Collisioninfo> collisions;
 			if (m_objs[i]->checkCollision(m_objs[j], collisions, false))
 			{
 				//qDebug() << getTick() << " Collision";
@@ -177,7 +177,7 @@ void CollisionChecker::update_performanceTest()
 	{
 		for (size_t j = i + 1; j < m_performanceObjs.size(); ++j)
 		{
-			std::vector<QSFML::Components::Collisioninfo> collisions;
+			std::vector<QSFML::Utilities::Collisioninfo> collisions;
 			//m_performanceObjs[i]->checkCollision(m_performanceObjs[j], collisions, false);
 			if (m_performanceObjs[i]->checkCollision(m_performanceObjs[j], collisions, false))
 			{
