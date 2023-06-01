@@ -744,6 +744,21 @@ void CanvasObject::setUpdateControlls(const CanvasSettings::UpdateControlls &con
     m_updateControlls = controlls;
 }
 
+const Utilities::AABB &CanvasObject::getBoundingBox() const
+{
+    return m_boundingBox;
+}
+void CanvasObject::updateBoundingBox()
+{
+    std::vector<Utilities::AABB> boxes;
+    boxes.reserve(m_colliders.size());
+    for (size_t i = 0; i < m_colliders.size(); ++i)
+    {
+        boxes.push_back(m_colliders[i]->getBoundingBox());
+    }
+    m_boundingBox = Utilities::AABB::getFrame(boxes);
+}
+
 
 std::string CanvasObject::toString() const
 {
@@ -813,6 +828,7 @@ void CanvasObject::deleteThis()
         m_canvasParent->CanvasObjectContainer::deleteLater(this);
 
 }
+
 
 
 void CanvasObject::needsEventUpdateChanged(bool needsEventUpdate)

@@ -40,6 +40,7 @@ namespace Components
             void addVertex(const sf::Vector2f& vertex);
             size_t getVertexCount() const;
             const std::vector<sf::Vector2f>& getVertecies() const;
+            const Utilities::AABB& getBoundingBox() const;
             
             void clear();
             void setPos(const sf::Vector2f& pos);
@@ -104,11 +105,13 @@ namespace Components
         protected:
             
             void calculateBoundingBox();
+            void calculateAbsPos();
             void onPainterDeleted(Painter* p);
 
             
     
-            std::vector<sf::Vector2f> m_vertices;
+            std::vector<sf::Vector2f> m_absoluteVertices;
+            std::vector<sf::Vector2f> m_relativeVertices;
             sf::Vector2f m_pos;
             Utilities::AABB m_boundingBox;
 

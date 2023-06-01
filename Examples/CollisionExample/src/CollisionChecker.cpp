@@ -1,11 +1,13 @@
 #include "CollisionChecker.h"
 
+#define USE_QUADTREE
 
 CLONE_FUNC_IMPL(CollisionChecker);
 CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent)
 	: QObject()
 	, CanvasObject(name)
 	, m_mode(Mode::intersecting)
+	, m_tree(QSFML::Utilities::AABB({ 0,0 }, { 800,600 }))
 {
 	m_mouseCollider = new MouseCollider();
 	//m_collisionObject = new CollisionObject();
@@ -18,6 +20,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector() * 100.f;
 		obj->setPositionAbsolute(pos);
 		m_collisionObjs.push_back(obj);
+		m_tree.insert(obj);
 	}
 	m_colliderContainer->addChilds(m_collisionObjs);
 	
@@ -59,6 +62,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 CollisionChecker::CollisionChecker(const CollisionChecker& other)
 	: QObject()
 	, CanvasObject(other)
+	, m_tree(other.m_tree)
 {
 
 }
@@ -173,8 +177,34 @@ void CollisionChecker::update_performanceTest()
 {
 	std::vector<sf::Vector2f> collisionPoints;
 	collisionPoints.reserve(1000);
+#ifdef USE_QUADTREE
+	std::list<QSFML::Utilities::ObjectQuadTree::TreeItem> objs = m_tree.getAllItems();
+	for (auto &it : objs)
+	{
+		m_tree.relocate(it);
+	}
+	
 	for (size_t i = 0; i < m_performanceObjs.size(); ++i)
 	{
+		std::list< QSFML::Objects::CanvasObject*> possibleColliders;
+		m_tree.search(m_performanceObjs[i]->getBoundingBox(), possibleColliders);
+		for (auto it : possibleColliders)
+		{
+			if (m_performanceObjs[i] != it)
+			{
+				std::vector<QSFML::Utilities::Collisioninfo> collisions;
+				m_performanceObjs[i]->checkCollision(it, collisions, false);
+				for (size_t k = 0; k < collisions.size(); ++k)
+					collisionPoints.push_back(collisions[k].collisionPos);
+			}
+		}
+	}
+
+#else
+
+	for (size_t i = 0; i < m_performanceObjs.size(); ++i)
+	{
+
 		for (size_t j = i + 1; j < m_performanceObjs.size(); ++j)
 		{
 			std::vector<QSFML::Utilities::Collisioninfo> collisions;
@@ -189,5 +219,6 @@ void CollisionChecker::update_performanceTest()
 			}
 		}
 	}
+#endif
 	m_pointPainter->setPoints(collisionPoints);
 }

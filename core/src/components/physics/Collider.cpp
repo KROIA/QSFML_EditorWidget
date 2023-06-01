@@ -14,14 +14,15 @@ namespace Components
 COMPONENT_IMPL(Collider)
 Collider::Collider(const std::string &name)
     : Component(name)
-    , m_vertices({sf::Vector2f(0,0), sf::Vector2f(1,0), sf::Vector2f(1,1), sf::Vector2f(0,1)})
+    , m_relativeVertices({sf::Vector2f(0,0), sf::Vector2f(1,0), sf::Vector2f(1,1), sf::Vector2f(0,1)})
     , m_pos(sf::Vector2f(0, 0))
 {
     calculateBoundingBox();
 }
 Collider::Collider(const Collider& other)
     : Component(other)
-    , m_vertices(other.m_vertices)
+    , m_absoluteVertices(other.m_absoluteVertices)
+    , m_relativeVertices(other.m_relativeVertices)
     , m_pos(other.m_pos)
     , m_boundingBox(other.m_boundingBox)
 {
@@ -35,20 +36,25 @@ Collider::~Collider()
 
 Collider& Collider::operator=(const Collider& other)
 {
-    m_vertices = other.m_vertices;
+    m_absoluteVertices = other.m_absoluteVertices;
+    m_relativeVertices = other.m_relativeVertices;
     m_pos = other.m_pos;
     m_boundingBox = other.m_boundingBox;
     return *this;
 }
 
+
+
 void Collider::setVertecies(const std::vector<sf::Vector2f>& vertecies)
 {
-    m_vertices = vertecies;
+    m_relativeVertices = vertecies;
+    calculateAbsPos();
     calculateBoundingBox();
 }
 void Collider::addVertex(const sf::Vector2f& vertex)
 {
-    m_vertices.push_back(vertex);
+    m_relativeVertices.push_back(vertex);
+    m_absoluteVertices.push_back(vertex + m_pos);
     if (m_boundingBox.contains(vertex))
         return;
 
@@ -73,26 +79,33 @@ void Collider::addVertex(const sf::Vector2f& vertex)
 }
 size_t Collider::getVertexCount() const
 {
-    return m_vertices.size();
+    return m_relativeVertices.size();
 }
 const std::vector<sf::Vector2f>& Collider::getVertecies() const
 {
-    return m_vertices;
+    return m_relativeVertices;
+}
+const Utilities::AABB& Collider::getBoundingBox() const
+{
+    return m_boundingBox;
 }
 
 void Collider::clear()
 {
-    m_vertices.clear();
+    m_relativeVertices.clear();
+    m_absoluteVertices.clear();
 }
 void Collider::setPos(const sf::Vector2f& pos)
 {
     m_boundingBox.move(pos - m_pos);
     m_pos = pos;
+    calculateAbsPos();
 }
 void Collider::move(const sf::Vector2f& offset)
 {
     m_boundingBox.move(offset);
     m_pos += offset;
+    calculateAbsPos();
 }
 const sf::Vector2f& Collider::getPos() const
 {
@@ -144,14 +157,14 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
     bool collision = false;
     
     size_t currentCollisionCount = collisions.size();
-    for (size_t i = 0; i < m_vertices.size(); ++i)
+    for (size_t i = 0; i < m_absoluteVertices.size(); ++i)
     {
-        thisNextVertexIndex = (i + 1) % m_vertices.size();
-        Utilities::Ray thisRay(m_vertices[i]+m_pos, m_vertices[thisNextVertexIndex] - m_vertices[i]);
-        for (size_t o = 0; o < other->m_vertices.size(); ++o)
+        thisNextVertexIndex = (i + 1) % m_absoluteVertices.size();
+        Utilities::Ray thisRay(m_absoluteVertices[i], m_absoluteVertices[thisNextVertexIndex] - m_absoluteVertices[i]);
+        for (size_t o = 0; o < other->m_absoluteVertices.size(); ++o)
         {
-            otherNextVertexIndex = (o + 1) % other->m_vertices.size();
-            Utilities::Ray otherRay(other->m_vertices[o]+other->m_pos, other->m_vertices[otherNextVertexIndex] - other->m_vertices[o]);
+            otherNextVertexIndex = (o + 1) % other->m_absoluteVertices.size();
+            Utilities::Ray otherRay(other->m_absoluteVertices[o], other->m_absoluteVertices[otherNextVertexIndex] - other->m_absoluteVertices[o]);
         
             float thisDistance;
             float otherDistance;
@@ -181,7 +194,7 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
             }
         }
     }
-    StatsManager::addCollisionCheck(canvasParent, m_vertices.size() * other->m_vertices.size());
+    StatsManager::addCollisionCheck(canvasParent, m_relativeVertices.size() * other->m_relativeVertices.size());
     StatsManager::addCollision(canvasParent, collisions.size() - currentCollisionCount);
 
     QSFMLP_END_BLOCK;
@@ -195,11 +208,11 @@ bool Collider::contains(const sf::Vector2f& point)
     if (!m_boundingBox.contains(point))
         return false;
 
-    bool result = contains(m_vertices, point, m_pos);
+    bool result = contains(m_relativeVertices, point, m_pos);
     Canvas* canvasParent = getCanvasParent();
     if(result)
         StatsManager::addCollision(canvasParent);
-    StatsManager::addCollisionCheck(canvasParent, m_vertices.size());
+    StatsManager::addCollisionCheck(canvasParent, m_relativeVertices.size());
     return result;
 }
 bool Collider::contains(const std::vector<sf::Vector2f>& polygon, 
@@ -240,8 +253,17 @@ Collider::Painter* Collider::createPainter()
 
 void Collider::calculateBoundingBox()
 {
-    m_boundingBox = Utilities::AABB::getFrame(m_vertices);
+    m_boundingBox = Utilities::AABB::getFrame(m_relativeVertices);
     m_boundingBox.move(m_pos);
+    if (getParent())
+        getParent()->updateBoundingBox();
+}
+void Collider::calculateAbsPos()
+{
+    m_absoluteVertices.clear();
+    m_absoluteVertices.reserve(m_relativeVertices.size());
+    for (size_t i = 0; i < m_relativeVertices.size(); ++i)
+        m_absoluteVertices.push_back(m_relativeVertices[i] + m_pos);
 }
 void Collider::onPainterDeleted(Painter* p)
 {
@@ -256,13 +278,13 @@ void Collider::onPainterDeleted(Painter* p)
 }
 void Collider::resolveCollision(Collider* other)
 {
-    move(resolveCollision(m_vertices, other->m_vertices));
+    move(resolveCollision(m_relativeVertices, other->m_relativeVertices));
     calculateBoundingBox();
 }
 void Collider::resolveCollision(const std::vector<Collider*>& other)
 {
     for (auto& collider : other)
-        move(resolveCollision(m_vertices, collider->m_vertices));
+        move(resolveCollision(m_relativeVertices, collider->m_relativeVertices));
     calculateBoundingBox();
 }
 // CHAT GPT
@@ -439,16 +461,15 @@ void Collider::Painter::draw(sf::RenderTarget& target,
         sf::Vertex(m_collider->m_boundingBox.BL(), m_aabbColor),
         sf::Vertex(m_collider->m_boundingBox.TL(), m_aabbColor),
     };
-    size_t certexCount = m_collider->m_vertices.size();
-    sf::Vector2f colliderPos = m_collider->m_pos;
+    size_t certexCount = m_collider->m_absoluteVertices.size();
     if (certexCount > 0)
     {
         sf::Vertex* coll = new sf::Vertex[certexCount + 1];
         for (size_t i = 0; i < certexCount; ++i)
         {
-            coll[i] = sf::Vertex(m_collider->m_vertices[i] + colliderPos, m_colliderColor);
+            coll[i] = sf::Vertex(m_collider->m_absoluteVertices[i], m_colliderColor);
         }
-        coll[m_collider->m_vertices.size()] = sf::Vertex(m_collider->m_vertices[0] + colliderPos, m_colliderColor);
+        coll[m_collider->m_relativeVertices.size()] = sf::Vertex(m_collider->m_absoluteVertices[0], m_colliderColor);
         target.draw(coll, certexCount+1, sf::LineStrip);
         delete[] coll;
     }

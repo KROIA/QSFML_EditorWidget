@@ -48,4 +48,6 @@ private:
 
 	QSFML::Objects::CanvasObject* m_performanceContainer;
 	std::vector<QSFML::Objects::CanvasObject*> m_performanceObjs;
+
+	QSFML::Utilities::ObjectQuadTree m_tree;
 };

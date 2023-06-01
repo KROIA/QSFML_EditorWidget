@@ -35,7 +35,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Line : public Drawable
         void updateShape();
         void updateColor();
 
-        sf::Vertex m_vertices[4];
+        sf::Vertex m_relativeVertices[4];
         float m_thickness;
         sf::Color m_color;
         sf::Vector2f m_begin;

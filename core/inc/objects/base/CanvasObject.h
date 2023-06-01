@@ -6,6 +6,7 @@
 
 #include "utilities/CollisionInfo.h"
 #include "utilities/Updatable.h"
+#include "utilities/AABB.h"
 
 #include <vector>
 #include "SFML/Graphics/Font.hpp"
@@ -198,6 +199,14 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         void setRenderLayer(RenderLayer layer);
         RenderLayer getRenderLayer() const;
 
+        const CanvasSettings::UpdateControlls& getUpdateControlls() const;
+        void setUpdateControlls(const CanvasSettings::UpdateControlls& controlls);
+
+        const Utilities::AABB &getBoundingBox() const;
+        void updateBoundingBox();
+
+        std::string toString() const;
+
         
         // Childs operations
         void addChild(CanvasObject *child);
@@ -269,14 +278,12 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
 
         size_t getTick() const;
         float getDeltaT() const; // Returns delta Time since last update in seconds
-        // ---------
-
-        const CanvasSettings::UpdateControlls &getUpdateControlls() const;
-        void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
-
-        std::string toString() const;
 
         Canvas* getCanvasParent() const;
+        // ---------
+
+        
+        
 
         const static size_t npos = -1;
     protected:
@@ -330,6 +337,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
 
         std::vector<Utilities::Updatable*> m_updatableComponents;
         std::vector<Components::Collider*> m_colliders;
+        Utilities::AABB m_boundingBox;
+        
 
         // Will send a signal to the parent to notify, the new status
         void needsEventUpdateChanged(bool needsEventUpdate);

@@ -76,21 +76,21 @@ void Line::updateShape()
 
     sf::Vector2f offset = (m_thickness/2.f)*unitPerpendicular;
 
-    m_vertices[0].position = m_begin + offset;
-    m_vertices[1].position = m_end + offset;
-    m_vertices[2].position = m_end - offset;
-    m_vertices[3].position = m_begin - offset;
+    m_relativeVertices[0].position = m_begin + offset;
+    m_relativeVertices[1].position = m_end + offset;
+    m_relativeVertices[2].position = m_end - offset;
+    m_relativeVertices[3].position = m_begin - offset;
 }
 void Line::updateColor()
 {
     for (int i=0; i<4; ++i)
-        m_vertices[i].color = m_color;
+        m_relativeVertices[i].color = m_color;
 }
 
 void Line::draw(sf::RenderTarget& target,
                 sf::RenderStates) const
 {
-     target.draw(m_vertices,4,sf::Quads);
+     target.draw(m_relativeVertices,4,sf::Quads);
 }
 }
 }

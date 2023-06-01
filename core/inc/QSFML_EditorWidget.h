@@ -29,5 +29,6 @@
 #include "utilities/VectorOperations.h"
 #include "utilities/RandomEngine.h"
 #include "utilities/Stats.h"
+#include "utilities/ObjectQuadTree.h"
 
 
