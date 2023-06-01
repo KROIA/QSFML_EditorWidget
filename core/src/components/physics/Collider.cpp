@@ -100,12 +100,16 @@ void Collider::setPos(const sf::Vector2f& pos)
     m_boundingBox.move(pos - m_pos);
     m_pos = pos;
     calculateAbsPos();
+    if (getParent())
+        getParent()->updateBoundingBox();
 }
 void Collider::move(const sf::Vector2f& offset)
 {
     m_boundingBox.move(offset);
     m_pos += offset;
     calculateAbsPos();
+    if (getParent())
+        getParent()->updateBoundingBox();
 }
 const sf::Vector2f& Collider::getPos() const
 {
@@ -141,21 +145,28 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
     Canvas* canvasParent = getCanvasParent();
     StatsManager::addBoundingBoxCollisionCheck(canvasParent);
-    QSFMLP_BLOCK("AABB check", QSFMLP_PHYSICS_COLOR_4)
+    QSFMLP_BLOCK("AABB check", QSFMLP_PHYSICS_COLOR_4);
     if (!m_boundingBox.intersects(other->m_boundingBox))
     {
         QSFMLP_END_BLOCK;
         return false;
     }
     QSFMLP_END_BLOCK;
-    QSFMLP_BLOCK("Intersection checks", QSFMLP_PHYSICS_COLOR_5)
-
     
+    return checkCollision_noAABB(other, collisions, onlyFirstCollision);
+}
+bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
+{
+    QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
+    
+    QSFMLP_BLOCK("Intersection checks", QSFMLP_PHYSICS_COLOR_5);
 
+
+    Canvas* canvasParent = getCanvasParent();
     size_t thisNextVertexIndex;
     size_t otherNextVertexIndex;
     bool collision = false;
-    
+
     size_t currentCollisionCount = collisions.size();
     for (size_t i = 0; i < m_absoluteVertices.size(); ++i)
     {
@@ -165,7 +176,7 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
         {
             otherNextVertexIndex = (o + 1) % other->m_absoluteVertices.size();
             Utilities::Ray otherRay(other->m_absoluteVertices[o], other->m_absoluteVertices[otherNextVertexIndex] - other->m_absoluteVertices[o]);
-        
+
             float thisDistance;
             float otherDistance;
             if (thisRay.raycast(otherRay, thisDistance, otherDistance))
@@ -184,8 +195,8 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
 
                     if (onlyFirstCollision)
                     {
-                        
-                        StatsManager::addCollisionCheck(canvasParent, i*o);
+
+                        StatsManager::addCollisionCheck(canvasParent, i * o);
                         StatsManager::addCollision(canvasParent);
                         QSFMLP_END_BLOCK;
                         return true;

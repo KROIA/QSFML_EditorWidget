@@ -41,6 +41,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         void setCameraView(const sf::View &view);
         const sf::View &getCameraView() const;
         const sf::View &getDefaultCameraView() const;
+        Utilities::AABB getCameraViewRect() const;
         sf::Vector2u getCanvasSize() const;
         sf::Vector2u getOldCanvasSize() const;
 

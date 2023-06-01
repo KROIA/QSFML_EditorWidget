@@ -37,12 +37,17 @@ namespace QSFML
 			};
 			ObjectQuadTree(const Utilities::AABB& area, size_t maxDepth = 10);
 			bool insert(Objects::CanvasObject* obj);
+			bool insert(const std::vector<Objects::CanvasObject*> &objs);
 			
 			void search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const;
 			const std::list<TreeItem>& getAllItems() const;
 			void remove(Objects::CanvasObject* obj);
 			void remove(const TreeItem& item);
 			bool relocate(TreeItem& item);
+			void clear();
+
+			void checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
+								 bool onlyFirstCollision = true);
 
 		private:
 			bool insert_internal(TreeItem& item);
@@ -55,7 +60,10 @@ namespace QSFML
 
 				void insert(TreeItem& item);
 				void search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const;
+				void clear();
 
+				void checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
+									 bool onlyFirstCollision = true);
 
 			private:
 				void instantiateChilds();

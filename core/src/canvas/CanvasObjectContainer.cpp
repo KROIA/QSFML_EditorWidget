@@ -95,8 +95,7 @@ void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
 }
 void CanvasObjectContainer::addObject_internal()
 {
-    for (auto obj : m_allObjects->getObjectsToAdd())
-        obj->inCanvasAdded();
+    
     m_allObjects->addObject_internal();
     
     if(m_threadWorker)
@@ -111,6 +110,8 @@ void CanvasObjectContainer::addObject_internal()
         m_renderLayerGroups[i]->addObject_internal();
     }
     StatsManager::setRootCanvesObject(m_parent, m_allObjects->getObjectsCount());
+
+    
 }
 void CanvasObjectContainer::deleteObject_internal()
 {
@@ -228,12 +229,16 @@ void CanvasObjectContainer::updateNewElements()
 {
     QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
     deleteObject_internal();
+    std::vector<Objects::CanvasObject*> toAdd = m_allObjects->getObjectsToAdd();
+
     addObject_internal();
     m_allObjects->updateNewElements();
     for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
     {
         m_renderLayerGroups[i]->updateNewElements();
     }
+    for (auto obj : toAdd)
+        obj->inCanvasAdded_internal();
 }
 void CanvasObjectContainer::sfEvent(const std::vector<sf::Event> &events)
 {

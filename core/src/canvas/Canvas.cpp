@@ -1,5 +1,6 @@
 #include "canvas/Canvas.h"
 #include "utilities/Stats.h"
+#include "utilities/AABB.h"
 #include <QResizeEvent>
 #include <QHBoxLayout>
 
@@ -145,6 +146,10 @@ const sf::View &Canvas::getDefaultCameraView() const
     static sf::View dummy;
     if(!m_window) return dummy;
     return m_window->getDefaultView();
+}
+Utilities::AABB Canvas::getCameraViewRect() const
+{
+    return Utilities::AABB(m_view.getCenter() - m_view.getSize() * 0.5f, m_view.getSize());
 }
 sf::Vector2u Canvas::getCanvasSize() const
 {

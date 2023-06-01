@@ -40,12 +40,6 @@ QSFML::Objects::CanvasObject* Component::getParent() const
 { 
     return m_parent; 
 }
-QSFML::Canvas* Component::getCanvasParent() const
-{
-    if (m_parent)
-        return m_parent->getCanvasParent();
-    return nullptr;
-}
 void Component::setName(const std::string &name)
 {
     m_name = name;
@@ -65,4 +59,77 @@ void Component::deleteThis()
         m_parent = nullptr;
         parent->deleteComponent(this);
     }
+}
+
+
+
+sf::Vector2i Component::getMousePosition() const
+{
+    if (!m_parent) return sf::Vector2i(0, 0);
+    return m_parent->getMousePosition();
+}
+sf::Vector2f Component::getMouseWorldPosition() const
+{
+    if (!m_parent) return sf::Vector2f(0, 0);
+    return m_parent->getMouseWorldPosition();
+}
+sf::Vector2f Component::getInWorldSpace(const sf::Vector2i& pixelSpace) const
+{
+    if (!m_parent) return sf::Vector2f(0, 0);
+    return m_parent->getInWorldSpace(pixelSpace);
+}
+sf::Vector2i Component::getInScreenSpace(const sf::Vector2f& worldSpace) const
+{
+    if (!m_parent) return sf::Vector2i(0, 0);
+    return m_parent->getInScreenSpace(worldSpace);
+}
+const sf::View Component::getCameraView() const
+{
+    static const sf::View dummy;
+    if (!m_parent) return dummy;
+    return m_parent->getCameraView();
+}
+const sf::View& Component::getDefaultCameraView() const
+{
+    static const sf::View dummy;
+    if (!m_parent) return dummy;
+    return m_parent->getDefaultCameraView();
+}
+QSFML::Utilities::AABB Component::getCameraViewRect() const
+{
+    if (!m_parent) return Utilities::AABB();
+    return m_parent->getCameraViewRect();
+}
+sf::Vector2u Component::getCanvasSize() const
+{
+    if (!m_parent) return sf::Vector2u(0, 0);
+    return m_parent->getCanvasSize();
+}
+sf::Vector2u Component::getOldCanvasSize() const
+{
+    if (!m_parent) return sf::Vector2u(0, 0);
+    return m_parent->getOldCanvasSize();
+}
+
+const sf::Font& Component::getTextFont() const
+{
+    const static sf::Font dummy;
+    if (!m_parent) return dummy;
+    return m_parent->getTextFont();
+}
+size_t Component::getTick() const
+{
+    if (!m_parent) return 0;
+    return m_parent->getTick();
+}
+float Component::getDeltaT() const
+{
+    if (!m_parent) return 0;
+    return m_parent->getDeltaT();
+}
+
+QSFML::Canvas* Component::getCanvasParent() const
+{
+    if (!m_parent) return nullptr;
+    return m_parent->getCanvasParent();
 }

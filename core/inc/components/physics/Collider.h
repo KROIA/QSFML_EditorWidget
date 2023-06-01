@@ -55,6 +55,7 @@ namespace Components
                 bool onlyFirstCollisionPerObject = true) const;
 
             bool checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+            bool checkCollision_noAABB(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
             bool contains(const sf::Vector2f& point);
 
             static bool contains(const std::vector<sf::Vector2f>& polygon, 

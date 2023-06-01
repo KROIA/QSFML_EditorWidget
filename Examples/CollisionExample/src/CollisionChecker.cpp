@@ -1,4 +1,5 @@
 #include "CollisionChecker.h"
+#include <iostream>
 
 #define USE_QUADTREE
 
@@ -20,7 +21,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector() * 100.f;
 		obj->setPositionAbsolute(pos);
 		m_collisionObjs.push_back(obj);
-		m_tree.insert(obj);
+		
 	}
 	m_colliderContainer->addChilds(m_collisionObjs);
 	
@@ -32,7 +33,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 
 	QSFML::Utilities::AABB range(0, 0, 800, 600);
 	m_performanceContainer = new QSFML::Objects::CanvasObject();
-	for (size_t i = 0; i < 1000; ++i)
+	for (size_t i = 0; i < 5000; ++i)
 	{
 		PerformanceObject* obj = new PerformanceObject();
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector(range.getPos(), range.getSize() + range.getPos());
@@ -40,6 +41,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 		obj->setRange(range);
 		
 		m_performanceObjs.push_back(obj);
+		//m_tree.insert(obj);
 	}
 	m_performanceContainer->addChilds(m_performanceObjs);
 	m_performanceObjs.push_back(m_mouseCollider);
@@ -123,6 +125,10 @@ void CollisionChecker::onMousePosChanged(const sf::Vector2f& worldPos,
 {
 	m_mousePos = worldPos;
 }
+void CollisionChecker::inCanvasAdded()
+{
+	m_tree.insert(m_performanceObjs);
+}
 void CollisionChecker::update()
 {
 	switch (m_mode)
@@ -176,15 +182,18 @@ void CollisionChecker::update_contains()
 void CollisionChecker::update_performanceTest()
 {
 	std::vector<sf::Vector2f> collisionPoints;
-	collisionPoints.reserve(1000);
+	collisionPoints.reserve(9999);
+	TimePoint t1 = std::chrono::high_resolution_clock::now();
 #ifdef USE_QUADTREE
-	std::list<QSFML::Utilities::ObjectQuadTree::TreeItem> objs = m_tree.getAllItems();
+	m_tree.clear();
+	m_tree.insert(m_performanceObjs);
+	/*std::list<QSFML::Utilities::ObjectQuadTree::TreeItem> objs = m_tree.getAllItems();
 	for (auto &it : objs)
 	{
 		m_tree.relocate(it);
-	}
+	}*/
 	
-	for (size_t i = 0; i < m_performanceObjs.size(); ++i)
+	/*for (size_t i = 0; i < m_performanceObjs.size(); ++i)
 	{
 		std::list< QSFML::Objects::CanvasObject*> possibleColliders;
 		m_tree.search(m_performanceObjs[i]->getBoundingBox(), possibleColliders);
@@ -194,14 +203,22 @@ void CollisionChecker::update_performanceTest()
 			{
 				std::vector<QSFML::Utilities::Collisioninfo> collisions;
 				m_performanceObjs[i]->checkCollision(it, collisions, false);
-				for (size_t k = 0; k < collisions.size(); ++k)
-					collisionPoints.push_back(collisions[k].collisionPos);
+				
 			}
 		}
-	}
+	}*/
+	std::vector<QSFML::Utilities::Collisioninfo> collisions;
+	collisions.reserve(9999);
+	TimePoint t11 = std::chrono::high_resolution_clock::now();
+	//CanvasObject::checkCollision(m_tree, collisions, false);	
+	m_tree.checkCollisions(collisions, false);
+	TimePoint t22 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff2 = t22 - t11;
+	for (auto &el : collisions)
+		collisionPoints.push_back(el.collisionPos);
 
 #else
-
+	std::chrono::duration<double> diff2;
 	for (size_t i = 0; i < m_performanceObjs.size(); ++i)
 	{
 
@@ -220,5 +237,45 @@ void CollisionChecker::update_performanceTest()
 		}
 	}
 #endif
+	TimePoint t2 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff = t2 - t1;
+	std::cout << "Time: " << diff.count() << " " << diff2.count() <<"\n";
+
 	m_pointPainter->setPoints(collisionPoints);
 }
+
+
+/*
+CollisionChecker::Painter::Painter(CollisionChecker* checker, const std::string& name)
+	: Drawable(name)
+	, m_ckecker(checker)
+{
+
+}
+CollisionChecker::Painter::Painter(const Painter& other)
+	: Drawable(other)
+	, m_ckecker(other.m_ckecker)
+{
+
+}
+COMPONENT_IMPL(CollisionChecker::Painter);
+
+
+CollisionChecker::Painter::~Painter()
+{
+
+}
+
+
+void CollisionChecker::Painter::draw(sf::RenderTarget& target,
+	sf::RenderStates states) const
+{
+	std::list< QSFML::Objects::CanvasObject*> possibleColliders;
+	m_ckecker->m_tree.search(getCameraViewRect(), possibleColliders);
+
+	sf::RenderWindow& window = getCanvasParent()->
+	for (auto el : possibleColliders)
+	{
+		el->draw();
+	}
+}*/

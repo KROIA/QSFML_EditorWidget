@@ -260,6 +260,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         const std::vector<Components::Collider*> &getCollider() const;
         bool checkCollision(const CanvasObject* other) const;
         bool checkCollision(const CanvasObject* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+        static void checkCollision(const Utilities::ObjectQuadTree& tree, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true);
         void solveCollision(CanvasObject* other);
         // ---------
 
@@ -269,8 +270,10 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         sf::Vector2f getInWorldSpace(const sf::Vector2i& pixelSpace) const;
         sf::Vector2i getInScreenSpace(const sf::Vector2f& worldSpace) const;
 
+        
         const sf::View getCameraView() const;
         const sf::View &getDefaultCameraView() const;
+        Utilities::AABB getCameraViewRect() const;
         sf::Vector2u getCanvasSize() const;
         sf::Vector2u getOldCanvasSize() const;
 
@@ -292,6 +295,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
          */
         void update() override;
 
+        virtual void inCanvasAdded();
 
 
 
@@ -365,12 +369,12 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         RenderLayer m_renderLayer;
 
         // Canvas Object Internal functions
-        virtual void inCanvasAdded();
         void setCanvasParent(Canvas *parent);
         
         void updateNewElements();
         void sfEvent(const std::vector<sf::Event> &events);
         void update_internal();
+        void inCanvasAdded_internal();
         void draw(sf::RenderWindow &window) const;
 
         // Static

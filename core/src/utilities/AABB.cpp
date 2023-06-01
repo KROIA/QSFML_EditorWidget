@@ -169,13 +169,13 @@ bool AABB::intersects(const AABB &b) const
 }
 bool AABB::intersectsInverseOf(const AABB &b) const
 {
-    return !(m_pos.x > b.m_pos.x && m_pos.x + m_size.x < b.m_pos.x + b.m_size.x &&
-             m_pos.y > b.m_pos.y && m_pos.y + m_size.y < b.m_pos.y + b.m_size.y);
+    return !(m_pos.x < b.m_pos.x && m_pos.x + m_size.x > b.m_pos.x + b.m_size.x &&
+             m_pos.y < b.m_pos.y && m_pos.y + m_size.y > b.m_pos.y + b.m_size.y);
 }
 bool AABB::contains(const AABB& b) const
 {
-    return (m_pos.x > b.m_pos.x && m_pos.x + m_size.x < b.m_pos.x + b.m_size.x &&
-            m_pos.y > b.m_pos.y && m_pos.y + m_size.y < b.m_pos.y + b.m_size.y);
+    return (m_pos.x < b.m_pos.x && m_pos.x + m_size.x > b.m_pos.x + b.m_size.x &&
+            m_pos.y < b.m_pos.y && m_pos.y + m_size.y > b.m_pos.y + b.m_size.y);
 }
 bool AABB::isLeftOf(const AABB &b) const
 {
@@ -222,13 +222,13 @@ bool AABB::intersects(const AABB &a, const AABB &b)
 }
 bool AABB::intersectsInverseOf(const AABB &a, const AABB &b)
 {
-    return !(a.m_pos.x > b.m_pos.x && a.m_pos.x + a.m_size.x < b.m_pos.x + b.m_size.x &&
-             a.m_pos.y > b.m_pos.y && a.m_pos.y + a.m_size.y < b.m_pos.y + b.m_size.y);
+    return !(a.m_pos.x < b.m_pos.x && a.m_pos.x + a.m_size.x > b.m_pos.x + b.m_size.x &&
+             a.m_pos.y < b.m_pos.y && a.m_pos.y + a.m_size.y > b.m_pos.y + b.m_size.y);
 }
 bool AABB::contains(const AABB& a, const AABB& b)
 {
-    return (a.m_pos.x > b.m_pos.x && a.m_pos.x + a.m_size.x < b.m_pos.x + b.m_size.x &&
-            a.m_pos.y > b.m_pos.y && a.m_pos.y + a.m_size.y < b.m_pos.y + b.m_size.y);
+    return (a.m_pos.x < b.m_pos.x && a.m_pos.x + a.m_size.x > b.m_pos.x + b.m_size.x &&
+            a.m_pos.y < b.m_pos.y && a.m_pos.y + a.m_size.y > b.m_pos.y + b.m_size.y);
 
 }
 bool AABB::isLeftOf(const AABB &a, const AABB &b)

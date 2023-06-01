@@ -46,6 +46,7 @@ namespace QSFML
         class Singelton;
         class Updatable;
         class VectorOperations;
+        class ObjectQuadTree;
         struct CollisionInfo;
     }
     

@@ -2,6 +2,8 @@
 
 #include "QSFML_base.h"
 
+#include "utilities/AABB.h"
+
 #include <string>
 
 namespace QSFML
@@ -58,12 +60,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Component
         Objects::CanvasObject* getParent() const;
 
         /**
-         * \brief getCanvasParent
-         * \return returns the Canvas, this component belongs to
-         */
-        Canvas* getCanvasParent() const;
-
-        /**
          * \brief setName
          * \param name of the Component
          */
@@ -92,7 +88,33 @@ class QSFML_EDITOR_WIDGET_EXPORT Component
     protected:
         void deleteThis();
 
+        // Canvas operations
+        sf::Vector2i getMousePosition() const;
+        sf::Vector2f getMouseWorldPosition() const;
+        sf::Vector2f getInWorldSpace(const sf::Vector2i& pixelSpace) const;
+        sf::Vector2i getInScreenSpace(const sf::Vector2f& worldSpace) const;
+
+
+        const sf::View getCameraView() const;
+        const sf::View& getDefaultCameraView() const;
+        Utilities::AABB getCameraViewRect() const;
+        sf::Vector2u getCanvasSize() const;
+        sf::Vector2u getOldCanvasSize() const;
+
+        const sf::Font& getTextFont() const;
+
+        size_t getTick() const;
+        float getDeltaT() const; // Returns delta Time since last update in seconds
+
+        /**
+         * \brief getCanvasParent
+         * \return returns the Canvas, this component belongs to
+         */
+        Canvas* getCanvasParent() const;
+        // ---------
+
     private:
+
         bool m_enabled;
         std::string m_name;
         Objects::CanvasObject *m_parent;

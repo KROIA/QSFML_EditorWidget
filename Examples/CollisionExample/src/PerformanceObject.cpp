@@ -25,7 +25,7 @@ PerformanceObject::PerformanceObject(const std::string& name, CanvasObject* pare
 	m_collider->setVertecies(vertecies);
 
 	addComponent(m_collider);
-	addComponent(m_collider->createPainter());
+	//addComponent(m_collider->createPainter());
 }
 PerformanceObject::~PerformanceObject()
 {

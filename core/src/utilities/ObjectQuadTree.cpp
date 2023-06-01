@@ -1,4 +1,6 @@
 #include "utilities/ObjectQuadTree.h"
+#include "objects/base/CanvasObject.h"
+#include "components/physics/Collider.h"
 
 namespace QSFML
 {
@@ -15,6 +17,16 @@ namespace QSFML
 				return false; // Object already in container
 			TreeItem item(obj);
 			return insert_internal(item);
+		}
+		bool ObjectQuadTree::insert(const std::vector<Objects::CanvasObject*> &objs)
+		{
+			bool success = true;
+			for (auto obj : objs)
+			{
+				TreeItem item(obj);
+				success &= insert_internal(item);
+			}
+			return success;
 		}
 		bool ObjectQuadTree::insert_internal(TreeItem& item)
 		{
@@ -67,6 +79,36 @@ namespace QSFML
 			item.containter = nullptr;
 			return insert_internal(item);
 		}
+		void ObjectQuadTree::clear()
+		{
+			m_allObjs.clear();
+			m_allObjMap.clear();
+			m_tree.clear();
+		}
+
+		void ObjectQuadTree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
+											 bool onlyFirstCollision)
+		{
+			//m_tree.checkCollisions(collisions, onlyFirstCollision);
+			for (auto& objStruct : m_allObjs)
+			{
+				Objects::CanvasObject* obj = objStruct.obj;
+				std::list< QSFML::Objects::CanvasObject*> possibleColliders;
+				m_tree.search(obj->getBoundingBox(), possibleColliders);
+				for (auto it : possibleColliders)
+				{
+					if (obj == it)
+						continue;
+
+					const std::vector<Components::Collider*>& otherColliders = it->getCollider();
+					const std::vector<Components::Collider*>& collider = obj->getCollider();
+					for (auto objCollider : collider)
+					{
+						objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
+					}
+				}
+			}
+		}
 
 
 		//
@@ -79,7 +121,7 @@ namespace QSFML
 			, m_maxDepth(maxDepth)
 			, m_childTrees(nullptr)
 			, m_childAreas{
-				Utilities::AABB(m_area.TL(), m_area.BR() - m_area.TL()),
+				Utilities::AABB(m_area.TL(), (m_area.BR() - m_area.TL()) * 0.5f),
 				Utilities::AABB(m_childAreas[0].TR(), m_childAreas[0].getSize()),
 				Utilities::AABB(m_childAreas[0].BL(), m_childAreas[0].getSize()),
 				Utilities::AABB(m_childAreas[0].BR(), m_childAreas[0].getSize())
@@ -96,24 +138,21 @@ namespace QSFML
 		void ObjectQuadTree::Tree::insert(TreeItem& item)
 		{
 			AABB objBB = item.obj->getBoundingBox();
-			if (m_area.contains(objBB))
+			#pragma unroll
+			for (size_t i = 0; i < 4; ++i)
 			{
-				#pragma unroll
-				for (size_t i = 0; i < 4; ++i)
+				if (m_childAreas[i].contains(objBB))
 				{
-					if (m_childAreas[i].contains(objBB))
-					{
-						if (!m_childTrees)
-							instantiateChilds();
-						m_childTrees[i].insert(item);
-						return;
-					}
+					if (!m_childTrees)
+						instantiateChilds();
+					m_childTrees[i].insert(item);
+					return;
 				}
-
-				m_objects.push_back(item.obj);
-				item.containter = &m_objects;
-				item.iterator = m_objects.end();
 			}
+
+			m_objects.push_back(item.obj);
+			item.containter = &m_objects;
+			item.iterator = m_objects.end();
 		}
 		void ObjectQuadTree::Tree::search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const
 		{
@@ -127,9 +166,53 @@ namespace QSFML
 				#pragma unroll
 				for (size_t i = 0; i < 4; ++i)
 				{
-					m_childTrees[i].search(area, container);
+					if(m_childAreas[i].contains(area))
+						m_childTrees[i].search(area, container);
 				}
 			}
+		}
+		void ObjectQuadTree::Tree::clear()
+		{
+			m_objects.clear();
+			if (m_childTrees)
+			{
+				#pragma unroll
+				for (size_t i = 0; i < 4; ++i)
+				{
+					m_childTrees[i].clear();
+				}
+			}
+		}
+		void ObjectQuadTree::Tree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
+												   bool onlyFirstCollision)
+		{
+
+			/*for (size_t i = 0; i<m_objects.size(); ++i)
+			{
+				std::list<Objects::CanvasObject*>::iterator objA = m_objects.begin();
+				std::advance(objA, i);
+				for (size_t j = i+1; j < m_objects.size(); ++j)
+				{
+					std::list<Objects::CanvasObject*>::iterator objB = m_objects.begin();
+					std::advance(objB, j);
+					
+					(*objA)->checkCollision(*objB, collisions, onlyFirstCollision);
+				}
+			}
+			if (!m_childTrees)
+				return;
+			#pragma unroll
+			for (size_t k = 0; k < 4; ++k)
+			{
+				Tree& tree = m_childTrees[k];
+				for (auto objA : m_objects)
+				{
+					for (auto objB : tree.m_objects)
+					{
+						objA->checkCollision(objB, collisions, onlyFirstCollision);
+					}
+				}
+			}*/
 		}
 		void ObjectQuadTree::Tree::instantiateChilds()
 		{

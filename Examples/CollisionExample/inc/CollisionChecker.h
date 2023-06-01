@@ -7,6 +7,8 @@
 class CollisionChecker : public QObject, public QSFML::Objects::CanvasObject
 {
 	Q_OBJECT
+	//class Painter;
+	//friend Painter;
 public:
 	enum Mode
 	{
@@ -29,6 +31,7 @@ private slots:
 						   const sf::Vector2i& pixelPos);
 
 private:
+	void inCanvasAdded() override;
 	void update() override;
 	void update_intersecting();
 	void update_contains();
@@ -48,6 +51,25 @@ private:
 
 	QSFML::Objects::CanvasObject* m_performanceContainer;
 	std::vector<QSFML::Objects::CanvasObject*> m_performanceObjs;
-
 	QSFML::Utilities::ObjectQuadTree m_tree;
+	
+/*
+	class QSFML_EDITOR_WIDGET_EXPORT Painter : public QSFML::Components::Drawable
+	{
+	public:
+		Painter(CollisionChecker* checker, const std::string& name = "Painter");
+		Painter(const Painter& other);
+		COMPONENT_DECL(Painter);
+
+
+		~Painter();
+
+
+		void draw(sf::RenderTarget& target,
+			sf::RenderStates states) const override;
+
+		
+	private:
+		CollisionChecker* m_ckecker;
+	};*/
 };

@@ -1,12 +1,13 @@
 #include "objects/base/CanvasObject.h"
 #include "canvas/Canvas.h"
-#include "utilities/Stats.h"
 
 #include "components/base/Component.h"
 #include "components/base/SfEventHandle.h"
 #include "components/base/Drawable.h"
 #include "components/physics/Collider.h"
 
+#include "utilities/Stats.h"
+#include "utilities/ObjectQuadTree.h"
 
 
 
@@ -545,6 +546,7 @@ void CanvasObject::setParent_internal(CanvasObject *parent,
 }
 void CanvasObject::addComponent_internal()
 {
+    size_t colliderCount = m_colliders.size();
     for(size_t i=0; i<m_toAddComponents.size(); ++i)
     {
         Components::Component *toAdd = m_toAddComponents[i];
@@ -593,6 +595,8 @@ void CanvasObject::addComponent_internal()
         }
     }
     m_toAddComponents.clear();
+    if (m_colliders.size() != colliderCount)
+        updateBoundingBox();
 }
 void CanvasObject::onObjectsChanged()
 {
@@ -661,6 +665,29 @@ bool CanvasObject::checkCollision(const CanvasObject* other,
         return true;
     return false;
 }
+void CanvasObject::checkCollision(const Utilities::ObjectQuadTree& tree, 
+                                  std::vector<Utilities::Collisioninfo>& collisions, 
+                                  bool onlyFirstCollision)
+{
+    std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
+    for (auto &objStruct : objs)
+    {
+        CanvasObject* obj = objStruct.obj;
+        std::list< QSFML::Objects::CanvasObject*> possibleColliders;
+        tree.search(obj->getBoundingBox(), possibleColliders);
+        for (auto it : possibleColliders)
+        {
+            if (obj == it)
+                continue;
+
+            std::vector<Components::Collider*> otherColliders = it->getCollider();
+            for (auto objCollider : obj->m_colliders)
+            {
+                objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
+            }            
+        }
+    }
+}
 void CanvasObject::solveCollision(CanvasObject* other)
 {
     for (size_t i = 0; i < m_colliders.size(); ++i)
@@ -706,6 +733,11 @@ const sf::View &CanvasObject::getDefaultCameraView() const
     static const sf::View dummy;
     if(!m_canvasParent) return dummy;
     return m_canvasParent->getDefaultCameraView();
+}
+Utilities::AABB CanvasObject::getCameraViewRect() const
+{
+    if (!m_canvasParent) return Utilities::AABB();
+    return m_canvasParent->getCameraViewRect();
 }
 sf::Vector2u CanvasObject::getCanvasSize() const
 {
@@ -994,6 +1026,20 @@ void CanvasObject::update_internal()
         CanvasObject* obj = m_childs[i];
         if (obj->m_enabled)
             obj->update_internal();
+    }
+    QSFMLP_END_BLOCK;
+}
+void CanvasObject::inCanvasAdded_internal()
+{
+    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
+    QSFMLP_BLOCK("Object inCanvasAdded", QSFMLP_OBJECT_COLOR_2);
+    inCanvasAdded();
+    QSFMLP_END_BLOCK;
+
+    QSFMLP_BLOCK("Childs inCanvasAdded", QSFMLP_OBJECT_COLOR_4);
+    for (size_t i = 0; i < m_childs.size(); ++i)
+    {
+        m_childs[i]->inCanvasAdded_internal();
     }
     QSFMLP_END_BLOCK;
 }
