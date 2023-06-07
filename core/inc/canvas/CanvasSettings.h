@@ -69,11 +69,11 @@ struct QSFML_EDITOR_WIDGET_EXPORT CanvasSettings
      */
     struct QSFML_EDITOR_WIDGET_EXPORT Timing
     {
-        unsigned int frameTime;  //!< Time between each frame
+        double frameTime;  //!< Time between each frame [s]
 
         Timing()
         {
-            frameTime = 16; // 62.5 FPS
+            frameTime = 0.016; // 62.5 FPS
         }
     };
     Timing timing;

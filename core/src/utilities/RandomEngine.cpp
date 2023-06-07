@@ -7,15 +7,23 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		RandomEngine RandomEngine::instance;
+		RandomEngine RandomEngine::s_instance;
 
 
 		RandomEngine::RandomEngine()
 		{
 			// Seed the random number generator with the current time
-			std::srand(static_cast<unsigned int>(std::time(nullptr)));
+			setSeed(static_cast<unsigned int>(std::time(nullptr)));
 		}
-
+		void RandomEngine::setSeed(unsigned int seed)
+		{
+			s_instance.m_seed = seed;
+			std::srand(seed);
+		}
+		unsigned int RandomEngine::getSeed()
+		{
+			return s_instance.m_seed;
+		}
 		float RandomEngine::getFloat(float min, float max)
 		{
 			// Generate a random number within the given range

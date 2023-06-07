@@ -15,6 +15,17 @@ CollisionObject::CollisionObject(const std::string& name, CanvasObject* parent)
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
 }
+CollisionObject::CollisionObject(const std::vector<sf::Vector2f>& vertecies,
+								 const std::string& name, 
+	                             CanvasObject* parent)
+	: CanvasObject(name)
+{
+	m_collider = new QSFML::Components::Collider();
+	m_collider->setVertecies(vertecies);
+
+	addComponent(m_collider);
+	addComponent(m_collider->createPainter());
+}
 CollisionObject::~CollisionObject()
 {
 

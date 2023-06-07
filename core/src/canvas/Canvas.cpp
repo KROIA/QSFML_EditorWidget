@@ -3,6 +3,7 @@
 #include "utilities/AABB.h"
 #include <QResizeEvent>
 #include <QHBoxLayout>
+#include <qapplication.h>
 
 /*
 #ifdef Q_WS_X11
@@ -14,6 +15,7 @@ using namespace QSFML;
 
 
 std::vector<Canvas*> Canvas::s_instances;
+//bool Canvas::s_execEventLoop = false;
 std::string Canvas::m_profilerOutputFile = "profile.prof";
 
 Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
@@ -46,8 +48,11 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
     // Set strong focus to enable keyboard events to be received
     setFocusPolicy(Qt::StrongFocus);
 
-
+    //m_updateTimer.onFinished(std::bind(&Canvas::update, this));
+    connect(&m_frameTimer, &QTimer::timeout, this, &Canvas::update);
     setSettings(settings);
+
+    
 }
 Canvas::~Canvas()
 {
@@ -65,6 +70,8 @@ Canvas::~Canvas()
             s_instances.erase(s_instances.begin() + i);
         }
     }
+   // if (s_instances.size() == 0)
+   //     stopEventLoop();
 }
 
 
@@ -107,6 +114,7 @@ void Canvas::setTiming(const CanvasSettings::Timing &timing)
 
     // Setup the timer
     m_frameTimer.setInterval(m_settings.timing.frameTime);
+    //m_updateTimer.setInterval(m_settings.timing.frameTime);
 }
 const CanvasSettings::Timing &Canvas::getTiming() const
 {
@@ -220,15 +228,18 @@ void Canvas::showEvent(QShowEvent*)
         OnInit();
 
         // Setup the timer to trigger a refresh at specified framerate
-        connect(&m_frameTimer, SIGNAL(timeout()), this, SLOT(timedUpdate()));
-        m_frameTimer.start();
+        m_frameTimer.start(0);
+        //m_updateTimer.autoRestart(true);
+        //m_updateTimer.start();
+        
+        
         m_deltaT_t1 = std::chrono::high_resolution_clock::now();
         m_oldCanvasSize = getCanvasSize();
     }
 }
 void Canvas::paintEvent(QPaintEvent*)
 {
-    timedUpdate();
+   // update();
 }
 
 void Canvas::resizeEvent(QResizeEvent *event)
@@ -246,7 +257,7 @@ void Canvas::resizeEvent(QResizeEvent *event)
     }
 }
 
-void Canvas::timedUpdate()
+void Canvas::update()
 {
     if(!m_window)
         return;
@@ -305,6 +316,10 @@ void Canvas::timedUpdate()
         QSFMLP_END_BLOCK;
     }
 }
+/*void Canvas::timedUpdate()
+{
+    m_updateTimer.update();
+}*/
 
 
 void Canvas::sfEvent(const std::vector<sf::Event> &events)
@@ -338,3 +353,23 @@ void Canvas::saveProfilerFile(const std::string& fileName)
     setProfilerOutputFileName(fileName);
     saveProfilerFile();
 }
+
+/*void Canvas::startEventLoop()
+{
+    s_execEventLoop = true;
+    while (s_execEventLoop)
+    {
+        QSFMLP_BLOCK("QApplication::processEvents", QSFMLP_CANVAS_COLOR_1);
+        QApplication::processEvents();
+        QSFMLP_END_BLOCK;
+        QSFMLP_BLOCK("Canvas::timedUpdate", QSFMLP_CANVAS_COLOR_1);
+        for (auto canvas : s_instances)
+            canvas->timedUpdate();
+        QSFMLP_END_BLOCK;
+        
+    }
+}
+void Canvas::stopEventLoop()
+{
+    s_execEventLoop = false;
+}*/

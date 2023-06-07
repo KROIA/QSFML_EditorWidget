@@ -2,6 +2,7 @@
 #include "ui_exampleCanvas.h"
 #include <iostream>
 #include <QTimer>
+#include <QCloseEvent>
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -17,7 +18,7 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300,100);
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 16;
+    settings.timing.frameTime = 0;
     //settings.updateControlls.enableMultithreading = false;
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
@@ -39,7 +40,7 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
 
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &ExampleCanvas::onTimerFinished);
-    timer->start(100);
+    timer->start(1000);
     
 }
 
@@ -66,4 +67,9 @@ void ExampleCanvas::onTimerFinished()
     QSFML::Stats stats = QSFML::StatsManager::getStats(m_canvas);
     system("cls");
     stats.print();
+}
+void ExampleCanvas::closeEvent(QCloseEvent* event)
+{
+    //Canvas::stopEventLoop();
+    event->accept();
 }

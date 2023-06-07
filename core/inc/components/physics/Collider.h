@@ -10,6 +10,7 @@
 
 #include <qobject.h>
 #include <vector>
+#include <vector>
 
 namespace QSFML
 {
@@ -55,6 +56,7 @@ namespace Components
                 bool onlyFirstCollisionPerObject = true) const;
 
             bool checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+            void checkCollision_noAABB(const std::vector<Components::Collider*>& other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
             bool checkCollision_noAABB(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
             bool contains(const sf::Vector2f& point);
 
@@ -104,7 +106,9 @@ namespace Components
 
 
         protected:
-            
+
+            static inline bool doLineSegmentsIntersect(const sf::Vector2f &p0, const sf::Vector2f& p1, const sf::Vector2f& p2, const sf::Vector2f& p3, float &scalar1, float &scalar2);
+
             void calculateBoundingBox();
             void calculateAbsPos();
             void onPainterDeleted(Painter* p);

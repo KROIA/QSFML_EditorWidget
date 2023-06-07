@@ -21,6 +21,7 @@ class SandBox : public QMainWindow
 private slots:
     void onTimerFinished();
     private:
+        void closeEvent(QCloseEvent* event) override;
         Ui::SandBox *ui;
 
         QSFML::Canvas *m_canvas_1;

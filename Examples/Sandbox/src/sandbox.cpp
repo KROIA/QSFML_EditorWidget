@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include <QTimer>
+#include <QCloseEvent>
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -49,6 +50,7 @@ SandBox::SandBox(QWidget *parent)
         //settings.layout.autoAjustSize = false;
         settings.layout.fixedSize = sf::Vector2u(300,100);
         settings.contextSettings.antialiasingLevel = 8;
+        //settings.timing.frameTime = 0;
        //settings.updateControlls.enableMultithreading = false;
        //settings.updateControlls.enablePaintLoop = false;
        //settings.updateControlls.enableEventLoop = false;
@@ -107,4 +109,10 @@ void SandBox::onTimerFinished()
         points.push_back(QSFML::Utilities::RandomEngine::getVector({ 0,0 }, { 100,100 }));
     }
     m_pointPainter->setPoints(points);
+}
+
+void SandBox::closeEvent(QCloseEvent* event)
+{
+    //Canvas::stopEventLoop();
+    event->accept();
 }

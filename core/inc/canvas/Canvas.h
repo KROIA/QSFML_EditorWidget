@@ -4,6 +4,8 @@
 #include "canvas/CanvasSettings.h"
 #include "canvas/CanvasObjectContainer.h"
 
+#include "utilities/Timer.h"
+
 #include <SFML/Graphics.hpp>
 #include <QWidget>
 #include <QTimer>
@@ -61,6 +63,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         static void saveProfilerFile();
         static void saveProfilerFile(const std::string &fileName);
 
+        //static void startEventLoop();
+        //static void stopEventLoop();
+
     protected:
         QPaintEngine* paintEngine() const override;
         void showEvent(QShowEvent*) override;
@@ -74,17 +79,19 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         virtual void OnUpdate();
 
     private slots:
-        void timedUpdate();
+        
+        void update();
 
     private:
-
-
+        //void timedUpdate();
+        
 
         void internal_event(const std::vector<sf::Event> &events);
 
 
 
         QTimer m_frameTimer;
+        //Utilities::Timer m_updateTimer;
         TimePoint m_deltaT_t1;
         float m_deltaT;
 
@@ -96,5 +103,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         static std::string m_profilerOutputFile;
 
         static std::vector<Canvas*> s_instances;
+        //static bool s_execEventLoop;
 };
 }

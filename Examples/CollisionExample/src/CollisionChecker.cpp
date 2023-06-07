@@ -11,6 +11,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	, m_tree(QSFML::Utilities::AABB({ 0,0 }, { 800,600 }))
 {
 	m_mouseCollider = new MouseCollider();
+	QSFML::Utilities::RandomEngine::setSeed(0);
 	//m_collisionObject = new CollisionObject();
 
 	
@@ -32,10 +33,17 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	//addChilds(m_objs);
 
 	QSFML::Utilities::AABB range(0, 0, 800, 600);
+	//QSFML::Utilities::AABB range(0, 0, 80, 60);
 	m_performanceContainer = new QSFML::Objects::CanvasObject();
-	for (size_t i = 0; i < 5000; ++i)
+	for (size_t i = 0; i < 500; ++i)
 	{
-		PerformanceObject* obj = new PerformanceObject();
+		PerformanceObject* obj = new PerformanceObject(/*{
+				sf::Vector2f(0,-10),
+				sf::Vector2f(10,0),
+				sf::Vector2f(0,10),
+				sf::Vector2f(-10,0),
+
+			}*/);
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector(range.getPos(), range.getSize() + range.getPos());
 		obj->setPositionAbsolute(pos);
 		obj->setRange(range);
@@ -59,6 +67,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	connect(m_mouseFollower, &QSFML::Components::MouseFollower::mousePosChanged,
 		this, &CollisionChecker::onMousePosChanged);
 	addComponent(m_mouseFollower);
+	setMode(Mode::performanceTest);
 
 }
 CollisionChecker::CollisionChecker(const CollisionChecker& other)
@@ -147,21 +156,25 @@ void CollisionChecker::update()
 void CollisionChecker::update_intersecting()
 {
 	std::vector<sf::Vector2f> collisionPoints;
+	std::vector<QSFML::Utilities::Collisioninfo> collisions;
 	for (size_t i = 0; i < m_objs.size(); ++i)
 	{
 		for (size_t j = i + 1; j < m_objs.size(); ++j)
 		{
-			std::vector<QSFML::Utilities::Collisioninfo> collisions;
-			if (m_objs[i]->checkCollision(m_objs[j], collisions, false))
-			{
+			
+			/*if (*/m_objs[i]->checkCollision(m_objs[j], collisions, false);//)
+			//{
 				//qDebug() << getTick() << " Collision";
-				for (size_t k = 0; k < collisions.size(); ++k)
-					collisionPoints.push_back(collisions[k].collisionPos);
+				//for (size_t k = 0; k < collisions.size(); ++k)
+				//	collisionPoints.push_back(collisions[k].collisionPos);
 
 				//m_objs[i]->solveCollision(m_objs[j]);
-			}
+			//}
 		}
 	}
+	collisionPoints.reserve(collisions.size());
+	for (auto &collision : collisions)
+		collisionPoints.push_back(collision.collisionPos);
 	m_pointPainter->setPoints(collisionPoints);
 }
 void CollisionChecker::update_contains()
@@ -182,7 +195,6 @@ void CollisionChecker::update_contains()
 void CollisionChecker::update_performanceTest()
 {
 	std::vector<sf::Vector2f> collisionPoints;
-	collisionPoints.reserve(9999);
 	TimePoint t1 = std::chrono::high_resolution_clock::now();
 #ifdef USE_QUADTREE
 	m_tree.clear();
@@ -208,38 +220,59 @@ void CollisionChecker::update_performanceTest()
 		}
 	}*/
 	std::vector<QSFML::Utilities::Collisioninfo> collisions;
-	collisions.reserve(9999);
+	//collisions.reserve(9999);
+
 	TimePoint t11 = std::chrono::high_resolution_clock::now();
 	//CanvasObject::checkCollision(m_tree, collisions, false);	
 	m_tree.checkCollisions(collisions, false);
 	TimePoint t22 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> diff2 = t22 - t11;
+
+	collisionPoints.reserve(collisions.size());
 	for (auto &el : collisions)
 		collisionPoints.push_back(el.collisionPos);
 
 #else
-	std::chrono::duration<double> diff2;
+	
+	std::vector<QSFML::Utilities::Collisioninfo> collisions;
+	TimePoint t11 = std::chrono::high_resolution_clock::now();
 	for (size_t i = 0; i < m_performanceObjs.size(); ++i)
 	{
 
 		for (size_t j = i + 1; j < m_performanceObjs.size(); ++j)
 		{
-			std::vector<QSFML::Utilities::Collisioninfo> collisions;
+			
 			//m_performanceObjs[i]->checkCollision(m_performanceObjs[j], collisions, false);
-			if (m_performanceObjs[i]->checkCollision(m_performanceObjs[j], collisions, false))
+			m_performanceObjs[i]->checkCollision(m_performanceObjs[j], collisions, false);
+			//if ()
 			{
 				//qDebug() << getTick() << " Collision";
-				for (size_t k = 0; k < collisions.size(); ++k)
-					collisionPoints.push_back(collisions[k].collisionPos);
+				
 
 				//m_objs[i]->solveCollision(m_objs[j]);
 			}
 		}
 	}
+	TimePoint t22 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff2 = t22 - t11;
+
+	collisionPoints.reserve(collisions.size());
+	for (auto& el : collisions)
+		collisionPoints.push_back(el.collisionPos);
 #endif
 	TimePoint t2 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> diff = t2 - t1;
-	std::cout << "Time: " << diff.count() << " " << diff2.count() <<"\n";
+	
+	static float time1 = 0;
+	static float time2 = 0;
+	static int counter = 0;
+	time1 = 0.8 * time1 + 0.2 * diff.count();
+	time2 = 0.8 * time2 + 0.2 * diff2.count();
+	++counter;
+	if (counter % 10 == 0)
+	{
+		//std::cout << "Time: " << time1 << " " << time2 << "\n";
+	}
 
 	m_pointPainter->setPoints(collisionPoints);
 }

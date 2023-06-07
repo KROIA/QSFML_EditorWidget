@@ -155,12 +155,16 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
     
     return checkCollision_noAABB(other, collisions, onlyFirstCollision);
 }
+void Collider::checkCollision_noAABB(const std::vector<Components::Collider*>& other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
+{
+    for (auto otherCollider : other)
+        checkCollision_noAABB(otherCollider, collisions, onlyFirstCollision);
+}
 bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 {
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
     
-    QSFMLP_BLOCK("Intersection checks", QSFMLP_PHYSICS_COLOR_5);
-
+#define FAST_COLLISION_CHECK
 
     Canvas* canvasParent = getCanvasParent();
     size_t thisNextVertexIndex;
@@ -171,14 +175,22 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
     for (size_t i = 0; i < m_absoluteVertices.size(); ++i)
     {
         thisNextVertexIndex = (i + 1) % m_absoluteVertices.size();
-        Utilities::Ray thisRay(m_absoluteVertices[i], m_absoluteVertices[thisNextVertexIndex] - m_absoluteVertices[i]);
+        sf::Vector2f start1 = m_absoluteVertices[i];
+        sf::Vector2f end1 = m_absoluteVertices[thisNextVertexIndex];
+#ifndef FAST_COLLISION_CHECK
+        Utilities::Ray thisRay(start1, end1 - start1);
+#endif
         for (size_t o = 0; o < other->m_absoluteVertices.size(); ++o)
         {
             otherNextVertexIndex = (o + 1) % other->m_absoluteVertices.size();
-            Utilities::Ray otherRay(other->m_absoluteVertices[o], other->m_absoluteVertices[otherNextVertexIndex] - other->m_absoluteVertices[o]);
+            sf::Vector2f start2 = other->m_absoluteVertices[o];
+            sf::Vector2f end2 = other->m_absoluteVertices[otherNextVertexIndex];
 
             float thisDistance;
             float otherDistance;
+#ifndef FAST_COLLISION_CHECK
+            Utilities::Ray otherRay(start2, end2 - start2);
+
             if (thisRay.raycast(otherRay, thisDistance, otherDistance))
             {
                 if (thisDistance >= 0 && thisDistance <= 1 && otherDistance >= 0 && otherDistance <= 1)
@@ -198,18 +210,83 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
 
                         StatsManager::addCollisionCheck(canvasParent, i * o);
                         StatsManager::addCollision(canvasParent);
-                        QSFMLP_END_BLOCK;
                         return true;
                     }
                 }
             }
+#else
+            
+            if (doLineSegmentsIntersect(start1, end1, start2, end2, thisDistance, otherDistance))
+            {
+                collision = true;
+                sf::Vector2f collisionPoint = start1 + (end1 - start1) * thisDistance;
+                Utilities::Collisioninfo info;
+                info.collider1 = this;
+                info.collider2 = other;
+                info.collisionPos = collisionPoint;
+                info.vertexIndex.index1 = i;
+                info.vertexIndex.index2 = o;
+                collisions.push_back(info);
+
+                if (onlyFirstCollision)
+                {
+
+                    StatsManager::addCollisionCheck(canvasParent, i * o);
+                    StatsManager::addCollision(canvasParent);
+                    return true;
+                }
+            }
+#endif
+            
+            
         }
     }
-    StatsManager::addCollisionCheck(canvasParent, m_relativeVertices.size() * other->m_relativeVertices.size());
+    StatsManager::addCollisionCheck(canvasParent, m_absoluteVertices.size() * other->m_absoluteVertices.size());
     StatsManager::addCollision(canvasParent, collisions.size() - currentCollisionCount);
 
-    QSFMLP_END_BLOCK;
     return collision;
+}
+
+bool Collider::doLineSegmentsIntersect(const sf::Vector2f& p0, const sf::Vector2f& p1, const sf::Vector2f& p2, const sf::Vector2f& p3, float& scalar1, float& scalar2)
+{
+    // Calculate the directional vectors of the line segments
+    /*sf::Vector2f dirP0P1 = p1 - p0;
+    sf::Vector2f dirP2P3 = p3 - p2;
+
+    // Calculate the determinant of the matrix formed by the directional vectors
+    float determinant = dirP0P1.x * dirP2P3.y - dirP0P1.y * dirP2P3.x;
+
+    // If the determinant is close to zero, the lines are parallel or collinear
+    if (std::abs(determinant) < 1e-6)
+        return false;
+
+    // Calculate the vector between the starting points of the line segments
+    sf::Vector2f p0P2 = p2 - p0;
+
+    // Calculate the parameters t and u for the intersection point
+    scalar1 = (p0P2.x * dirP2P3.y - p0P2.y * dirP2P3.x) / determinant;
+    scalar2 = (p0P2.x * dirP0P1.y - p0P2.y * dirP0P1.x) / determinant;
+    */
+
+    sf::Vector2f s1 = p1 - p0;
+    sf::Vector2f s2 = p3 - p2;
+
+    // Calculate the determinant of the matrix formed by the directional vectors
+    float determinant = (s2.x * s1.y - s1.x * s2.y);
+    // If the determinant is close to zero, the lines are parallel or collinear
+    if (std::abs(determinant) < 1e-6)
+        return false;
+
+    determinant = 1 / determinant;
+    scalar1 = (p0.x * s2.y - p0.y * s2.x - p2.x * s2.y + p2.y * s2.x) * determinant;
+    scalar2 = (p0.x * s1.y - p0.y * s1.x + s1.x * p2.y - s1.y * p2.x) * determinant;
+
+    //scalar1 = (-s1.y * (p0.x - p2.x) + s1.x * (p0.y - p2.y)) / determinant;
+    //scalar2 = (s2.x * (p0.y - p2.y) - s2.y * (p0.x - p2.x))  / determinant;
+
+
+    // If t and u are within [0, 1], the line segments intersect
+    return scalar1 >= 0.0 && scalar1 <= 1.0 && scalar2 >= 0.0 && scalar2 <= 1.0;
 }
 bool Collider::contains(const sf::Vector2f& point)
 {
@@ -242,7 +319,7 @@ bool Collider::contains(const std::vector<sf::Vector2f>& polygon,
         const sf::Vector2f& vertex1 = polygon[i] + polygonPos;
         const sf::Vector2f& vertex2 = polygon[(i + 1) % numVertices] + polygonPos;
 
-        // Check if the ray from the test point crosses the edge
+        // Check if the ray from the test const sf::Vector2f & crosses the edge
         if (((vertex1.y > point.y) != (vertex2.y > point.y)) &&
             (point.x < (vertex2.x - vertex1.x) * (point.y - vertex1.y) / (vertex2.y - vertex1.y) + vertex1.x)) {
             crossingCount++;
@@ -250,7 +327,7 @@ bool Collider::contains(const std::vector<sf::Vector2f>& polygon,
     }
     
 
-    // If the number of edge crossings is odd, the point is inside the polygon
+    // If the number of edge crossings is odd, the const sf::Vector2f & is inside the polygon
     return (crossingCount % 2) == 1;
 }
 Collider::Painter* Collider::createPainter()
@@ -371,22 +448,22 @@ sf::Vector2f Collider::resolveCollision(std::vector<sf::Vector2f>& polygonA,  st
     sf::FloatRect rectA = sf::FloatRect(polygonA[0], polygonA[0]);
     sf::FloatRect rectB = sf::FloatRect(polygonB[0], polygonB[0]);
     for (const sf::Vector2f& point : polygonA) {
-        rectA.left = std::min(rectA.left, point.x);
-        rectA.top = std::min(rectA.top, point.y);
-        rectA.width = std::max(rectA.width, point.x);
+        rectA.left   = std::min(rectA.left, point.x);
+        rectA.top    = std::min(rectA.top, point.y);
+        rectA.width  = std::max(rectA.width, point.x);
         rectA.height = std::max(rectA.height, point.y);
     }
     for (const sf::Vector2f& point : polygonB) {
-        rectB.left = std::min(rectB.left, point.x);
-        rectB.top = std::min(rectB.top, point.y);
-        rectB.width = std::max(rectB.width, point.x);
+        rectB.left   = std::min(rectB.left,   point.x);
+        rectB.top    = std::min(rectB.top,    point.y);
+        rectB.width  = std::max(rectB.width,  point.x);
         rectB.height = std::max(rectB.height, point.y);
     }
 
     if (!rectA.intersects(rectB))
         return sf::Vector2f(0.f, 0.f); // No collision
 
-    // Convert the polygons to a list of edges
+    // Convert the polygons to a vector of edges
     std::vector<sf::Vector2f> edgesA;
     std::vector<sf::Vector2f> edgesB;
     for (size_t i = 0; i < polygonA.size(); ++i) {
@@ -429,8 +506,8 @@ sf::Vector2f Collider::resolveCollision(std::vector<sf::Vector2f>& polygonA,  st
     }
 
     // Separate the polygons
-    //for (sf::Vector2f& point : polygonA) {
-    //    point += minTranslationVector;
+    //for (sf::Vector2f& const sf::Vector2f & : polygonA) {
+    //    const sf::Vector2f & += minTranslationVector;
     //}
 
     return minTranslationVector;

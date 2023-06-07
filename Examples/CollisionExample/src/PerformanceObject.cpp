@@ -25,7 +25,18 @@ PerformanceObject::PerformanceObject(const std::string& name, CanvasObject* pare
 	m_collider->setVertecies(vertecies);
 
 	addComponent(m_collider);
-	//addComponent(m_collider->createPainter());
+	addComponent(m_collider->createPainter());
+}
+PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies, const std::string& name, CanvasObject* parent)
+	: CanvasObject(name)
+{
+	m_collider = new QSFML::Components::Collider();
+	m_currentDirection = QSFML::Utilities::RandomEngine::getFloat(-M_PI, M_PI);
+
+	m_collider->setVertecies(vertecies);
+
+	addComponent(m_collider);
+	addComponent(m_collider->createPainter());
 }
 PerformanceObject::~PerformanceObject()
 {
@@ -37,6 +48,7 @@ void PerformanceObject::setRange(const QSFML::Utilities::AABB& range)
 }
 void PerformanceObject::update()
 {
+	return;
 	const float maxVelocity = 100;
 	float deltaT = getDeltaT();
 	float deltaDir = QSFML::Utilities::RandomEngine::getFloat(-0.1, 0.1);

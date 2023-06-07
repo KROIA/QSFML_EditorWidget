@@ -90,6 +90,7 @@ namespace QSFML
 											 bool onlyFirstCollision)
 		{
 			//m_tree.checkCollisions(collisions, onlyFirstCollision);
+			
 			for (auto& objStruct : m_allObjs)
 			{
 				Objects::CanvasObject* obj = objStruct.obj;
@@ -104,7 +105,7 @@ namespace QSFML
 					const std::vector<Components::Collider*>& collider = obj->getCollider();
 					for (auto objCollider : collider)
 					{
-						objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
+						objCollider->checkCollision_noAABB(otherColliders, collisions, onlyFirstCollision);
 					}
 				}
 			}
@@ -166,7 +167,7 @@ namespace QSFML
 				#pragma unroll
 				for (size_t i = 0; i < 4; ++i)
 				{
-					if(m_childAreas[i].contains(area))
+					if(m_childAreas[i].intersects(area))
 						m_childTrees[i].search(area, container);
 				}
 			}
@@ -186,8 +187,7 @@ namespace QSFML
 		void ObjectQuadTree::Tree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
 												   bool onlyFirstCollision)
 		{
-
-			/*for (size_t i = 0; i<m_objects.size(); ++i)
+			for (size_t i = 0; i<m_objects.size(); ++i)
 			{
 				std::list<Objects::CanvasObject*>::iterator objA = m_objects.begin();
 				std::advance(objA, i);
@@ -212,7 +212,8 @@ namespace QSFML
 						objA->checkCollision(objB, collisions, onlyFirstCollision);
 					}
 				}
-			}*/
+				tree.checkCollisions(collisions, onlyFirstCollision);
+			}
 		}
 		void ObjectQuadTree::Tree::instantiateChilds()
 		{

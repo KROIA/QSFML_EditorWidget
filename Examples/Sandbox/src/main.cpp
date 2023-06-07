@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     //benchmark();
     int ret = a.exec();
  //   profiler::dumpBlocksToFile("test_profile.prof");
+    //QSFML::Canvas::startEventLoop();
     return ret;
 }
 

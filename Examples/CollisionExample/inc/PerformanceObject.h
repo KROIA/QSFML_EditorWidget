@@ -7,6 +7,9 @@ class PerformanceObject : public QSFML::Objects::CanvasObject
 public:
 	PerformanceObject(const std::string& name = "PerformanceObject",
 		CanvasObject* parent = nullptr);
+	PerformanceObject(const std::vector<sf::Vector2f>& vertecies,
+		const std::string& name = "PerformanceObject",
+		CanvasObject* parent = nullptr);
 	~PerformanceObject();
 
 	CLONE_FUNC_DEC(PerformanceObject);

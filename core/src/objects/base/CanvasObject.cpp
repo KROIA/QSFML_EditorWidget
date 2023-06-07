@@ -666,7 +666,7 @@ bool CanvasObject::checkCollision(const CanvasObject* other,
     return false;
 }
 void CanvasObject::checkCollision(const Utilities::ObjectQuadTree& tree, 
-                                  std::vector<Utilities::Collisioninfo>& collisions, 
+                                  std::vector<Utilities::Collisioninfo>& collisions,
                                   bool onlyFirstCollision)
 {
     std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
@@ -680,7 +680,7 @@ void CanvasObject::checkCollision(const Utilities::ObjectQuadTree& tree,
             if (obj == it)
                 continue;
 
-            std::vector<Components::Collider*> otherColliders = it->getCollider();
+            const std::vector<Components::Collider*> &otherColliders = it->getCollider();
             for (auto objCollider : obj->m_colliders)
             {
                 objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);

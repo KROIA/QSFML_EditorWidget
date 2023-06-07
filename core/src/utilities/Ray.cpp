@@ -193,7 +193,8 @@ namespace QSFML
 		{
 			float divisor = directionA.x * directionB.y - directionA.y * directionB.x;
 
-			if (divisor == 0)
+
+			if (std::abs(divisor) < 1e-6)
 			{
 				outDistanceFactorA = NAN;
 				outDistanceFactorB = NAN;
