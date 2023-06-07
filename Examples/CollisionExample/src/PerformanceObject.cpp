@@ -3,8 +3,10 @@
 CLONE_FUNC_IMPL(PerformanceObject);
 PerformanceObject::PerformanceObject(const std::string& name, CanvasObject* parent)
 	: CanvasObject(name)
+	, m_dynamic(true)
 {
 	m_collider = new QSFML::Components::Collider();
+	
 
 	size_t verteciesCount = 3 + (rand() % 50);
 	float radius = QSFML::Utilities::RandomEngine::getFloat(2, 10);
@@ -29,6 +31,7 @@ PerformanceObject::PerformanceObject(const std::string& name, CanvasObject* pare
 }
 PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies, const std::string& name, CanvasObject* parent)
 	: CanvasObject(name)
+	, m_dynamic(true)
 {
 	m_collider = new QSFML::Components::Collider();
 	m_currentDirection = QSFML::Utilities::RandomEngine::getFloat(-M_PI, M_PI);
@@ -46,9 +49,14 @@ void PerformanceObject::setRange(const QSFML::Utilities::AABB& range)
 {
 	m_range = range;
 }
+void PerformanceObject::setDynamic(bool isDynamic)
+{
+	m_dynamic = isDynamic;
+}
 void PerformanceObject::update()
 {
-	return;
+	if (!m_dynamic)
+		return;
 	const float maxVelocity = 100;
 	float deltaT = getDeltaT();
 	float deltaDir = QSFML::Utilities::RandomEngine::getFloat(-0.1, 0.1);

@@ -35,7 +35,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	QSFML::Utilities::AABB range(0, 0, 800, 600);
 	//QSFML::Utilities::AABB range(0, 0, 80, 60);
 	m_performanceContainer = new QSFML::Objects::CanvasObject();
-	for (size_t i = 0; i < 500; ++i)
+	for (size_t i = 0; i <1000; ++i)
 	{
 		PerformanceObject* obj = new PerformanceObject(/*{
 				sf::Vector2f(0,-10),
@@ -67,6 +67,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	connect(m_mouseFollower, &QSFML::Components::MouseFollower::mousePosChanged,
 		this, &CollisionChecker::onMousePosChanged);
 	addComponent(m_mouseFollower);
+	addComponent(m_tree.createPainter());
 	setMode(Mode::performanceTest);
 
 }
@@ -198,6 +199,9 @@ void CollisionChecker::update_performanceTest()
 	TimePoint t1 = std::chrono::high_resolution_clock::now();
 #ifdef USE_QUADTREE
 	m_tree.clear();
+	m_tree.shrink();
+	for (auto el : m_performanceObjs)
+		el->setEnabled(true);
 	m_tree.insert(m_performanceObjs);
 	/*std::list<QSFML::Utilities::ObjectQuadTree::TreeItem> objs = m_tree.getAllItems();
 	for (auto &it : objs)

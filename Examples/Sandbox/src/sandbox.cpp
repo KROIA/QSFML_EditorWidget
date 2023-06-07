@@ -4,6 +4,7 @@
 #include "DrawableVector.h"
 #include "AABBDisplayer.h"
 #include "SandboxObject.h"
+#include "MouseCollider.h"
 #include <iostream>
 
 #include <QTimer>
@@ -73,6 +74,11 @@ SandBox::SandBox(QWidget *parent)
         m_chart->setOrigin(sf::Vector2f(50,50));
         m_chart->setSize(sf::Vector2f(200,100));
         m_canvas_2->addObject(m_chart);
+
+        
+        MouseCollider* mouseCollider = new MouseCollider();
+        m_canvas_2->addObject(mouseCollider);
+
     }
 
     QSFML::Utilities::Ray func1(sf::Vector2f(0, 0), sf::Vector2f(0, 1));

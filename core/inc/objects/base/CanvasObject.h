@@ -261,7 +261,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         bool checkCollision(const CanvasObject* other) const;
         bool checkCollision(const CanvasObject* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
         static void checkCollision(const Utilities::ObjectQuadTree& tree, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true);
-        void solveCollision(CanvasObject* other);
+        //void solveCollision(CanvasObject* other);
         // ---------
 
         // Canvas operations

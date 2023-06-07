@@ -688,13 +688,13 @@ void CanvasObject::checkCollision(const Utilities::ObjectQuadTree& tree,
         }
     }
 }
-void CanvasObject::solveCollision(CanvasObject* other)
+/*void CanvasObject::solveCollision(CanvasObject* other)
 {
     for (size_t i = 0; i < m_colliders.size(); ++i)
     {
         m_colliders[i]->resolveCollision(other->getCollider());
     }
-}
+}*/
 
 
 size_t CanvasObject::getComponentCount() const

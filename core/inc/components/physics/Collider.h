@@ -66,14 +66,8 @@ namespace Components
 
             Painter* createPainter();
 
-            void resolveCollision(Collider* other);
-            void resolveCollision(const std::vector<Collider*>& other);
-
-            static bool isSeparatingAxis(const std::vector<sf::Vector2f>& polygonA, const std::vector<sf::Vector2f>& polygonB, const sf::Vector2f& axis);
-            static sf::Vector2f getMinimumTranslationVector(const std::vector<sf::Vector2f>& polygonA, const std::vector<sf::Vector2f>& polygonB, const sf::Vector2f& axis);
-            static sf::Vector2f normalize(const sf::Vector2f& vector);
-            static sf::Vector2f resolveCollision(std::vector<sf::Vector2f>& polygonA, std::vector<sf::Vector2f>& polygonB);
-
+        
+        
 
             class QSFML_EDITOR_WIDGET_EXPORT Painter : public Components::Drawable
             {

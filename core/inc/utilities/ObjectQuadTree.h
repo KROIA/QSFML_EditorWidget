@@ -3,6 +3,7 @@
 #include "QSFML_base.h"
 
 #include "objects/base/CanvasObject.h"
+#include "components/base/Drawable.h"
 
 #include "AABB.h"
 
@@ -14,11 +15,11 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class ObjectQuadTree
+		class QSFML_EDITOR_WIDGET_EXPORT ObjectQuadTree
 		{
-			class Tree;
+			class QSFML_EDITOR_WIDGET_EXPORT Tree;
 		public:
-			struct TreeItem
+			struct QSFML_EDITOR_WIDGET_EXPORT TreeItem
 			{
 				friend ObjectQuadTree;
 				friend Tree;
@@ -36,6 +37,7 @@ namespace QSFML
 				std::list<Objects::CanvasObject*>::iterator iterator;
 			};
 			ObjectQuadTree(const Utilities::AABB& area, size_t maxDepth = 10);
+			~ObjectQuadTree();
 			bool insert(Objects::CanvasObject* obj);
 			bool insert(const std::vector<Objects::CanvasObject*> &objs);
 			
@@ -45,15 +47,41 @@ namespace QSFML
 			void remove(const TreeItem& item);
 			bool relocate(TreeItem& item);
 			void clear();
+			void shrink(); // removes not used childs
 
 			void checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
 								 bool onlyFirstCollision = true);
 
+
+			class QSFML_EDITOR_WIDGET_EXPORT ObjectQuadTreePainter : public Components::Drawable
+			{
+				friend ObjectQuadTree;
+				ObjectQuadTreePainter(ObjectQuadTree *tree, const std::string& name = "ObjectQuadTreePainter");
+				ObjectQuadTreePainter(const ObjectQuadTreePainter& other);
+			public:
+				COMPONENT_DECL(ObjectQuadTreePainter);
+				~ObjectQuadTreePainter();
+
+				void setColor(const sf::Color& color);
+				const sf::Color& getColor() const;
+
+				void draw(sf::RenderTarget& target,
+					sf::RenderStates states) const override;
+
+			private:
+				void destroy();
+				ObjectQuadTree* m_tree;
+				sf::Color m_color;
+			};
+
+			ObjectQuadTreePainter* createPainter();
+			void removePainter(ObjectQuadTreePainter* painter);
+
 		private:
 			bool insert_internal(TreeItem& item);
-			class Tree
+			class QSFML_EDITOR_WIDGET_EXPORT Tree
 			{
-				
+				friend ObjectQuadTreePainter;
 			public:
 				Tree(const Utilities::AABB& area, size_t depth, size_t maxDepth);
 				~Tree();
@@ -61,12 +89,19 @@ namespace QSFML
 				void insert(TreeItem& item);
 				void search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const;
 				void clear();
+				bool shrink(); // returns false if this can be deleted
 
 				void checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
 									 bool onlyFirstCollision = true);
 
 			private:
+				void checkCollision(Objects::CanvasObject* other, 
+									 std::vector<Utilities::Collisioninfo>& collisions,
+									 bool onlyFirstCollision);
 				void instantiateChilds();
+				void draw(const sf::Font &font, const sf::Color &color, sf::RenderTarget& target,
+						sf::RenderStates states) const;
+
 
 				Utilities::AABB m_area;
 				size_t m_depth;
@@ -80,6 +115,7 @@ namespace QSFML
 			Tree m_tree;
 			std::list<TreeItem> m_allObjs;
 			std::unordered_map<Objects::CanvasObject*, size_t> m_allObjMap;
+			std::vector<ObjectQuadTreePainter*> m_painters;
 		};
 		
 
