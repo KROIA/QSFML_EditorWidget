@@ -5,6 +5,7 @@
 
 #include "utilities/Singelton.h"
 #include <unordered_map>
+#include <atomic>
 
 namespace QSFML
 {
@@ -12,61 +13,52 @@ namespace QSFML
 	class QSFML_EDITOR_WIDGET_EXPORT Stats
 	{
 		friend StatsManager;
-		Stats(Canvas *canvas);
-	public:
+		Stats();
+		public:
 		
 		Stats(const Stats& other);
 
-		Canvas* getCanvas() const;
 		unsigned int getRootObjectCount() const;
 		unsigned int getObjectCount() const;
 		unsigned int getComponentCount() const;
-		unsigned int getTickCount() const;
 		unsigned int getCollisionCheckCount() const;
 		unsigned int getBoundingBoxCollisionCheckCount() const;
 		unsigned int getCollisionCount() const;
-		float getFrametime() const;
-		float getFPS() const;
 
 		void print() const;
 
 	private:
-		Canvas* m_canvas;
-		unsigned int m_rootObjectsCount;
-		unsigned int m_objectsCount;
-		unsigned int m_componentsCount;
-		unsigned int m_collisionChecks;
-		unsigned int m_boundingBoxCollisionChecks;
-		unsigned int m_collisions;
+		std::atomic<unsigned int> m_rootObjectsCount;
+		std::atomic<unsigned int> m_objectsCount;
+		std::atomic<unsigned int> m_componentsCount;
+		std::atomic<unsigned int> m_collisionChecks;
+		std::atomic<unsigned int> m_boundingBoxCollisionChecks;
+		std::atomic<unsigned int> m_collisions;
 
 	};
 	class QSFML_EDITOR_WIDGET_EXPORT StatsManager: public Singleton<StatsManager>
 	{
-		friend Objects::CanvasObject;
-		friend Canvas;
-		friend CanvasObjectContainer;
-		friend Components::Collider;
 	public:
-		static const Stats& getStats(Canvas* canvas);
+		static const Stats& getStats();
+
+		static void setRootCanvesObject(unsigned int count);
+		static void addRootCanvesObject(unsigned int count = 1);
+		static void addCanvesObject(unsigned int count = 1);
+		static void removeRootCanvasObject(unsigned int count = 1);
+		static void removeCanvasObject(unsigned int count = 1);
+
+		static void addComponent(unsigned int count = 1);
+		static void removeComponent(unsigned int count = 1);
+
+		static void addCollisionCheck(unsigned int count = 1);
+		static void addBoundingBoxCollisionCheck(unsigned int count = 1);
+		static void addCollision(unsigned int count = 1);
+		static void resetCollisionStats();
 	private:
-		static void createStats(Canvas* canvas);
+		static Stats& getStats_internal();
 
-		static Stats& getStats_internal(Canvas* canvas);
+		
 
-		static void setRootCanvesObject(Canvas* canvas, unsigned int count);
-		static void addRootCanvesObject(Canvas* canvas, unsigned int count = 1);
-		static void addCanvesObject(Canvas* canvas, unsigned int count = 1);
-		static void removeRootCanvasObject(Canvas* canvas, unsigned int count = 1);
-		static void removeCanvasObject(Canvas* canvas, unsigned int count = 1);
-
-		static void addComponent(Canvas* canvas, unsigned int count = 1);
-		static void removeComponent(Canvas* canvas, unsigned int count = 1);
-
-		static void addCollisionCheck(Canvas* canvas, unsigned int count = 1);
-		static void addBoundingBoxCollisionCheck(Canvas* canvas, unsigned int count = 1);
-		static void addCollision(Canvas* canvas, unsigned int count = 1);
-		static void resetCollisionStats(Canvas* canvas);
-
-		static std::unordered_map<Canvas*, Stats> m_instances;
+		static Stats m_instance;
 	};
 }

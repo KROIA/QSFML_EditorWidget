@@ -61,8 +61,7 @@ namespace Components
             bool contains(const sf::Vector2f& point);
 
             static bool contains(const std::vector<sf::Vector2f>& polygon, 
-                                 const sf::Vector2f& point,
-                                 const sf::Vector2f& polygonPos = sf::Vector2f(0,0));
+                                 const sf::Vector2f& point);
 
             Painter* createPainter();
 

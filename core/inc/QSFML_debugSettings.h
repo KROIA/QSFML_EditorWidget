@@ -13,10 +13,12 @@
 	#define QSFMLP_BLOCK(text, color) EASY_BLOCK(text, profiler::colors:: color)
 	#define QSFMLP_END_BLOCK EASY_END_BLOCK
 	#define QSFMLP_FUNCTION(color) EASY_FUNCTION(profiler::colors:: color)
+	#define QSFMLP_THREAD(name) EASY_THREAD(name)
 #else
 	#define QSFMLP_BLOCK(text, color)
 	#define QSFMLP_END_BLOCK
 	#define QSFMLP_FUNCTION(color)
+	#define QSFMLP_THREAD(name)
 #endif
 #define CONCAT_SYMBOLS_IMPL(x, y) x##y
 #define CONCAT_SYMBOLS(x, y) CONCAT_SYMBOLS_IMPL(x, y)

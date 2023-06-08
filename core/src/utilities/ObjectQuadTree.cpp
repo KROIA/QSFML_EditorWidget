@@ -1,6 +1,8 @@
 #include "utilities/ObjectQuadTree.h"
+#include "utilities/Stats.h"
 #include "objects/base/CanvasObject.h"
 #include "components/physics/Collider.h"
+
 
 namespace QSFML
 {
@@ -8,15 +10,17 @@ namespace QSFML
 	{
 		ObjectQuadTree::ObjectQuadTree(const Utilities::AABB& area, size_t maxDepth)
 			: m_tree(area, 0, maxDepth)
+			, m_threadWorker(nullptr)
 		{
 
 		}
 		ObjectQuadTree::~ObjectQuadTree()
 		{
+			enableCollisionThreads(false);
 			for (size_t i = 0; i < m_painters.size(); ++i)
 			{
 				m_painters[i]->m_tree = nullptr;
-				m_painters[i]->deleteThis();
+				m_painters[i]->destroy();
 			}
 				
 		}
@@ -96,32 +100,107 @@ namespace QSFML
 		}
 		void ObjectQuadTree::shrink()
 		{
-			m_tree.shrink();
+			if (m_threadWorker)
+			{
+				m_tree.getChild(0).shrink();
+				m_tree.getChild(1).shrink();
+				m_tree.getChild(2).shrink();
+				m_tree.getChild(3).shrink();
+			}
+			else
+				m_tree.shrink();
+		}
+		const Utilities::AABB& ObjectQuadTree::getArea() const
+		{
+			return m_tree.getArea();
+		}
+		size_t ObjectQuadTree::getMaxDepth() const
+		{
+			return m_tree.getMaxDepth();
 		}
 
+		void ObjectQuadTree::enableCollisionThreads(bool enable)
+		{
+			if (m_threadWorker && enable || !m_threadWorker && !enable)
+				return;
+			if (!enable)
+			{
+				delete m_threadWorker;
+				m_threadWorker = nullptr;
+				if (m_tree.hasChilds())
+				{
+					m_tree.getChild(0).setThreadedParams(nullptr, false);
+					m_tree.getChild(1).setThreadedParams(nullptr, false);
+					m_tree.getChild(2).setThreadedParams(nullptr, false);
+					m_tree.getChild(3).setThreadedParams(nullptr, false);
+				}
+				return;
+			}
+
+			m_threadWorker = new ThreadWorker("ObjectQuadTree Worker");
+			m_tree.instantiateChilds();
+			m_tree.getChild(0).setupThreadWorker(m_threadWorker);
+			m_tree.getChild(1).setupThreadWorker(m_threadWorker);
+			m_tree.getChild(2).setupThreadWorker(m_threadWorker);
+			m_tree.getChild(3).setupThreadWorker(m_threadWorker);
+
+
+		m_threadWorker->addFunction([this] {
+			this->m_tree.checkCollisionsSingleLayerSelfDeep(0, *this->m_collisions1, this->m_onlyFirstCollision);
+			this->m_tree.checkCollisionsSingleLayerSelfDeep(1, *this->m_collisions1, this->m_onlyFirstCollision);
+			});
+		m_threadWorker->addFunction([this] {
+			this->m_tree.checkCollisionsSingleLayerSelfDeep(2, *this->m_collisions2, this->m_onlyFirstCollision);
+			this->m_tree.checkCollisionsSingleLayerSelfDeep(3, *this->m_collisions2, this->m_onlyFirstCollision);
+			});
+			
+		}
 		void ObjectQuadTree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
 											 bool onlyFirstCollision)
 		{
-			m_tree.checkCollisions(collisions, onlyFirstCollision);
-			
-			/*for (auto& objStruct : m_allObjs)
+			QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_1);
+			if (m_threadWorker)
 			{
-				Objects::CanvasObject* obj = objStruct.obj;
-				std::list< QSFML::Objects::CanvasObject*> possibleColliders;
-				m_tree.search(obj->getBoundingBox(), possibleColliders);
-				for (auto it : possibleColliders)
-				{
-					if (obj == it)
-						continue;
+				std::vector<Utilities::Collisioninfo> sector1;
+				std::vector<Utilities::Collisioninfo> sector2;
+				std::vector<Utilities::Collisioninfo> sector3;
+				std::vector<Utilities::Collisioninfo> sector4;
+				std::vector<Utilities::Collisioninfo> sector5;
+				std::vector<Utilities::Collisioninfo> sector6;
+				m_collisions1 = &sector5;
+				m_collisions2 = &sector6;
+				m_onlyFirstCollision = onlyFirstCollision;
+				m_tree.getChild(0).setThreadedParams(&sector1 , onlyFirstCollision);
+				m_tree.getChild(1).setThreadedParams(&sector2 , onlyFirstCollision);
+				m_tree.getChild(2).setThreadedParams(&sector3 , onlyFirstCollision);
+				m_tree.getChild(3).setThreadedParams(&sector4 , onlyFirstCollision);
 
-					const std::vector<Components::Collider*>& otherColliders = it->getCollider();
-					const std::vector<Components::Collider*>& collider = obj->getCollider();
-					for (auto objCollider : collider)
-					{
-						objCollider->checkCollision_noAABB(otherColliders, collisions, onlyFirstCollision);
-					}
-				}
-			}*/
+				m_threadWorker->signalExecution();
+				m_tree.checkCollisionsSingleLayerSelf(collisions, onlyFirstCollision);
+
+				//this->m_tree.checkCollisionsSingleLayerSelfDeep(0, *this->m_collisions1, this->m_onlyFirstCollision);
+				//this->m_tree.checkCollisionsSingleLayerSelfDeep(1, *this->m_collisions1, this->m_onlyFirstCollision);
+				//
+				//
+				//this->m_tree.checkCollisionsSingleLayerSelfDeep(2, *this->m_collisions2, this->m_onlyFirstCollision);
+				//this->m_tree.checkCollisionsSingleLayerSelfDeep(3, *this->m_collisions2, this->m_onlyFirstCollision);
+				
+				m_threadWorker->waitForThreadsNoDelayNoExec();
+				QSFMLP_BLOCK("Collisions copy", QSFMLP_PHYSICS_COLOR_2);
+				size_t cap = collisions.size() + sector1.size(); +sector2.size() + sector3.size() + sector4.size() + sector5.size() + sector6.size();
+				collisions.reserve(cap);
+				collisions.insert(collisions.end(), sector1.begin(), sector1.end());
+				collisions.insert(collisions.end(), sector2.begin(), sector2.end());
+				collisions.insert(collisions.end(), sector3.begin(), sector3.end());
+				collisions.insert(collisions.end(), sector4.begin(), sector4.end());
+				collisions.insert(collisions.end(), sector5.begin(), sector5.end());
+				collisions.insert(collisions.end(), sector6.begin(), sector6.end());
+				QSFMLP_END_BLOCK;
+			}
+			else
+			{
+				m_tree.checkCollisions(collisions, onlyFirstCollision);
+			}
 		}
 
 
@@ -140,27 +219,55 @@ namespace QSFML
 				Utilities::AABB(m_childAreas[0].BL(), m_childAreas[0].getSize()),
 				Utilities::AABB(m_childAreas[0].BR(), m_childAreas[0].getSize())
 			}
+			, m_collisions(nullptr)
 		{
-
+			if (m_maxDepth < 1)
+				m_maxDepth = 1;
+			m_enableChilds = m_depth < m_maxDepth;
 		}
 		ObjectQuadTree::Tree::~Tree()
 		{
 			if (m_childTrees)
 				delete[] m_childTrees;
 		}
+		ObjectQuadTree::Tree& ObjectQuadTree::Tree::getChild(size_t index)
+		{
+			return m_childTrees[index];
+		}
+		void ObjectQuadTree::Tree::instantiateChilds()
+		{
+			if (m_childTrees)
+				return;
+			size_t newDepth = m_depth + 1;
+
+			m_childTrees = new Tree[4]{
+				Tree(m_childAreas[0], newDepth, m_maxDepth),
+				Tree(m_childAreas[1], newDepth, m_maxDepth),
+				Tree(m_childAreas[2], newDepth, m_maxDepth),
+				Tree(m_childAreas[3], newDepth, m_maxDepth),
+			};
+
+		}
+		bool ObjectQuadTree::Tree::hasChilds()
+		{
+			return m_childTrees;
+		}
 
 		void ObjectQuadTree::Tree::insert(TreeItem& item)
 		{
 			AABB objBB = item.obj->getBoundingBox();
-			#pragma unroll
-			for (size_t i = 0; i < 4; ++i)
+			if (m_enableChilds)
 			{
-				if (m_childAreas[i].contains(objBB))
+				#pragma unroll
+				for (size_t i = 0; i < 4; ++i)
 				{
-					if (!m_childTrees)
-						instantiateChilds();
-					m_childTrees[i].insert(item);
-					return;
+					if (m_childAreas[i].contains(objBB))
+					{
+						if (!m_childTrees)
+							instantiateChilds();
+						m_childTrees[i].insert(item);
+						return;
+					}
 				}
 			}
 
@@ -215,26 +322,68 @@ namespace QSFML
 
 			return m_objects.size() || anyContent;
 		}
+		
+		const Utilities::AABB& ObjectQuadTree::Tree::getArea() const
+		{
+			return m_area;
+		}
+		size_t ObjectQuadTree::Tree::getMaxDepth() const
+		{
+			return m_maxDepth;
+		}
+
+		void ObjectQuadTree::Tree::setupThreadWorker(ThreadWorker* worker)
+		{
+			worker->addFunction([this] {
+				this->checkCollisions(*this->m_collisions, this->m_onlyFirstCollision);
+				});
+		}
+		void ObjectQuadTree::Tree::setThreadedParams(std::vector<Utilities::Collisioninfo>* container, bool onlyFisrtCollision)
+		{
+			m_collisions = container;
+			m_onlyFirstCollision = onlyFisrtCollision;
+		}
+
 		void ObjectQuadTree::Tree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
 												   bool onlyFirstCollision)
+		{
+			checkCollisionsSingleLayerSelf(collisions, onlyFirstCollision);
+			if (!m_childTrees)
+				return;
+
+			checkCollisionsSingleLayerSelfDeep(collisions, onlyFirstCollision);
+			m_childTrees[0].checkCollisions(collisions, onlyFirstCollision);
+			m_childTrees[1].checkCollisions(collisions, onlyFirstCollision);
+			m_childTrees[2].checkCollisions(collisions, onlyFirstCollision);
+			m_childTrees[3].checkCollisions(collisions, onlyFirstCollision);
+		
+		}
+		void ObjectQuadTree::Tree::checkCollisionsSingleLayer(std::vector<Utilities::Collisioninfo>& collisions,
+														      bool onlyFirstCollision)
+		{
+			checkCollisionsSingleLayerSelf(collisions, onlyFirstCollision);
+			if (!m_childTrees)
+				return;
+			checkCollisionsSingleLayerSelfDeep(collisions, onlyFirstCollision);
+		}
+		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelf(std::vector<Utilities::Collisioninfo>& collisions,
+			bool onlyFirstCollision)
 		{
 			// Iterate over the objects and call checkCollision
 			for (auto it1 = m_objects.begin(); it1 != m_objects.end(); ++it1)
 			{
-				//(*m_objects.begin())->setEnabled(false);
 				for (auto it2 = std::next(it1); it2 != m_objects.end(); ++it2)
 				{
-					//(*it2)->setEnabled(false);
 					(*it1)->checkCollision(*it2, collisions, onlyFirstCollision);
 				}
 			}
-
-			if (!m_childTrees)
-				return;
-
+		}
+		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(std::vector<Utilities::Collisioninfo>& collisions,
+																	  bool onlyFirstCollision)
+		{
 			Tree& tree0 = m_childTrees[0];
 			Tree& tree1 = m_childTrees[1];
-			Tree& tree2 = m_childTrees[2]; 
+			Tree& tree2 = m_childTrees[2];
 			Tree& tree3 = m_childTrees[3];
 			for (auto objA : m_objects)
 			{
@@ -255,11 +404,20 @@ namespace QSFML
 					tree3.checkCollision(objA, collisions, onlyFirstCollision);
 				}
 			}
-			tree0.checkCollisions(collisions, onlyFirstCollision);
-			tree1.checkCollisions(collisions, onlyFirstCollision);
-			tree2.checkCollisions(collisions, onlyFirstCollision);
-			tree3.checkCollisions(collisions, onlyFirstCollision);
-		
+			StatsManager::addBoundingBoxCollisionCheck(4 * m_objects.size());
+		}
+		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(size_t index, std::vector<Utilities::Collisioninfo>& collisions,
+															          bool onlyFirstCollision)
+		{
+			Tree& tree = m_childTrees[index];
+			AABB& box = m_childAreas[index];
+			for (auto objA : m_objects)
+			{
+				if (objA->getBoundingBox().intersects(box))
+				{
+					tree.checkCollision(objA, collisions, onlyFirstCollision);
+				}
+			}
 		}
 		void ObjectQuadTree::Tree::checkCollision(Objects::CanvasObject* other,
 			std::vector<Utilities::Collisioninfo>& collisions,
@@ -276,18 +434,7 @@ namespace QSFML
 			m_childTrees[2].checkCollision(other, collisions, onlyFirstCollision);
 			m_childTrees[3].checkCollision(other, collisions, onlyFirstCollision);
 		}
-		void ObjectQuadTree::Tree::instantiateChilds()
-		{
-			size_t newDepth = m_depth + 1;
-
-			m_childTrees = new Tree[4]{
-				Tree(m_childAreas[0], newDepth, m_maxDepth),
-				Tree(m_childAreas[1], newDepth, m_maxDepth),
-				Tree(m_childAreas[2], newDepth, m_maxDepth),
-				Tree(m_childAreas[3], newDepth, m_maxDepth),
-			};
-
-		}
+		
 		void ObjectQuadTree::Tree::draw(const sf::Font& font, const sf::Color& color, sf::RenderTarget& target,
 			sf::RenderStates states) const
 		{
@@ -330,14 +477,29 @@ namespace QSFML
 		}
 		void ObjectQuadTree::removePainter(ObjectQuadTreePainter* painter)
 		{
+			if (!painter) return;
 			for (size_t i = 0; i < m_painters.size(); ++i)
 			{
 				if (m_painters[i] == painter)
 				{
 					m_painters.erase(m_painters.begin() + i);
+					painter->m_tree = nullptr;
+					return;
+				}
+			}			
+		}
+		void ObjectQuadTree::assignPainter(ObjectQuadTreePainter* painter)
+		{
+			if (!painter) return;
+			for (size_t i = 0; i < m_painters.size(); ++i)
+			{
+				if (m_painters[i] == painter)
+				{
 					return;
 				}
 			}
+			painter->m_tree = this;
+			m_painters.push_back(painter);
 		}
 
 		ObjectQuadTree::ObjectQuadTreePainter::ObjectQuadTreePainter(ObjectQuadTree* tree, const std::string& name)
@@ -348,15 +510,30 @@ namespace QSFML
 		}
 		ObjectQuadTree::ObjectQuadTreePainter::ObjectQuadTreePainter(const ObjectQuadTreePainter& other)
 			: Drawable(other)
-			, m_tree(other.m_tree)
+			, m_tree(nullptr)
 		{
-
+			assignTree(other.m_tree);
 		}
 		COMPONENT_IMPL(ObjectQuadTree::ObjectQuadTreePainter);
 		ObjectQuadTree::ObjectQuadTreePainter::~ObjectQuadTreePainter()
 		{
 			if (m_tree)
 				m_tree->removePainter(this);
+		}
+		void ObjectQuadTree::ObjectQuadTreePainter::assignTree(ObjectQuadTree* tree)
+		{
+			if (m_tree)
+			{
+				m_tree->removePainter(this);
+			}
+			m_tree = tree;
+			if (m_tree)
+				m_tree->assignPainter(this);
+
+		}
+		ObjectQuadTree* ObjectQuadTree::ObjectQuadTreePainter::getTree() const
+		{
+			return m_tree;
 		}
 		void ObjectQuadTree::ObjectQuadTreePainter::setColor(const sf::Color& color)
 		{

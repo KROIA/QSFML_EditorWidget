@@ -63,6 +63,10 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         static void saveProfilerFile();
         static void saveProfilerFile(const std::string &fileName);
 
+        size_t getTick() const; // returns the count of updates done
+        float getFrametime() const;
+        float getFPS() const;
+
         //static void startEventLoop();
         //static void stopEventLoop();
 

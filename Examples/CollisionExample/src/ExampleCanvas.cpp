@@ -64,8 +64,12 @@ void ExampleCanvas::on_performanceTest_radioButton_clicked()
 }
 void ExampleCanvas::onTimerFinished()
 {
-    QSFML::Stats stats = QSFML::StatsManager::getStats(m_canvas);
     system("cls");
+    QSFML::Stats stats = QSFML::StatsManager::getStats();
+    qDebug() << "  Tick:                  " << m_canvas->getTick();
+    qDebug() << "  FPS:                   " << m_canvas->getFPS();
+    qDebug() << "  Frametime:             " << m_canvas->getFrametime()*1000.f << " ms";
+    
     stats.print();
 }
 void ExampleCanvas::closeEvent(QCloseEvent* event)

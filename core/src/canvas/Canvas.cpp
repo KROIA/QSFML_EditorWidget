@@ -23,7 +23,6 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
   CanvasObjectContainer(this, settings)
 {
     s_instances.push_back(this);
-    StatsManager::createStats(this);
 #ifdef QSFML_PROFILING
     if(s_instances.size() == 1)
     {
@@ -268,7 +267,7 @@ void Canvas::update()
     std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
     m_deltaT_t1 = t2;
     m_deltaT = elapsed.count();
-    StatsManager::resetCollisionStats(this);
+    StatsManager::resetCollisionStats();
 
     QSFMLP_BLOCK("Delete unused objects", QSFMLP_CANVAS_COLOR_2);
     CanvasObjectContainer::updateNewElements();
@@ -352,6 +351,20 @@ void Canvas::saveProfilerFile(const std::string& fileName)
 {
     setProfilerOutputFileName(fileName);
     saveProfilerFile();
+}
+
+
+size_t Canvas::getTick() const
+{
+    return m_updateCount;
+}
+float Canvas::getFrametime() const
+{
+    return getDeltaT();
+}
+float Canvas::getFPS() const
+{
+    return 1.0f / getDeltaT();
 }
 
 /*void Canvas::startEventLoop()

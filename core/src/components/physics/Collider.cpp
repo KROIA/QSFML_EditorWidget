@@ -144,7 +144,7 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
 { 
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
     Canvas* canvasParent = getCanvasParent();
-    StatsManager::addBoundingBoxCollisionCheck(canvasParent);
+    StatsManager::addBoundingBoxCollisionCheck();
     QSFMLP_BLOCK("AABB check", QSFMLP_PHYSICS_COLOR_4);
     if (!m_boundingBox.intersects(other->m_boundingBox))
     {
@@ -166,7 +166,6 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
     
 #define FAST_COLLISION_CHECK
 
-    Canvas* canvasParent = getCanvasParent();
     size_t thisNextVertexIndex;
     size_t otherNextVertexIndex;
     bool collision = false;
@@ -231,8 +230,8 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
                 if (onlyFirstCollision)
                 {
 
-                    StatsManager::addCollisionCheck(canvasParent, i * o);
-                    StatsManager::addCollision(canvasParent);
+                    StatsManager::addCollisionCheck(i * o);
+                    StatsManager::addCollision();
                     return true;
                 }
             }
@@ -241,8 +240,8 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
             
         }
     }
-    StatsManager::addCollisionCheck(canvasParent, m_absoluteVertices.size() * other->m_absoluteVertices.size());
-    StatsManager::addCollision(canvasParent, collisions.size() - currentCollisionCount);
+    StatsManager::addCollisionCheck(m_absoluteVertices.size() * other->m_absoluteVertices.size());
+    StatsManager::addCollision(collisions.size() - currentCollisionCount);
 
     return collision;
 }
@@ -292,20 +291,18 @@ bool Collider::contains(const sf::Vector2f& point)
 {
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_1);
     
-    StatsManager::addBoundingBoxCollisionCheck(getCanvasParent());
+    StatsManager::addBoundingBoxCollisionCheck();
     if (!m_boundingBox.contains(point))
         return false;
 
-    bool result = contains(m_relativeVertices, point, m_pos);
-    Canvas* canvasParent = getCanvasParent();
+    bool result = contains(m_absoluteVertices, point);
     if(result)
-        StatsManager::addCollision(canvasParent);
-    StatsManager::addCollisionCheck(canvasParent, m_relativeVertices.size());
+        StatsManager::addCollision();
+    StatsManager::addCollisionCheck(m_relativeVertices.size());
     return result;
 }
 bool Collider::contains(const std::vector<sf::Vector2f>& polygon, 
-                        const sf::Vector2f& point,
-                        const sf::Vector2f& polygonPos)
+                        const sf::Vector2f& point)
 {
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_2);
     // Get the number of vertices in the polygon
@@ -316,8 +313,8 @@ bool Collider::contains(const std::vector<sf::Vector2f>& polygon,
 
     // Iterate over each edge of the polygon
     for (std::size_t i = 0; i < numVertices; ++i) {
-        const sf::Vector2f& vertex1 = polygon[i] + polygonPos;
-        const sf::Vector2f& vertex2 = polygon[(i + 1) % numVertices] + polygonPos;
+        const sf::Vector2f& vertex1 = polygon[i];
+        const sf::Vector2f& vertex2 = polygon[(i + 1) % numVertices];
 
         // Check if the ray from the test const sf::Vector2f & crosses the edge
         if (((vertex1.y > point.y) != (vertex2.y > point.y)) &&

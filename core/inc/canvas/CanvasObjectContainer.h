@@ -42,7 +42,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
 
         void renderLayerSwitch(Objects::CanvasObject *obj, RenderLayer from, RenderLayer to);
 
-        size_t getTick() const; // returns the count of updates done
+        
 
         const static size_t npos = -1;
 
@@ -51,6 +51,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         void sfEvent(const std::vector<sf::Event> &events);
         void update();
         void draw(sf::RenderWindow &window);
+
+        size_t m_updateCount;
     private:
 
         void setupThreads(size_t threadCount);
@@ -70,7 +72,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         Canvas *m_parent;
 
         CanvasThreadWorker *m_threadWorker;
-        size_t m_updateCount;
+        
 };
 template<typename T>
 size_t CanvasObjectContainer::getObjectsCount() const
