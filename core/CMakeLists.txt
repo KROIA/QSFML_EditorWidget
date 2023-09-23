@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 # SFML_EditorWidget core 
 set(SFML_EditorWidget_filename "SFML_EditorWidget")
+set(EASY_PROFILER_NO_GUI False)
+set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies")
+set(SFML_EditorWidget_Include "inc")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,7 +28,7 @@ endif()
 include(FetchContent)
 
 
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies")
+
 
 # SFML Static Lib
 set(SFML_STATIC_LIBRARIES TRUE)
@@ -40,7 +43,8 @@ message("Download dependency: ${SFML_GIT_REPO}")
 FetchContent_MakeAvailable(SFML)
 
 
-set(EASY_PROFILER_NO_GUI False)
+
+set(EASY_PROFILER_NO_SAMPLES True)
 FetchContent_Declare(
  EASY_PROFILER
  GIT_REPOSITORY ${EASY_GIT_REPO}
@@ -101,7 +105,7 @@ FILE_DIRECTORIES(H_FILES *.h)
 FILE_DIRECTORIES(CPP_FILES *.cpp)
 qt5_wrap_cpp(CPP_MOC_FILES ${H_FILES})
 
-set(SFML_EditorWidget_Include "inc")
+
 
 set(SOURCES
     ${CPP_MOC_FILES}
