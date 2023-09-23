@@ -57,7 +57,13 @@ void MouseCollider::update()
 {
 	if (m_collider->getBoundingBox().intersects(m_staticCollider->getBoundingBox()))
 	{
-		m_staticColliderPainter->setColor(sf::Color::Green);
+		//std::vector<QSFML::Utilities::CollisionInfo> collisions;
+		  std::vector<QSFML::Utilities::Collisioninfo> collisions;
+
+		if(m_collider->checkCollision(m_staticCollider, collisions))
+			m_staticColliderPainter->setColor(sf::Color::Green);
+		else
+			m_staticColliderPainter->setColor(sf::Color::Yellow);
 	}
 	else
 	{

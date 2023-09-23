@@ -48,7 +48,7 @@ namespace QSFML
         class VectorOperations;
         class ObjectQuadTree;
         class Timer;
-        struct CollisionInfo;
+        struct Collisioninfo;
     }
     
 

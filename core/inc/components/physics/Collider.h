@@ -6,7 +6,7 @@
 
 #include "utilities/Ray.h"
 #include "utilities/AABB.h"
-#include "utilities/CollisionInfo.h"
+#include "utilities/Collisioninfo.h"
 
 #include <qobject.h>
 #include <vector>
