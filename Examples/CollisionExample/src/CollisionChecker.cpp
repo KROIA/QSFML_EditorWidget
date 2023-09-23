@@ -8,7 +8,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	: QObject()
 	, CanvasObject(name)
 	, m_mode(Mode::intersecting)
-	, m_tree(QSFML::Utilities::AABB({ 0,0 }, { 800,600 }), 3)
+	, m_tree(nullptr,QSFML::Utilities::AABB({ 0,0 }, { 800,600 }), 3)
 {
 	m_mouseCollider = new MouseCollider();
 	QSFML::Utilities::RandomEngine::setSeed(0);
@@ -76,7 +76,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 CollisionChecker::CollisionChecker(const CollisionChecker& other)
 	: QObject()
 	, CanvasObject(other)
-	, m_tree(other.m_tree.getArea(), other.m_tree.getMaxDepth())
+	, m_tree(other.getCanvasParent(), other.m_tree.getArea(), other.m_tree.getMaxDepth())
 {
 
 }
@@ -136,6 +136,10 @@ void CollisionChecker::onMousePosChanged(const sf::Vector2f& worldPos,
 										 const sf::Vector2i& pixelPos)
 {
 	m_mousePos = worldPos;
+}
+void CollisionChecker::onCanvasParentChange(QSFML::Canvas* oldParent, QSFML::Canvas* newParent)
+{
+	m_tree.setStatsManager(newParent);
 }
 void CollisionChecker::inCanvasAdded()
 {

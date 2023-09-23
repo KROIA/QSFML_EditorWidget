@@ -71,9 +71,15 @@ struct QSFML_EDITOR_WIDGET_EXPORT CanvasSettings
     {
         double frameTime;  //!< Time between each frame [s]
 
+        bool physicsUseFixedTimeInterval; //<! If enabled, deltaT will be set to a fixed value, otherwise deltaT = frameTime*timeScale
+        double physicsDeltaTScale;  // seconds multiplyer
+        double physicsFixedDeltaT;  // [s]
         Timing()
         {
             frameTime = 0.016; // 62.5 FPS
+            physicsUseFixedTimeInterval = true;
+            physicsDeltaTScale = 0.1;
+            physicsFixedDeltaT = 0.01;
         }
     };
     Timing timing;

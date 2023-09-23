@@ -2,15 +2,17 @@
 #include "utilities/Stats.h"
 #include "objects/base/CanvasObject.h"
 #include "components/physics/Collider.h"
+#include "utilities/Stats.h"
 
 
 namespace QSFML
 {
 	namespace Utilities
 	{
-		ObjectQuadTree::ObjectQuadTree(const Utilities::AABB& area, size_t maxDepth)
-			: m_tree(area, 0, maxDepth)
+		ObjectQuadTree::ObjectQuadTree(StatsManager *statsManager, const Utilities::AABB& area, size_t maxDepth)
+			: m_tree(statsManager, area, 0, maxDepth)
 			, m_threadWorker(nullptr)
+			, m_statsManager(statsManager)
 		{
 
 		}
@@ -24,6 +26,11 @@ namespace QSFML
 			}
 				
 		}
+		void ObjectQuadTree::setStatsManager(StatsManager* manager)
+		{
+			m_statsManager = manager;
+			m_tree.setStatsManager(manager);
+		}
 		bool ObjectQuadTree::insert(Objects::CanvasObject* obj)
 		{
 			if (m_allObjMap.find(obj) != m_allObjMap.end())
@@ -31,6 +38,7 @@ namespace QSFML
 			TreeItem item(obj);
 			return insert_internal(item);
 		}
+
 		bool ObjectQuadTree::insert(const std::vector<Objects::CanvasObject*> &objs)
 		{
 			bool success = true;
@@ -208,7 +216,7 @@ namespace QSFML
 		// TREE
 		//
 
-		ObjectQuadTree::Tree::Tree(const Utilities::AABB& area, size_t depth, size_t maxDepth)
+		ObjectQuadTree::Tree::Tree(StatsManager* statsManager, const Utilities::AABB& area, size_t depth, size_t maxDepth)
 			: m_area(area)
 			, m_depth(depth)
 			, m_maxDepth(maxDepth)
@@ -220,6 +228,7 @@ namespace QSFML
 				Utilities::AABB(m_childAreas[0].BR(), m_childAreas[0].getSize())
 			}
 			, m_collisions(nullptr)
+			, m_statsManager(statsManager)
 		{
 			if (m_maxDepth < 1)
 				m_maxDepth = 1;
@@ -229,6 +238,17 @@ namespace QSFML
 		{
 			if (m_childTrees)
 				delete[] m_childTrees;
+		}
+		void ObjectQuadTree::Tree::setStatsManager(StatsManager* manager)
+		{
+			m_statsManager = manager;
+			if (m_childTrees)
+			{
+				m_childTrees[0].setStatsManager(manager);
+				m_childTrees[1].setStatsManager(manager);
+				m_childTrees[2].setStatsManager(manager);
+				m_childTrees[3].setStatsManager(manager);
+			}
 		}
 		ObjectQuadTree::Tree& ObjectQuadTree::Tree::getChild(size_t index)
 		{
@@ -241,10 +261,10 @@ namespace QSFML
 			size_t newDepth = m_depth + 1;
 
 			m_childTrees = new Tree[4]{
-				Tree(m_childAreas[0], newDepth, m_maxDepth),
-				Tree(m_childAreas[1], newDepth, m_maxDepth),
-				Tree(m_childAreas[2], newDepth, m_maxDepth),
-				Tree(m_childAreas[3], newDepth, m_maxDepth),
+				Tree(m_statsManager, m_childAreas[0], newDepth, m_maxDepth),
+				Tree(m_statsManager, m_childAreas[1], newDepth, m_maxDepth),
+				Tree(m_statsManager, m_childAreas[2], newDepth, m_maxDepth),
+				Tree(m_statsManager, m_childAreas[3], newDepth, m_maxDepth),
 			};
 
 		}
@@ -404,7 +424,7 @@ namespace QSFML
 					tree3.checkCollision(objA, collisions, onlyFirstCollision);
 				}
 			}
-			StatsManager::addBoundingBoxCollisionCheck(4 * m_objects.size());
+			m_statsManager->addBoundingBoxCollisionCheck(4 * m_objects.size());
 		}
 		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(size_t index, std::vector<Utilities::Collisioninfo>& collisions,
 															          bool onlyFirstCollision)

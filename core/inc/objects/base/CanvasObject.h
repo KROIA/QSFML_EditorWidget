@@ -280,7 +280,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         const sf::Font &getTextFont() const;
 
         size_t getTick() const;
-        float getDeltaT() const; // Returns delta Time since last update in seconds
+        double getDeltaT() const; // Returns delta Time since last update in seconds
 
         Canvas* getCanvasParent() const;
         // ---------

@@ -5,6 +5,7 @@
 #include "canvas/CanvasObjectContainer.h"
 
 #include "utilities/Timer.h"
+#include "utilities/Stats.h"
 
 #include <SFML/Graphics.hpp>
 #include <QWidget>
@@ -16,11 +17,12 @@ namespace QSFML
 
 class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         public QWidget,
-        public CanvasObjectContainer
-{
+        public CanvasObjectContainer,
+        public Utilities::StatsManager
+    {
         Q_OBJECT
         friend CanvasObjectContainer;
-    public :
+    public:
 
 
         Canvas(QWidget* parent, const CanvasSettings &settings = CanvasSettings());
@@ -52,8 +54,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         sf::Vector2f getInWorldSpace(const sf::Vector2i &pixelSpace);
         sf::Vector2i getInScreenSpace(const sf::Vector2f &worldSpace);
 
-        float getDeltaT() const; // Gets delta Time in seconds
-
+        
 
         void sfEvent(const std::vector<sf::Event> &events);
 
@@ -64,8 +65,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         static void saveProfilerFile(const std::string &fileName);
 
         size_t getTick() const; // returns the count of updates done
-        float getFrametime() const;
-        float getFPS() const;
+        double getDeltaT() const; // Gets delta Time in 
+        double getFPS() const;
 
         //static void startEventLoop();
         //static void stopEventLoop();
@@ -97,7 +98,10 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         QTimer m_frameTimer;
         //Utilities::Timer m_updateTimer;
         TimePoint m_deltaT_t1;
-        float m_deltaT; // Time in seconds
+        
+       // float m_deltaT; // Time in seconds
+
+       // StatsManager m_statsManager;
 
         CanvasSettings m_settings;
         sf::RenderWindow *m_window;
@@ -108,5 +112,5 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
 
         static std::vector<Canvas*> s_instances;
         //static bool s_execEventLoop;
-};
+    };
 }

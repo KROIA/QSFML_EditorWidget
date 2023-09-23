@@ -17,10 +17,10 @@ using namespace QSFML;
 
 CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, const CanvasSettings &settings)
 {
-    m_updateCount = 0;
+    //m_updateCount = 0;
     m_parent = parent;
     m_allObjects = new CanvasObjectGroup(m_parent);
-    StatsManager::setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
     for(size_t i=0; i<RenderLayer::count; ++i)
     {
         m_renderLayerGroups.push_back(new CanvasObjectGroup(m_parent));
@@ -35,7 +35,7 @@ CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, const CanvasSetting
 }
 CanvasObjectContainer::~CanvasObjectContainer()
 {
-    StatsManager::setRootCanvesObject(0);
+    m_parent->setRootCanvesObject(0);
     delete m_allObjects;
     for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
     {
@@ -109,7 +109,7 @@ void CanvasObjectContainer::addObject_internal()
     {
         m_renderLayerGroups[i]->addObject_internal();
     }
-    StatsManager::setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
 
     
 }
@@ -120,7 +120,7 @@ void CanvasObjectContainer::deleteObject_internal()
     {
         m_renderLayerGroups[i]->deleteObject_internal();
     }
-    StatsManager::setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
 }
 
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
@@ -136,7 +136,7 @@ void CanvasObjectContainer::removeObject(CanvasObject *obj)
     }
     if(obj->getRenderLayer() < RenderLayer::count)
         m_renderLayerGroups[obj->getRenderLayer()]->removeObject(obj);
-    StatsManager::setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 {
@@ -168,7 +168,7 @@ void CanvasObjectContainer::clearObjects()
     {
         m_renderLayerGroups[i]->clearObjects();
     }
-    StatsManager::setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
 }
 
 void CanvasObjectContainer::reserveObjectsCount(size_t size)
@@ -254,7 +254,7 @@ void CanvasObjectContainer::update()
     {
         m_allObjects->update();
     }
-    ++m_updateCount;
+    //++m_updateCount;
 }
 void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {

@@ -31,6 +31,7 @@ private slots:
 						   const sf::Vector2i& pixelPos);
 
 private:
+	void onCanvasParentChange(QSFML::Canvas* oldParent, QSFML::Canvas* newParent) override;
 	void inCanvasAdded() override;
 	void update() override;
 	void update_intersecting();

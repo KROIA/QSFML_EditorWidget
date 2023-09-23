@@ -53,6 +53,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Component
          */
         virtual void setParent(Objects::CanvasObject *parent);
 
+        virtual void setCanvasParent(Canvas* parent);
+
         /**
          * \brief getParent
          * \return returns the parent CanvasObject, this component belongs to
@@ -104,7 +106,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component
         const sf::Font& getTextFont() const;
 
         size_t getTick() const;
-        float getDeltaT() const; // Returns delta Time since last update in seconds
+        double getDeltaT() const; // Returns delta Time since last update in seconds
 
         /**
          * \brief getCanvasParent
@@ -113,11 +115,14 @@ class QSFML_EDITOR_WIDGET_EXPORT Component
         Canvas* getCanvasParent() const;
         // ---------
 
+        Objects::CanvasObject* m_parent;
+        Canvas* m_canvasParent;
+
     private:
 
         bool m_enabled;
         std::string m_name;
-        Objects::CanvasObject *m_parent;
+        
 };
 }
 }

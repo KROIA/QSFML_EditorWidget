@@ -10,6 +10,7 @@ Component::Component(const std::string &name)
     : m_enabled(true)
     , m_name(name)
     , m_parent(nullptr)
+    , m_canvasParent(nullptr)
 {
 
 }
@@ -17,6 +18,7 @@ Component::Component(const Component &other)
     : m_enabled(other.m_enabled)
     , m_name(other.m_name)
     , m_parent(nullptr)
+    , m_canvasParent(nullptr)
 {
 
 }
@@ -35,6 +37,10 @@ Component::~Component()
 void Component::setParent(CanvasObject *parent)
 {
     m_parent = parent;
+}
+void Component::setCanvasParent(Canvas* parent)
+{
+    m_canvasParent = parent;
 }
 QSFML::Objects::CanvasObject* Component::getParent() const
 { 
@@ -122,7 +128,7 @@ size_t Component::getTick() const
     if (!m_parent) return 0;
     return m_parent->getTick();
 }
-float Component::getDeltaT() const
+double Component::getDeltaT() const
 {
     if (!m_parent) return 0;
     return m_parent->getDeltaT();
@@ -130,6 +136,5 @@ float Component::getDeltaT() const
 
 QSFML::Canvas* Component::getCanvasParent() const
 {
-    if (!m_parent) return nullptr;
-    return m_parent->getCanvasParent();
+    return m_canvasParent;
 }

@@ -75,8 +75,8 @@ CanvasObject::~CanvasObject()
         delete m_childs[i];
     m_childs.clear();
 
-    StatsManager::removeCanvasObject();
-    StatsManager::removeComponent(m_components.size());
+    m_canvasParent->removeCanvasObject();
+    m_canvasParent->removeComponent(m_components.size());
     for(size_t i=0; i<m_components.size(); ++i)
         delete m_components[i];
     m_components.clear();
@@ -433,7 +433,7 @@ void CanvasObject::removeComponent_internal()
         }
     }
     m_toRemoveComponents.clear();
-    StatsManager::removeComponent(removedCount);
+    m_canvasParent->removeComponent(removedCount);
 
 }
 void CanvasObject::deleteComponent(Component *comp)
@@ -448,11 +448,12 @@ void CanvasObject::deleteComponent(Component *comp)
             break;
         }
     comp->setParent(nullptr);
+    comp->setCanvasParent(nullptr);
 
     size_t index = getComponentIndex(comp);
     if(index == npos) return;
     m_components.erase(m_components.begin() + index);
-    StatsManager::removeComponent();
+    m_canvasParent->removeComponent();
 
     // Check for sfEventHandles
     SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(comp);
@@ -538,8 +539,11 @@ void CanvasObject::setParent_internal(CanvasObject *parent,
     m_parent = parent;
     m_rootParent = rootParent;
     setCanvasParent(canvasParent);
-    for(size_t i=0; i<m_components.size(); ++i)
-        m_components[i]->setParent(this);
+    for (size_t i = 0; i < m_components.size(); ++i)
+    {
+        Component* comp = m_components[i];
+        comp->setParent(this);
+    }
 
     internalOnParentChange(oldParent, m_parent);
     onParentChange(oldParent, m_parent);
@@ -554,7 +558,8 @@ void CanvasObject::addComponent_internal()
             continue;
 
         toAdd->setParent(this);
-        StatsManager::addComponent();
+        toAdd->setCanvasParent(m_canvasParent);
+        m_canvasParent->addComponent();
         m_components.push_back(toAdd);
 
         // Check for sfEventHandles
@@ -610,14 +615,18 @@ void CanvasObject::deleteComponents()
 {
     for(size_t i=0; i<m_toAddComponents.size(); ++i)
     {
-        m_toAddComponents[i]->setParent(nullptr);
-        delete m_toAddComponents[i];
+        Component* comp = m_toAddComponents[i];
+        comp->setParent(nullptr);
+        comp->setCanvasParent(nullptr);
+        delete comp;
     }
-    StatsManager::removeComponent(m_components.size());
+    m_canvasParent->removeComponent(m_components.size());
     for(size_t i=0; i<m_components.size(); ++i)
     {
-        m_components[i]->setParent(nullptr);
-        delete m_components[i];
+        Component* comp = m_components[i];
+        comp->setParent(nullptr);
+        comp->setCanvasParent(nullptr);
+        delete comp;
     }
     m_updatableComponents.clear();
     m_eventComponents.clear();    
@@ -761,7 +770,7 @@ size_t CanvasObject::getTick() const
     if(!m_canvasParent) return 0;
     return m_canvasParent->getTick();
 }
-float CanvasObject::getDeltaT() const
+double CanvasObject::getDeltaT() const
 {
     if(!m_canvasParent) return 0;
     return m_canvasParent->getDeltaT();
@@ -943,15 +952,21 @@ void CanvasObject::setCanvasParent(Canvas *parent)
         return;
     Canvas *oldParent = m_canvasParent;
     m_canvasParent = parent;
-    if (m_canvasParent == nullptr)
+    if (oldParent != nullptr)
     {
-        StatsManager::removeCanvasObject();
-        StatsManager::removeComponent(m_components.size());
+        oldParent->removeCanvasObject();
+        oldParent->removeComponent(m_components.size());
     }
-    else if (oldParent == nullptr)
+    if (m_canvasParent != nullptr)
     {
-        StatsManager::addCanvesObject();
-        StatsManager::addComponent(m_components.size());
+        m_canvasParent->addCanvesObject();
+        m_canvasParent->addComponent(m_components.size());
+    }
+
+    for (size_t i = 0; i < m_components.size(); ++i)
+    {
+        Component* comp = m_components[i];
+        comp->setCanvasParent(m_canvasParent);
     }
 
     //for(size_t i=0; i<m_components.size(); ++i)

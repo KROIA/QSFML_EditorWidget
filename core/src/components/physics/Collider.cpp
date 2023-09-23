@@ -6,6 +6,7 @@
 
 #include "utilities/VectorOperations.h"
 #include "utilities/Ray.h"
+#include "Canvas/Canvas.h"
 
 namespace QSFML
 {
@@ -144,7 +145,8 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
 { 
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
     Canvas* canvasParent = getCanvasParent();
-    StatsManager::addBoundingBoxCollisionCheck();
+    if(m_canvasParent)
+        m_canvasParent->addBoundingBoxCollisionCheck();
     QSFMLP_BLOCK("AABB check", QSFMLP_PHYSICS_COLOR_4);
     if (!m_boundingBox.intersects(other->m_boundingBox))
     {
@@ -230,8 +232,11 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
                 if (onlyFirstCollision)
                 {
 
-                    StatsManager::addCollisionCheck(i * o);
-                    StatsManager::addCollision();
+                    if (m_canvasParent)
+                    {
+                        m_canvasParent->addCollisionCheck(i * o);
+                        m_canvasParent->addCollision();
+                    }
                     return true;
                 }
             }
@@ -240,8 +245,11 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
             
         }
     }
-    StatsManager::addCollisionCheck(m_absoluteVertices.size() * other->m_absoluteVertices.size());
-    StatsManager::addCollision(collisions.size() - currentCollisionCount);
+    if (m_canvasParent)
+    {
+        m_canvasParent->addCollisionCheck(m_absoluteVertices.size() * other->m_absoluteVertices.size());
+        m_canvasParent->addCollision(collisions.size() - currentCollisionCount);
+    }
 
     return collision;
 }
@@ -291,14 +299,18 @@ bool Collider::contains(const sf::Vector2f& point)
 {
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_1);
     
-    StatsManager::addBoundingBoxCollisionCheck();
+    if(m_canvasParent)
+        m_canvasParent->addBoundingBoxCollisionCheck();
     if (!m_boundingBox.contains(point))
         return false;
 
     bool result = contains(m_absoluteVertices, point);
-    if(result)
-        StatsManager::addCollision();
-    StatsManager::addCollisionCheck(m_relativeVertices.size());
+    if (m_canvasParent)
+    {
+        if (result)
+            m_canvasParent->addCollision();
+        m_canvasParent->addCollisionCheck(m_relativeVertices.size());
+    }
     return result;
 }
 bool Collider::contains(const std::vector<sf::Vector2f>& polygon, 

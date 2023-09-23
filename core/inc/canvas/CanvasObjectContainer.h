@@ -52,7 +52,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         void update();
         void draw(sf::RenderWindow &window);
 
-        size_t m_updateCount;
+        //size_t m_updateCount;
     private:
 
         void setupThreads(size_t threadCount);

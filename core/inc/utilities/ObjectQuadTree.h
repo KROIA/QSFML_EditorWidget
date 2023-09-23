@@ -37,9 +37,12 @@ namespace QSFML
 				std::list<Objects::CanvasObject*>* containter;
 				std::list<Objects::CanvasObject*>::iterator iterator;
 			};
-			ObjectQuadTree(const Utilities::AABB& area, size_t maxDepth = 10);
+			ObjectQuadTree(StatsManager* statsManager, const Utilities::AABB& area, size_t maxDepth = 10);
 			ObjectQuadTree(const ObjectQuadTree& other) = delete;
 			~ObjectQuadTree();
+
+			void setStatsManager(StatsManager* manager);
+
 			bool insert(Objects::CanvasObject* obj);
 			bool insert(const std::vector<Objects::CanvasObject*>& objs);
 
@@ -94,8 +97,10 @@ namespace QSFML
 			{
 				friend ObjectQuadTreePainter;
 			public:
-				Tree(const Utilities::AABB& area, size_t depth, size_t maxDepth);
+				Tree(StatsManager* statsManager, const Utilities::AABB& area, size_t depth, size_t maxDepth);
 				~Tree();
+
+				void setStatsManager(StatsManager* manager);
 
 				Tree &getChild(size_t index);
 				void instantiateChilds();
@@ -148,6 +153,7 @@ namespace QSFML
 				// special collision detection container for multithreading;
 				std::vector<Utilities::Collisioninfo>* m_collisions;
 				bool m_onlyFirstCollision;
+				StatsManager* m_statsManager;
 			};
 
 			Tree m_tree;
@@ -160,6 +166,8 @@ namespace QSFML
 			std::vector<Utilities::Collisioninfo>* m_collisions1;
 			std::vector<Utilities::Collisioninfo>* m_collisions2;
 			bool m_onlyFirstCollision;
+
+			StatsManager* m_statsManager;
 		};
 	}
 }

@@ -11,7 +11,8 @@ namespace QSFML
 		{
 			m_text = new Components::Text("InfoText");
 			m_text->setFont("C:\\Windows\\Fonts\\courbd.ttf");
-			
+			m_smoothStats = true;
+
 			addComponent(m_text);
 		}
 		RuntimeInfo::RuntimeInfo(const RuntimeInfo& other)
@@ -19,6 +20,8 @@ namespace QSFML
 		{
 			m_text = new Components::Text("InfoText");
 			m_text->setFont("C:\\Windows\\Fonts\\courbd.ttf");
+
+			m_smoothStats = other.m_smoothStats;
 
 			addComponent(m_text);
 		}
@@ -28,21 +31,29 @@ namespace QSFML
 		}
 		OBJECT_IMPL(RuntimeInfo);
 
+		void RuntimeInfo::enableSmoothStats(bool enable)
+		{
+			m_smoothStats = enable;
+		}
+		bool RuntimeInfo::isSmoothStatsEnabled() const
+		{
+			return m_smoothStats;
+		}
+
 		void RuntimeInfo::update()
 		{
-			QSFML::Stats stats = QSFML::StatsManager::getLastStats();
 			QSFML::Canvas* canvas = getCanvasParent();
+			QSFML::Utilities::Stats stats = canvas->getLastStats();
+			if (m_smoothStats)
+				stats = stats.getSmothed(m_oldStats, 0.9);
+
+			m_oldStats = stats;
 
 			std::string statsStr = stats.toString();
 
-			std::string performanceText =
-				std::string("Performance:\n")+
-				std::string("  Tick:                ") + std::to_string(canvas->getTick()) + "\n" +
-				std::string("  FPS:                 ") + std::to_string(canvas->getFPS()) + "\n" + 
-				std::string("  Frametime:           ") + std::to_string(canvas->getFrametime() * 1000.f) + " ms\n";
 
 	
-			m_text->setText(performanceText + statsStr);
+			m_text->setText(statsStr);
 			Utilities::AABB viewBox = canvas->getCameraViewRect();
 			sf::Vector2f pos = viewBox.TL();
 			float width = viewBox.getSize().x;

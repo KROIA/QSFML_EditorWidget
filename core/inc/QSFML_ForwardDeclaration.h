@@ -9,8 +9,7 @@ namespace QSFML
     struct CanvasSettings;
     class CanvasThreadWorker;
 
-    class Stats;
-    class StatsManager;
+    
     
     namespace Objects
     {
@@ -49,6 +48,9 @@ namespace QSFML
         class ObjectQuadTree;
         class Timer;
         struct Collisioninfo;
+
+        class Stats;
+        class StatsManager;
     }
     
 
