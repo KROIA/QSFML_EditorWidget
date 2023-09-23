@@ -30,11 +30,11 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
     QSFML::Components::KeyPressEvent* runtimeInfoKeyToggler = new QSFML::Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
     connect(runtimeInfoKeyToggler, &Components::KeyPressEvent::fallingEdge, defaultEditor, &DefaultEditor::onToggleRuntimeInfo);
     defaultEditor->addComponent(runtimeInfoKeyToggler);
-
     m_canvas->addObject(defaultEditor);
 
     
     
+
 
     m_collisionChecker = new CollisionChecker();
     m_canvas->addObject(m_collisionChecker);

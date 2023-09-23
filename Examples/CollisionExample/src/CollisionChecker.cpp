@@ -47,7 +47,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector(range.getPos(), range.getSize() + range.getPos());
 		obj->setPositionAbsolute(pos);
 		obj->setRange(range);
-		obj->setDynamic(false);
+		obj->setDynamic(true);
 		
 		m_performanceObjs.push_back(obj);
 		//m_tree.insert(obj);
