@@ -28,6 +28,7 @@ private slots:
         Ui::ExampleCanvas *ui;
 
         QSFML::Canvas *m_canvas;
+        
 
         CollisionChecker* m_collisionChecker;
 };

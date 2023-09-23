@@ -97,7 +97,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         QTimer m_frameTimer;
         //Utilities::Timer m_updateTimer;
         TimePoint m_deltaT_t1;
-        float m_deltaT;
+        float m_deltaT; // Time in seconds
 
         CanvasSettings m_settings;
         sf::RenderWindow *m_window;

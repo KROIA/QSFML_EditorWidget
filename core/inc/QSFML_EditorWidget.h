@@ -21,6 +21,7 @@
 #include "objects/BackgroundGrid.h"
 #include "objects/CameraController.h"
 #include "objects/LineChart.h"
+#include "objects/RuntimeInfo.h"
 
 
 #include "utilities/AABB.h"
@@ -30,5 +31,6 @@
 #include "utilities/RandomEngine.h"
 #include "utilities/Stats.h"
 #include "utilities/ObjectQuadTree.h"
+#include "utilities/Origin.h"
 
 

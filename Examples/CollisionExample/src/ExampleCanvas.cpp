@@ -26,11 +26,19 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
     m_canvas = new Canvas(ui->canvasWidget,settings);
 
     DefaultEditor *defaultEditor = new DefaultEditor();
+    // Create a Key button to toggle the RuntimeInfo Text on and off
+    QSFML::Components::KeyPressEvent* runtimeInfoKeyToggler = new QSFML::Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
+    connect(runtimeInfoKeyToggler, &Components::KeyPressEvent::fallingEdge, defaultEditor, &DefaultEditor::onToggleRuntimeInfo);
+    defaultEditor->addComponent(runtimeInfoKeyToggler);
+
     m_canvas->addObject(defaultEditor);
+
+    
     
 
     m_collisionChecker = new CollisionChecker();
     m_canvas->addObject(m_collisionChecker);
+
 
     m_canvas->applyObjectChanges();
 
@@ -65,7 +73,7 @@ void ExampleCanvas::on_performanceTest_radioButton_clicked()
 void ExampleCanvas::onTimerFinished()
 {
     system("cls");
-    QSFML::Stats stats = QSFML::StatsManager::getStats();
+    QSFML::Stats stats = QSFML::StatsManager::getLastStats();
     qDebug() << "  Tick:                  " << m_canvas->getTick();
     qDebug() << "  FPS:                   " << m_canvas->getFPS();
     qDebug() << "  Frametime:             " << m_canvas->getFrametime()*1000.f << " ms";

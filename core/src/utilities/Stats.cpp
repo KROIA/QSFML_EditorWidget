@@ -22,6 +22,16 @@ namespace QSFML
 	{
 
 	}
+	Stats& Stats::operator=(const Stats& other)
+	{
+		m_rootObjectsCount = other.m_rootObjectsCount.load();
+		m_objectsCount = other.m_objectsCount.load();
+		m_componentsCount = other.m_componentsCount.load();
+		m_collisionChecks = other.m_collisionChecks.load();
+		m_boundingBoxCollisionChecks = other.m_boundingBoxCollisionChecks.load();
+		m_collisions = other.m_collisions.load();
+		return *this;
+	}
 
 	unsigned int Stats::getRootObjectCount() const
 	{
@@ -47,78 +57,88 @@ namespace QSFML
 	{
 		return m_collisions;
 	}
+	std::string Stats::toString() const
+	{
+		return	"Root Objects:          " + std::to_string(m_rootObjectsCount) + "\n" +
+				"Objects:               " + std::to_string(m_objectsCount) + "\n" +
+				"Components:            " + std::to_string(m_componentsCount) + "\n" +
+				"Physics:               \n" +
+				"  Collision checks:    " + std::to_string(m_collisionChecks) + "\n" +
+				"  AABB checks:         " + std::to_string(m_boundingBoxCollisionChecks) + "\n" +
+				"  Collisions:          " + std::to_string(m_collisions) + "\n";
+	}
 	void Stats::print() const
 	{
-		qDebug() << "Stats: ";
-		//qDebug() << "  Tick:                  " << getTickCount();
-		//qDebug() << "  FPS:                   " << getFPS();
-		//qDebug() << "  Frametime:             " << getFrametime()*1000.f << " ms";
-		qDebug() << "  Root Objects:          " << m_rootObjectsCount;
-		qDebug() << "  Objects:               " << m_objectsCount;
-		qDebug() << "  Components:            " << m_componentsCount;
-		qDebug() << "  Physics:               ";
-		qDebug() << "    Collision checks:    " << m_collisionChecks;
-		qDebug() << "    AABB checks:         " << m_boundingBoxCollisionChecks;
-		qDebug() << "    Collisions:          " << m_collisions;
+		qDebug() << "Stats: \n" << toString().c_str();
 	}
 
 
-	Stats StatsManager::m_instance;
-	const Stats& StatsManager::getStats()
+	Stats StatsManager::m_currentStats;
+	Stats StatsManager::m_lastStats;
+	const Stats& StatsManager::getCurrentStats()
 	{
-		return m_instance;
+		return m_currentStats;
 	}
-	Stats& StatsManager::getStats_internal()
+	const Stats& StatsManager::getLastStats()
 	{
-		return m_instance;
+		return m_lastStats;
+	}
+	Stats& StatsManager::getCurrentStats_internal()
+	{
+		return m_currentStats;
+	}
+	Stats& StatsManager::getLastStats_internal()
+	{
+		return m_lastStats;
 	}
 
 	void StatsManager::setRootCanvesObject(unsigned int count)
 	{
-		m_instance.m_rootObjectsCount = count;
+		m_currentStats.m_rootObjectsCount = count;
 	}
 	void StatsManager::addRootCanvesObject(unsigned int count)
 	{
-		m_instance.m_rootObjectsCount += count;
+		m_currentStats.m_rootObjectsCount += count;
 	}
 	void StatsManager::addCanvesObject(unsigned int count)
 	{
-		m_instance.m_objectsCount += count;
+		m_currentStats.m_objectsCount += count;
 	}
 	
 	void StatsManager::removeRootCanvasObject(unsigned int count)
 	{
-		m_instance.m_rootObjectsCount -= count;
+		m_currentStats.m_rootObjectsCount -= count;
 	}
 	void StatsManager::removeCanvasObject(unsigned int count)
 	{
-		m_instance.m_objectsCount -= count;
+		m_currentStats.m_objectsCount -= count;
 	}
 	
 	void StatsManager::addComponent(unsigned int count)
 	{
-		m_instance.m_componentsCount += count;
+		m_currentStats.m_componentsCount += count;
 	}
 	void StatsManager::removeComponent(unsigned int count)
 	{
-		m_instance.m_componentsCount -= count;
+		m_currentStats.m_componentsCount -= count;
 	}
 	void StatsManager::addCollisionCheck(unsigned int count)
 	{
-		m_instance.m_collisionChecks += count;
+		m_currentStats.m_collisionChecks += count;
 	}
 	void StatsManager::addBoundingBoxCollisionCheck(unsigned int count)
 	{
-		m_instance.m_boundingBoxCollisionChecks += count;
+		m_currentStats.m_boundingBoxCollisionChecks += count;
 	}
 	void StatsManager::addCollision(unsigned int count)
 	{
-		m_instance.m_collisions += count;
+		m_currentStats.m_collisions += count;
 	}
 	void StatsManager::resetCollisionStats()
 	{
-		m_instance.m_collisionChecks = 0;
-		m_instance.m_boundingBoxCollisionChecks = 0;
-		m_instance.m_collisions = 0;
+		m_lastStats = m_currentStats;
+		m_currentStats.m_collisionChecks = 0;
+		m_currentStats.m_boundingBoxCollisionChecks = 0;
+		m_currentStats.m_collisions = 0;
 	}
 }

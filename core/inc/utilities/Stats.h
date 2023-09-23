@@ -17,6 +17,7 @@ namespace QSFML
 		public:
 		
 		Stats(const Stats& other);
+		Stats& operator=(const Stats& other);
 
 		unsigned int getRootObjectCount() const;
 		unsigned int getObjectCount() const;
@@ -25,6 +26,7 @@ namespace QSFML
 		unsigned int getBoundingBoxCollisionCheckCount() const;
 		unsigned int getCollisionCount() const;
 
+		std::string toString() const;
 		void print() const;
 
 	private:
@@ -39,7 +41,8 @@ namespace QSFML
 	class QSFML_EDITOR_WIDGET_EXPORT StatsManager: public Singleton<StatsManager>
 	{
 	public:
-		static const Stats& getStats();
+		static const Stats& getCurrentStats();
+		static const Stats& getLastStats();
 
 		static void setRootCanvesObject(unsigned int count);
 		static void addRootCanvesObject(unsigned int count = 1);
@@ -55,10 +58,13 @@ namespace QSFML
 		static void addCollision(unsigned int count = 1);
 		static void resetCollisionStats();
 	private:
-		static Stats& getStats_internal();
+		static Stats& getCurrentStats_internal();
+		static Stats& getLastStats_internal();
 
 		
 
-		static Stats m_instance;
+		static Stats m_currentStats;
+		static Stats m_lastStats;
+
 	};
 }
