@@ -1,4 +1,4 @@
-#include "components/PointPainter.h"
+#include "components/drawable/PointPainter.h"
 #include <SFML/Graphics.hpp>
 
 namespace QSFML

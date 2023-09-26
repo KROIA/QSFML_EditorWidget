@@ -7,7 +7,7 @@ OBJECT_IMPL(SandboxObject)
 SandboxObject::SandboxObject(const std::string &name)
     : CanvasObject(name)
 {
-    m_vec = new DrawableVector();
+    m_vec = new VectorPainter();
     addComponent(m_vec);
     m_vec->setPoints(sf::Vector2f(0,0),VectorMath::getUnitVector()*20.f);
 

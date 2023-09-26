@@ -195,7 +195,7 @@ namespace QSFML
 				
 				m_threadWorker->waitForThreadsNoDelayNoExec();
 				QSFMLP_BLOCK("Collisions copy", QSFMLP_PHYSICS_COLOR_2);
-				size_t cap = collisions.size() + sector1.size(); +sector2.size() + sector3.size() + sector4.size() + sector5.size() + sector6.size();
+				size_t cap = collisions.size() + sector1.size() + sector2.size() + sector3.size() + sector4.size() + sector5.size() + sector6.size();
 				collisions.reserve(cap);
 				collisions.insert(collisions.end(), sector1.begin(), sector1.end());
 				collisions.insert(collisions.end(), sector2.begin(), sector2.end());
@@ -278,16 +278,33 @@ namespace QSFML
 			AABB objBB = item.obj->getBoundingBox();
 			if (m_enableChilds)
 			{
-				#pragma unroll
-				for (size_t i = 0; i < 4; ++i)
+				if (m_childAreas[0].contains(objBB))
 				{
-					if (m_childAreas[i].contains(objBB))
-					{
-						if (!m_childTrees)
-							instantiateChilds();
-						m_childTrees[i].insert(item);
-						return;
-					}
+					if (!m_childTrees)
+						instantiateChilds();
+					m_childTrees[0].insert(item);
+					return;
+				}
+				if (m_childAreas[1].contains(objBB))
+				{
+					if (!m_childTrees)
+						instantiateChilds();
+					m_childTrees[1].insert(item);
+					return;
+				}
+				if (m_childAreas[2].contains(objBB))
+				{
+					if (!m_childTrees)
+						instantiateChilds();
+					m_childTrees[2].insert(item);
+					return;
+				}
+				if (m_childAreas[3].contains(objBB))
+				{
+					if (!m_childTrees)
+						instantiateChilds();
+					m_childTrees[3].insert(item);
+					return;
 				}
 			}
 

@@ -1,4 +1,4 @@
-#include "components/RectPainter.h"
+#include "components/drawable/RectPainter.h"
 
 namespace QSFML
 {

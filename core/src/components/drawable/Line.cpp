@@ -1,4 +1,4 @@
-#include "components/Line.h"
+#include "components/drawable/Line.h"
 #include <math.h>
 #include <SFML/Graphics.hpp>
 

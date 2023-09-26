@@ -1,5 +1,5 @@
 
-#include "components/DrawableVector.h"
+#include "components/drawable/VectorPainter.h"
 #include "math.h"
 
 
@@ -8,10 +8,10 @@ namespace QSFML
 {
     namespace Components
     {
-        COMPONENT_IMPL(DrawableVector)
-            bool DrawableVector::m_flipYaxis = false;
+        COMPONENT_IMPL(VectorPainter)
+            bool VectorPainter::m_flipYaxis = false;
 
-        DrawableVector::DrawableVector(const std::string& name)
+        VectorPainter::VectorPainter(const std::string& name)
             : Drawable(name)
             , m_start(0, 0)
             , m_end(1, 1)
@@ -19,7 +19,7 @@ namespace QSFML
         {
             updateArrow();
         }
-        DrawableVector::DrawableVector(const DrawableVector& other)
+        VectorPainter::VectorPainter(const VectorPainter& other)
             : Drawable(other)
             , m_start(other.m_start)
             , m_end(other.m_end)
@@ -27,67 +27,67 @@ namespace QSFML
         {
             updateArrow();
         }
-        DrawableVector::~DrawableVector()
+        VectorPainter::~VectorPainter()
         {
 
         }
 
-        void DrawableVector::setPoints(const sf::Vector2f& begin, const sf::Vector2f& end)
+        void VectorPainter::setPoints(const sf::Vector2f& begin, const sf::Vector2f& end)
         {
             m_start = begin;
             m_end = end;
             updateArrow();
         }
-        void DrawableVector::setStart(const sf::Vector2f& begin)
+        void VectorPainter::setStart(const sf::Vector2f& begin)
         {
             m_start = begin;
             updateArrow();
         }
-        void DrawableVector::setEnd(const sf::Vector2f& end)
+        void VectorPainter::setEnd(const sf::Vector2f& end)
         {
             m_end = end;
             updateArrow();
         }
-        void DrawableVector::setDirection(const sf::Vector2f& directionVec)
+        void VectorPainter::setDirection(const sf::Vector2f& directionVec)
         {
             m_end = m_start + directionVec;
             updateArrow();
         }
-        void DrawableVector::setColor(const sf::Color& color)
+        void VectorPainter::setColor(const sf::Color& color)
         {
             m_color = color;
             for (size_t i = 0; i < 6; ++i)
                 m_lines[i].color = m_color;
         }
 
-        const sf::Vector2f& DrawableVector::getStart() const
+        const sf::Vector2f& VectorPainter::getStart() const
         {
             return m_start;
         }
-        const sf::Vector2f& DrawableVector::getEnd() const
+        const sf::Vector2f& VectorPainter::getEnd() const
         {
             return m_end;
         }
-        const sf::Color& DrawableVector::getColor() const
+        const sf::Color& VectorPainter::getColor() const
         {
             return m_color;
         }
-        sf::Vector2f DrawableVector::getDirection() const
+        sf::Vector2f VectorPainter::getDirection() const
         {
             return (m_end - m_start);
         }
 
 
-        void DrawableVector::draw(sf::RenderTarget& target,
+        void VectorPainter::draw(sf::RenderTarget& target,
             sf::RenderStates states) const
         {
             target.draw(m_lines, 6, sf::Lines);
         }
-        void DrawableVector::setInvertedYAxis(bool doInvert)
+        void VectorPainter::setInvertedYAxis(bool doInvert)
         {
             m_flipYaxis = doInvert;
         }
-        void DrawableVector::updateArrow()
+        void VectorPainter::updateArrow()
         {
             sf::Vector2f dir = getDirection();
             sf::Vector2f end = m_end;
@@ -118,7 +118,7 @@ namespace QSFML
             m_lines[4].position = end;
             m_lines[5].position = end + arrowRight;
         }
-        sf::Vector2f DrawableVector::getRotated(const sf::Vector2f& vec,
+        sf::Vector2f VectorPainter::getRotated(const sf::Vector2f& vec,
             float angle) const
         {
             float c = cos(angle);
@@ -126,11 +126,11 @@ namespace QSFML
             return sf::Vector2f(c * vec.x - s * vec.y,
                 s * vec.x + c * vec.y);
         }
-        float DrawableVector::getLength(const sf::Vector2f& vec) const
+        float VectorPainter::getLength(const sf::Vector2f& vec) const
         {
             return sqrt(vec.x * vec.x + vec.y * vec.y);
         }
-        float DrawableVector::getAngle(const sf::Vector2f& vec) const
+        float VectorPainter::getAngle(const sf::Vector2f& vec) const
         {
             float l = getLength(vec);
             if (l == 0)

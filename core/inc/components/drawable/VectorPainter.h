@@ -9,13 +9,13 @@ namespace QSFML
 {
 namespace Components
 {
-class QSFML_EDITOR_WIDGET_EXPORT DrawableVector: public Drawable
+class QSFML_EDITOR_WIDGET_EXPORT VectorPainter: public Drawable
 {
     public:
-    DrawableVector(const std::string &name = "DrawableVector");
-    DrawableVector(const DrawableVector &other);
-    ~DrawableVector();
-    COMPONENT_DECL(DrawableVector);
+    VectorPainter(const std::string &name = "VectorPainter");
+    VectorPainter(const VectorPainter &other);
+    ~VectorPainter();
+    COMPONENT_DECL(VectorPainter);
 
     void setPoints(const sf::Vector2f &begin, const sf::Vector2f &end);
     void setStart(const sf::Vector2f &begin);

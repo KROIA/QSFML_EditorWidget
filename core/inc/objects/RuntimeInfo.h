@@ -2,7 +2,7 @@
 
 #include "QSFML_base.h"
 #include "objects/base/CanvasObject.h"
-#include "components/Text.h"
+#include "components/drawable/Text.h"
 #include "utilities/Stats.h"
 
 namespace QSFML

@@ -10,8 +10,8 @@ class VectorDisplayer: public QSFML::Objects::CanvasObject
                         CanvasObject *parent = nullptr)
             : CanvasObject(name, parent)
         {
-            m_vec1 = new QSFML::Components::DrawableVector("vec1");
-            m_vec2 = new QSFML::Components::DrawableVector("vec2");
+            m_vec1 = new QSFML::Components::VectorPainter("vec1");
+            m_vec2 = new QSFML::Components::VectorPainter("vec2");
 
             m_vec1->setStart(sf::Vector2f(0,0));
             m_vec1->setEnd(sf::Vector2f(10,30));
@@ -27,7 +27,14 @@ class VectorDisplayer: public QSFML::Objects::CanvasObject
 
             MouseFollower *follower = new MouseFollower("MouseFollower");
             follower->m_vec = this;
+
+            m_image = new QSFML::Components::Image("hund.png", "Image");
+            m_image->setScale(0.1,0.1);
+            m_image->setOrigin(256, 256);
+            
+            
             addComponent(follower);
+            addComponent(m_image);
         }
         void update() override
         {}
@@ -35,7 +42,8 @@ class VectorDisplayer: public QSFML::Objects::CanvasObject
         friend MouseFollower;
 
     private:
-        QSFML::Components::DrawableVector *m_vec1, *m_vec2;
+        QSFML::Components::VectorPainter *m_vec1, *m_vec2;
+        QSFML::Components::Image* m_image;
 
         class MouseFollower : public QSFML::Components::SfEventHandle
         {
@@ -54,6 +62,8 @@ class VectorDisplayer: public QSFML::Objects::CanvasObject
                             sf::Vector2f pos = m_vec->getInWorldSpace(sf::Vector2i(e.mouseMove.x,e.mouseMove.y));
                             m_vec->m_vec1->setEnd(pos);
                             m_vec->m_vec2->setStart(pos);
+
+                            m_vec->m_image->setPosition(pos);
                         }
                     }
                 }

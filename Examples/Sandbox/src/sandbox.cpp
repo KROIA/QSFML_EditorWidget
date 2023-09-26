@@ -79,6 +79,8 @@ SandBox::SandBox(QWidget *parent)
         MouseCollider* mouseCollider = new MouseCollider();
         m_canvas_2->addObject(mouseCollider);
 
+
+       
     }
 
     QSFML::Utilities::Ray func1(sf::Vector2f(0, 0), sf::Vector2f(0, 1));

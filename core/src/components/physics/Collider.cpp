@@ -144,7 +144,6 @@ void Collider::checkCollision(const std::vector<Components::Collider*>& other,
 bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 { 
     QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_3);
-    Canvas* canvasParent = getCanvasParent();
     if(m_canvasParent)
         m_canvasParent->addBoundingBoxCollisionCheck();
     QSFMLP_BLOCK("AABB check", QSFMLP_PHYSICS_COLOR_4);

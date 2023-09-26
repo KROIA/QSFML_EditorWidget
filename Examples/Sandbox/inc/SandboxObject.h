@@ -19,6 +19,6 @@ class SandboxObject: public QObject, public QSFML::Objects::CanvasObject
     protected:
 
     private:
-        QSFML::Components::DrawableVector *m_vec;
+        QSFML::Components::VectorPainter *m_vec;
 
 };

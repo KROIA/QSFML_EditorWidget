@@ -27,7 +27,7 @@ namespace QSFML
         class Collider;
         class AbstractPressEvent;
         class Button;
-        class DrawableVector;
+        class VectorPainter;
         class KeyPressEvent;
         class Line;
         class MouseFollower;
@@ -35,6 +35,7 @@ namespace QSFML
         class PointPainter;
         class SfEventHandle;
         class Text;
+        class Image;
     }
     namespace Utilities
     {
