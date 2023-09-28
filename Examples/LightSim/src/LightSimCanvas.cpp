@@ -1,14 +1,14 @@
-#include "ExampleCanvas.h"
-#include "ui_exampleCanvas.h"
+#include "LightSimCanvas.h"
+#include "ui_lightSimCanvas.h"
 #include <iostream>
 #include <QCloseEvent>
 
 using namespace QSFML;
 using namespace QSFML::Objects;
 
-ExampleCanvas::ExampleCanvas(QWidget *parent)
+LightSimCanvas::LightSimCanvas(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::ExampleCanvas)
+    , ui(new Ui::LightSimCanvas)
 {
     ui->setupUi(this);
 
@@ -26,18 +26,21 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
 
     DefaultEditor *defaultEditor = new DefaultEditor();
     m_canvas->addObject(defaultEditor);
+
+    m_canvas->applyObjectChanges();
     qDebug() << defaultEditor->toString().c_str();
 
     
 }
 
-ExampleCanvas::~ExampleCanvas()
+LightSimCanvas::~LightSimCanvas()
 {
     delete ui;
     delete m_canvas;
 }
 
-void ExampleCanvas::closeEvent(QCloseEvent* event)
+
+void LightSimCanvas::closeEvent(QCloseEvent* event)
 {
     if (m_canvas)
         m_canvas->stop();

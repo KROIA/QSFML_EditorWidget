@@ -29,5 +29,7 @@ private slots:
 
         QSFML::Components::PointPainter* m_pointPainter;
 
+       
+
 };
 #endif // SANDBOX_H

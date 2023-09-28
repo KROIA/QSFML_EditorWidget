@@ -321,12 +321,14 @@ namespace QSFML
 			}
 			if (m_childTrees)
 			{
-				#pragma unroll
-				for (size_t i = 0; i < 4; ++i)
-				{
-					if(m_childAreas[i].intersects(area))
-						m_childTrees[i].search(area, container);
-				}
+				if (m_childAreas[0].intersects(area))
+					m_childTrees[0].search(area, container);
+				if (m_childAreas[1].intersects(area))
+					m_childTrees[1].search(area, container);
+				if (m_childAreas[2].intersects(area))
+					m_childTrees[2].search(area, container);
+				if (m_childAreas[3].intersects(area))
+					m_childTrees[3].search(area, container);
 			}
 		}
 		void ObjectQuadTree::Tree::clear()
@@ -334,11 +336,10 @@ namespace QSFML
 			m_objects.clear();
 			if (m_childTrees)
 			{
-				#pragma unroll
-				for (size_t i = 0; i < 4; ++i)
-				{
-					m_childTrees[i].clear();
-				}
+				m_childTrees[0].clear();
+				m_childTrees[1].clear();
+				m_childTrees[2].clear();
+				m_childTrees[3].clear();
 			}
 		}
 		bool ObjectQuadTree::Tree::shrink()

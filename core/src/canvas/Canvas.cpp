@@ -4,6 +4,8 @@
 #include <QResizeEvent>
 #include <QHBoxLayout>
 #include <qapplication.h>
+#include <thread>
+#include <iostream>
 
 /*
 #ifdef Q_WS_X11
@@ -54,6 +56,9 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
 }
 Canvas::~Canvas()
 {
+    stop();
+    parentWidget()->layout()->removeWidget(this);
+    m_window->close();
     delete m_window;
 #ifdef QSFML_PROFILING
     if (s_instances.size() == 1)
@@ -133,6 +138,15 @@ void Canvas::setUpdateControlls(const CanvasSettings::UpdateControlls &controlls
 const CanvasSettings::UpdateControlls &Canvas::getUpdateControlls() const
 {
     return m_settings.updateControlls;
+}
+
+void Canvas::start()
+{
+    m_frameTimer.start();
+}
+void Canvas::stop()
+{
+    m_frameTimer.stop();
 }
 
 void Canvas::setCameraView(const sf::View &view)
@@ -223,7 +237,7 @@ void Canvas::showEvent(QShowEvent*)
         OnInit();
 
         // Setup the timer to trigger a refresh at specified framerate
-        m_frameTimer.start(0);
+        start();
         //m_updateTimer.autoRestart(true);
         //m_updateTimer.start();
         
@@ -258,7 +272,6 @@ void Canvas::update()
         return;
     QSFMLP_FUNCTION(QSFMLP_CANVAS_COLOR_1); // Magenta block with name "foo"
 
-
     TimePoint t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
     m_deltaT_t1 = t2;
@@ -280,6 +293,7 @@ void Canvas::update()
     CanvasObjectContainer::updateNewElements();
     QSFMLP_END_BLOCK;
 
+    m_window->setActive(true);
     sf::Event event;
     if(m_settings.updateControlls.enableEventLoop)
     {
@@ -332,6 +346,7 @@ void Canvas::update()
         StatsManager::setDrawTime(elapsed.count());
         QSFMLP_END_BLOCK;
     }
+    m_window->setActive(false);
 }
 /*void Canvas::timedUpdate()
 {

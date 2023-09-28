@@ -1,5 +1,6 @@
 
 #include "components/drawable/VectorPainter.h"
+#include "utilities/VectorOperations.h"
 #include "math.h"
 
 
@@ -53,6 +54,12 @@ namespace QSFML
             m_end = m_start + directionVec;
             updateArrow();
         }
+        void VectorPainter::setAngle(float angle)
+        {
+            float length = VectorMath::getLength(m_end - m_start);
+            m_end = m_start + VectorMath::getRotatedUnitVector(angle) * length;
+            updateArrow();
+        }
         void VectorPainter::setColor(const sf::Color& color)
         {
             m_color = color;
@@ -97,7 +104,7 @@ namespace QSFML
                 end.y = m_start.y + dir.y;
             }
             float length = sqrt(dir.x * dir.x + dir.y * dir.y);
-            float angle = getAngle(dir);
+            float angle = VectorMath::getAngle(dir);
 
             static const float arrowTipAngle = M_PI * 4.f / 5.f;
 
@@ -106,8 +113,8 @@ namespace QSFML
             else if (length > 200)
                 length = 200;
             sf::Vector2f arrowTip(0.1f * length, 0);
-            sf::Vector2f arrowLeft = getRotated(arrowTip, angle - arrowTipAngle);
-            sf::Vector2f arrowRight = getRotated(arrowTip, angle + arrowTipAngle);
+            sf::Vector2f arrowLeft = VectorMath::getRotated(arrowTip, angle - arrowTipAngle);
+            sf::Vector2f arrowRight = VectorMath::getRotated(arrowTip, angle + arrowTipAngle);
 
             m_lines[0].position = m_start;
             m_lines[1].position = end;
@@ -118,15 +125,15 @@ namespace QSFML
             m_lines[4].position = end;
             m_lines[5].position = end + arrowRight;
         }
-        sf::Vector2f VectorPainter::getRotated(const sf::Vector2f& vec,
+        /*sf::Vector2f VectorPainter::getRotated(const sf::Vector2f& vec,
             float angle) const
         {
             float c = cos(angle);
             float s = sin(angle);
             return sf::Vector2f(c * vec.x - s * vec.y,
                 s * vec.x + c * vec.y);
-        }
-        float VectorPainter::getLength(const sf::Vector2f& vec) const
+        }*/
+        /*float VectorPainter::getLength(const sf::Vector2f& vec) const
         {
             return sqrt(vec.x * vec.x + vec.y * vec.y);
         }
@@ -138,7 +145,7 @@ namespace QSFML
             if (vec.x < 0)
                 return M_PI - asin(vec.y / l);
             return asin(vec.y / l);
-        }
+        }*/
 
     }
 }

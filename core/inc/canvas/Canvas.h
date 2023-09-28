@@ -41,6 +41,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
         const CanvasSettings::UpdateControlls &getUpdateControlls() const;
 
+        void start();
+        void stop();
 
         void setCameraView(const sf::View &view);
         const sf::View &getCameraView() const;

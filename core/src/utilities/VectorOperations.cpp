@@ -14,7 +14,10 @@ namespace VectorMath
     {
         return vec.x * vec.x + vec.y * vec.y;
     }
-
+    sf::Vector2f getRotatedUnitVector(float rad)
+    {
+        return sf::Vector2f(cos(rad), sin(rad));
+    }
     sf::Vector2f getRotated(const sf::Vector2f &vec, float rad)
     {
         float angle = getAngle(vec);
@@ -32,27 +35,31 @@ namespace VectorMath
             return 0;
         float angle;
         sqrL = sqrt(sqrL);
-        if(vec.x > 0)
-        {
-            angle = asin(vec.y / sqrL);
+
+        if (vec.y >= 0) {
+            angle = acos(vec.x / sqrL);
         }
-        else
-        {
-            angle = M_PI - asin(vec.y / sqrL);
+        else {
+            angle = -acos(vec.x / sqrL);
         }
         return angle;
     }
     float getAngle(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
-        float l1 = getLength(vec1);
-        float l2 = getLength(vec2);
-        float prod = l1 * l2;
-        if(prod == 0)
-            return 0;
-        if(vec1.x > vec2.x)
-            return -acos(dotProduct(vec1, vec2) / (l1 *l2));
-        else
-            return acos(dotProduct(vec1, vec2) / (l1 *l2));
+        float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
+        float determinant = vec1.x * vec2.y - vec1.y * vec2.x;
+        float length = getLength(vec1) * getLength(vec2);
+
+        float angle = 0.0f;
+
+        if (determinant >= 0) {
+            angle = acos(dotProduct/ length);
+        }
+        else {
+            angle = 2 * M_PI - acos(dotProduct/ length);
+        }
+
+        return angle;
     }
     float dotProduct(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {

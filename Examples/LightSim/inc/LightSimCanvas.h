@@ -4,22 +4,23 @@
 #include "QSFML_EditorWidget.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class ExampleCanvas; }
+namespace Ui { class LightSimCanvas; }
 QT_END_NAMESPACE
 
-class ExampleCanvas : public QMainWindow
+class LightSimCanvas : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    ExampleCanvas(QWidget* parent = nullptr);
-    ~ExampleCanvas();
+    LightSimCanvas(QWidget* parent = nullptr);
+    ~LightSimCanvas();
+
+    
 
 private:
     void closeEvent(QCloseEvent* event) override;
 
-
-    Ui::ExampleCanvas* ui;
+    Ui::LightSimCanvas* ui;
 
     QSFML::Canvas* m_canvas;
 };

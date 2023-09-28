@@ -19,6 +19,9 @@ SandBox::SandBox(QWidget *parent)
 {
     ui->setupUi(this);
 
+    m_canvas_1 = nullptr;
+    m_canvas_2 = nullptr;
+    
     {
         CanvasSettings settings;
         //settings.layout.autoAjustSize = false;
@@ -43,8 +46,18 @@ SandBox::SandBox(QWidget *parent)
 
         SandboxObject *sbObj = new SandboxObject();
         m_canvas_1->addObject(sbObj);
-    }
 
+        m_pointPainter = new QSFML::Components::PointPainter();
+        QSFML::Objects::CanvasObject* canvasObject = new QSFML::Objects::CanvasObject();
+        canvasObject->addComponent(m_pointPainter);
+        m_canvas_1->addObject(canvasObject);
+
+        QTimer* timer = new QTimer(this);
+
+        connect(timer, &QTimer::timeout, this, &SandBox::onTimerFinished);
+        timer->start(1000);
+    }
+    
     {
 
         CanvasSettings settings;
@@ -90,22 +103,16 @@ SandBox::SandBox(QWidget *parent)
     float distance = func1.getShortestDistance(point);
     std::cout << "PosFactor: " << factor << " pos: " << pos.x << " " << pos.y << " distance: "<< distance<<"\n";
     
-    QTimer* timer = new QTimer(this);
-    m_pointPainter = new QSFML::Components::PointPainter();
-    QSFML::Objects::CanvasObject* canvasObject = new QSFML::Objects::CanvasObject();
-    canvasObject->addComponent(m_pointPainter);
-    m_canvas_1->addObject(canvasObject);
-    connect(timer, &QTimer::timeout, this, &SandBox::onTimerFinished);
-    timer->start(1000);
+    
 
     
 }
 
 SandBox::~SandBox()
 {
-    delete ui;
-    delete m_canvas_2;
     delete m_canvas_1;
+    delete m_canvas_2;
+    delete ui;
 }
 
 void SandBox::onTimerFinished()
@@ -121,6 +128,10 @@ void SandBox::onTimerFinished()
 
 void SandBox::closeEvent(QCloseEvent* event)
 {
+    if (m_canvas_1)
+        m_canvas_1->stop();
+    if (m_canvas_2)
+        m_canvas_2->stop();
     //Canvas::stopEventLoop();
     event->accept();
 }

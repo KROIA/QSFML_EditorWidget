@@ -21,6 +21,7 @@ class QSFML_EDITOR_WIDGET_EXPORT VectorPainter: public Drawable
     void setStart(const sf::Vector2f &begin);
     void setEnd(const sf::Vector2f &end);
     void setDirection(const sf::Vector2f &directionVec);
+    void setAngle(float angle);
     void setColor(const sf::Color &color);
 
     const sf::Vector2f &getStart() const;
@@ -37,10 +38,10 @@ class QSFML_EDITOR_WIDGET_EXPORT VectorPainter: public Drawable
 
     protected:
     void updateArrow();
-    inline sf::Vector2f getRotated(const sf::Vector2f &vec,
-                                   float angle) const;
-    inline float getLength(const sf::Vector2f &vec) const;
-    inline float getAngle(const sf::Vector2f &vec) const;
+    //inline sf::Vector2f getRotated(const sf::Vector2f &vec,
+    //                               float angle) const;
+    //static inline float getLength(const sf::Vector2f &vec);
+    //static inline float getAngle(const sf::Vector2f &vec);
 
     sf::Vector2f m_start, m_end;
     sf::Color m_color;

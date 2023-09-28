@@ -1,5 +1,5 @@
 ﻿#include "utilities/Ray.h"
-
+#include "utilities/VectorOperations.h"
 
 namespace QSFML
 {
@@ -138,20 +138,25 @@ namespace QSFML
 			return m_pos;
 		}
 
-		void Ray::setDir(const sf::Vector2f& dir)
+		void Ray::setDirection(const sf::Vector2f& dir)
 		{
 			m_dir = dir;
 			m_dirLength = sqrt(m_dir.x * m_dir.x + m_dir.y * m_dir.y);
 		}
-		void Ray::setDir(float dirX, float dirY)
+		void Ray::setDirection(float dirX, float dirY)
 		{
 			m_dir.x = dirX;
 			m_dir.y = dirY;
 			m_dirLength = sqrt(m_dir.x * m_dir.x + m_dir.y * m_dir.y);
 		}
-		const sf::Vector2f& Ray::getDir() const
+		const sf::Vector2f& Ray::getDirection() const
 		{
 			return m_dir;
+		}
+
+		float Ray::getAngle(const Ray& ray)
+		{
+			return VectorMath::getAngle(m_dir, ray.m_dir);
 		}
 
 		sf::Vector2f Ray::getPoint(float scalar)
