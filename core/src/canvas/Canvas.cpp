@@ -116,7 +116,7 @@ void Canvas::setTiming(const CanvasSettings::Timing &timing)
     m_settings.timing = timing;
 
     // Setup the timer
-    m_frameTimer.setInterval(m_settings.timing.frameTime);
+    m_frameTimer.setInterval(m_settings.timing.frameTime*1000);
     //m_updateTimer.setInterval(m_settings.timing.frameTime);
 }
 const CanvasSettings::Timing &Canvas::getTiming() const

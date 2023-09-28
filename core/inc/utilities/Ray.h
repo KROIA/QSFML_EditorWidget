@@ -51,7 +51,7 @@ namespace QSFML
 			*/
 			float getAngle(const Ray& ray);
 
-			sf::Vector2f getPoint(float scalar);
+			sf::Vector2f getPoint(float scalar) const;
 
 			/**
 			 * \brief Calculates the <scalar> "s" in this given function F(s) = pos + s * dir, 
@@ -63,7 +63,7 @@ namespace QSFML
 			 *		   Call getPoint(getShortestDistanceFactor(...)) to get the shortest distanced point.
 			 * 
 			 */
-			float getShortestDistanceFactor(const sf::Vector2f& point, bool *failed = nullptr);
+			float getShortestDistanceFactor(const sf::Vector2f& point, bool *failed = nullptr) const;
 
 			/**
 			 * \brief Calculates the shortest distance from the <point> to this function
@@ -73,7 +73,7 @@ namespace QSFML
 			 * \return The shortest distance from this function to the <point>
 			 *
 			 */
-			float getShortestDistance(const sf::Vector2f& point, bool* failed = nullptr);
+			float getShortestDistance(const sf::Vector2f& point, bool* failed = nullptr) const;
 
 
 			/**

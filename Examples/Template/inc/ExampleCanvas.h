@@ -16,6 +16,7 @@ public:
     ~ExampleCanvas();
 
 private:
+    void setupCanvas();
     void closeEvent(QCloseEvent* event) override;
 
 

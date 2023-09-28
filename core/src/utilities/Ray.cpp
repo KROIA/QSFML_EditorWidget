@@ -159,11 +159,11 @@ namespace QSFML
 			return VectorMath::getAngle(m_dir, ray.m_dir);
 		}
 
-		sf::Vector2f Ray::getPoint(float scalar)
+		sf::Vector2f Ray::getPoint(float scalar) const
 		{
 			return m_pos + scalar * m_dir;
 		}
-		float Ray::getShortestDistanceFactor(const sf::Vector2f& point, bool* failed)
+		float Ray::getShortestDistanceFactor(const sf::Vector2f& point, bool* failed) const
 		{
 			if (m_dirLength == 0)
 			{
@@ -176,7 +176,7 @@ namespace QSFML
 				*failed = false;
 			return -(m_pos.x * m_dir.x + m_pos.y * m_dir.y - m_dir.x * point.x - m_dir.y * point.y) / divisor;
 		}
-		float Ray::getShortestDistance(const sf::Vector2f& point, bool* failed)
+		float Ray::getShortestDistance(const sf::Vector2f& point, bool* failed) const
 		{
 			if (m_dirLength == 0)
 			{
