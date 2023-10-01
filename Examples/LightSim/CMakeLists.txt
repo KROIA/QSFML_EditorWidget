@@ -52,7 +52,7 @@ set(Files
 	${UIS_HDRS}
 	${SRC_HDRS})
 
-add_executable(${PROJECT_NAME} ${Files})
+ add_executable(${PROJECT_NAME} ${Files})
 
 if(QSFML_PROFILING)
     target_link_libraries(${PROJECT_NAME} SFML_EditorWidget_static_profile)

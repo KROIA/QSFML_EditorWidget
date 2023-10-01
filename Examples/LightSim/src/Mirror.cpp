@@ -118,5 +118,5 @@ bool Mirror::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanc
 
 void Mirror::update()
 {
-	//setRotation(getRotation() + m_rotationSpeed);
+	setRotation(getRotation() + m_rotationSpeed);
 }

@@ -22,5 +22,9 @@ namespace VectorMath
     QSFML_EDITOR_WIDGET_EXPORT extern float crossProduct(const sf::Vector2f &vec1, const sf::Vector2f &vec2);
     QSFML_EDITOR_WIDGET_EXPORT extern const sf::Vector2f &getUnitVector();
     QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f getNormalized(const sf::Vector2f &vec);
+
+    QSFML_EDITOR_WIDGET_EXPORT extern float getNormalzedAngle(float angle);
+    QSFML_EDITOR_WIDGET_EXPORT extern bool isAngleInRange(float angle, float minAngle, float maxAngle);
 }
+
 }

@@ -36,13 +36,13 @@ namespace VectorMath
         float angle;
         sqrL = sqrt(sqrL);
 
-        if (vec.y >= 0) {
-            angle = acos(vec.x / sqrL);
-        }
-        else {
+        if (vec.y <= 0) {
             angle = -acos(vec.x / sqrL);
         }
-        return angle;
+        else {
+            angle = acos(vec.x / sqrL);
+        }
+        return getNormalzedAngle(angle);
     }
     float getAngle(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
@@ -59,7 +59,7 @@ namespace VectorMath
             angle = 2 * M_PI - acos(dotProduct/ length);
         }
 
-        return angle;
+        return getNormalzedAngle(angle);
     }
     float dotProduct(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
@@ -80,6 +80,37 @@ namespace VectorMath
         if(l <= 0)
             return vec;
         return(vec / (float)sqrt(l));
+    }
+
+    float getNormalzedAngle(float angle)
+    {
+        angle = fmod(angle + M_PI, 2 * M_PI);
+        if (angle < 0)
+            angle += 2 * M_PI;
+        return angle - M_PI;
+    }
+    bool isAngleInRange(float angle, float minAngle, float maxAngle)
+    {
+        // Normalize angles to be in the range [0, 2*pi)
+        angle = fmod(angle, M_2PI);
+        if (angle < 0)
+            angle += M_2PI;
+
+        minAngle = fmod(minAngle, M_2PI);
+        if (minAngle < 0)
+            minAngle += M_2PI;
+
+        maxAngle = fmod(maxAngle, M_2PI);
+        if (maxAngle < 0)
+            maxAngle += M_2PI;
+
+        // Case where the angle wraps around
+        if (minAngle > maxAngle) {
+            return (angle >= minAngle || angle <= maxAngle);
+        }
+
+        // Case where the angle does not wrap around
+        return (angle >= minAngle && angle <= maxAngle);
     }
 }
 }

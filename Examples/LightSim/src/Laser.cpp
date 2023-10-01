@@ -89,7 +89,7 @@ void Laser::updateRay(QSFML::Utilities::Ray& r, LaserInfo& info, unsigned int it
 
 	for (size_t i = 0; i < m_opticalElements.size(); ++i)
 	{
-		float distance;
+		float distance = 99999999;
 		if (m_opticalElements[i]->getRaycastDistance(ray, distance))
 		{
 			if (distance < minDistance)
