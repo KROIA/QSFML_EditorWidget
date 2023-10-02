@@ -173,7 +173,7 @@ bool ConvexLense::processLaser_intern(const QSFML::Utilities::Ray& ray,
 			n2 = m_n1;
 		}
 
-		reflectAndRefraction(rayAngle, normalAngle, n1, n2, reflectAngle, refractAngle, doesRefract);
+		reflectAndRefract(rayAngle, normalAngle, n1, n2, reflectAngle, refractAngle, doesRefract);
 
 		QSFML::Utilities::Ray reflected(ray);
 		sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(reflectAngle);

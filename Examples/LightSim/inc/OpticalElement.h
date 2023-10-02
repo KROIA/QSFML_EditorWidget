@@ -32,8 +32,16 @@ public:
        /param outRefractAngle: the global angle of the refracted part of the light, if it exists.
        /param outHasRefraction: true, if it has a refraction, otherwise false.
     */
-    static void reflectAndRefraction(float rayAngle, float normalAngle, float n1, float n2,
+    static void reflectAndRefract(float rayAngle, float normalAngle, float n1, float n2,
         float& outReflectAngle, float& outRefractAngle, bool &outHasRefraction);
+
+    static bool reflectAndRefract_circleSegment(const QSFML::Utilities::Ray& ray, const sf::Vector2f& circleCenter,
+        float circleRadius, float minAngle, float maxAngle, float n1, float n2,
+        float& outCollisionNormal, float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction);
+
+    static bool reflectAndRefract_circle(const QSFML::Utilities::Ray& ray, const sf::Vector2f& circleCenter,
+        float circleRadius, float n1, float n2,
+        float& outCollisionNormal, float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction);
 
 protected:
     //void update() override;

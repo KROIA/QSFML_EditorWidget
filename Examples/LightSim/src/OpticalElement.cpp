@@ -40,7 +40,7 @@ bool OpticalElement::getRaycastDistance(const QSFML::Utilities::Ray& ray, float&
 {
 	return false;
 }
-void OpticalElement::reflectAndRefraction(float rayAngle, float normalAngle, float n1, float n2,
+void OpticalElement::reflectAndRefract(float rayAngle, float normalAngle, float n1, float n2,
 	float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction)
 {
 	rayAngle = QSFML::VectorMath::getNormalzedAngle(rayAngle);
@@ -56,7 +56,7 @@ void OpticalElement::reflectAndRefraction(float rayAngle, float normalAngle, flo
 	{
 		normalAngle = M_PI - normalAngle;
 		// Lichtstrahl trifft von der anderen Seite auf die Grenzschicht. n1 und n2 vertauschen
-		reflectAndRefraction(rayAngle, normalAngle, n2, n1, outReflectAngle, outRefractAngle, outHasRefraction);
+		reflectAndRefract(rayAngle, normalAngle, n2, n1, outReflectAngle, outRefractAngle, outHasRefraction);
 		//outHasRefraction = false;
 		return;
 	}
@@ -83,6 +83,19 @@ void OpticalElement::reflectAndRefraction(float rayAngle, float normalAngle, flo
 	// Winkel zwischen der Normalen und dem gebrochenen Strahl
 	float epsilon2 = asin(n1 / n2 * sin(epsilon1));
 	outRefractAngle =  normalAngle + epsilon2;
+}
+bool OpticalElement::reflectAndRefract_circleSegment(const QSFML::Utilities::Ray& ray, const sf::Vector2f& circleCenter,
+	float circleRadius, float minAngle, float maxAngle, float n1, float n2,
+	float& outCollisionNormal, float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction)
+{
+
+}
+
+bool OpticalElement::reflectAndRefract_circle(const QSFML::Utilities::Ray& ray, const sf::Vector2f& circleCenter,
+	float circleRadius, float n1, float n2,
+	float& outCollisionNormal, float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction)
+{
+
 }
 /*void OpticalElement::update()
 {
