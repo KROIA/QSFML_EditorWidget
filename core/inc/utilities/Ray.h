@@ -123,6 +123,18 @@ namespace QSFML
 			bool raycast(const Ray& other,
 						 float& outDistanceFactorA,
 						 float& outDistanceFactorB) const;
+
+			/**
+			 * \brief Calculates the collision between this vector function and a circle
+			 *
+			 * \param center of the circle
+			 * \param radius of the circle
+			 * \param output of the first collision point
+			 * \param output of the second collision point if it exists
+			 * \return the amount of collision points, 0 if no collision occured
+			 */
+			int getCircleCollisionFactors(const sf::Vector2f& circlePos, float circleRadius,
+										  float& outFactor1, float& outFactor2) const;
 		private:
 			sf::Vector2f m_pos;
 			sf::Vector2f m_dir;

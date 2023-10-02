@@ -115,21 +115,25 @@ void LightSimCanvas::setupCanvas()
         }
     }
 
-    {
+      {
         sf::Vector2f offset(0, 5);
         sf::Vector2f startPos(20, 250);
-        sf::Vector2f dir(1, -0.2);
+        sf::Vector2f dir(1, -0.9);
             for (int i = 0; i < 10; ++i)
             {
                 Laser* laser = new Laser();
                 laser->setPos(startPos + (float)i * offset);
                 laser->setDirection(dir);
+                dir.y += 0.05;
                 laser->setColor(sf::Color::Yellow);
                 m_canvas->addObject(laser);
                 m_lasers.push_back(laser);
             }
     }
 
+    GlasRectangle* rect = new GlasRectangle();
+    m_canvas->addObject(rect);
+    /*
     // Setup mirrors
     {
         Mirror* mirror = new Mirror();
@@ -186,7 +190,7 @@ void LightSimCanvas::setupCanvas()
          lense->serDiameter(200);
          m_canvas->addObject(lense);
          m_convexLenses.push_back(lense);
-     }
+     }*/
 
 
 }

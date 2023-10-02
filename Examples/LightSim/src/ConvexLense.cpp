@@ -141,6 +141,89 @@ bool ConvexLense::processLaser_intern(const QSFML::Utilities::Ray& ray,
 	std::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
 	sf::Vector2f& collisionPointOut) const
 {
+	/*float minAngle1 = M_PI + m_angle - m_openingAngle / 2;
+	float maxAngle1 = M_PI + m_angle + m_openingAngle / 2;
+	float collisionPointFactor1 = 999999;
+	float collisionPointNormalAngle1;
+	float reflectAngle1, refractAngle1;
+	bool hasRefraction1;
+
+	float minAngle2 = minAngle1 - M_PI;
+	float maxAngle2 = maxAngle1 - M_PI;
+	float collisionPointFactor2 = 999999;
+	float collisionPointNormalAngle2;
+	float reflectAngle2, refractAngle2;
+	bool hasRefraction2;
+
+	bool c1 = reflectAndRefract_circleSegment(ray, m_circlePos1, m_lenseRadius, minAngle1, maxAngle1, m_n1, m_n2,
+		true, collisionPointFactor1, collisionPointNormalAngle1,
+		reflectAngle1, refractAngle1, hasRefraction1);
+
+	bool c2 = reflectAndRefract_circleSegment(ray, m_circlePos2, m_lenseRadius, minAngle2, maxAngle2, m_n1, m_n2,
+		true, collisionPointFactor2, collisionPointNormalAngle2,
+		reflectAngle2, refractAngle2, hasRefraction2);
+
+	if (!c1 && !c2)
+		return false;
+
+	float finalFac;
+	float finalReflectAngle, finalRefractAngle;
+	bool finalDoesRefract;
+
+	finalFac = collisionPointFactor1;
+	finalReflectAngle = reflectAngle1;
+	finalRefractAngle = refractAngle1;
+	finalDoesRefract = hasRefraction1;
+	if ((c2 && collisionPointFactor1 > collisionPointFactor2) || !c1)
+	{
+		finalFac = collisionPointFactor2;
+		finalReflectAngle = reflectAngle2;
+		finalRefractAngle = refractAngle2;
+		finalDoesRefract = hasRefraction2;
+	}
+	
+	QSFML::Utilities::Ray reflected(ray);
+	sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(finalReflectAngle);
+	collisionPointOut = ray.getPoint(finalFac);
+	reflected.setPos(collisionPointOut + 0.001f * dir);
+	reflected.setDirection(dir);
+
+	if (!outgoingRay && !finalDoesRefract)
+	{
+		reflectedOut.push_back(reflected);
+		LaserInfo info;
+		info.start = reflected.getPos();
+		info.end = reflected.getPoint(100);
+		//additionalLightPathsOut.push_back(info);
+	}
+	if (finalDoesRefract)
+	{
+		QSFML::Utilities::Ray refracted(ray);
+		sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(finalRefractAngle);
+
+		refracted.setDirection(dir);
+
+		if (outgoingRay)
+		{
+			refracted.setPos(collisionPointOut + 0.001f * dir);
+			reflectedOut.push_back(refracted);
+		}
+		else
+		{
+			refracted.setPos(collisionPointOut);
+			LaserInfo info;
+			info.start = refracted.getPos();
+
+
+			refracted.setPos(collisionPointOut + 0.001f * dir);
+			sf::Vector2f collisionPoint1;
+			processLaser_intern(refracted, reflectedOut, additionalLightPathsOut, true, collisionPoint1);
+			info.end = collisionPoint1;
+			additionalLightPathsOut.push_back(info);
+		}
+	}
+	return true;*/
+
 	float fac = -1;
 	float normalAngle;
 	if (getLenseCollisionFactor(ray, outgoingRay, fac, normalAngle))
@@ -149,21 +232,21 @@ bool ConvexLense::processLaser_intern(const QSFML::Utilities::Ray& ray,
 		float rayAngle = QSFML::VectorMath::getAngle(ray.getDirection());
 		float reflectAngle, refractAngle;
 		bool doesRefract;
-/*
-		{
-			sf::RectangleShape* rect = new sf::RectangleShape(sf::Vector2f(10, 0.5));
-			rect->setFillColor(sf::Color::Blue);
-			rect->setPosition(collisionPointOut);
-			rect->setRotation(normalAngle * 180 / M_PI);
-			m_tmpDraw.push_back(rect);
-		}
-		{
-			sf::RectangleShape* rect = new sf::RectangleShape(sf::Vector2f(10, 0.5));
-			rect->setFillColor(sf::Color::Red);
-			rect->setPosition(collisionPointOut);
-			rect->setRotation(rayAngle * 180 / M_PI);
-			m_tmpDraw.push_back(rect);
-		}*/
+
+		// {
+		// 	sf::RectangleShape* rect = new sf::RectangleShape(sf::Vector2f(10, 0.5));
+		// 	rect->setFillColor(sf::Color::Blue);
+		// 	rect->setPosition(collisionPointOut);
+		// 	rect->setRotation(normalAngle * 180 / M_PI);
+		// 	m_tmpDraw.push_back(rect);
+		// }
+		// {
+		// 	sf::RectangleShape* rect = new sf::RectangleShape(sf::Vector2f(10, 0.5));
+		// 	rect->setFillColor(sf::Color::Red);
+		// 	rect->setPosition(collisionPointOut);
+		// 	rect->setRotation(rayAngle * 180 / M_PI);
+		// 	m_tmpDraw.push_back(rect);
+		// }
 
 		float n1 = m_n1;
 		float n2 = m_n2;
@@ -175,13 +258,15 @@ bool ConvexLense::processLaser_intern(const QSFML::Utilities::Ray& ray,
 
 		reflectAndRefract(rayAngle, normalAngle, n1, n2, reflectAngle, refractAngle, doesRefract);
 
-		QSFML::Utilities::Ray reflected(ray);
-		sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(reflectAngle);
-		reflected.setPos(collisionPointOut +0.001f* dir);
-		reflected.setDirection(dir);
+		
 
 		if (!outgoingRay && !doesRefract)
 		{
+			QSFML::Utilities::Ray reflected(ray);
+			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(reflectAngle);
+			reflected.setPos(collisionPointOut + 0.001f * dir);
+			reflected.setDirection(dir);
+
 			reflectedOut.push_back(reflected);
 			LaserInfo info;
 			info.start = reflected.getPos();
@@ -379,8 +464,9 @@ bool ConvexLense::getCircleCollisionFactor(const QSFML::Utilities::Ray& ray, con
 	float diskrim = (bdx2 + bdy2) * r2 - bdx2 * (bpy2 - 2 * bp.y * center.y + yp2) + 2 * bd.x * bd.y * (bpx_xp) * (bpy_yp)-bdy2 * (bpx2 - 2 * bp.x * center.x + xp2);
 	float divisor = (bdx2 + bdy2);
 	float tmp1 = bd.x * (bpx_xp) + bd.y * (bpy_yp);
-	float t1 =  ((sqrt(diskrim) - tmp1) / divisor);
-	float t2 = -((sqrt(diskrim) + tmp1) / divisor);
+	float root = sqrt(diskrim);
+	float t1 =  ((root - tmp1) / divisor);
+	float t2 = -((root + tmp1) / divisor);
 
 	if (t1 < 0 && t2 < 0)
 		return false;

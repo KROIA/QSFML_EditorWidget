@@ -36,12 +36,14 @@ public:
         float& outReflectAngle, float& outRefractAngle, bool &outHasRefraction);
 
     static bool reflectAndRefract_circleSegment(const QSFML::Utilities::Ray& ray, const sf::Vector2f& circleCenter,
-        float circleRadius, float minAngle, float maxAngle, float n1, float n2,
-        float& outCollisionNormal, float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction);
+        float circleRadius, float minAngle, float maxAngle, float n1, float n2, bool normalDirToCircleCenter,
+        float &outCollisionPointFactor,
+        float& outCollisionNormalAngle, float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction);
 
     static bool reflectAndRefract_circle(const QSFML::Utilities::Ray& ray, const sf::Vector2f& circleCenter,
-        float circleRadius, float n1, float n2,
-        float& outCollisionNormal, float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction);
+        float circleRadius, float n1, float n2, bool normalDirToCircleCenter,
+        float& outCollisionPointFactor,
+        float& outCollisionNormalAngle, float& outReflectAngle, float& outRefractAngle, bool& outHasRefraction);
 
 protected:
     //void update() override;

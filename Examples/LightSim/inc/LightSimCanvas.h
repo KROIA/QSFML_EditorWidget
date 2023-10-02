@@ -7,6 +7,7 @@
 #include "CurvedMirror.h"
 #include "Laser.h"
 #include "ConvexLense.h"
+#include "GlasRectangle.h"
 
 
 QT_BEGIN_NAMESPACE

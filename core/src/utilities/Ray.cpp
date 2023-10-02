@@ -221,5 +221,41 @@ namespace QSFML
 			return raycast(m_pos, m_dir, other.m_pos, other.m_dir, outDistanceFactorA, outDistanceFactorB);
 		}
 
+		int Ray::getCircleCollisionFactors(const sf::Vector2f& circlePos, float circleRadius,
+										   float& outFactor1, float& outFactor2) const
+		{
+			bool failed;
+			float shortestFactorToCenter = getShortestDistanceFactor(circlePos, &failed);
+			if (failed)
+				return 0; // No collision on circle
+
+			float m_dirx2 = m_dir.x * m_dir.x;
+			float m_diry2 = m_dir.y * m_dir.y;
+
+			float m_posy2 = m_pos.y * m_pos.y;
+			float m_posx2 = m_pos.x * m_pos.x;
+
+			float xp2 = circlePos.x * circlePos.x;
+			float yp2 = circlePos.y * circlePos.y;
+			float r2 = circleRadius * circleRadius;
+
+			float m_posx_xp = m_pos.x - circlePos.x;
+			float m_posy_yp = m_pos.y - circlePos.y;
+
+			float divisor = (m_dirx2 + m_diry2);
+			float diskrim = divisor * r2 - m_dirx2 * (m_posy2 - 2 * m_pos.y * circlePos.y + yp2) + 2 * m_dir.x * m_dir.y * m_posx_xp * m_posy_yp-m_diry2 * (m_posx2 - 2 * m_pos.x * circlePos.x + xp2);
+			
+			float tmp1 = m_dir.x * (m_posx_xp)+m_dir.y * (m_posy_yp);
+			float root = sqrt(diskrim);
+			float t1 = ((root - tmp1) / divisor);
+			float t2 = -((root + tmp1) / divisor);
+
+			outFactor1 = t1;
+			outFactor2 = t2;
+			if (diskrim == 0)
+				return 1;
+			return 2;
+		}
+
 	}
 }
