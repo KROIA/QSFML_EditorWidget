@@ -45,11 +45,13 @@ namespace QSFML
 			void setDirection(float dirX, float dirY);
 			const sf::Vector2f& getDirection() const;
 
+			float getAngle() const;
+
 			/*
-				Returns the counterclockwise angle in radiant between vec1 and vec2.
+				Returns the clockwise angle in radiant between vec1 and vec2.
 				The angle points from vec1 to vec2. If the direction of that angle is clockwise, the angle is negative.
 			*/
-			float getAngle(const Ray& ray);
+			float getAngle(const Ray& ray) const;
 
 			sf::Vector2f getPoint(float scalar) const;
 

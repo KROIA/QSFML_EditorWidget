@@ -8,35 +8,37 @@ CurvedMirror::CurvedMirror(unsigned int resolution, const std::string& name)
 	{
 		QSFML::Components::Line* line = new QSFML::Components::Line();
 		m_mirrorLines.push_back(line);
-		m_mirrorRays.push_back(QSFML::Utilities::Ray());
+		m_shape.m_mirrorRays.push_back(QSFML::Utilities::Ray());
 		addComponent(line);
 	}
-	m_resolution = resolution;
-	m_openingAngle = M_PI / 4;
-	m_radius = 40;
-	m_angle = M_PI / 4;
-	m_pos = sf::Vector2f(0, 0);
+	m_shape.m_resolution = resolution;
+	m_shape.m_openingAngle = M_PI / 4;
+	m_shape.m_radius = 40;
+	m_shape.m_angle = M_PI / 4;
+	m_shape.m_pos = sf::Vector2f(0, 0);
 	m_rotationSpeed = QSFML::Utilities::RandomEngine::getFloat(-M_PI / 100, M_PI / 100) *0.5;
+
+	setRefractionIndexOutside(1);
+	setRefractionIndexInside(-1);
+	setShape(&m_shape);
 	updateLine();
 	
 }
 CurvedMirror::CurvedMirror(const CurvedMirror& other)
 	: OpticalElement(other)
 {
-	m_resolution = other.m_resolution;
-	m_openingAngle = other.m_openingAngle;
-	for (size_t i = 0; i < m_resolution; ++i)
+	
+	
+	m_shape = other.m_shape;
+	for (size_t i = 0; i < m_shape.m_resolution; ++i)
 	{
 		QSFML::Components::Line* line = new QSFML::Components::Line();
 		m_mirrorLines.push_back(line);
-		m_mirrorRays.push_back(QSFML::Utilities::Ray());
+		m_shape.m_mirrorRays.push_back(QSFML::Utilities::Ray());
 		addComponent(line);
 	}
-	
-	m_radius = other.m_radius;
-	m_angle = other.m_angle;
-	m_pos = other.m_pos;
 	m_rotationSpeed = other.m_rotationSpeed;
+	setShape(&m_shape);
 	updateLine();
 }
 CurvedMirror::~CurvedMirror()
@@ -61,59 +63,59 @@ const sf::Color& CurvedMirror::getColor() const
 
 void CurvedMirror::setPos(const sf::Vector2f& pos)
 {
-	m_pos = pos;
+	m_shape.m_pos = pos;
 	updateLine();
 }
 const sf::Vector2f& CurvedMirror::getPos() const
 {
-	return m_pos;
+	return m_shape.m_pos;
 }
 
 void CurvedMirror::setRotation(float angle)
 {
-	m_angle = angle;
+	m_shape.m_angle = angle;
 	updateLine();
 }
 float CurvedMirror::getRotation() const
 {
-	return m_angle;
+	return m_shape.m_angle;
 }
 void CurvedMirror::setOpeningAngle(float angle)
 {
-	m_openingAngle = angle;
+	m_shape.m_openingAngle = angle;
 	updateLine();
 }
 float CurvedMirror::getOpeningAngle() const
 {
-	return m_openingAngle;
+	return m_shape.m_openingAngle;
 }
 
 void CurvedMirror::setRadius(float r)
 {
-	m_radius = r;
+	m_shape.m_radius = r;
 	updateLine();
 }
 float CurvedMirror::getRadius() const
 {
-	return m_radius;
+	return m_shape.m_radius;
 }
 
 void CurvedMirror::updateLine()
 {
-	float dAlpha = m_openingAngle / m_resolution;
-	float alpha = - m_openingAngle/2;
-	sf::Vector2f start = QSFML::VectorMath::getRotatedUnitVector(alpha) * m_radius;
-	sf::Vector2f rotationPoint = QSFML::VectorMath::getUnitVector() * m_radius;
-	start = QSFML::VectorMath::getRotated(start, rotationPoint,  m_angle) + m_pos;
-	for (unsigned int i = 0; i < m_resolution; ++i)
+	float dAlpha = m_shape.m_openingAngle / m_shape.m_resolution;
+	float alpha = -m_shape.m_openingAngle/2;
+	sf::Vector2f start = QSFML::VectorMath::getRotatedUnitVector(alpha) * m_shape.m_radius;
+	sf::Vector2f rotationPoint = QSFML::VectorMath::getUnitVector() * m_shape.m_radius;
+	start = QSFML::VectorMath::getRotated(start, rotationPoint, m_shape.m_angle) + m_shape.m_pos;
+	for (unsigned int i = 0; i < m_shape.m_resolution; ++i)
 	{
 		alpha += dAlpha;
-		sf::Vector2f end = QSFML::VectorMath::getRotatedUnitVector(alpha) * m_radius;
-		end = QSFML::VectorMath::getRotated(end, rotationPoint, m_angle) + m_pos;
+		sf::Vector2f end = QSFML::VectorMath::getRotatedUnitVector(alpha) * m_shape.m_radius;
+		end = QSFML::VectorMath::getRotated(end, rotationPoint, m_shape.m_angle) + m_shape.m_pos;
 		m_mirrorLines[i]->setStartPos(start);
 		m_mirrorLines[i]->setEndPos(end);
-		m_mirrorRays[i].setPos(start);
-		m_mirrorRays[i].setDirection(end - start);
+		m_shape.m_mirrorRays[i].setPos(start);
+		m_shape.m_mirrorRays[i].setDirection(end - start);
 		start = end;
 	}
 
@@ -123,7 +125,7 @@ void CurvedMirror::updateLine()
 	m_CurvedMirrorRay.setPos(start);
 	m_CurvedMirrorRay.setDirection(direction * m_width);*/
 }
-
+/*
 bool CurvedMirror::processLaser(const QSFML::Utilities::Ray& ray,
 	std::vector< QSFML::Utilities::Ray>& reflectedOut,
 	std::vector< LaserInfo>& additionalLightPathsOut) const
@@ -153,20 +155,9 @@ bool CurvedMirror::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& d
 	size_t i;
 	float a;
 	return getShortestDistanceAndIndex(ray, a, distanceOut, i);
-	/*float factorA;
+}*/
 
-	for (size_t i = 0; i < m_mirrorRays.size(); ++i)
-	{
-		if (m_mirrorRays[i].raycast(ray, factorA, distanceOut))
-		{
-			if (factorA >= 0 && factorA <= 1 && distanceOut > 0.1)
-				return true;
-		}
-	}
-	return false;*/
-}
-
-bool CurvedMirror::getShortestDistanceAndIndex(const QSFML::Utilities::Ray& ray, float& distanceA, float& distanceB, size_t& index) const
+bool CurvedMirror::MirrorShape::getShortestDistanceAndIndex(const QSFML::Utilities::Ray& ray, float& distanceA, float& distanceB, size_t& index) const
 {
 	float factorA, factorB;
 	float shortestDistanceA;
@@ -198,4 +189,23 @@ bool CurvedMirror::getShortestDistanceAndIndex(const QSFML::Utilities::Ray& ray,
 void CurvedMirror::update()
 {
 	setRotation(getRotation() + m_rotationSpeed);
+}
+
+
+bool CurvedMirror::MirrorShape::getCollisionData(const QSFML::Utilities::Ray& ray,
+	float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
+{
+	float factorA, factorB;
+
+	size_t i;
+	if (getShortestDistanceAndIndex(ray, factorA, factorB, i))
+	{
+		outCollisionFactor = factorB;
+		sf::Vector2f collisionPoint = m_mirrorRays[i].getPoint(factorA);
+		float subshapeAngle = QSFML::VectorMath::getAngle(m_mirrorRays[i].getDirection());
+
+		outNormalAngle = subshapeAngle + M_PI_2;
+		return true;
+	}
+	return false;
 }

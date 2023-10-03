@@ -153,8 +153,11 @@ namespace QSFML
 		{
 			return m_dir;
 		}
-
-		float Ray::getAngle(const Ray& ray)
+		float Ray::getAngle() const
+		{
+			return VectorMath::getAngle(m_dir);
+		}
+		float Ray::getAngle(const Ray& ray) const
 		{
 			return VectorMath::getAngle(m_dir, ray.m_dir);
 		}

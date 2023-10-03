@@ -28,23 +28,33 @@ public:
 
 private:
 	void updateLine();
-	bool processLaser(const QSFML::Utilities::Ray& ray,
-		std::vector< QSFML::Utilities::Ray>& reflectedOut,
-		std::vector< LaserInfo>& additionalLightPathsOut) const override;
-	bool getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const override;
+	//bool processLaser(const QSFML::Utilities::Ray& ray,
+	//	std::vector< QSFML::Utilities::Ray>& reflectedOut,
+	//	std::vector< LaserInfo>& additionalLightPathsOut) const override;
+	//bool getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const override;
 
-	bool getShortestDistanceAndIndex(const QSFML::Utilities::Ray& ray, float& distanceA, float& distanceB, size_t& index) const;
 	void update() override;
 
-	std::vector<QSFML::Components::Line*> m_mirrorLines;
-	std::vector<QSFML::Utilities::Ray> m_mirrorRays;
+	class MirrorShape : public Shape
+	{
+	public:
+		bool getCollisionData(const QSFML::Utilities::Ray& ray,
+			float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const override;
+
+		bool getShortestDistanceAndIndex(const QSFML::Utilities::Ray& ray, float& distanceA, float& distanceB, size_t& index) const;
+
+		float m_angle;
+		float m_radius;
+		float m_openingAngle;
+		unsigned int m_resolution;
+		sf::Vector2f m_pos;
+		std::vector<QSFML::Utilities::Ray> m_mirrorRays;
+
+	};
+
+	MirrorShape m_shape;
 
 
-	float m_angle;
-	float m_radius;
-	float m_openingAngle;
-	unsigned int m_resolution;
-	sf::Vector2f m_pos;
-	 
+	std::vector<QSFML::Components::Line*> m_mirrorLines;	 
 	float m_rotationSpeed;
 };

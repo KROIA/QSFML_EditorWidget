@@ -24,17 +24,27 @@ public:
 
 private:
 	void updateLine();
-	bool processLaser(const QSFML::Utilities::Ray& ray, 
-		std::vector< QSFML::Utilities::Ray>& reflectedOut,
-		std::vector< LaserInfo>& additionalLightPathsOut) const override;
-	bool getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const override;
+	//bool processLaser(const QSFML::Utilities::Ray& ray, 
+	//	std::vector< QSFML::Utilities::Ray>& reflectedOut,
+	//	std::vector< LaserInfo>& additionalLightPathsOut) const override;
+	//bool getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const override;
 
 	void update() override;
 
+	class MirrorShape : public Shape
+	{
+	public:
+		bool getCollisionData(const QSFML::Utilities::Ray& ray,
+			float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const override;
+
+		float m_width;
+		float m_angle;
+		sf::Vector2f m_pos;
+		QSFML::Utilities::Ray m_mirrorRay;
+	};
+
+	MirrorShape m_shape;
 	QSFML::Components::Line* m_mirrorLine;
-	float m_width;
-	float m_angle;
-	sf::Vector2f m_pos;
-	QSFML::Utilities::Ray m_mirrorRay;
+	
 	float m_rotationSpeed;
 };
