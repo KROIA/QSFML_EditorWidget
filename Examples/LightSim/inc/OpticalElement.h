@@ -48,6 +48,11 @@ public:
     float getRefractionIndexInside() const;
     float getRefractionIndexOutside() const;
 
+    void doesReflect(bool enable);
+    void doesRefract(bool enable);
+    bool doesReflect() const;
+    bool doesRefract() const;
+
     bool processLaser(const QSFML::Utilities::Ray& ray, 
                               std::vector< QSFML::Utilities::Ray> & reflectedOut,
                               std::vector< LaserInfo> &additionalLightPathsOut) const;
@@ -64,25 +69,12 @@ public:
        /param n2: refraction index of the medium 2
        /param outData: Reflection data
     */
-    static void reflectAndRefract(float rayAngle, float normalAngle, float n1, float n2,
-        ReflectionAndRefractionData &outData);
+    void reflectAndRefract(float rayAngle, float normalAngle, float n1, float n2,
+        ReflectionAndRefractionData &outData) const;
 
-    static bool reflectAndRefract(const QSFML::Utilities::Ray& ray, const Shape& shape, float n1, float n2,
-        ReflectionAndRefractionData& outData);
+    bool reflectAndRefract(const QSFML::Utilities::Ray& ray, const Shape& shape, float n1, float n2,
+        ReflectionAndRefractionData& outData) const;
 
-    static bool reflectAndRefract_circleSegment(const QSFML::Utilities::Ray& ray, const sf::Vector2f& circleCenter,
-        float circleRadius, float minAngle, float maxAngle, float n1, float n2, bool normalDirToCircleCenter,
-        float &outCollisionPointFactor,
-        ReflectionAndRefractionData &outData);
-
-    static bool reflectAndRefract_circle(const QSFML::Utilities::Ray& ray, const sf::Vector2f& circleCenter,
-        float circleRadius, float n1, float n2, bool normalDirToCircleCenter,
-        float& outCollisionPointFactor,
-        ReflectionAndRefractionData& outData);
-    
-    static bool reflectAndRefract_line(const QSFML::Utilities::Ray& ray, const sf::Vector2f& pos1, const sf::Vector2f& pos2,
-        float& outCollisionPointFactor,
-        ReflectionAndRefractionData& outData);
 protected:
     //void update() override;
 
@@ -95,6 +87,8 @@ private:
 
     Shape* m_shape;
     float m_n1, m_n2;
+    bool m_doesReflect; 
+    bool m_doesRefract;
     mutable size_t m_bounceCount;
     size_t m_maxBounceCount;
     static std::vector<OpticalElement*> s_opticalElements;

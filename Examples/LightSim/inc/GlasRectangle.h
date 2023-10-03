@@ -11,19 +11,9 @@ public:
     OBJECT_DECL(GlasRectangle);
 
 
-    //bool processLaser(const QSFML::Utilities::Ray& ray,
-    //    std::vector< QSFML::Utilities::Ray>& reflectedOut,
-    //    std::vector< LaserInfo>& additionalLightPathsOut) const override;
-
-    //bool getRaycastDistance(const QSFML::Utilities::Ray& ray, float& outDistance) const override;
-
-
+    void update() override;
 private:
-    //void processLaser_intern(const QSFML::Utilities::Ray& ray,
-    //    std::vector< QSFML::Utilities::Ray>& reflectedOut,
-    //    std::vector< LaserInfo>& additionalLightPathsOut,
-    //    sf::Vector2f &outNextCollisionPoint, sf::Vector2f& outCollisionPoint) const;
-
+    
     class RectShape : public Shape
     {
     public:
@@ -33,7 +23,8 @@ private:
             float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const override;
    
         void set(const sf::Vector2f& pos, const sf::Vector2f& size, float rotation);
-    
+        void setRotation(float angle);
+        float getRotation() const;
         class Painter : public QSFML::Components::Drawable
         {
         public:
@@ -52,6 +43,7 @@ private:
 
         };
         Painter* m_painter;
+        
     private:
         sf::Vector2f m_size;
         float m_angle;
@@ -63,6 +55,4 @@ private:
     };
 
     RectShape m_shape;
-    //float m_n1;
-    //float m_n2;
 };

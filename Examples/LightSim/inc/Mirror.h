@@ -24,10 +24,6 @@ public:
 
 private:
 	void updateLine();
-	//bool processLaser(const QSFML::Utilities::Ray& ray, 
-	//	std::vector< QSFML::Utilities::Ray>& reflectedOut,
-	//	std::vector< LaserInfo>& additionalLightPathsOut) const override;
-	//bool getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const override;
 
 	void update() override;
 

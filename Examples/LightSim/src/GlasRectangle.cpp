@@ -23,62 +23,10 @@ GlasRectangle::~GlasRectangle()
 }
 OBJECT_IMPL(GlasRectangle);
 
-
-/*bool GlasRectangle::processLaser(const QSFML::Utilities::Ray& ray,
-    std::vector< QSFML::Utilities::Ray>& reflectedOut,
-    std::vector< LaserInfo>& additionalLightPathsOut) const
+void GlasRectangle::update()
 {
-    sf::Vector2f collisionPoint; 
-    return processLaser_intern(ray, reflectedOut, additionalLightPathsOut, collisionPoint);
+    m_shape.setRotation(m_shape.getRotation() + M_PI * 0.001) ;
 }
-
-void GlasRectangle::processLaser_intern(const QSFML::Utilities::Ray& ray,
-    std::vector< QSFML::Utilities::Ray>& reflectedOut,
-    std::vector< LaserInfo>& additionalLightPathsOut,
-    sf::Vector2f& outNextCollisionPoint, sf::Vector2f& outCollisionPoint) const
-{
-    ReflectionAndRefractionData data1;
-    if (!reflectAndRefract(ray, m_shape, m_n1, m_n1, data1))
-        return;
-
-    outCollisionPoint = ray.getPoint(data1.rayCollisionFactor);
-    outNextCollisionPoint = outCollisionPoint;
-
-    QSFML::Utilities::Ray bounced(ray);
-    sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(data1.reflectAngle);
-    bounced.setPos(outCollisionPoint + 0.001f * dir);
-    bounced.setDirection(dir);
-
-
-    float distance;
-    if (getRaycastDistance(bounced, distance))
-    {
-        LaserInfo info;
-        info.start = outCollisionPoint;
-        sf::Vector2f point;
-        processLaser_intern(bounced, reflectedOut, additionalLightPathsOut, point, outCollisionPoint);
-        info.end = point;
-        additionalLightPathsOut.push_back(info);
-    }
-    else
-    {
-        reflectedOut.push_back(bounced);
-    }
-
-    
-    
-    
-}
-
-bool GlasRectangle::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& outDistance) const
-{
-    float normal; 
-    bool inside;
-    return m_shape.getCollisionData(ray, outDistance, normal, inside);
-
-    
-}*/
-
 
 GlasRectangle::RectShape::RectShape()
     : Shape()
@@ -86,6 +34,7 @@ GlasRectangle::RectShape::RectShape()
 {
 
 }
+
 
 bool GlasRectangle::RectShape::getCollisionData(const QSFML::Utilities::Ray& ray,
     float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
@@ -152,6 +101,14 @@ bool GlasRectangle::RectShape::getCollisionData(const QSFML::Utilities::Ray& ray
     outCollisionFactor = shortest;
     return true;
 
+}
+void GlasRectangle::RectShape::setRotation(float angle)
+{
+    set(m_pos, m_size, angle);
+}
+float GlasRectangle::RectShape::getRotation() const
+{
+    return m_angle;
 }
 void GlasRectangle::RectShape::set(const sf::Vector2f& pos, const sf::Vector2f& size, float rotation)
 {

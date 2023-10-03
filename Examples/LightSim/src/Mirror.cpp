@@ -10,8 +10,7 @@ Mirror::Mirror(const std::string& name)
 	m_shape.m_pos = sf::Vector2f(0, 0);
 	m_rotationSpeed = QSFML::Utilities::RandomEngine::getFloat(-M_PI / 100, M_PI / 100)*0.5;
 
-	setRefractionIndexOutside(1);
-	setRefractionIndexInside(-1);
+	doesRefract(false);
 	setShape(&m_shape);
 	updateLine();
 	addComponent(m_mirrorLine);
@@ -83,41 +82,6 @@ void Mirror::updateLine()
 	m_shape.m_mirrorRay.setPos(start);
 	m_shape.m_mirrorRay.setDirection(direction * m_shape.m_width);
 }
-/*
-bool Mirror::processLaser(const QSFML::Utilities::Ray& ray, 
-	std::vector< QSFML::Utilities::Ray>& reflectedOut,
-	std::vector< LaserInfo>& additionalLightPathsOut) const
-{
-	float factorA, factorB;
-	if (m_mirrorRay.raycast(ray, factorA, factorB))
-	{
-		if (factorA < 0 || factorA > 1)
-			return false;
-		sf::Vector2f collisionPoint = m_mirrorRay.getPoint(factorA);
-
-		float rayAngle = QSFML::VectorMath::getAngle(ray.getDirection());
-		float newAngle = 2 * m_angle - rayAngle;
-
-
-		//qDebug() << "new Angle: " << newAngle*180/M_PI << " " << rayAngle;
-
-		QSFML::Utilities::Ray reflected(collisionPoint, QSFML::VectorMath::getRotatedUnitVector(newAngle));
-		reflectedOut.push_back(reflected);
-		return true;
-	}
-	return false;
-}
-bool Mirror::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const
-{
-	float factorA;
-
-	if (m_mirrorRay.raycast(ray, factorA, distanceOut))
-	{
-		if (factorA >= 0 && factorA <= 1 && distanceOut > 0.1)
-			return true;
-	}
-	return false;
-}*/
 
 void Mirror::update()
 {

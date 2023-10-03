@@ -18,8 +18,9 @@ CurvedMirror::CurvedMirror(unsigned int resolution, const std::string& name)
 	m_shape.m_pos = sf::Vector2f(0, 0);
 	m_rotationSpeed = QSFML::Utilities::RandomEngine::getFloat(-M_PI / 100, M_PI / 100) *0.5;
 
-	setRefractionIndexOutside(1);
-	setRefractionIndexInside(-1);
+	//setRefractionIndexOutside(1);
+	//setRefractionIndexInside(-1);
+	doesRefract(false);
 	setShape(&m_shape);
 	updateLine();
 	
