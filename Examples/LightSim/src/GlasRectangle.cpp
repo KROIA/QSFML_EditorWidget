@@ -36,17 +36,17 @@ GlasRectangle::RectShape::RectShape()
 }
 
 
-bool GlasRectangle::RectShape::getCollisionData(const QSFML::Utilities::Ray& ray,
+bool GlasRectangle::RectShape::getCollisionData(const LightRay& ray,
     float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
 {
 
     float d1 = 999999, d2 = 999999, d3 = 999999, d4 = 999999;
     using namespace QSFML::Utilities;
     float fac1 = 999999, fac2 = 999999, fac3 = 999999, fac4 = 999999;
-    bool c1 = ray.raycast(Ray(m_TL, m_TR - m_TL), d1, fac1);
-    bool c2 = ray.raycast(Ray(m_TL, m_BL - m_TL), d2, fac2);
-    bool c3 = ray.raycast(Ray(m_BR, m_TR - m_BR), d3, fac3);
-    bool c4 = ray.raycast(Ray(m_BR, m_BL - m_BR), d4, fac4);
+    bool c1 = ray.ray.raycast(Ray(m_TL, m_TR - m_TL), d1, fac1);
+    bool c2 = ray.ray.raycast(Ray(m_TL, m_BL - m_TL), d2, fac2);
+    bool c3 = ray.ray.raycast(Ray(m_BR, m_TR - m_BR), d3, fac3);
+    bool c4 = ray.ray.raycast(Ray(m_BR, m_BL - m_BR), d4, fac4);
 
     if (fac1 < 0 || fac1 > 1 || d1 < 0)
         c1 = false;

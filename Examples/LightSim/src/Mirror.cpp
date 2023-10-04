@@ -88,12 +88,12 @@ void Mirror::update()
 	setRotation(getRotation() + m_rotationSpeed);
 }
 
-bool Mirror::MirrorShape::getCollisionData(const QSFML::Utilities::Ray& ray,
+bool Mirror::MirrorShape::getCollisionData(const LightRay& ray,
 	float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
 {
 	float factorA, fac;
 
-	if (m_mirrorRay.raycast(ray, factorA, fac))
+	if (m_mirrorRay.raycast(ray.ray, factorA, fac))
 	{
 		if (factorA >= 0 && factorA <= 1 && fac > 0.01)
 		{

@@ -127,7 +127,7 @@ void CurvedMirror::updateLine()
 	m_CurvedMirrorRay.setDirection(direction * m_width);*/
 }
 /*
-bool CurvedMirror::processLaser(const QSFML::Utilities::Ray& ray,
+bool CurvedMirror::processLaser(const LightRay& ray,
 	std::vector< QSFML::Utilities::Ray>& reflectedOut,
 	std::vector< LaserInfo>& additionalLightPathsOut) const
 {
@@ -151,14 +151,14 @@ bool CurvedMirror::processLaser(const QSFML::Utilities::Ray& ray,
 	}
 	return false;
 }
-bool CurvedMirror::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const
+bool CurvedMirror::getRaycastDistance(const LightRay& ray, float& distanceOut) const
 {
 	size_t i;
 	float a;
 	return getShortestDistanceAndIndex(ray, a, distanceOut, i);
 }*/
 
-bool CurvedMirror::MirrorShape::getShortestDistanceAndIndex(const QSFML::Utilities::Ray& ray, float& distanceA, float& distanceB, size_t& index) const
+bool CurvedMirror::MirrorShape::getShortestDistanceAndIndex(const LightRay& ray, float& distanceA, float& distanceB, size_t& index) const
 {
 	float factorA, factorB;
 	float shortestDistanceA;
@@ -166,7 +166,7 @@ bool CurvedMirror::MirrorShape::getShortestDistanceAndIndex(const QSFML::Utiliti
 	long shortestIndex = -1;
 	for (size_t i = 0; i < m_mirrorRays.size(); ++i)
 	{
-		if (m_mirrorRays[i].raycast(ray, factorA, factorB))
+		if (m_mirrorRays[i].raycast(ray.ray, factorA, factorB))
 		{
 			if (factorB < shortestDistanceB)
 			{
@@ -193,7 +193,7 @@ void CurvedMirror::update()
 }
 
 
-bool CurvedMirror::MirrorShape::getCollisionData(const QSFML::Utilities::Ray& ray,
+bool CurvedMirror::MirrorShape::getCollisionData(const LightRay& ray,
 	float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
 {
 	float factorA, factorB;

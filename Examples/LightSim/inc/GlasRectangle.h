@@ -19,7 +19,7 @@ private:
     public:
         RectShape();
 
-        bool getCollisionData(const QSFML::Utilities::Ray& ray,
+        bool getCollisionData(const LightRay& ray,
             float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const override;
    
         void set(const sf::Vector2f& pos, const sf::Vector2f& size, float rotation);

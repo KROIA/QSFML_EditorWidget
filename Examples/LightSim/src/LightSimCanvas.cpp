@@ -48,14 +48,28 @@ void LightSimCanvas::setupCanvas()
 
     sf::Vector2f laserPos(0, 180);
     // Setup Laser
-    /* {
+    {
+        Laser* laser = new Laser();
+        laser->setPos(sf::Vector2f(-100,8));
+        laser->setDirection(sf::Vector2f(1, 0));
+        m_canvas->addObject(laser);
+        m_lasers.push_back(laser);
+    }
+   /* {
+        Laser* laser = new Laser();
+        laser->setPos(sf::Vector2f(-200, 10));
+        laser->setDirection(sf::Vector2f(1, 0));
+        m_canvas->addObject(laser);
+        m_lasers.push_back(laser);
+    }*/
+   /* {
         Laser* laser = new Laser();
         laser->setPos(laserPos);
         laser->setDirection(sf::Vector2f(1, 0));
         m_canvas->addObject(laser);
         m_lasers.push_back(laser);
-    }*/
-     {
+    }
+   {
         Laser* laser = new Laser();
         laser->setPos(laserPos);
         laser->setDirection(sf::Vector2f(1, 0.1));
@@ -113,9 +127,9 @@ void LightSimCanvas::setupCanvas()
             m_canvas->addObject(laser);
             m_lasers.push_back(laser);
         }
-    }
+    }*/
 
-     {
+     /* {
         sf::Vector2f offset(0, 5);
         sf::Vector2f startPos(20, 250);
         sf::Vector2f dir(1, -0.2);
@@ -129,7 +143,7 @@ void LightSimCanvas::setupCanvas()
                 m_canvas->addObject(laser);
                 m_lasers.push_back(laser);
             }
-    }
+    }*/
 
    // GlasRectangle* rect = new GlasRectangle();
    // m_canvas->addObject(rect);
@@ -172,15 +186,16 @@ void LightSimCanvas::setupCanvas()
 
       {
          ConvexLense* lense = new ConvexLense();
-         lense->setPos(sf::Vector2f(400, 200));
+         //lense->setPos(sf::Vector2f(400, 200));
+         lense->setPos(sf::Vector2f(0, 0));
          lense->setFocusLength(200);
-         lense->setRotation(0);
+         lense->setRotation(-M_PI_2);
          lense->setColor(sf::Color(200, 200, 200));
          lense->serDiameter(200);
          m_canvas->addObject(lense);
          m_convexLenses.push_back(lense);
      }
-
+/*
      {
          ConvexLense* lense = new ConvexLense();
          lense->setPos(sf::Vector2f(600, 200));
@@ -192,7 +207,7 @@ void LightSimCanvas::setupCanvas()
          lense->setRotation(M_PI / 10);
          m_canvas->addObject(lense);
          m_convexLenses.push_back(lense);
-     }
+     }*/
 
 
 }

@@ -34,20 +34,20 @@ Laser::~Laser()
 
 void Laser::setPos(const sf::Vector2f& pos)
 {
-	m_rootRay.setPos(pos);
+	m_rootRay.ray.setPos(pos);
 }
 const sf::Vector2f& Laser::getPos() const
 {
-	return m_rootRay.getPos();
+	return m_rootRay.ray.getPos();
 }
 void Laser::setDirection(const sf::Vector2f& dir)
 {
-	m_rootRay.setDirection(dir);
-	m_rootRay.normalize();
+	m_rootRay.ray.setDirection(dir);
+	m_rootRay.ray.normalize();
 }
 const sf::Vector2f& Laser::getDirection() const
 {
-	return m_rootRay.getDirection();
+	return m_rootRay.ray.getDirection();
 }
 
 void Laser::setColor(const sf::Color& col)
@@ -76,13 +76,13 @@ void Laser::update()
 	updateRay(m_rootRay, m_rootLaserInfo, 0);
 	
 }
-void Laser::updateRay(QSFML::Utilities::Ray& r, LaserInfo& info, unsigned int iteration)
+void Laser::updateRay(LightRay& r, LaserInfo& info, unsigned int iteration)
 {
 	//OpticalElement* OpticalElement = OpticalElements[i];
 	if (iteration > m_maxBounces)
 		return;
 
-	QSFML::Utilities::Ray ray = r;
+	LightRay ray = r;
 
 	OpticalElement* nearesElement = nullptr;
 	float minDistance = 99999999;
@@ -101,14 +101,14 @@ void Laser::updateRay(QSFML::Utilities::Ray& r, LaserInfo& info, unsigned int it
 	}
 
 	LaserInfo laserInfo(info);
-	laserInfo.start = ray.getPos();
-	laserInfo.end = ray.getPoint(minDistance);
+	laserInfo.start = ray.ray.getPos();
+	laserInfo.end = ray.ray.getPoint(minDistance);
 
 	m_lasers.push_back(laserInfo);
 
 	if (nearesElement)
 	{
-		std::vector<QSFML::Utilities::Ray> reflected;
+		std::vector<LightRay> reflected;
 		std::vector< LaserInfo> additionalLightPaths;
 		if (nearesElement->processLaser(ray, reflected, additionalLightPaths))
 		{

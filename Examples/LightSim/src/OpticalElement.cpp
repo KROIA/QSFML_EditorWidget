@@ -8,7 +8,7 @@ OpticalElement::OpticalElement(const std::string& name)
 	, m_n1(1)
 	, m_n2(1.5)
 	, m_bounceCount(0)
-	, m_maxBounceCount(3)
+	, m_maxBounceCount()
 	, m_doesReflect(true)
 	, m_doesRefract(true)
 
@@ -91,8 +91,8 @@ bool OpticalElement::doesRefract() const
 	return m_doesRefract;
 }
 
-bool OpticalElement::processLaser(const QSFML::Utilities::Ray& ray, 
-	std::vector< QSFML::Utilities::Ray>& reflectedOut,
+bool OpticalElement::processLaser(const LightRay& ray,
+	std::vector< LightRay>& reflectedOut,
 	std::vector< LaserInfo>& additionalLightPathsOut) const
 {
 	if (!m_shape)
@@ -101,7 +101,7 @@ bool OpticalElement::processLaser(const QSFML::Utilities::Ray& ray,
 	processLaser_intern(ray, reflectedOut, additionalLightPathsOut, p1);
 	return true;
 }
-bool OpticalElement::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& outDistance) const
+bool OpticalElement::getRaycastDistance(const LightRay& ray, float& outDistance) const
 {
 	if (!m_shape)
 		return false;
@@ -162,7 +162,7 @@ void OpticalElement::reflectAndRefract(float rayAngle, float normalAngle, float 
 	}
 }
 
-bool OpticalElement::reflectAndRefract(const QSFML::Utilities::Ray& ray, const Shape& shape, float n1, float n2,
+bool OpticalElement::reflectAndRefract(const LightRay& ray, const Shape& shape, float n1, float n2,
 	ReflectionAndRefractionData& outData) const
 {
 	float collisionPointFactor = 0;
@@ -176,16 +176,16 @@ bool OpticalElement::reflectAndRefract(const QSFML::Utilities::Ray& ray, const S
 	outData.rayCollisionFactor = collisionPointFactor;
 	if (rayInsideShape)
 		std::swap(n1, n2);
-	reflectAndRefract(QSFML::VectorMath::getAngle(ray.getDirection()), normalAngle, n1, n2, outData);
+	reflectAndRefract(QSFML::VectorMath::getAngle(ray.ray.getDirection()), normalAngle, n1, n2, outData);
 	return true;
 }
 
-void OpticalElement::processLaser_intern(const QSFML::Utilities::Ray& ray,
-	std::vector< QSFML::Utilities::Ray>& reflectedOut,
+void OpticalElement::processLaser_intern(const LightRay& ray,
+	std::vector< LightRay>& reflectedOut,
 	std::vector< LaserInfo>& additionalLightPathsOut,
 	sf::Vector2f& outNextCollisionPoint) const
 {
-	if (m_bounceCount > m_maxBounceCount)
+	if (m_bounceCount >= m_maxBounceCount)
 		return;
 	
 	ReflectionAndRefractionData data1;
@@ -193,14 +193,14 @@ void OpticalElement::processLaser_intern(const QSFML::Utilities::Ray& ray,
 		return;
 
 	++m_bounceCount;
-	outNextCollisionPoint = ray.getPoint(data1.rayCollisionFactor);
+	outNextCollisionPoint = ray.ray.getPoint(data1.rayCollisionFactor);
 
 
-	QSFML::Utilities::Ray bounced(ray);
+	LightRay bounced = ray;
 	
 	sf::Vector2f dirRefract = QSFML::VectorMath::getRotatedUnitVector(data1.refractAngle);
-	bounced.setPos(outNextCollisionPoint + 0.001f * dirRefract);
-	bounced.setDirection(dirRefract);
+	bounced.ray.setPos(outNextCollisionPoint + 0.001f * dirRefract);
+	bounced.ray.setDirection(dirRefract);
 
 
 	float distance;
@@ -232,8 +232,8 @@ void OpticalElement::processLaser_intern(const QSFML::Utilities::Ray& ray,
 		if (doReflectBounce)
 		{
 			sf::Vector2f dirReflect = QSFML::VectorMath::getRotatedUnitVector(data1.reflectAngle);
-			bounced.setPos(outNextCollisionPoint + 0.001f * dirReflect);
-			bounced.setDirection(dirReflect);
+			bounced.ray.setPos(outNextCollisionPoint + 0.001f * dirReflect);
+			bounced.ray.setDirection(dirReflect);
 			if (getRaycastDistance(bounced, distance))
 			{
 				LaserInfo info;

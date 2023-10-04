@@ -30,7 +30,7 @@ private:
 	class MirrorShape : public Shape
 	{
 	public:
-		bool getCollisionData(const QSFML::Utilities::Ray& ray,
+		bool getCollisionData(const LightRay& ray,
 			float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const override;
 
 		float m_width;

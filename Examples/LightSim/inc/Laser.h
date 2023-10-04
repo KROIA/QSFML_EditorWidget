@@ -1,6 +1,7 @@
 #pragma once
 #include "QSFML_EditorWidget.h"
 #include "LaserInfo.h"
+#include "LightRay.h"
 
 class OpticalElement;
 class Laser: public QSFML::Objects::CanvasObject
@@ -34,14 +35,14 @@ private:
 	
 
 	void update() override;
-	void updateRay(QSFML::Utilities::Ray& r, LaserInfo &info, unsigned int iteration);
+	void updateRay(LightRay& r, LaserInfo &info, unsigned int iteration);
 
 	const std::vector<OpticalElement*> const& m_opticalElements;
-	QSFML::Utilities::Ray m_rootRay;
+	LightRay m_rootRay;
 	LaserInfo m_rootLaserInfo;
 	unsigned int m_maxBounces;
 
-	std::vector<QSFML::Utilities::Ray> m_childRays;
+	std::vector<LightRay> m_childRays;
 
 	
 	

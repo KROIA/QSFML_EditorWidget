@@ -27,19 +27,22 @@ public:
 	void serDiameter(float w);
 	float getDiameter() const;
 
+	void setThickness(float t);
+	float getThickness() const;
+
 	void setFocusLength(float r);
 	float getFocusLength() const;
 
 private:
 	
-	//bool processLaser(const QSFML::Utilities::Ray& ray,
-	//	std::vector< QSFML::Utilities::Ray>& reflectedOut,
+	//bool processLaser(const LightRay& ray,
+	//	std::vector< LightRay>& reflectedOut,
 	//	std::vector< LaserInfo>& additionalLightPathsOut) const override;
-	//bool getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const override;
+	//bool getRaycastDistance(const LightRay& ray, float& distanceOut) const override;
 
 
-	//bool processLaser_intern(const QSFML::Utilities::Ray& ray,
-	//	std::vector< QSFML::Utilities::Ray>& reflectedOut,
+	//bool processLaser_intern(const LightRay& ray,
+	//	std::vector< LightRay>& reflectedOut,
 	//	std::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
 	//	sf::Vector2f & collisionPointOut) const;
 	
@@ -49,23 +52,26 @@ private:
 	class LenseShape : public Shape
 	{
 	public:
-		bool getCollisionData(const QSFML::Utilities::Ray& ray,
+		bool getCollisionData(const LightRay& ray,
 			float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const override;
 
 		void updateShape();
+
+		void setThickness(float t);
+		float getThickness() const;
 	
-		bool getLenseCollisionFactor(const QSFML::Utilities::Ray& ray, bool outgoingRay, float& smalestFactor, float& collisionNormal, bool &rayInsideShape) const;
+		bool getLenseCollisionFactor(const LightRay& ray, bool outgoingRay, float& smalestFactor, float& collisionNormal, bool &rayInsideShape) const;
 
 		// calculates the malest factor in ray which collides on the edge of one part of the lense
-		bool getCircleElementCollisionFactor(const QSFML::Utilities::Ray& ray, const sf::Vector2f& center,
+		bool getCircleElementCollisionFactor(const LightRay& ray, const sf::Vector2f& center,
 			float radius, float minAngle, float maxAngle, float& smalestFactor, bool &rayInsideSegment) const;
 
 		// calculates the factor in ray which collides on the edge of the circle
-		bool getCircleCollisionFactor(const QSFML::Utilities::Ray& ray, const sf::Vector2f& center,
+		bool getCircleCollisionFactor(const LightRay& ray, const sf::Vector2f& center,
 			float radius, float& fac1, float& fac2) const;
 
 
-		bool getRaycastData(const QSFML::Utilities::Ray& ray,
+		bool getRaycastData(const LightRay& ray,
 			const sf::Vector2f& circleOrigin,
 			float& alpha1, float& alpha2,
 			float& distance1, float& distance2,
@@ -74,9 +80,25 @@ private:
 
 		//void getCollisionData(float alpha, float rayAngle, float& entryAngle, sf::Vector2f& point);
 
+		bool getParableData(const LightRay& ray, float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const;
+		
+		// Parabel in der Form: ax^2 +b
+		bool getParableCollisionFactor(const QSFML::Utilities::Ray& ray, float a, float b, float parableRotation,
+			const sf::Vector2f &parablePos, float minMaxInputRange, 
+			float& outFac1, float& outFac2, 
+			float& outNormal1, float &outNormal2, 
+			bool &fac1InRange, bool &vac2InRange) const;
+
+		void getPainterVertecies(std::vector < sf::Vertex>& left, std::vector < sf::Vertex>& right, size_t resolution);
+		
+		
 
 		
 		float m_diameter;
+		float m_lenseThickness;
+		float m_parableParamA;
+		float m_parableParamB;
+
 		float m_angle;
 		float m_lenseRadius;
 		float m_openingAngle;
