@@ -72,6 +72,19 @@ void Laser::update()
 {
 	m_lasers.clear();
 	m_childRays.clear();
+	/*static float rotSpeed = 0.001;
+	float range = 5 * M_PI /360;
+
+	float angle = QSFML::VectorMath::getAngle(getDirection());
+	if (angle < range - M_PI_2)
+	{
+		angle += rotSpeed;
+	}
+	else
+	{
+		angle = -M_PI_2 - range;
+	}
+	setDirection(QSFML::VectorMath::getRotatedUnitVector(angle));*/
 
 	updateRay(m_rootRay, m_rootLaserInfo, 0);
 	

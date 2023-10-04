@@ -222,7 +222,7 @@ bool ConvexLense::processLaser_intern(const QSFML::Utilities::Ray& ray,
 
 void ConvexLense::update()
 {
-	//setRotation(getRotation() + m_rotationSpeed);
+	//setRotation(getRotation() + 0.01);
 }
 
 
@@ -341,7 +341,7 @@ void ConvexLense::LenseShape::updateShape()
 	m_parableParamA = m_lenseThickness / (2 * d2 * d2);
 
 
-	/*sf::Vector2f direction = QSFML::VectorMath::getRotatedUnitVector(m_angle)
+	/*sf::Vector2f direction = QSFML::VectorMath::getRotatedUnitVector(m_angle);
 	sf::Vector2f start = m_pos - direction * m_width / 2.f;
 	sf::Vector2f end = m_pos + direction * m_width / 2.f;
 
@@ -549,37 +549,37 @@ bool ConvexLense::LenseShape::getRaycastData(const LightRay& ray,
 
 bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
 {
-	float nan = 999999;
-	float parable1Fac1 = nan;
-	float parable1Fac2 = nan;
+	double nan = 999999;
+	double parable1Fac1 = nan;
+	double parable1Fac2 = nan;
 	bool parable1Fac1Valid = false;
 	bool parable1Fac2Valid = false;
-	float parabel1Normal1 = nan;
-	float parabel1Normal2 = nan;
+	double parabel1Normal1 = nan;
+	double parabel1Normal2 = nan;
 
-	float parable1Rotation = m_angle - M_PI_2;
+	double parable1Rotation = m_angle - M_PI_2;
 	sf::Vector2f originDir = QSFML::VectorMath::getRotatedUnitVector(m_angle) * m_parableParamB;
-	sf::Vector2f parable1Pos = m_pos - originDir;
+	sf::Vector2f parable1Pos = m_pos;// -originDir;
 
-	float parable2Fac1 = nan;
-	float parable2Fac2 = nan;
+	double parable2Fac1 = nan;
+	double parable2Fac2 = nan;
 	bool parable2Fac1Valid = false;
 	bool parable2Fac2Valid = false;
-	float parabel2Normal1 = nan;
-	float parabel2Normal2 = nan;
+	double parabel2Normal1 = nan;
+	double parabel2Normal2 = nan;
 
-	float parable2Rotation = m_angle + M_PI_2;
-	sf::Vector2f parable2Pos = m_pos + originDir;
+	double parable2Rotation = m_angle + M_PI_2;
+	sf::Vector2f parable2Pos = m_pos;// +originDir;
 
 	bool c1 = getParableCollisionFactor(ray.ray, m_parableParamA, m_parableParamB, parable1Rotation, parable1Pos, m_diameter / 2,
 										parable1Fac1, parable1Fac2, 
 										parabel1Normal1, parabel1Normal2,
 										parable1Fac1Valid, parable1Fac2Valid);
-	bool c2 = false;
-	//bool c2 = getParableCollisionFactor(ray.ray, m_parableParamA, m_parableParamB, parable2Rotation, parable2Pos, m_diameter / 2,
-	//									parable2Fac1, parable2Fac2, 
-	//									parabel2Normal1, parabel2Normal2,
-	//								    parable2Fac1Valid, parable2Fac2Valid);
+
+	bool c2 = getParableCollisionFactor(ray.ray, m_parableParamA, m_parableParamB, parable2Rotation, parable2Pos, m_diameter / 2,
+										parable2Fac1, parable2Fac2, 
+										parabel2Normal1, parabel2Normal2,
+									    parable2Fac1Valid, parable2Fac2Valid);
 										
 	if (!(c1 + c2))
 		return false;
@@ -590,8 +590,8 @@ bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outColl
 	if (!parable2Fac1Valid || !c2 || parable2Fac1 < 0) parable2Fac1 = nan;
 	if (!parable2Fac2Valid || !c2 || parable2Fac2 < 0) parable2Fac2 = nan;
 
-	float minFac = parable1Fac1;
-	float normal = parabel1Normal1;
+	double minFac = parable1Fac1;
+	double normal = parabel1Normal1;
 
 	if (parable1Fac2 < minFac)
 	{
@@ -616,71 +616,84 @@ bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outColl
 	return true;
 }
 
-bool ConvexLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities::Ray& ray, float a, float b, float parableRotation,
-	const sf::Vector2f& parablePos, float minMaxInputRange, 
-	float& outFac1, float& outFac2, 
-	float& outNormal1, float& outNormal2,
+bool ConvexLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities::Ray& ray, double a, double b, double parableRotation,
+	const sf::Vector2f& parablePos, double minMaxInputRange, 
+	double& outFac1, double& outFac2, 
+	double& outNormal1, double& outNormal2,
 	bool& fac1InRange, bool& fac2InRange) const
 {
-	sf::Vector2f rayPos = QSFML::VectorMath::getRotated(ray.getPos(), -parableRotation);
+	/*
+		( (bdy ^ 2 - 4 * a * b * bdx ^ 2 + 4 * a * bdx ^ 2 * bpy - 4 * a * bdx * bdy * bpx) ^ (1 / 2) + bdy - 2 * a * bdx * bpx)  / (2 * a * bdx ^ 2);
+		-((bdy ^ 2 - 4 * a * b * bdx ^ 2 + 4 * a * bdx ^ 2 * bpy - 4 * a * bdx * bdy * bpx) ^ (1 / 2) - bdy + 2 * a * bdx * bpx) / (2 * a * bdx ^ 2)
+
+
+		t =  ((bdy^2 - 4*a*b*bdx^2 + 4*a*bdx^2*bpy - 4*a*bdx*bdy*bpx)^(1/2) + bdy - 2*a*bdx*bpx)/(2*a*bdx^2);
+			(-(bdy^2 - 4*a*b*bdx^2 + 4*a*bdx^2*bpy - 4*a*bdx*bdy*bpx)^(1/2) + bdy - 2*a*bdx*bpx)/(2*a*bdx^2)
+		*/
+
+	sf::Vector2f rayPos = QSFML::VectorMath::getRotated(ray.getPos() - parablePos, -parableRotation);
 	sf::Vector2f rayDir = QSFML::VectorMath::getRotated(ray.getDirection(), -parableRotation);
 
-	float bpx = rayPos.x;
-	float bpy = rayPos.y;
+	// Calculations in double precission because when the ray is vertical. it is high volatile
+	double bpx = rayPos.x;
+	double bpy = rayPos.y;
 
-	float bdx = rayDir.x;
-	float bdy = rayDir.y;
+	double bdx = rayDir.x;
+	double bdy = rayDir.y;
 
-	float bdx2 = bdx * bdx;
-	float bdy2 = bdy * bdy;
+	double bdx2 = bdx * bdx;
+	double bdy2 = bdy * bdy;
 
-	float diskrim = bdy2 - 4 * a * b * bdx2 + 4 * a * bdx2 * bpy - 4 * a * bdx * bdy * bpx;
+	double diskrim = bdy2 - 4 * a * b * bdx2 + 4 * a * bdx2 * bpy - 4 * a * bdx * bdy * bpx;
 
 	if (diskrim < 0)
 	{
 		// No collision
 		return false;
 	}
-	float divisor = 2 * a * bdx2;
-	if (divisor == 0)
+	double divisor = 2 * a * bdx2;
+	double x1;
+	double x2;
+	if (std::abs(bdx2) < 0.1e-10)
 	{
-		// No collision
-		return false;
+		// vertical collision
+		//return false;
+		double dirLength = QSFML::VectorMath::getLength(rayDir);
+
+
+		x1 = bpx;
+		x2 = bpx;
+
+		outFac1 = ((a * x1 * x1 + b) - rayPos.y) / dirLength;
+		outFac2 = outFac1;
+
+		
+		
+		outNormal1 = M_PI_2 + parableRotation;
+		outNormal2 = M_PI_2 + parableRotation;
+		outNormal1 = QSFML::VectorMath::getAngle(sf::Vector2f(x1, 2 * a * x1)) - M_PI_2 + parableRotation;
+		outNormal2 = QSFML::VectorMath::getAngle(sf::Vector2f(x2, 2 * a * x2)) - M_PI_2 + parableRotation;
 	}
+	else
+	{
+		divisor = 1 / divisor;
 
-	divisor = 1 / divisor;
+		double sqrRoot = sqrt(diskrim);
+		double adder = bdy - 2 * a * bdx * bpx;
 
-	float sqrRoot = sqrt(diskrim);
-	float adder = bdy - 2 * a * bdx * bpx;
+		outFac1 = (sqrRoot + adder) * divisor;
+		outFac2 = (-sqrRoot + adder) * divisor;
 
+		x1 = bpx + outFac1 * bdx;
+		x2 = bpx + outFac2 * bdx;
 
-	/*
-	( (bdy ^ 2 - 4 * a * b * bdx ^ 2 + 4 * a * bdx ^ 2 * bpy - 4 * a * bdx * bdy * bpx) ^ (1 / 2) + bdy - 2 * a * bdx * bpx)  / (2 * a * bdx ^ 2);
-	-((bdy ^ 2 - 4 * a * b * bdx ^ 2 + 4 * a * bdx ^ 2 * bpy - 4 * a * bdx * bdy * bpx) ^ (1 / 2) - bdy + 2 * a * bdx * bpx) / (2 * a * bdx ^ 2)
-
-
-	t =  ((bdy^2 - 4*a*b*bdx^2 + 4*a*bdx^2*bpy - 4*a*bdx*bdy*bpx)^(1/2) + bdy - 2*a*bdx*bpx)/(2*a*bdx^2);
-		(-(bdy^2 - 4*a*b*bdx^2 + 4*a*bdx^2*bpy - 4*a*bdx*bdy*bpx)^(1/2) + bdy - 2*a*bdx*bpx)/(2*a*bdx^2)
-	*/
+		outNormal1 = QSFML::VectorMath::getAngle(sf::Vector2f(x1, 2 * a * x1)) - M_PI_2 + parableRotation;
+		outNormal2 = QSFML::VectorMath::getAngle(sf::Vector2f(x2, 2 * a * x2)) - M_PI_2 + parableRotation;
+	}
+	
 	
 
-
-	outFac1 = ( sqrRoot + adder) * divisor;
-	outFac2 = (-sqrRoot + adder) * divisor;
 	
-	sf::CircleShape* c1 = new sf::CircleShape(1, 10);
-	c1->setOrigin(1, 1);
-	c1->setPosition(ray.getPoint(outFac1));
-	m_tmpDraw.push_back(c1);
-	sf::CircleShape* c2 = new sf::CircleShape(*c1);
-	c2->setPosition(ray.getPoint(outFac2));
-	m_tmpDraw.push_back(c2);
-
-	float x1 = bpx + outFac1 * bdx;
-	float x2 = bpx + outFac2 * bdx;
-
-	outNormal1 = QSFML::VectorMath::getAngle(sf::Vector2f(x1, 2 * a * x1)) - M_PI_2 + parableRotation;
-	outNormal2 = QSFML::VectorMath::getAngle(sf::Vector2f(x2, 2 * a * x2)) - M_PI_2 + parableRotation;
 
 	fac1InRange = true;
 	fac2InRange = true;
@@ -693,6 +706,20 @@ bool ConvexLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities::
 		fac2InRange = false;
 	}
 
+	/*if (fac1InRange)
+	{
+		sf::CircleShape* c1 = new sf::CircleShape(1, 10);
+		c1->setOrigin(1, 1);
+		c1->setPosition(ray.getPoint(outFac1));
+		m_tmpDraw.push_back(c1);
+	}
+	if (fac2InRange)
+	{
+		sf::CircleShape* c1 = new sf::CircleShape(1, 10);
+		c1->setOrigin(1, 1);
+		c1->setPosition(ray.getPoint(outFac2));
+		m_tmpDraw.push_back(c1);
+	}*/
 	return true;
 
 

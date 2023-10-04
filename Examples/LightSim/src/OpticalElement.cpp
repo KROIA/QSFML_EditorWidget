@@ -8,7 +8,7 @@ OpticalElement::OpticalElement(const std::string& name)
 	, m_n1(1)
 	, m_n2(1.5)
 	, m_bounceCount(0)
-	, m_maxBounceCount()
+	, m_maxBounceCount(10)
 	, m_doesReflect(true)
 	, m_doesRefract(true)
 
@@ -185,8 +185,6 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 	std::vector< LaserInfo>& additionalLightPathsOut,
 	sf::Vector2f& outNextCollisionPoint) const
 {
-	if (m_bounceCount >= m_maxBounceCount)
-		return;
 	
 	ReflectionAndRefractionData data1;
 	if (!reflectAndRefract(ray, *m_shape, m_n1, m_n2, data1))
@@ -213,10 +211,14 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 			{
 				LaserInfo info;
 				info.start = outNextCollisionPoint;
-				sf::Vector2f point;
-				processLaser_intern(bounced, reflectedOut, additionalLightPathsOut, point);
-				info.end = point;
-				additionalLightPathsOut.push_back(info);
+				
+				if (m_bounceCount < m_maxBounceCount)
+				{
+					sf::Vector2f point;
+					processLaser_intern(bounced, reflectedOut, additionalLightPathsOut, point);
+					info.end = point;
+					additionalLightPathsOut.push_back(info);
+				}
 				doReflectBounce = false;
 			}
 			else
@@ -238,10 +240,14 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 			{
 				LaserInfo info;
 				info.start = outNextCollisionPoint;
-				sf::Vector2f point;
-				processLaser_intern(bounced, reflectedOut, additionalLightPathsOut, point);
-				info.end = point;
-				additionalLightPathsOut.push_back(info);
+				
+				if (m_bounceCount < m_maxBounceCount)
+				{
+					sf::Vector2f point;
+					processLaser_intern(bounced, reflectedOut, additionalLightPathsOut, point);
+					info.end = point;
+					additionalLightPathsOut.push_back(info);
+				}
 			}
 			else
 			{

@@ -83,10 +83,10 @@ private:
 		bool getParableData(const LightRay& ray, float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const;
 		
 		// Parabel in der Form: ax^2 +b
-		bool getParableCollisionFactor(const QSFML::Utilities::Ray& ray, float a, float b, float parableRotation,
-			const sf::Vector2f &parablePos, float minMaxInputRange, 
-			float& outFac1, float& outFac2, 
-			float& outNormal1, float &outNormal2, 
+		bool getParableCollisionFactor(const QSFML::Utilities::Ray& ray, double a, double b, double parableRotation,
+			const sf::Vector2f &parablePos, double minMaxInputRange, 
+			double& outFac1, double& outFac2, 
+			double& outNormal1, double &outNormal2, 
 			bool &fac1InRange, bool &vac2InRange) const;
 
 		void getPainterVertecies(std::vector < sf::Vertex>& left, std::vector < sf::Vertex>& right, size_t resolution);
