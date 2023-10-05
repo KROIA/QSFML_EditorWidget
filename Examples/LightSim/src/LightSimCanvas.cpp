@@ -81,14 +81,33 @@ void LightSimCanvas::setupCanvas()
          m_canvas->addObject(mirror);
      }
 */
-    {
+    //float refraction = 1.39;
+    float refraction = 1.5;
+    float brennweite;
+   /* {
         ConvexLense* lense = new ConvexLense();
         //lense->setPos(sf::Vector2f(400, 200));
-        lense->setPos(sf::Vector2f(400, 200));
+        lense->setPos(sf::Vector2f(100, 200));
         lense->setFocusLength(200);
+        lense->setThickness(80);
         lense->setRotation(0);
         lense->setColor(sf::Color(200, 200, 200));
+        lense->serDiameter(254);
+        lense->setRefractionIndexInside(refraction);
+        m_canvas->addObject(lense);
+        m_convexLenses.push_back(lense);
+        brennweite = lense->getFocusLength();
+    }*/
+   {
+        ConvexLense* lense = new ConvexLense();
+        //lense->setPos(sf::Vector2f(400, 200));
+        lense->setPos(sf::Vector2f(600, 200));
+        lense->setFocusLength(200);
+        lense->setThickness(50);
+        lense->setRotation(1);
+        lense->setColor(sf::Color(200, 200, 200));
         lense->serDiameter(200);
+        lense->setRefractionIndexInside(refraction);
         m_canvas->addObject(lense);
         m_convexLenses.push_back(lense);
     }
@@ -108,13 +127,20 @@ void LightSimCanvas::setupCanvas()
 
     sf::Vector2f laserPos(0, 180);
     // Setup Laser
-     /* {
+     /*{
         Laser* laser = new Laser();
-        laser->setPos(sf::Vector2f(-100,100));
-        laser->setDirection(sf::Vector2f(1, -1));
+        laser->setPos(sf::Vector2f(0,110));
+        laser->setDirection(sf::Vector2f(200,200) - laser->getPos());
         m_canvas->addObject(laser);
         m_lasers.push_back(laser);
-    }*/
+    }
+      {
+          Laser* laser = new Laser();
+          laser->setPos(sf::Vector2f(0, 110));
+          laser->setDirection(sf::Vector2f(1,0));
+          m_canvas->addObject(laser);
+          m_lasers.push_back(laser);
+      }*/
    /* {
         Laser* laser = new Laser();
         laser->setPos(sf::Vector2f(-200, 10));
@@ -175,10 +201,10 @@ void LightSimCanvas::setupCanvas()
         m_canvas->addObject(laser);
         m_lasers.push_back(laser);
     }*/
-    {
-        sf::Vector2f offset(0, 10);
-        sf::Vector2f startPos(20, 105);
-        for (int i = 0; i < 1; ++i)
+  {
+        sf::Vector2f offset(0, 1);
+        sf::Vector2f startPos(20, 150);
+        for (int i = 0; i < 200; ++i)
         {
             Laser* laser = new Laser();
             laser->setPos(startPos + (float)i * offset);

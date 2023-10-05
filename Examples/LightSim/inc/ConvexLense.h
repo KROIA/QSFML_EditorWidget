@@ -12,8 +12,6 @@ public:
 	~ConvexLense();
 	OBJECT_DECL(ConvexLense);
 
-	void setRefractionIndex(float n);
-	float getRefractionIndex() const;
 
 	void setColor(const sf::Color& c);
 	const sf::Color& getColor() const;
@@ -59,6 +57,8 @@ private:
 
 		void setThickness(float t);
 		float getThickness() const;
+
+		float getFocusLength() const;
 	
 		bool getLenseCollisionFactor(const LightRay& ray, bool outgoingRay, float& smalestFactor, float& collisionNormal, bool &rayInsideShape) const;
 
@@ -98,7 +98,7 @@ private:
 		float m_lenseThickness;
 		float m_parableParamA;
 		float m_parableParamB;
-
+		
 		float m_angle;
 		float m_lenseRadius;
 		float m_openingAngle;
@@ -113,6 +113,7 @@ private:
 			LensePainter(const LensePainter& other);
 			COMPONENT_DECL(LensePainter);
 
+			
 			void draw(sf::RenderTarget& target,
 				sf::RenderStates states) const override;
 
@@ -126,6 +127,7 @@ private:
 
 		mutable std::vector<sf::Drawable*> m_tmpDraw;
 		LensePainter* m_painter;
+		ConvexLense* m_lense;
 	};
 
 	LenseShape m_shape;
@@ -134,8 +136,8 @@ private:
 
 	
 
-	float m_n1;
-	float m_n2;
+	//float m_n1;
+	//float m_n2;
 
 	
 

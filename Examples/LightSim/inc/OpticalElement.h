@@ -45,8 +45,9 @@ public:
 
     void setRefractionIndexOutside(float n1);
     void setRefractionIndexInside(float n2);
-    float getRefractionIndexInside() const;
+    
     float getRefractionIndexOutside() const;
+    float getRefractionIndexInside() const;
 
     void doesReflect(bool enable);
     void doesRefract(bool enable);
@@ -85,6 +86,26 @@ private:
         std::vector< LaserInfo>& additionalLightPathsOut,
         sf::Vector2f& outNextCollisionPoint) const;
 
+    class Painter : public QSFML::Components::Drawable
+    {
+    public:
+        Painter(const std::string& name = "Painter");
+        Painter(const Painter& other);
+        COMPONENT_DECL(Painter);
+
+        void drawNormalVec(float normalAngle, const sf::Vector2f& pos);
+
+
+        void draw(sf::RenderTarget& target,
+            sf::RenderStates states) const override;
+
+        mutable std::vector<QSFML::Utilities::Ray> m_normalList;
+
+
+    private:
+
+    };
+    Painter* m_painter;
     Shape* m_shape;
     float m_n1, m_n2;
     bool m_doesReflect; 

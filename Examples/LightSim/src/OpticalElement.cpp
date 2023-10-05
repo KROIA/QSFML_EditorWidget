@@ -1,6 +1,6 @@
 #include "OpticalElement.h"
 
-
+#define USE_DEBUG_DRAW
 std::vector<OpticalElement*> OpticalElement::s_opticalElements;
 OpticalElement::OpticalElement(const std::string& name)
 	: CanvasObject(name)
@@ -14,6 +14,8 @@ OpticalElement::OpticalElement(const std::string& name)
 
 {
 	s_opticalElements.push_back(this);
+	m_painter = new Painter();
+	addComponent(m_painter);
 }
 OpticalElement::OpticalElement(const OpticalElement& other)
 	: CanvasObject(other)
@@ -26,6 +28,8 @@ OpticalElement::OpticalElement(const OpticalElement& other)
 	, m_doesRefract(other.m_doesRefract)
 {
 	s_opticalElements.push_back(this);
+	m_painter = new Painter();
+	addComponent(m_painter);
 }
 OpticalElement::~OpticalElement()
 {
@@ -62,11 +66,12 @@ void OpticalElement::setRefractionIndexInside(float n2)
 {
 	m_n2 = n2;
 }
-float OpticalElement::getRefractionIndexInside() const
+
+float OpticalElement::getRefractionIndexOutside() const
 {
 	return m_n1;
 }
-float OpticalElement::getRefractionIndexOutside() const
+float OpticalElement::getRefractionIndexInside() const
 {
 	return m_n2;
 }
@@ -174,6 +179,15 @@ bool OpticalElement::reflectAndRefract(const LightRay& ray, const Shape& shape, 
 
 	outData.normalAngle = normalAngle;
 	outData.rayCollisionFactor = collisionPointFactor;
+	static float lastNormal;
+	/*if (rayInsideShape)
+	{
+		normalAngle = M_PI - lastNormal;
+	}
+	else
+	{
+		lastNormal = normalAngle;
+	}*/
 	if (rayInsideShape)
 		std::swap(n1, n2);
 	reflectAndRefract(QSFML::VectorMath::getAngle(ray.ray.getDirection()), normalAngle, n1, n2, outData);
@@ -217,12 +231,18 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 					sf::Vector2f point;
 					processLaser_intern(bounced, reflectedOut, additionalLightPathsOut, point);
 					info.end = point;
+#ifdef USE_DEBUG_DRAW
+					m_painter->drawNormalVec(data1.normalAngle, outNextCollisionPoint);
+#endif
 					additionalLightPathsOut.push_back(info);
 				}
 				doReflectBounce = false;
 			}
 			else
 			{
+#ifdef USE_DEBUG_DRAW
+				m_painter->drawNormalVec(data1.normalAngle, outNextCollisionPoint);
+#endif
 				reflectedOut.push_back(bounced);
 				--m_bounceCount;
 				return;
@@ -246,11 +266,17 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 					sf::Vector2f point;
 					processLaser_intern(bounced, reflectedOut, additionalLightPathsOut, point);
 					info.end = point;
+#ifdef USE_DEBUG_DRAW
+					m_painter->drawNormalVec(data1.normalAngle, outNextCollisionPoint);
+#endif
 					additionalLightPathsOut.push_back(info);
 				}
 			}
 			else
 			{
+#ifdef USE_DEBUG_DRAW
+				m_painter->drawNormalVec(data1.normalAngle, outNextCollisionPoint);
+#endif
 				reflectedOut.push_back(bounced);
 				--m_bounceCount;
 				return;
@@ -259,6 +285,36 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 	}
 	--m_bounceCount;
 
+}
+
+OpticalElement::Painter::Painter(const std::string& name)
+{
+
+}
+OpticalElement::Painter::Painter(const Painter& other)
+{
+
+}
+COMPONENT_IMPL(OpticalElement::Painter);
+
+void OpticalElement::Painter::drawNormalVec(float normalAngle, const sf::Vector2f& pos)
+{
+	m_normalList.push_back(QSFML::Utilities::Ray(pos, QSFML::VectorMath::getRotatedUnitVector(normalAngle)));
+}
+void OpticalElement::Painter::draw(sf::RenderTarget& target,
+	sf::RenderStates states) const
+{
+	sf::Color normalColor = sf::Color::Blue;
+	float vectorLength = 20;
+	for (size_t i = 0; i < m_normalList.size(); ++i)
+	{
+		sf::Vertex normal[]{
+			sf::Vertex(m_normalList[i].getPos(), normalColor),
+			sf::Vertex(m_normalList[i].getPos() + m_normalList[i].getDirection()* vectorLength, normalColor)
+		};
+		target.draw(normal, 2, sf::Lines);
+	}
+	m_normalList.clear();
 }
 /*void OpticalElement::update()
 {

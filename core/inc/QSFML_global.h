@@ -3,6 +3,8 @@
 #include <QtCore/qglobal.h>
 #include <chrono>
 
+//#define QSFML_OPTIMIZED
+
 #ifdef BUILD_STATIC
 #define QSFML_EDITOR_WIDGET_STATIC
 #endif

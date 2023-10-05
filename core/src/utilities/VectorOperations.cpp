@@ -30,6 +30,16 @@ namespace VectorMath
     }
     float getAngle(const sf::Vector2f &vec)
     {
+#ifdef QSFML_OPTIMIZED
+        float sqrL = vec.x * vec.x + vec.y * vec.y;
+
+        if (sqrL == 0)
+            return 0;
+
+        float angle = atan2(vec.y, vec.x);
+        return getNormalzedAngle(angle);
+#else
+
         float sqrL = getSquareLength(vec);
         if(sqrL <= 0)
             return 0;
@@ -43,6 +53,7 @@ namespace VectorMath
             angle = acos(vec.x / sqrL);
         }
         return getNormalzedAngle(angle);
+#endif
     }
     float getAngle(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
@@ -84,10 +95,15 @@ namespace VectorMath
 
     float getNormalzedAngle(float angle)
     {
+#ifdef QSFML_OPTIMIZED
+        angle = fmod(angle + M_PI, 2 * M_PI);
+        return (angle < 0) ? angle + 2 * M_PI - M_PI : angle - M_PI;
+#else
         angle = fmod(angle + M_PI, 2 * M_PI);
         if (angle < 0)
             angle += 2 * M_PI;
         return angle - M_PI;
+#endif
     }
     bool isAngleInRange(float angle, float minAngle, float maxAngle)
     {
