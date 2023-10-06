@@ -125,27 +125,5 @@ namespace QSFML
             m_lines[4].position = end;
             m_lines[5].position = end + arrowRight;
         }
-        /*sf::Vector2f VectorPainter::getRotated(const sf::Vector2f& vec,
-            float angle) const
-        {
-            float c = cos(angle);
-            float s = sin(angle);
-            return sf::Vector2f(c * vec.x - s * vec.y,
-                s * vec.x + c * vec.y);
-        }*/
-        /*float VectorPainter::getLength(const sf::Vector2f& vec) const
-        {
-            return sqrt(vec.x * vec.x + vec.y * vec.y);
-        }
-        float VectorPainter::getAngle(const sf::Vector2f& vec) const
-        {
-            float l = getLength(vec);
-            if (l == 0)
-                return 0;
-            if (vec.x < 0)
-                return M_PI - asin(vec.y / l);
-            return asin(vec.y / l);
-        }*/
-
     }
 }

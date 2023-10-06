@@ -156,15 +156,6 @@ void OpticalElement::reflectAndRefract(float rayAngle, float normalAngle, float 
 
 	outData.refractAngle = normalAngle - epsilon2;
 	return;
-	if (std::abs(normalAngle) > M_PI_2)
-	{
-		outData.refractAngle = (M_PI - normalAngle - epsilon2);
-	}
-	else
-	{
-		
-		
-	}
 }
 
 bool OpticalElement::reflectAndRefract(const LightRay& ray, const Shape& shape, float n1, float n2,

@@ -15,9 +15,9 @@ using namespace QSFML::Objects;
 using namespace QSFML::Components;
 using namespace QSFML;
 
-CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, const CanvasSettings &settings)
+CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, CanvasSettings &settings)
+    : m_settings(settings)
 {
-    //m_updateCount = 0;
     m_parent = parent;
     m_allObjects = new CanvasObjectGroup(m_parent);
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
@@ -26,12 +26,8 @@ CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, const CanvasSetting
         m_renderLayerGroups.push_back(new CanvasObjectGroup(m_parent));
     }
 
-    m_threadGroupCount = settings.updateControlls.threadSettings.objectGroups;
     m_currentThreadGroupInsertIndex = 0;
     m_threadWorker = nullptr;
-    if(settings.updateControlls.enableMultithreading)
-        setupThreads(settings.updateControlls.threadSettings.threadCount);
-
 }
 CanvasObjectContainer::~CanvasObjectContainer()
 {
@@ -48,15 +44,17 @@ void CanvasObjectContainer::applyObjectChanges()
     updateNewElements();
 }
 
-void CanvasObjectContainer::setupThreads(size_t threadCount)
+void CanvasObjectContainer::initializeThreads(size_t threadCount)
 {
     if(m_threadWorker)
         return;
+    m_currentThreadGroupInsertIndex = 0;
+    m_threadGroupCount = m_settings.updateControlls.threadSettings.objectGroups;
     for(size_t i=0; i<m_threadGroupCount; ++i)
     {
         m_threadGroups.push_back(new CanvasObjectGroup(m_parent));
     }
-    std::vector<CanvasObject*> objs = m_allObjects->getObjects();
+    const std::vector<CanvasObject*> &objs = m_allObjects->getObjects();
     for(size_t i=0; i<objs.size(); ++i)
     {
         m_threadGroups[i%m_threadGroups.size()]->addObject(objs[i]);
@@ -66,6 +64,19 @@ void CanvasObjectContainer::setupThreads(size_t threadCount)
         m_threadGroups[i]->addObject_internal();
     }
     m_threadWorker = new CanvasThreadWorker(threadCount, &m_threadGroups);
+}
+void CanvasObjectContainer::deinitializeThreads()
+{
+    CanvasThreadWorker* currentWorker = m_threadWorker;
+    m_threadWorker = nullptr;
+    
+    for (size_t i = 0; i < m_threadGroups.size(); ++i)
+    {
+        delete m_threadGroups[i];
+    }
+    m_threadGroups.clear();
+    m_threadGroupCount = 0;
+    delete currentWorker;
 }
 
 void CanvasObjectContainer::addObject(CanvasObject *obj)
@@ -109,9 +120,7 @@ void CanvasObjectContainer::addObject_internal()
     {
         m_renderLayerGroups[i]->addObject_internal();
     }
-    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
-
-    
+    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());    
 }
 void CanvasObjectContainer::deleteObject_internal()
 {
@@ -227,7 +236,7 @@ void CanvasObjectContainer::updateNewElements()
 {
     QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
     deleteObject_internal();
-    std::vector<Objects::CanvasObject*> toAdd = m_allObjects->getObjectsToAdd();
+    const std::vector<Objects::CanvasObject*> &toAdd = m_allObjects->getObjectsToAdd();
 
     addObject_internal();
     m_allObjects->updateNewElements();
@@ -247,14 +256,13 @@ void CanvasObjectContainer::update()
     if(m_parent->m_settings.updateControlls.enableMultithreading)
     {
         if(!m_threadWorker)
-            setupThreads(m_parent->m_settings.updateControlls.threadSettings.threadCount);
+            initializeThreads(m_parent->m_settings.updateControlls.threadSettings.threadCount);
         m_threadWorker->process();
     }
     else
     {
         m_allObjects->update();
     }
-    //++m_updateCount;
 }
 void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {

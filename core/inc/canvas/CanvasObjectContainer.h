@@ -2,6 +2,7 @@
 
 #include "QSFML_base.h"
 #include "RenderLayer.h"
+#include "canvas/CanvasSettings.h"
 
 #include "SFML/Graphics.hpp"
 #include <vector>
@@ -11,7 +12,7 @@ namespace QSFML
 class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
 {
     public:
-        CanvasObjectContainer(Canvas *parent, const CanvasSettings &settings);
+        CanvasObjectContainer(Canvas *parent, CanvasSettings &settings);
         ~CanvasObjectContainer();
 
         void applyObjectChanges(); // Will be called automaticly if not manual
@@ -52,10 +53,11 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         void update();
         void draw(sf::RenderWindow &window);
 
-        //size_t m_updateCount;
+        void initializeThreads(size_t threadCount);
+        void deinitializeThreads();
     private:
 
-        void setupThreads(size_t threadCount);
+        
 
 
         void addObject_internal();
@@ -72,6 +74,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         Canvas *m_parent;
 
         CanvasThreadWorker *m_threadWorker;
+
+        CanvasSettings& m_settings;
         
 };
 template<typename T>

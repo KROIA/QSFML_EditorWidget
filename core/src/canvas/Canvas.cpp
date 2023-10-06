@@ -7,22 +7,16 @@
 #include <thread>
 #include <iostream>
 
-/*
-#ifdef Q_WS_X11
-    #include <Qt/qx11info_x11.h>
-    #include <X11/Xlib.h>
-#endif*/
-
 using namespace QSFML;
 
 
 std::vector<Canvas*> Canvas::s_instances;
-//bool Canvas::s_execEventLoop = false;
+
 std::string Canvas::m_profilerOutputFile = "profile.prof";
 
 Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
   QWidget(parent),
-  CanvasObjectContainer(this, settings)
+  CanvasObjectContainer(this, m_settings)
 {
     s_instances.push_back(this);
 #ifdef QSFML_PROFILING
@@ -73,8 +67,6 @@ Canvas::~Canvas()
             s_instances.erase(s_instances.begin() + i);
         }
     }
-   // if (s_instances.size() == 0)
-   //     stopEventLoop();
 }
 
 
@@ -134,6 +126,10 @@ const sf::ContextSettings &Canvas::getContextSettings() const
 void Canvas::setUpdateControlls(const CanvasSettings::UpdateControlls &controlls)
 {
     m_settings.updateControlls = controlls;
+    if (m_settings.updateControlls.enableMultithreading)
+        initializeThreads(m_settings.updateControlls.threadSettings.threadCount);
+    else
+        deinitializeThreads();
 }
 const CanvasSettings::UpdateControlls &Canvas::getUpdateControlls() const
 {
@@ -248,7 +244,7 @@ void Canvas::showEvent(QShowEvent*)
 }
 void Canvas::paintEvent(QPaintEvent*)
 {
-   // update();
+
 }
 
 void Canvas::resizeEvent(QResizeEvent *event)
@@ -348,11 +344,6 @@ void Canvas::update()
     }
     m_window->setActive(false);
 }
-/*void Canvas::timedUpdate()
-{
-    m_updateTimer.update();
-}*/
-
 
 void Canvas::sfEvent(const std::vector<sf::Event> &events)
 {
@@ -400,24 +391,3 @@ double Canvas::getFPS() const
     return m_currentStats.getFPS();
 }
 
-
-
-/*void Canvas::startEventLoop()
-{
-    s_execEventLoop = true;
-    while (s_execEventLoop)
-    {
-        QSFMLP_BLOCK("QApplication::processEvents", QSFMLP_CANVAS_COLOR_1);
-        QApplication::processEvents();
-        QSFMLP_END_BLOCK;
-        QSFMLP_BLOCK("Canvas::timedUpdate", QSFMLP_CANVAS_COLOR_1);
-        for (auto canvas : s_instances)
-            canvas->timedUpdate();
-        QSFMLP_END_BLOCK;
-        
-    }
-}
-void Canvas::stopEventLoop()
-{
-    s_execEventLoop = false;
-}*/

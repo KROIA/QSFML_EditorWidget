@@ -38,10 +38,6 @@ class QSFML_EDITOR_WIDGET_EXPORT VectorPainter: public Drawable
 
     protected:
     void updateArrow();
-    //inline sf::Vector2f getRotated(const sf::Vector2f &vec,
-    //                               float angle) const;
-    //static inline float getLength(const sf::Vector2f &vec);
-    //static inline float getAngle(const sf::Vector2f &vec);
 
     sf::Vector2f m_start, m_end;
     sf::Color m_color;

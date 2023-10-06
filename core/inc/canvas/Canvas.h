@@ -90,8 +90,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         void update();
 
     private:
-        //void timedUpdate();
-        
 
         void internal_event(const std::vector<sf::Event> &events);
 

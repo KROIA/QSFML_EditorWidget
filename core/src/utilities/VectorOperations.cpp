@@ -37,7 +37,9 @@ namespace VectorMath
             return 0;
 
         float angle = atan2(vec.y, vec.x);
-        return getNormalzedAngle(angle);
+        angle = fmod(angle + M_PI, 2 * M_PI);
+        
+        return (angle < 0) ? angle + 2 * M_PI - M_PI : angle - M_PI;
 #else
 
         float sqrL = getSquareLength(vec);
@@ -54,6 +56,7 @@ namespace VectorMath
         }
         return getNormalzedAngle(angle);
 #endif
+        return 0;
     }
     float getAngle(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {

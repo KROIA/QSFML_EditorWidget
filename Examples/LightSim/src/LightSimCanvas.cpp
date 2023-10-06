@@ -101,10 +101,10 @@ void LightSimCanvas::setupCanvas()
    {
         ConvexLense* lense = new ConvexLense();
         //lense->setPos(sf::Vector2f(400, 200));
-        lense->setPos(sf::Vector2f(600, 200));
+        lense->setPos(sf::Vector2f(600, 250));
         lense->setFocusLength(200);
         lense->setThickness(50);
-        lense->setRotation(1);
+        lense->setRotation(0);
         lense->setColor(sf::Color(200, 200, 200));
         lense->serDiameter(200);
         lense->setRefractionIndexInside(refraction);
