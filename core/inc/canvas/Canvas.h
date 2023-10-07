@@ -96,12 +96,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
 
 
         QTimer m_frameTimer;
-        //Utilities::Timer m_updateTimer;
         TimePoint m_deltaT_t1;
-        
-       // float m_deltaT; // Time in seconds
-
-       // StatsManager m_statsManager;
 
         CanvasSettings m_settings;
         sf::RenderWindow *m_window;
@@ -111,6 +106,5 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         static std::string m_profilerOutputFile;
 
         static std::vector<Canvas*> s_instances;
-        //static bool s_execEventLoop;
     };
 }

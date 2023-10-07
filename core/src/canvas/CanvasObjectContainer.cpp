@@ -28,6 +28,7 @@ CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, CanvasSettings &set
 
     m_currentThreadGroupInsertIndex = 0;
     m_threadWorker = nullptr;
+    m_threadGroupCount = 0;
 }
 CanvasObjectContainer::~CanvasObjectContainer()
 {
