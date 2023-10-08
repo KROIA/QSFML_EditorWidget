@@ -75,8 +75,7 @@ CanvasObject::~CanvasObject()
         delete m_childs[i];
     m_childs.clear();
 
-    m_canvasParent->removeCanvasObject();
-    m_canvasParent->removeComponent(m_components.size());
+    
     for(size_t i=0; i<m_components.size(); ++i)
         delete m_components[i];
     m_components.clear();
@@ -86,8 +85,12 @@ CanvasObject::~CanvasObject()
     m_toRemoveComponents.clear();
     m_toDeleteChilds.clear();
     m_toRemoveChilds.clear();
-    if(m_canvasParent)
-        m_canvasParent->removeObject(this);
+    if (m_canvasParent)
+    {
+        m_canvasParent->removeCanvasObject();
+        m_canvasParent->removeComponent(m_components.size());
+        m_canvasParent->removeObject(this);   
+    }
 }
 
 

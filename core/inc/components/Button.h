@@ -12,8 +12,9 @@ namespace Components
 {
 class QSFML_EDITOR_WIDGET_EXPORT Button : public MousePressEvent, public Utilities::AABB
 {
+    Q_OBJECT
     public:
-        Button(const std::string &name = "BoxCollider");
+        Button(const std::string &name = "Button");
         Button(const std::string &name, const Utilities::AABB &box);
         Button(const Button &other);
         ~Button();

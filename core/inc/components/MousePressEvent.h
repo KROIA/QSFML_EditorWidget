@@ -12,7 +12,6 @@ namespace Components
 {
 class QSFML_EDITOR_WIDGET_EXPORT MousePressEvent : public AbstractPressEvent
 {
-        Q_OBJECT
     public:
         /**
          * \brief MousePressEvent constructor

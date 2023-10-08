@@ -22,6 +22,19 @@ AbstractPressEvent::AbstractPressEvent(const AbstractPressEvent &other)
 {
 
 }
+
+void AbstractPressEvent::onFallingEdge()
+{
+
+}
+void AbstractPressEvent::onDown()
+{
+
+}
+void AbstractPressEvent::onRisingEdge()
+{
+
+}
 void AbstractPressEvent::update()
 {
     if(getCurrentValue())
@@ -39,19 +52,24 @@ void AbstractPressEvent::update()
 
     if(m_fallingEdge)
     {
+        onFallingEdge();
         emit fallingEdge();
         m_fallingEdge = false;
         m_down = true;
     }
     else if(m_down)
     {
+        onDown();
         emit down();
     }else if(m_risingEdge)
     {
+        onRisingEdge();
         emit risingEdge();
         m_risingEdge = false;
     }
 }
+
+
 
 }
 }

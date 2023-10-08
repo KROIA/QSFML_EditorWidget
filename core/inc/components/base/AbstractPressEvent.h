@@ -29,6 +29,10 @@ class QSFML_EDITOR_WIDGET_EXPORT AbstractPressEvent : public QObject,  public Co
         void risingEdge();
 
     protected:
+        virtual void onFallingEdge();
+        virtual void onDown();
+        virtual void onRisingEdge();
+
         /**
          * \brief update will be called once per frame
          */

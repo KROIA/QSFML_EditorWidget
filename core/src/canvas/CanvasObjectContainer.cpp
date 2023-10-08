@@ -17,14 +17,11 @@ using namespace QSFML;
 
 CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, CanvasSettings &settings)
     : m_settings(settings)
+    , m_renderLayerGroup(parent, RenderLayer::count)
 {
     m_parent = parent;
     m_allObjects = new CanvasObjectGroup(m_parent);
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
-    for(size_t i=0; i<RenderLayer::count; ++i)
-    {
-        m_renderLayerGroups.push_back(new CanvasObjectGroup(m_parent));
-    }
 
     m_currentThreadGroupInsertIndex = 0;
     m_threadWorker = nullptr;
@@ -34,11 +31,6 @@ CanvasObjectContainer::~CanvasObjectContainer()
 {
     m_parent->setRootCanvesObject(0);
     delete m_allObjects;
-    for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
-    {
-        m_renderLayerGroups[i]->clearObjects();
-        delete m_renderLayerGroups[i];
-    }
 }
 void CanvasObjectContainer::applyObjectChanges()
 {
@@ -92,9 +84,8 @@ void CanvasObjectContainer::addObject(CanvasObject *obj)
         m_threadGroups[m_currentThreadGroupInsertIndex]->addObject(obj);
         m_currentThreadGroupInsertIndex = (m_currentThreadGroupInsertIndex+1)%m_threadGroupCount;
     }
-    if(obj->getRenderLayer() < RenderLayer::count)
-        m_renderLayerGroups[obj->getRenderLayer()]->addObject(obj);
-  
+    m_renderLayerGroup.addObject(obj, obj->getRenderLayer());
+
     obj->setCanvasParent(m_parent);
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
@@ -117,19 +108,13 @@ void CanvasObjectContainer::addObject_internal()
             m_threadGroups[i]->addObject_internal();
         }
     }
-    for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
-    {
-        m_renderLayerGroups[i]->addObject_internal();
-    }
+    m_renderLayerGroup.addObject_internal();
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());    
 }
 void CanvasObjectContainer::deleteObject_internal()
 {
     m_allObjects->deleteObject_internal();
-    for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
-    {
-        m_renderLayerGroups[i]->deleteObject_internal();
-    }
+    m_renderLayerGroup.deleteObject_internal();
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
 }
 
@@ -144,8 +129,7 @@ void CanvasObjectContainer::removeObject(CanvasObject *obj)
             m_threadGroups[i]->removeObject(obj);
         }
     }
-    if(obj->getRenderLayer() < RenderLayer::count)
-        m_renderLayerGroups[obj->getRenderLayer()]->removeObject(obj);
+    m_renderLayerGroup.removeObject(obj, obj->getRenderLayer());
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
@@ -174,20 +158,14 @@ void CanvasObjectContainer::deleteObject(const std::vector<Objects::CanvasObject
 void CanvasObjectContainer::clearObjects()
 {
     m_allObjects->clearObjects();
-    for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
-    {
-        m_renderLayerGroups[i]->clearObjects();
-    }
+    m_renderLayerGroup.clearObjects();
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
 }
 
 void CanvasObjectContainer::reserveObjectsCount(size_t size)
 {
     m_allObjects->reserveObjectsCount(size);
-    for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
-    {
-        m_renderLayerGroups[i]->reserveObjectsCount(size);
-    }
+    m_renderLayerGroup.reserveObjectsCount(size);
 }
 size_t CanvasObjectContainer::getObjectsCount() const
 {
@@ -202,14 +180,14 @@ const std::vector<CanvasObject*> &CanvasObjectContainer::getObjects() const
 bool CanvasObjectContainer::objectExists(CanvasObject *obj)
 {
     if(obj->getRenderLayer() < RenderLayer::count)
-        return m_renderLayerGroups[obj->getRenderLayer()]->objectExists(obj);
+        return m_renderLayerGroup.objectExists(obj, obj->getRenderLayer());
 
     return m_allObjects->objectExists(obj);
 }
 size_t CanvasObjectContainer::getObjectIndex(CanvasObject *obj)
 {
     if(obj->getRenderLayer() < RenderLayer::count)
-        return m_renderLayerGroups[obj->getRenderLayer()]->getObjectIndex(obj);
+        return m_renderLayerGroup.getObjectIndex(obj, obj->getRenderLayer());
 
     return m_allObjects->getObjectIndex(obj);
 }
@@ -217,7 +195,7 @@ void CanvasObjectContainer::deleteLater(Objects::CanvasObject *obj)
 {
     m_allObjects->deleteLater(obj);
     if(obj->getRenderLayer() < RenderLayer::count)
-        m_renderLayerGroups[obj->getRenderLayer()]->removeObject(obj);
+        m_renderLayerGroup.removeObject(obj, obj->getRenderLayer());
 }
 void CanvasObjectContainer::renderLayerSwitch(Objects::CanvasObject *obj, RenderLayer from, RenderLayer to)
 {
@@ -226,9 +204,9 @@ void CanvasObjectContainer::renderLayerSwitch(Objects::CanvasObject *obj, Render
     if(obj->m_canvasParent != m_parent)
         return; // not owner of this object
     if(from < RenderLayer::count)
-        m_renderLayerGroups[obj->getRenderLayer()]->removeObject(obj);
+        m_renderLayerGroup.removeObject(obj, obj->getRenderLayer());
     if(to < RenderLayer::count)
-        m_renderLayerGroups[obj->getRenderLayer()]->addObject(obj);
+        m_renderLayerGroup.addObject(obj, obj->getRenderLayer());
 }
 
 
@@ -241,10 +219,7 @@ void CanvasObjectContainer::updateNewElements()
 
     addObject_internal();
     m_allObjects->updateNewElements();
-    for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
-    {
-        m_renderLayerGroups[i]->updateNewElements();
-    }
+    m_renderLayerGroup.updateNewElements();
     for (auto obj : toAdd)
         obj->inCanvasAdded_internal();
 }
@@ -267,10 +242,10 @@ void CanvasObjectContainer::update()
 }
 void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {
-    for(size_t i=0; i<m_renderLayerGroups.size(); ++i)
+    for(size_t i=0; i< m_renderLayerGroup.size(); ++i)
     {
         QSFMLP_BLOCK("Draw layer", QSFMLP_CANVASCONTAINER_COLOR_1);
-        m_renderLayerGroups[i]->draw(window);
+        m_renderLayerGroup[i].draw(window);
         QSFMLP_END_BLOCK;
     }
 }

@@ -11,6 +11,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectGroup
 {
         friend CanvasObjectContainer;
         friend CanvasThreadWorker;
+        friend CanvasObjectLayerGroup;
     public:
         CanvasObjectGroup(Canvas *parent);
         CanvasObjectGroup(const CanvasObjectGroup &other) = delete;

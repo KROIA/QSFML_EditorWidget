@@ -3,6 +3,7 @@
 #include "QSFML_base.h"
 #include "RenderLayer.h"
 #include "canvas/CanvasSettings.h"
+#include "canvas/CanvasObjectLayerGroup.h"
 
 #include "SFML/Graphics.hpp"
 #include <vector>
@@ -68,8 +69,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         size_t m_currentThreadGroupInsertIndex;
         size_t m_threadGroupCount;
         std::vector<CanvasObjectGroup*> m_threadGroups;
-        std::vector<CanvasObjectGroup*> m_renderLayerGroups;
-
+        //std::vector<CanvasObjectGroup*> m_renderLayerGroups;
+        CanvasObjectLayerGroup m_renderLayerGroup;
 
         Canvas *m_parent;
 

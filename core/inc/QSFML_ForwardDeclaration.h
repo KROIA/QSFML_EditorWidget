@@ -5,6 +5,7 @@ namespace QSFML
     class Canvas;
     class CanvasObjectContainer;
     class CanvasObjectGroup;
+    class CanvasObjectLayerGroup;
     class CanvasThreadWorker;
     struct CanvasSettings;
     class CanvasThreadWorker;
