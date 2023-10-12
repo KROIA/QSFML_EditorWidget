@@ -8,7 +8,7 @@ OpticalElement::OpticalElement(const std::string& name)
 	, m_n1(1)
 	, m_n2(1.5)
 	, m_bounceCount(0)
-	, m_maxBounceCount(10)
+	, m_maxBounceCount(4)
 	, m_doesReflect(true)
 	, m_doesRefract(true)
 
@@ -190,7 +190,8 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 	std::vector< LaserInfo>& additionalLightPathsOut,
 	sf::Vector2f& outNextCollisionPoint) const
 {
-	
+	const float newPointOffset = 0.00001;
+
 	ReflectionAndRefractionData data1;
 	if (!reflectAndRefract(ray, *m_shape, m_n1, m_n2, data1))
 		return;
@@ -202,7 +203,7 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 	LightRay bounced = ray;
 	
 	sf::Vector2f dirRefract = QSFML::VectorMath::getRotatedUnitVector(data1.refractAngle);
-	bounced.ray.setPos(outNextCollisionPoint + 0.001f * dirRefract);
+	bounced.ray.setPos(outNextCollisionPoint + newPointOffset * dirRefract);
 	bounced.ray.setDirection(dirRefract);
 
 
@@ -245,7 +246,7 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 		if (doReflectBounce)
 		{
 			sf::Vector2f dirReflect = QSFML::VectorMath::getRotatedUnitVector(data1.reflectAngle);
-			bounced.ray.setPos(outNextCollisionPoint + 0.001f * dirReflect);
+			bounced.ray.setPos(outNextCollisionPoint + newPointOffset * dirReflect);
 			bounced.ray.setDirection(dirReflect);
 			if (getRaycastDistance(bounced, distance))
 			{

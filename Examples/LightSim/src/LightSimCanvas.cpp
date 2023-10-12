@@ -79,17 +79,17 @@ void LightSimCanvas::setupCanvas()
          mirror->setColor(sf::Color(200, 200, 200));
          mirror->setRadius(50);
          m_canvas->addObject(mirror);
-     }
-*/
+     }*/
+
     //float refraction = 1.39;
     float refraction = 1.5;
     float brennweite;
-   /* {
+     {
         ConvexLense* lense = new ConvexLense();
         //lense->setPos(sf::Vector2f(400, 200));
-        lense->setPos(sf::Vector2f(100, 200));
+        lense->setPos(sf::Vector2f(200, 200));
         lense->setFocusLength(200);
-        lense->setThickness(80);
+        lense->setThickness(50);
         lense->setRotation(0);
         lense->setColor(sf::Color(200, 200, 200));
         lense->serDiameter(254);
@@ -97,8 +97,22 @@ void LightSimCanvas::setupCanvas()
         m_canvas->addObject(lense);
         m_convexLenses.push_back(lense);
         brennweite = lense->getFocusLength();
-    }*/
-   {
+    }
+    {
+        ConcaveLense* lense = new ConcaveLense();
+        //lense->setPos(sf::Vector2f(400, 200));
+        lense->setPos(sf::Vector2f(250.1, 200));
+        lense->setFocusLength(200);
+        lense->setThickness(50);
+        lense->setRotation(0);
+        lense->setColor(sf::Color(200, 200, 200));
+        lense->serDiameter(254);
+        lense->setRefractionIndexInside(refraction);
+        m_canvas->addObject(lense);
+        //m_convexLenses.push_back(lense);
+        brennweite = lense->getFocusLength();
+    }
+   /* {
         ConvexLense* lense = new ConvexLense();
         //lense->setPos(sf::Vector2f(400, 200));
         lense->setPos(sf::Vector2f(600, 250));
@@ -112,19 +126,19 @@ void LightSimCanvas::setupCanvas()
         m_convexLenses.push_back(lense);
     }
     
-        /* {
+        {
              ConvexLense* lense = new ConvexLense();
-             lense->setPos(sf::Vector2f(600, 200));
+             lense->setPos(sf::Vector2f(300, 300));
              lense->setFocusLength(100);
-             lense->setRefractionIndex(1.5);
+             lense->setRefractionIndexInside(1.5);
              lense->setRotation(0);
              lense->setColor(sf::Color(200, 200, 200));
              lense->serDiameter(100);
              lense->setRotation(M_PI / 10);
              m_canvas->addObject(lense);
              m_convexLenses.push_back(lense);
-         }*/
-
+         }
+         */
     sf::Vector2f laserPos(0, 180);
     // Setup Laser
      /*{
@@ -148,7 +162,7 @@ void LightSimCanvas::setupCanvas()
         m_canvas->addObject(laser);
         m_lasers.push_back(laser);
     }*/
-    /* {
+   /* {
         Laser* laser = new Laser();
         laser->setPos(laserPos);
         laser->setDirection(sf::Vector2f(1, 0));
@@ -202,9 +216,9 @@ void LightSimCanvas::setupCanvas()
         m_lasers.push_back(laser);
     }*/
   {
-        sf::Vector2f offset(0, 1);
-        sf::Vector2f startPos(20, 150);
-        for (int i = 0; i < 200; ++i)
+        sf::Vector2f offset(0, 10);
+        sf::Vector2f startPos(10, 100);
+        for (int i = 1; i < 2; ++i)
         {
             Laser* laser = new Laser();
             laser->setPos(startPos + (float)i * offset);

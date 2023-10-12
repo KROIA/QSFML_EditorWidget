@@ -1,11 +1,11 @@
-#include "ConvexLense.h"
+#include "ConcaveLense.h"
 #include <qpainter.h>
 
 //#define USE_CIRCLE
 #define USE_PARABLE
 //#define USE_HYPERBOL
 
-ConvexLense::ConvexLense(const std::string& name)
+ConcaveLense::ConcaveLense(const std::string& name)
 	: OpticalElement(name)
 {
 	m_shape.m_painter = new LenseShape::LensePainter(&m_shape);
@@ -19,7 +19,7 @@ ConvexLense::ConvexLense(const std::string& name)
 	m_shape.updateShape();
 	setShape(&m_shape);
 }
-ConvexLense::ConvexLense(const ConvexLense& other)
+ConcaveLense::ConcaveLense(const ConcaveLense& other)
 	: OpticalElement(other)
 {
 	m_shape.m_painter = new LenseShape::LensePainter(&m_shape);
@@ -32,64 +32,64 @@ ConvexLense::ConvexLense(const ConvexLense& other)
 	m_shape.updateShape();
 	setShape(&m_shape);
 }
-ConvexLense::~ConvexLense()
+ConcaveLense::~ConcaveLense()
 {
 
 }
-OBJECT_IMPL(ConvexLense);
+OBJECT_IMPL(ConcaveLense);
 
 
-void ConvexLense::setColor(const sf::Color& c)
+void ConcaveLense::setColor(const sf::Color& c)
 {
 	m_shape.m_painter->m_color = c;
 }
-const sf::Color& ConvexLense::getColor() const
+const sf::Color& ConcaveLense::getColor() const
 {
 	return m_shape.m_painter->m_color;
 }
 
-void ConvexLense::setPos(const sf::Vector2f& pos)
+void ConcaveLense::setPos(const sf::Vector2f& pos)
 {
 	m_shape.m_pos = pos;
 	m_shape.updateShape();
 }
-const sf::Vector2f& ConvexLense::getPos() const
+const sf::Vector2f& ConcaveLense::getPos() const
 {
 	return m_shape.m_pos;
 }
 
-void ConvexLense::setRotation(float angle)
+void ConcaveLense::setRotation(float angle)
 {
 	m_shape.m_angle = angle;
 	m_shape.updateShape();
 }
-float ConvexLense::getRotation() const
+float ConcaveLense::getRotation() const
 {
 	return m_shape.m_angle;
 }
-void ConvexLense::serDiameter(float w)
+void ConcaveLense::serDiameter(float w)
 {
 	m_shape.m_diameter = abs(w);
 	m_shape.updateShape();
 }
-float ConvexLense::getDiameter() const
+float ConcaveLense::getDiameter() const
 {
 	return m_shape.m_diameter;
 }
-void ConvexLense::setThickness(float t)
+void ConcaveLense::setThickness(float t)
 {
 	m_shape.setThickness(t);
 }
-float ConvexLense::getThickness() const
+float ConcaveLense::getThickness() const
 {
 	return m_shape.getThickness();
 }
-void ConvexLense::setFocusLength(float r)
+void ConcaveLense::setFocusLength(float r)
 {
 	m_shape.m_lenseRadius = abs(r);
 	m_shape.updateShape();
 }
-float ConvexLense::getFocusLength() const
+float ConcaveLense::getFocusLength() const
 {
 	return m_shape.getFocusLength();
 	//return m_shape.m_lenseRadius;
@@ -97,7 +97,7 @@ float ConvexLense::getFocusLength() const
 
 
 /*
-bool ConvexLense::processLaser(const QSFML::Utilities::Ray& ray,
+bool ConcaveLense::processLaser(const QSFML::Utilities::Ray& ray,
 	std::vector< QSFML::Utilities::Ray>& reflectedOut,
 	std::vector< LaserInfo>& additionalLightPathsOut) const
 {
@@ -105,7 +105,7 @@ bool ConvexLense::processLaser(const QSFML::Utilities::Ray& ray,
 	return processLaser_intern(ray, reflectedOut, additionalLightPathsOut, false, collisionPoint);
 }
 
-bool ConvexLense::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const
+bool ConcaveLense::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& distanceOut) const
 {
 	float fac = -1;
 	float normal; 
@@ -117,7 +117,7 @@ bool ConvexLense::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& di
 	return false;
 }
 
-bool ConvexLense::processLaser_intern(const QSFML::Utilities::Ray& ray,
+bool ConcaveLense::processLaser_intern(const QSFML::Utilities::Ray& ray,
 	std::vector< QSFML::Utilities::Ray>& reflectedOut,
 	std::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
 	sf::Vector2f& collisionPointOut) const
@@ -214,28 +214,28 @@ bool ConvexLense::processLaser_intern(const QSFML::Utilities::Ray& ray,
 */
 
 
-void ConvexLense::update()
+void ConcaveLense::update()
 {
 	//setRotation(getRotation() + 0.01);
 }
 
 
-ConvexLense::LenseShape::LensePainter::LensePainter(LenseShape* lense, const std::string& name)
+ConcaveLense::LenseShape::LensePainter::LensePainter(LenseShape* lense, const std::string& name)
 	: Drawable(name)
 	, m_lense(lense)
 {
 	m_resolution = 20;
 }
-ConvexLense::LenseShape::LensePainter::LensePainter(const LensePainter& other)
+ConcaveLense::LenseShape::LensePainter::LensePainter(const LensePainter& other)
 	: Drawable(other)
 	, m_lense(nullptr)
 {
 	m_resolution = other.m_resolution;
 }
-COMPONENT_IMPL(ConvexLense::LenseShape::LensePainter);
+COMPONENT_IMPL(ConcaveLense::LenseShape::LensePainter);
 
 
-void ConvexLense::LenseShape::LensePainter::draw(sf::RenderTarget& target,
+void ConcaveLense::LenseShape::LensePainter::draw(sf::RenderTarget& target,
 	sf::RenderStates states) const
 {
 	const size_t resolution = 20;
@@ -252,8 +252,8 @@ void ConvexLense::LenseShape::LensePainter::draw(sf::RenderTarget& target,
 		right[i].color = m_color;
 	}
 
-	target.draw(left.data(), resolution, sf::LineStrip);
-	target.draw(right.data(), resolution, sf::LineStrip);
+	target.draw(left.data(), left.size(), sf::LineStrip);
+	target.draw(right.data(), right.size(), sf::LineStrip);
 
 #endif
 
@@ -337,7 +337,7 @@ void ConvexLense::LenseShape::LensePainter::draw(sf::RenderTarget& target,
 }
 
 
-void ConvexLense::LenseShape::updateShape()
+void ConcaveLense::LenseShape::updateShape()
 {
 	m_openingAngle = asin(m_diameter / (2 * m_lenseRadius)) * 2;
 	float centerOffset = sqrt(m_lenseRadius * m_lenseRadius - m_diameter * m_diameter / 4);
@@ -355,14 +355,14 @@ void ConvexLense::LenseShape::updateShape()
 	sf::Vector2f start = m_pos - direction * m_width / 2.f;
 	sf::Vector2f end = m_pos + direction * m_width / 2.f;
 
-	m_ConvexLenseLine->setStartPos(start);
-	m_ConvexLenseLine->setEndPos(end);
+	m_ConcaveLenseLine->setStartPos(start);
+	m_ConcaveLenseLine->setEndPos(end);
 
-	m_ConvexLenseRay.setPos(start);
-	m_ConvexLenseRay.setDirection(direction * m_width);*/
+	m_ConcaveLenseRay.setPos(start);
+	m_ConcaveLenseRay.setDirection(direction * m_width);*/
 }
 
-void ConvexLense::LenseShape::setThickness(float t)
+void ConcaveLense::LenseShape::setThickness(float t)
 {
 	m_lenseThickness = t;
 	
@@ -370,11 +370,11 @@ void ConvexLense::LenseShape::setThickness(float t)
 	
 	updateShape();
 }
-float ConvexLense::LenseShape::getThickness() const
+float ConcaveLense::LenseShape::getThickness() const
 {
 	return m_lenseThickness;
 }
-float  ConvexLense::LenseShape::getFocusLength() const
+float  ConcaveLense::LenseShape::getFocusLength() const
 {
 	float rInf = m_lenseRadius / 2;
 	float n_1 = 1/( m_lense->getRefractionIndexInside() - m_lense->getRefractionIndexOutside());
@@ -382,7 +382,7 @@ float  ConvexLense::LenseShape::getFocusLength() const
 	return ((n_1) * (rInf));
 }
 
-bool ConvexLense::LenseShape::getLenseCollisionFactor(const LightRay& ray, bool outgoingRay, float& smalestFactor, float& collisionNormal, bool& rayInsideShape) const
+bool ConcaveLense::LenseShape::getLenseCollisionFactor(const LightRay& ray, bool outgoingRay, float& smalestFactor, float& collisionNormal, bool& rayInsideShape) const
 {
 	float fac1 = 99999999;
 	float fac2 = 99999999;
@@ -423,7 +423,7 @@ bool ConvexLense::LenseShape::getLenseCollisionFactor(const LightRay& ray, bool 
 }
 
 // calculates the malest factor in ray which collides on the edge of one part of the lense
-bool ConvexLense::LenseShape::getCircleElementCollisionFactor(const LightRay& ray, const sf::Vector2f& center,
+bool ConcaveLense::LenseShape::getCircleElementCollisionFactor(const LightRay& ray, const sf::Vector2f& center,
 	float radius, float minAngle, float maxAngle, float& smalestFactor, bool& rayInsideSegment) const
 {
 
@@ -477,7 +477,7 @@ bool ConvexLense::LenseShape::getCircleElementCollisionFactor(const LightRay& ra
 }
 
 // calculates the factor in ray which collides on the edge of the circle
-bool ConvexLense::LenseShape::getCircleCollisionFactor(const LightRay& ray, const sf::Vector2f& center,
+bool ConcaveLense::LenseShape::getCircleCollisionFactor(const LightRay& ray, const sf::Vector2f& center,
 	float radius, float& fac1, float& fac2) const
 {
 	bool failed;
@@ -520,7 +520,7 @@ bool ConvexLense::LenseShape::getCircleCollisionFactor(const LightRay& ray, cons
 
 
 
-bool ConvexLense::LenseShape::getRaycastData(const LightRay& ray,
+bool ConcaveLense::LenseShape::getRaycastData(const LightRay& ray,
 	const sf::Vector2f& circleOrigin,
 	float& alpha1, float& alpha2,
 	float& distance1, float& distance2,
@@ -552,13 +552,13 @@ bool ConvexLense::LenseShape::getRaycastData(const LightRay& ray,
 
 	return true;
 }
-/*void ConvexLense::LenseShape::getCollisionData(float alpha, float rayAngle, float& entryAngle, sf::Vector2f& point)
+/*void ConcaveLense::LenseShape::getCollisionData(float alpha, float rayAngle, float& entryAngle, sf::Vector2f& point)
 {
 
 }*/
 
 
-bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
+bool ConcaveLense::LenseShape::getParableData(const LightRay& ray, float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
 {
 	double nan = 999999;
 	double parable1Fac1 = nan;
@@ -570,7 +570,7 @@ bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outColl
 
 	double parable1Rotation = m_angle - M_PI_2;
 	sf::Vector2f originDir = QSFML::VectorMath::getRotatedUnitVector(m_angle) * m_parableParamB;
-	sf::Vector2f parable1Pos = m_pos;// -originDir;
+	sf::Vector2f parable1Pos = m_pos;
 
 	double parable2Fac1 = nan;
 	double parable2Fac2 = nan;
@@ -580,14 +580,15 @@ bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outColl
 	double parabel2Normal2 = nan;
 
 	double parable2Rotation = m_angle + M_PI_2;
-	sf::Vector2f parable2Pos = m_pos;// +originDir;
+	sf::Vector2f parable2Pos = m_pos;
 
-	bool c1 = getParableCollisionFactor(ray.ray, m_parableParamA, m_parableParamB, parable1Rotation, parable1Pos, m_diameter / 2,
+	// Scheibe links
+	bool c1 = getParableCollisionFactor(ray.ray, -m_parableParamA, m_parableParamB, parable1Rotation, parable1Pos, m_diameter / 2,
 										parable1Fac1, parable1Fac2, 
 										parabel1Normal1, parabel1Normal2,
 										parable1Fac1Valid, parable1Fac2Valid);
 
-	bool c2 = getParableCollisionFactor(ray.ray, m_parableParamA, m_parableParamB, parable2Rotation, parable2Pos, m_diameter / 2,
+	bool c2 = getParableCollisionFactor(ray.ray, -m_parableParamA, m_parableParamB, parable2Rotation, parable2Pos, m_diameter / 2,
 										parable2Fac1, parable2Fac2, 
 										parabel2Normal1, parabel2Normal2,
 									    parable2Fac1Valid, parable2Fac2Valid);
@@ -609,23 +610,25 @@ bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outColl
 	if (!parable2Fac2Valid || !c2 || parable2Fac2 < 0) parable2Fac2 = nan;
 
 	double minFac = parable1Fac1;
-	double otherFac = cpyFac12;
+	//double otherFac = cpyFac12;
 	double normal = parabel1Normal1;
 
 	if (parable1Fac2 < minFac)
 	{
 		minFac = parable1Fac2;
-		otherFac = cpyFac11;
+	//	otherFac = cpyFac11;
 		normal = parabel1Normal2;
-	}else if (parable2Fac1 < minFac)
+	}
+	if (parable2Fac1 < minFac)
 	{
 		minFac = parable2Fac1;
-		otherFac = cpyFac22;
+	//	otherFac = cpyFac22;
 		normal = parabel2Normal1;
-	}else if (parable2Fac2 < minFac)
+	}
+	if (parable2Fac2 < minFac)
 	{
 		minFac = parable2Fac2;
-		otherFac = cpyFac21;
+	//	otherFac = cpyFac21;
 		normal = parabel2Normal2;
 	}
 	if (minFac >= nan)
@@ -633,7 +636,13 @@ bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outColl
 
 	outCollisionFactor = minFac;
 	outNormalAngle = normal;
-	if ((otherFac < 0 && minFac > 0) || (otherFac > 0 && minFac < 0))
+
+	bool inParable1 = (cpyFac11 < 0 && cpyFac12 > 0) || (cpyFac11 > 0 && cpyFac12 < 0);
+	bool inParable2 = (cpyFac21 < 0 && cpyFac22 > 0) || (cpyFac21 > 0 && cpyFac22 < 0);
+
+
+	if (!inParable1 && !inParable2)
+	//if ((otherFac < 0 && minFac > 0) || (otherFac > 0 && minFac < 0))
 	{
 		rayStartsInsideShape = true;
 		//normal = M_PI - m_lastNormal;
@@ -647,7 +656,7 @@ bool ConvexLense::LenseShape::getParableData(const LightRay& ray, float& outColl
 	return true;
 }
 
-bool ConvexLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities::Ray& ray, double a, double b, double parableRotation,
+bool ConcaveLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities::Ray& ray, double a, double b, double parableRotation,
 	const sf::Vector2f& parablePos, double minMaxInputRange, 
 	double& outFac1, double& outFac2, 
 	double& outNormal1, double& outNormal2,
@@ -694,9 +703,9 @@ bool ConvexLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities::
 
 		x1 = bpx;
 		x2 = bpx;
-
-		outFac1 = ((a * x1 * x1 + b) - rayPos.y) / dirLength;
-		outFac2 = outFac1;
+		float funcVal = (a * x1 * x1 + b);
+		outFac1 = (funcVal - rayPos.y) / dirLength * abs(rayDir.y)/rayDir.y;
+		outFac2 = -outFac1*1000000;
 
 		
 		
@@ -757,7 +766,7 @@ bool ConvexLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities::
 
 }
 
-void ConvexLense::LenseShape::getPainterVertecies(std::vector < sf::Vertex>& left, std::vector < sf::Vertex>& right, size_t resolution)
+void ConcaveLense::LenseShape::getPainterVertecies(std::vector < sf::Vertex>& left, std::vector < sf::Vertex>& right, size_t resolution)
 {
 	float dx = m_diameter / (resolution-1);
 
@@ -767,18 +776,33 @@ void ConvexLense::LenseShape::getPainterVertecies(std::vector < sf::Vertex>& lef
 	{
 		x = start + i * dx;
 		float y = m_parableParamA * x * x;
-		sf::Vector2f pLeft = QSFML::VectorMath::getRotated(sf::Vector2f(x, y + m_parableParamB), m_angle + M_PI_2) + m_pos;
-		sf::Vector2f pRight = QSFML::VectorMath::getRotated(sf::Vector2f(x, y + m_parableParamB), m_angle - M_PI_2) + m_pos;
+		sf::Vector2f pLeft = QSFML::VectorMath::getRotated(sf::Vector2f(x, y - m_parableParamB), m_angle + M_PI_2) + m_pos;
+		sf::Vector2f pRight = QSFML::VectorMath::getRotated(sf::Vector2f(x, y - m_parableParamB), m_angle - M_PI_2) + m_pos;
 
+		if (i == 0)
+		{
+			//right.push_back(pLeft);
+			//left.push_back(pRight);
+		}
+		
+		
 		left.push_back(pLeft);
 		right.push_back(pRight);
+		/*if (i == resolution - 1)
+		{
+			right.push_back(left[0]);
+			left.push_back(right[0]);
+		}*/
+
 	}
+	right.push_back(left[0]);
+	left.push_back(right[0]);
 	
 }
 
 
 
-bool ConvexLense::LenseShape::getCollisionData(const LightRay& ray,
+bool ConcaveLense::LenseShape::getCollisionData(const LightRay& ray,
 	float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
 {
 
