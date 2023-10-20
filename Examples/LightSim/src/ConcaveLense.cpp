@@ -671,8 +671,12 @@ bool ConcaveLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities:
 			(-(bdy^2 - 4*a*b*bdx^2 + 4*a*bdx^2*bpy - 4*a*bdx*bdy*bpx)^(1/2) + bdy - 2*a*bdx*bpx)/(2*a*bdx^2)
 		*/
 
-	sf::Vector2f rayPos = QSFML::VectorMath::getRotated(ray.getPos() - parablePos, -parableRotation);
-	sf::Vector2f rayDir = QSFML::VectorMath::getRotated(ray.getDirection(), -parableRotation);
+	QSFML::VectorMath::Vector2d rayPosRaw((double)ray.getPos().x - (double)parablePos.x, (double)ray.getPos().y - (double)parablePos.y);
+	QSFML::VectorMath::Vector2d rayDirRaw(ray.getDirection().x, ray.getDirection().y);
+
+
+	QSFML::VectorMath::Vector2d rayPos = QSFML::VectorMath::getRotated(rayPosRaw, -parableRotation);
+	QSFML::VectorMath::Vector2d rayDir = QSFML::VectorMath::getRotated(rayDirRaw, -parableRotation);
 
 	// Calculations in double precission because when the ray is vertical. it is high volatile
 	double bpx = rayPos.x;
@@ -711,8 +715,8 @@ bool ConcaveLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities:
 		
 		outNormal1 = M_PI_2 + parableRotation;
 		outNormal2 = M_PI_2 + parableRotation;
-		outNormal1 = QSFML::VectorMath::getAngle(sf::Vector2f(1, (2 * a * x1))) + M_PI_2 + parableRotation;
-		outNormal2 = QSFML::VectorMath::getAngle(sf::Vector2f(1, (2 * a * x2))) + M_PI_2 + parableRotation;
+		outNormal1 = QSFML::VectorMath::getAngle(QSFML::VectorMath::Vector2d(1, (2 * a * x1))) + M_PI_2 + parableRotation;
+		outNormal2 = QSFML::VectorMath::getAngle(QSFML::VectorMath::Vector2d(1, (2 * a * x2))) + M_PI_2 + parableRotation;
 	}
 	else
 	{
@@ -728,8 +732,8 @@ bool ConcaveLense::LenseShape::getParableCollisionFactor(const QSFML::Utilities:
 		x2 = bpx + outFac2 * bdx;
 
 		//outNormal1 = QSFML::VectorMath::getAngle(sf::Vector2f(x1, 2 * a * x1)) - M_PI_2 + parableRotation;
-		outNormal1 = QSFML::VectorMath::getAngle(sf::Vector2f(1, (2 * a * x1))) + M_PI_2 + parableRotation;
-		outNormal2 = QSFML::VectorMath::getAngle(sf::Vector2f(1, (2 * a * x2))) + M_PI_2 + parableRotation;
+		outNormal1 = QSFML::VectorMath::getAngle(QSFML::VectorMath::Vector2d(1, (2 * a * x1))) + M_PI_2 + parableRotation;
+		outNormal2 = QSFML::VectorMath::getAngle(QSFML::VectorMath::Vector2d(1, (2 * a * x2))) + M_PI_2 + parableRotation;
 	}
 	
 	

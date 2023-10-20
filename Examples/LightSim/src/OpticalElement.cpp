@@ -190,7 +190,7 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 	std::vector< LaserInfo>& additionalLightPathsOut,
 	sf::Vector2f& outNextCollisionPoint) const
 {
-	const float newPointOffset = 0.00001;
+	const float newPointOffset = 0.0001;
 
 	ReflectionAndRefractionData data1;
 	if (!reflectAndRefract(ray, *m_shape, m_n1, m_n2, data1))

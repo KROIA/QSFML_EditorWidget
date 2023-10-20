@@ -47,7 +47,7 @@ void LightSimCanvas::setupCanvas()
     //qDebug() << defaultEditor->toString().c_str();
 
         // Setup mirrors
-  /* {
+   {
         Mirror* mirror = new Mirror();
         mirror->setPos(sf::Vector2f(300, 600));
         mirror->setRotation(M_PI / 2);
@@ -79,7 +79,7 @@ void LightSimCanvas::setupCanvas()
          mirror->setColor(sf::Color(200, 200, 200));
          mirror->setRadius(50);
          m_canvas->addObject(mirror);
-     }*/
+     }
 
     //float refraction = 1.39;
     float refraction = 1.5;
@@ -101,8 +101,8 @@ void LightSimCanvas::setupCanvas()
     {
         ConcaveLense* lense = new ConcaveLense();
         //lense->setPos(sf::Vector2f(400, 200));
-        lense->setPos(sf::Vector2f(250.1, 200));
-        lense->setFocusLength(200);
+        lense->setPos(sf::Vector2f(300, 201));
+        lense->setFocusLength(251);
         lense->setThickness(50);
         lense->setRotation(0);
         lense->setColor(sf::Color(200, 200, 200));
@@ -218,7 +218,7 @@ void LightSimCanvas::setupCanvas()
   {
         sf::Vector2f offset(0, 10);
         sf::Vector2f startPos(10, 100);
-        for (int i = 1; i < 2; ++i)
+        for (int i = 0; i < 20; ++i)
         {
             Laser* laser = new Laser();
             laser->setPos(startPos + (float)i * offset);
