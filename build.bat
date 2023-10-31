@@ -48,6 +48,7 @@ if %errorlevel% neq 0 (
 ) else (
     CALL::ECHO_COLOR "Build successful!", %GREEN%
 )
+cd ..
 EXIT /B 0
 
 :ECHO_COLOR 

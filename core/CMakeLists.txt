@@ -1,79 +1,38 @@
 cmake_minimum_required(VERSION 3.1.0)
-# SFML_EditorWidget core 
-set(SFML_EditorWidget_filename "SFML_EditorWidget")
-set(EASY_PROFILER_NO_GUI False)
-set(SFML_EditorWidget_Include "inc")
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+## --------------------------------------------------------------------------------
+## -------------------- Project settings ------------------------------------------
+## --------------------------------------------------------------------------------
 
 
-include(../QtLocator.cmake)
-message("Search for QT5 finished")
-find_package(Qt5Widgets REQUIRED)
-message("find_package for Qt5Widgets finished")
+set(LIBRARY_NAME            SFML_EditorWidget)
+set(LIB_DEFINE              QSFML_EDITOR_WIDGET_LIB)
+set(LIB_PROFILE_DEFINE      QSFML_PROFILING)
 
-if (Qt5Widgets_FOUND)
-    message(STATUS "Using Qt v ${Qt5Widgets_VERSION}")
-else()
-    message(STATUS "INFO\n\n\tQt5 not found!\n")
-endif()
+set(INCLUDE_PATH "inc")
 
-
-include(FetchContent)
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies")
-
-
-
-# SFML Static Lib
-set(SFML_STATIC_LIBRARIES TRUE)
-set(BUILD_SHARED_LIBS OFF)
-set(SFML_USE_STATIC_LIBS ON)
-FetchContent_Declare(
- SFML
- GIT_REPOSITORY ${SFML_GIT_REPO}
- GIT_TAG ${SFML_GIT_TAG}
+# Enable/disable QT modules for this example
+set(QT_ENABLE ON)
+set(QT_DEPLOY ON)
+# Find the necessary QT modules
+set(QT_MODULES
+    Core
+    Widgets
+    # Add any other required modules here
 )
-message("Download dependency: ${SFML_GIT_REPO}")
-FetchContent_MakeAvailable(SFML)
 
+set(DEBUG_POSTFIX_STR  "-d")
+set(STATIC_POSTFIX_STR "-s")
+set(PROFILING_POSTFIX_STR "-p")
 
+## --------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------
 
-set(EASY_PROFILER_NO_SAMPLES True)
-FetchContent_Declare(
- EASY_PROFILER
- GIT_REPOSITORY ${EASY_GIT_REPO}
- GIT_TAG ${EASY_GIT_TAG}
-)
-message("Download dependency: ${EASY_GIT_REPO}")
-
-FetchContent_MakeAvailable(EASY_PROFILER)
-
-
-
-#add_custom_command(
-#    TARGET easy_profiler POST_BUILD VERBATIM
-#    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${easy_profiler}>" ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-#)
-
-#install(TARGETS easy_profiler DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-
-
-
-set_target_properties(easy_profiler PROPERTIES CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
-set_target_properties(easy_profiler PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
-set_target_properties(easy_profiler PROPERTIES CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
-
-#set_target_properties(easy_profiler PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
-#set_target_properties(easy_profiler PROPERTIES CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
-
-#FetchContent_Populate(EASY_PROFILER)
-#add_subdirectory(${depname_SOURCE_DIR} ${depname_BINARY_DIR})
-
+set(LIBRARY_NAME_STATIC ${LIBRARY_NAME}_static)
+set(LIBRARY_NAME_SHARED ${LIBRARY_NAME}_shared)
+set(LIBRARY_NAME_STATIC_PROFILE ${LIBRARY_NAME_STATIC}_profile)
 
 
 
@@ -83,103 +42,114 @@ endif()
 
 
 
-MACRO(FILE_DIRECTORIES return_list ending)
-    FILE(GLOB_RECURSE new_list ${ending})
-    SET(dir_list "")
-    FOREACH(file_path ${new_list})
-        GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
-        SET(dir_list ${dir_list} ${file_path})
-    ENDFOREACH()
-    LIST(REMOVE_DUPLICATES dir_list)
-    SET(${return_list} ${dir_list})
-ENDMACRO()
+# QT settings
+if(QT_ENABLE)
+    include(${QT_LOCATOR_CMAKE})
+
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    #set(CMAKE_AUTOUIC ON)
+
+    find_package(Qt5 REQUIRED COMPONENTS ${QT_MODULES})
+endif()
+# end QT settings
+
+# External dependencies from the dependencies.cmake
+use_easy_profiler(EASY_PROFILER_DEPS)
+use_sfml(LIBRARY_DEPENDENCIES)
 
 
-set(CMAKE_AUTOMOC ON) 
 
-
-
+include_directories(inc)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 FILE_DIRECTORIES(H_FILES *.h)
 FILE_DIRECTORIES(CPP_FILES *.cpp)
-qt5_wrap_cpp(CPP_MOC_FILES ${H_FILES})
-
 
 
 set(SOURCES
-    ${CPP_MOC_FILES}
     ${CPP_FILES}
     ${H_FILES}
 )
 
+if(QT_ENABLE)
+    # Search for QT specific files
+    FILE_DIRECTORIES(UI_FILES *.ui)    
+    FILE_DIRECTORIES(RES_FILES *.qrc)    
 
+    qt5_wrap_cpp(CPP_MOC_FILES ${H_FILES})
+    qt5_wrap_ui(UIS_HDRS ${UI_FILES})
+    qt5_add_resources(RESOURCE_FILES ${RES_FILES})
+
+    set(SOURCES ${SOURCES}
+	    ${CPP_MOC_FILES}
+	    ${UIS_HDRS}
+        ${RESOURCE_FILES})
+
+    # Link the QT modules to your executable
+    foreach(MODULE ${QT_MODULES})
+        set(QT_LIBS ${QT_LIBS} Qt5::${MODULE})
+    endforeach()
+    set(LIBRARY_DEPENDENCIES ${LIBRARY_DEPENDENCIES} ${QT_LIBS})
+endif()
 
 message("Create library with files:")
- FOREACH(file ${SOURCES})
-    message("  File: " ${file})
- ENDFOREACH()
+FOREACH(file ${SOURCES})
+   message("  File: " ${file})
+ENDFOREACH()
+message("Using external dependencies:")
+FOREACH(dep ${extDependencies})
+   message("  Library: " ${dep})
+ENDFOREACH()
 
+
+
+
+
+add_library(${LIBRARY_NAME_SHARED}                          SHARED      ${SOURCES})
+add_library(${LIBRARY_NAME_STATIC}                          STATIC      ${SOURCES})
+add_library(${LIBRARY_NAME_STATIC_PROFILE}                  STATIC      ${SOURCES})
  
- set(SFML_EditorWidget_dependencies 
-    Qt5::Widgets
-    sfml-graphics
-    sfml-audio
-    sfml-network
-    sfml-system
-    sfml-window)
+target_compile_definitions(${LIBRARY_NAME_SHARED}           PRIVATE                  ${LIB_DEFINE})
+target_compile_definitions(${LIBRARY_NAME_STATIC}           PRIVATE     BUILD_STATIC ${LIB_DEFINE})
+target_compile_definitions(${LIBRARY_NAME_STATIC_PROFILE}   PRIVATE     BUILD_STATIC ${LIB_DEFINE}  ${LIB_PROFILE_DEFINE})
 
-add_library(SFML_EditorWidget_shared SHARED ${SOURCES})
-add_library(SFML_EditorWidget_static STATIC ${SOURCES})
-add_library(SFML_EditorWidget_static_profile STATIC ${SOURCES})
+set_target_properties(${LIBRARY_NAME_SHARED}                PROPERTIES  LINKER_LANGUAGE CXX  OUTPUT_NAME "${LIBRARY_NAME}"                                              DEBUG_POSTFIX ${DEBUG_POSTFIX_STR})
+set_target_properties(${LIBRARY_NAME_STATIC}                PROPERTIES  LINKER_LANGUAGE CXX  OUTPUT_NAME "${LIBRARY_NAME}${STATIC_POSTFIX_STR}"                         DEBUG_POSTFIX ${DEBUG_POSTFIX_STR})
+set_target_properties(${LIBRARY_NAME_STATIC_PROFILE}        PROPERTIES  LINKER_LANGUAGE CXX  OUTPUT_NAME "${LIBRARY_NAME}${STATIC_POSTFIX_STR}${PROFILING_POSTFIX_STR}" DEBUG_POSTFIX ${DEBUG_POSTFIX_STR})
 
 
-target_compile_definitions(sfml-graphics PRIVATE  SFML_STATIC)
-target_compile_definitions(sfml-audio PRIVATE  SFML_STATIC)
-target_compile_definitions(sfml-network PRIVATE  SFML_STATIC)
-target_compile_definitions(sfml-system PRIVATE  SFML_STATIC)
-target_compile_definitions(sfml-window PRIVATE  SFML_STATIC)
-target_compile_definitions(SFML_EditorWidget_shared PRIVATE  QSFML_EDITOR_WIDGET_LIB)
-target_compile_definitions(SFML_EditorWidget_static PRIVATE  BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
-target_compile_definitions(SFML_EditorWidget_static_profile PRIVATE QSFML_PROFILING BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
-#if(QSFML_PROFILING)
-#    target_compile_definitions(SFML_EditorWidget_shared PRIVATE  QSFML_PROFILING)
-#    target_compile_definitions(SFML_EditorWidget_static PRIVATE  QSFML_PROFILING)
-#    set(SFML_EditorWidget_dependencies 
-#        ${SFML_EditorWidget_dependencies}
-#        easy_profiler)
-#ENDIF()
+target_link_libraries(${LIBRARY_NAME_SHARED}            ${LIBRARY_DEPENDENCIES})
+target_link_libraries(${LIBRARY_NAME_STATIC}            ${LIBRARY_DEPENDENCIES})
+target_link_libraries(${LIBRARY_NAME_STATIC_PROFILE}    ${LIBRARY_DEPENDENCIES} ${EASY_PROFILER_DEPS})
 
 
-set_target_properties(easy_profiler PROPERTIES DEBUG_POSTFIX "-d")
-set_target_properties(SFML_EditorWidget_shared PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}" DEBUG_POSTFIX "-d")
-set_target_properties(SFML_EditorWidget_static PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}-s" DEBUG_POSTFIX "-d")
-set_target_properties(SFML_EditorWidget_static_profile PROPERTIES LINKER_LANGUAGE CXX  OUTPUT_NAME "${SFML_EditorWidget_filename}-s-p" DEBUG_POSTFIX "-d")
-
-
-
-
-target_link_libraries(SFML_EditorWidget_shared ${SFML_EditorWidget_dependencies})
-target_link_libraries(SFML_EditorWidget_static ${SFML_EditorWidget_dependencies})
-target_link_libraries(SFML_EditorWidget_static_profile ${SFML_EditorWidget_dependencies} easy_profiler)
-
-target_include_directories(SFML_EditorWidget_shared PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+target_include_directories(${LIBRARY_NAME_SHARED} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}>
+    ${CMAKE_CURRENT_BINARY_DIR}
 	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
 )
-target_include_directories(SFML_EditorWidget_static PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+target_include_directories(${LIBRARY_NAME_STATIC}  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}>
+    ${CMAKE_CURRENT_BINARY_DIR}
 	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
 )
-target_include_directories(SFML_EditorWidget_static_profile PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+target_include_directories(${LIBRARY_NAME_STATIC_PROFILE} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}>
+    ${CMAKE_CURRENT_BINARY_DIR}
 	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
 )
+
 # Define the install path
 message("Installation to path: ${CMAKE_INSTALL_PREFIX}/bin")
-message("Installation to path: ${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
-install(TARGETS SFML_EditorWidget_shared DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
-install(TARGETS SFML_EditorWidget_shared DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
-install(TARGETS SFML_EditorWidget_static DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
-install(TARGETS SFML_EditorWidget_static_profile DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
-install(TARGETS easy_profiler DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
-install(TARGETS sfml-graphics sfml-audio sfml-network sfml-system sfml-window DESTINATION "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
+message("Installation to path: ${INSTALL_LIB_PATH}")
+install(TARGETS ${LIBRARY_NAME_SHARED} ${LIBRARY_NAME_STATIC}  ${LIBRARY_NAME_STATIC_PROFILE} ${EASY_PROFILER_DEPS} DESTINATION "${INSTALL_BIN_PATH}")
+install(TARGETS ${LIBRARY_NAME_SHARED} ${LIBRARY_NAME_STATIC}  ${LIBRARY_NAME_STATIC_PROFILE} DESTINATION "${INSTALL_LIB_PATH}")
+
+
+copyLibraryHeaders("${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}" "${CMAKE_INSTALL_PREFIX}/include" "QSFML")
+
+
+if(QT_ENABLE AND QT_DEPLOY)
+    DEPLOY_QT(${QT_PATH} "$<TARGET_FILE_DIR:profiler_gui>/$<TARGET_FILE_NAME:profiler_gui>" ${INSTALL_BIN_PATH})
+endif()

@@ -1,20 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.15)
 
 project(SFML_EditorWidget)
-
-# Dependencies:
-# QT base Path
-#   Set a specific QT msvc compiler path 
-#   If not defined, the QtLocator.cmake try's to search for the highest QT5 version to use
-# set(QT_PATH C:/Qt/5.11.0/msvc2017_64)
-
-#  SFML
-set(SFML_GIT_REPO  https://github.com/SFML/SFML.git)
-set(SFML_GIT_TAG   2.5.1)
-
-#  EasyProfiler
-set(EASY_GIT_REPO  https://github.com/yse/easy_profiler.git)
-set(EASY_GIT_TAG   v2.1.0)
+set(PARALLEL_BUILD OFF)
 
 #
 # -----------------------------------------
@@ -34,13 +21,25 @@ endif()
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
-set(SFML_MISC_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}/misc")
+
+
+set(INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
+set(INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
+# create bin folder
+file(MAKE_DIRECTORY ${INSTALL_BIN_PATH})
 
 set(QT_LOCATOR_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/QtLocator.cmake")
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
+if(PARALLEL_BUILD)
+	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} /MP)
+	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} /MP)
+endif()
 
+
+include(utility.cmake)
+include(dependencies.cmake)
 
 add_subdirectory(core)
 add_subdirectory(Examples)
