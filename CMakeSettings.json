@@ -37,7 +37,7 @@
       "name": "x64-Debug-Profile",
       "generator": "Visual Studio 17 2022 Win64",
       "configurationType": "Debug",
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "buildRoot": "${projectDir}\\build\\${name}",
       "installRoot": "${projectDir}",
       "cmakeCommandArgs": "-DQSFML_PROFILING=1",
       "buildCommandArgs": "",

@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.1.0)
 # SFML_EditorWidget core 
 set(SFML_EditorWidget_filename "SFML_EditorWidget")
 set(EASY_PROFILER_NO_GUI False)
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies")
 set(SFML_EditorWidget_Include "inc")
 
 set(CMAKE_CXX_STANDARD 11)
@@ -26,7 +25,7 @@ endif()
 
 
 include(FetchContent)
-
+set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies")
 
 
 
@@ -139,7 +138,6 @@ target_compile_definitions(sfml-audio PRIVATE  SFML_STATIC)
 target_compile_definitions(sfml-network PRIVATE  SFML_STATIC)
 target_compile_definitions(sfml-system PRIVATE  SFML_STATIC)
 target_compile_definitions(sfml-window PRIVATE  SFML_STATIC)
-target_compile_definitions(easy_profiler PRIVATE  EASY_PROFILER_STATIC)
 target_compile_definitions(SFML_EditorWidget_shared PRIVATE  QSFML_EDITOR_WIDGET_LIB)
 target_compile_definitions(SFML_EditorWidget_static PRIVATE  BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
 target_compile_definitions(SFML_EditorWidget_static_profile PRIVATE QSFML_PROFILING BUILD_STATIC QSFML_EDITOR_WIDGET_LIB)
