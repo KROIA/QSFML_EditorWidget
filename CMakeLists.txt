@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.15)
 
 project(SFML_EditorWidget)
-set(PARALLEL_BUILD OFF)
+set(PARALLEL_BUILD ON)
 
 #
 # -----------------------------------------
@@ -15,6 +15,13 @@ if(NOT CMAKE_INSTALL_PREFIX)
 endif()
 if(NOT RELATIVE_INSTALL_FOLDER)
 	set(RELATIVE_INSTALL_FOLDER lib)
+endif()
+
+if(CMAKE_GENERATOR STREQUAL "Ninja")
+    message("CMake was configured using Ninja")
+else()
+    set(PARALLEL_BUILD OFF) # Multithreading does mostly not work if not configured using ninja
+    message("CMake was not configured using Ninja")
 endif()
  
 # Set output paths
