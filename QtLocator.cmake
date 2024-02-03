@@ -85,11 +85,34 @@ IF(MSVC AND QT_MISSING)
     # fix any double slashes which seem to be common
     STRING(REPLACE "//" "/"  QT_VERSION "${QT_VERSION}")
 
-    FILE(GLOB CompilerPath "${QT_VERSION}/msvc*")
+    FILE(GLOB CompilerPaths "${QT_VERSION}/msvc*")
 
-    if (EXISTS ${CompilerPath})
+
+    # Initialize variables to store the newest compiler version and path
+    set(NewestYear 0)
+    set(NewestCompilerPath "")
+
+    foreach(CompilerPath ${CompilerPaths})
+        get_filename_component(CompilerVersion ${CompilerPath} NAME) # Extract the version from the path
+
+        # Extract year from the version string
+        string(REGEX MATCH "[0-9][0-9][0-9][0-9]" YearMatch ${CompilerVersion})
+        if (YearMatch)
+            set(Year ${CMAKE_MATCH_0})
+            if (Year GREATER NewestYear)
+                set(NewestYear ${Year})
+                set(NewestCompilerPath ${CompilerPath})
+            endif()
+        endif()
+    endforeach()
+
+
+    message("Newest MSVC Compiler Version: ${NewestCompilerVersion}")
+    message("Path to Newest MSVC Compiler: ${NewestCompilerPath}")
+
+    if (EXISTS ${NewestCompilerPath})
         #message("Compiler path: ${CompilerPath}")
-        set(QT_PATH ${CompilerPath})
+        set(QT_PATH ${NewestCompilerPath})
         SET(QT_MISSING False)
     else()
         message("No QT5 installation found")
