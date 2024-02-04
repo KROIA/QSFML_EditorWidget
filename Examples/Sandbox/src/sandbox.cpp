@@ -99,7 +99,9 @@ SandBox::SandBox(QWidget *parent)
         QSFML::Utilities::Ray *testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
         obj->setPositionAbsolute(sf::Vector2f(100, 100));
         //delete testRay->createRayPainter();
+
         obj->addComponent(testRay->createRayPainter());
+        
 
         shape->setPoints(
             {

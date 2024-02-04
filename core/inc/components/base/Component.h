@@ -3,6 +3,7 @@
 #include "QSFML_base.h"
 
 #include "utilities/AABB.h"
+#include "events/DestroyEvent.h"
 
 #include <string>
 
@@ -30,7 +31,7 @@ namespace Components
  *           See predefined Components
  *
  */
-class QSFML_EDITOR_WIDGET_EXPORT Component
+class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 {
     public:
         /**

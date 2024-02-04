@@ -122,7 +122,7 @@ T* CanvasObjectGroup::getFirstObject() const
 template<typename T>
 bool CanvasObjectGroup::objectExists(T *obj,const std::vector<T*> &list)
 {
-    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
     size_t num = list.size();
     if(!num) return false;
 
@@ -135,7 +135,7 @@ bool CanvasObjectGroup::objectExists(T *obj,const std::vector<T*> &list)
 template<typename T>
 size_t CanvasObjectGroup::getObjectIndex(T *obj,const std::vector<T*> &list)
 {
-    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_2);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_2);
     size_t num = list.size();
     if(!num) return npos;
 
@@ -147,7 +147,7 @@ size_t CanvasObjectGroup::getObjectIndex(T *obj,const std::vector<T*> &list)
 template<typename T>
 void CanvasObjectGroup::addObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
 {
-    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_3);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_3);
     T* transformed = dynamic_cast<T*>(obj);
     if(transformed)
     {
@@ -158,7 +158,7 @@ void CanvasObjectGroup::addObject(QSFML::Objects::CanvasObject *obj,std::vector<
 template<typename T>
 void CanvasObjectGroup::removeObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
 {
-    QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_4);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_4);
     T* transformed = dynamic_cast<T*>(obj);
     if(transformed)
     {

@@ -984,7 +984,7 @@ void CanvasObject::setCanvasParent(Canvas *parent)
 
 void CanvasObject::updateNewElements()
 {
-    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
+    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
     removeChild_internal();
     deleteChild_internal();
     removeComponent_internal();
@@ -998,8 +998,8 @@ void CanvasObject::updateNewElements()
 void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
 {
     if (!m_enabled || !m_updateControlls.enableEventLoop || !m_thisNeedsEventUpdate) return;
-    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
-    QSFMLP_BLOCK("Components event", QSFMLP_OBJECT_COLOR_2);
+    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
+    QSFMLP_OBJECT_BLOCK("Components event", QSFMLP_COLOR_STAGE_2);
     for (auto component : m_eventComponents)
     {
         if (!component->isEnabled())
@@ -1009,25 +1009,25 @@ void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
             component->sfEvent(event);
 
     }
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_BLOCK("Childs event", QSFMLP_OBJECT_COLOR_3);
+    QSFMLP_OBJECT_BLOCK("Childs event", QSFMLP_COLOR_STAGE_3);
     for (auto obj : m_childs)
     {
         if (obj->m_enabled)
             obj->sfEvent(events);
     }
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 }
 void CanvasObject::update_internal()
 {
     if (!m_enabled || !m_updateControlls.enableUpdateLoop) return;
-    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
-    QSFMLP_BLOCK("Object update", QSFMLP_OBJECT_COLOR_2);
+    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
+    QSFMLP_OBJECT_BLOCK("Object update", QSFMLP_COLOR_STAGE_2);
     Updatable::emitUpdate();
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_BLOCK("Components update", QSFMLP_OBJECT_COLOR_3);
+    QSFMLP_OBJECT_BLOCK("Components update", QSFMLP_COLOR_STAGE_2);
     for (size_t i = 0; i < m_updatableComponents.size(); ++i)
     {
         Utilities::Updatable* comp = m_updatableComponents[i];
@@ -1036,50 +1036,50 @@ void CanvasObject::update_internal()
             continue;
         comp->emitUpdate();
     }
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_BLOCK("Childs update", QSFMLP_OBJECT_COLOR_4);
+    QSFMLP_OBJECT_BLOCK("Childs update", QSFMLP_COLOR_STAGE_4);
     for (size_t i = 0; i < m_childs.size(); ++i)
     {
         CanvasObject* obj = m_childs[i];
         if (obj->m_enabled)
             obj->update_internal();
     }
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 }
 void CanvasObject::inCanvasAdded_internal()
 {
-    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
-    QSFMLP_BLOCK("Object inCanvasAdded", QSFMLP_OBJECT_COLOR_2);
+    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
+    QSFMLP_OBJECT_BLOCK("Object inCanvasAdded", QSFMLP_COLOR_STAGE_2);
     inCanvasAdded();
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_BLOCK("Childs inCanvasAdded", QSFMLP_OBJECT_COLOR_4);
+    QSFMLP_OBJECT_BLOCK("Childs inCanvasAdded", QSFMLP_COLOR_STAGE_4);
     for (size_t i = 0; i < m_childs.size(); ++i)
     {
         m_childs[i]->inCanvasAdded_internal();
     }
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 }
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
     if(!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate) return;
-    QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
-    QSFMLP_BLOCK("Components draw", QSFMLP_OBJECT_COLOR_2);
+    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
+    QSFMLP_OBJECT_BLOCK("Components draw", QSFMLP_COLOR_STAGE_2);
     for(size_t i=0; i<m_drawableComponents.size(); ++i)
     {
         if(!m_drawableComponents[i]->isEnabled())
             continue;
         window.draw(*m_drawableComponents[i]);
     }
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_BLOCK("Childs draw", QSFMLP_OBJECT_COLOR_3);
+    QSFMLP_OBJECT_BLOCK("Childs draw", QSFMLP_COLOR_STAGE_3);
     for(size_t i=0; i<m_childs.size(); ++i)
     {
         if(m_childs[i]->m_enabled)
             m_childs[i]->draw(window);
     }
-    QSFMLP_END_BLOCK;
+    QSFMLP_OBJECT_END_BLOCK;
 }
 

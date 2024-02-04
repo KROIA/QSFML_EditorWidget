@@ -43,7 +43,8 @@ namespace QSFML
 		{
 			if (m_rayPainter)
 			{
-				m_rayPainter->m_canvasParent = nullptr;
+				m_rayPainter->disconnect_onDestroy(this, &Ray::onRayPainterDestroyed);
+				m_rayPainter = nullptr;
 			}
 		}
 
@@ -409,14 +410,18 @@ namespace QSFML
 		{
 			if (m_rayPainter)
 				return m_rayPainter;
-			m_rayPainter = new Ray::RayPainter(this);
+			m_rayPainter = new Ray::RayPainter();
+			m_rayPainter->connect_onDestroy(this, &Ray::onRayPainterDestroyed);
 			return m_rayPainter;
+		}
+		void Ray::onRayPainterDestroyed()
+		{
+			m_rayPainter = nullptr;
 		}
 
 
-		Ray::RayPainter::RayPainter(Ray* parent, const std::string& name)
+		Ray::RayPainter::RayPainter(const std::string& name)
 			: Drawable(name)
-			, m_parent(parent)
 			, m_pointColor(sf::Color::Red)
 			, m_lineColor(sf::Color::White)
 			, m_pointRadius(2)
@@ -426,8 +431,7 @@ namespace QSFML
 		
 		Ray::RayPainter::~RayPainter()
 		{
-			if(m_parent)
-				m_parent->m_rayPainter = nullptr;
+
 		}
 
 		void Ray::RayPainter::addPoint(const sf::Vector2f& point)

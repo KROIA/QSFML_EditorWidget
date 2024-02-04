@@ -163,7 +163,7 @@ namespace QSFML
 			class QSFML_EDITOR_WIDGET_EXPORT RayPainter : public Components::Drawable
 			{
 				friend Ray;
-				RayPainter(Ray* parent, const std::string& name = "RayPainter");
+				RayPainter(const std::string& name = "RayPainter");
 				RayPainter(const RayPainter& other) = delete;
 				
 			public:
@@ -180,7 +180,6 @@ namespace QSFML
 				{
 					sf::Vertex m_line[2];
 				};
-				Ray* m_parent;
 				sf::Color m_pointColor;
 				sf::Color m_lineColor;
 				float m_pointRadius;
@@ -195,6 +194,7 @@ namespace QSFML
 			bool raycast_internal(const Components::Shape& shape, float& outDistanceFactor, size_t& outEdge) const;
 			bool raycast_internal(const AABB& aabb, float& outDistanceFactor, size_t& outEdge) const;
 
+			void onRayPainterDestroyed();
 
 			sf::Vector2f m_pos;
 			sf::Vector2f m_dir;
