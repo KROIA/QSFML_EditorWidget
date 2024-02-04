@@ -148,13 +148,42 @@ const sf::Vector2f &AABB::getSize() const
 {
     return m_size;
 }
-sf::Vector2f AABB::getLeft() const
+float AABB::getLeft() const
 {
-    return sf::Vector2f(0, m_size.y);
+    return m_pos.x;
 }
-sf::Vector2f AABB::getTop() const
+float AABB::getRight() const
 {
-    return sf::Vector2f(m_size.x, 0);
+    return m_pos.x + m_size.x;
+}
+float AABB::getTop() const
+{
+    return m_pos.y;
+}
+float AABB::getBottom() const
+{
+    return m_pos.y + m_size.y;
+}
+
+void AABB::setLeft(float x)
+{
+    float right = m_pos.x + m_size.x;
+    m_pos.x = x;
+    m_size.x = right - x;
+}
+void AABB::setRight(float x)
+{
+    m_size.x = x - m_pos.x;
+}
+void AABB::setTop(float y)
+{
+    float bottom = m_pos.y + m_size.y;
+	m_pos.y = y;
+	m_size.y = bottom - y;
+}
+void AABB::setBottom(float y)
+{
+	m_pos.y = y - m_size.y;
 }
 
 bool AABB::contains(const sf::Vector2f &point) const

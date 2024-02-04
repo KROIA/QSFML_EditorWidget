@@ -1,18 +1,26 @@
 #pragma once
 
 #include "QSFML_base.h"
+#include "components/base/Drawable.h"
 
 namespace QSFML
 {
+	namespace Components
+	{
+		class Shape;
+	}
 	namespace Utilities
 	{
+		class AABB;
 		class QSFML_EDITOR_WIDGET_EXPORT Ray
 		{
+			friend class RayPainter;
 		public:
 			Ray();
 			Ray(const Ray& other);
 			Ray(const sf::Vector2f& position, const sf::Vector2f& direction);
 			Ray(float posX, float posY, float dirX, float dirY);
+			~Ray();
 
 			Ray& operator=(const Ray& other);
 			bool operator==(const Ray& other) const;
@@ -137,10 +145,62 @@ namespace QSFML
 			 */
 			int getCircleCollisionFactors(const sf::Vector2f& circlePos, float circleRadius,
 										  float& outFactor1, float& outFactor2) const;
-		private:
+
+			/**
+			 * \brief Checks if the given shape collides with this ray
+			 * 
+			 * \param shape which is checked for collision
+			 * \param outDistanceFactor is the calculated scalar for the ray
+			 * \param outEdge is the index of shapeVertex where the collision occured between points[outEdge] -- points[outEdge+1].
+			 * \return true, if the shape collides with the ray. The scalar for the ray is stored in outDistanceFactor
+			 *         false, if the shape does not collide with the ray. outDistanceFactor is not changed.
+			 */ 
+			bool raycast(const Components::Shape& shape, float &outDistanceFactor, size_t &outEdge) const;
+			bool raycast(const std::vector<Components::Shape>& shapes, float &outDistanceFactor, size_t &outShapeIndex, size_t &outEdge) const;
+			
+			bool raycast(const AABB& aabb, float &outDistanceFactor, size_t &outEdge) const;
+		
+			class QSFML_EDITOR_WIDGET_EXPORT RayPainter : public Components::Drawable
+			{
+				friend Ray;
+				RayPainter(Ray* parent, const std::string& name = "RayPainter");
+				RayPainter(const RayPainter& other) = delete;
+				
+			public:
+				~RayPainter();
+				
+
+				void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+
+			private:
+				void addPoint(const sf::Vector2f& point);
+				void addLine(const sf::Vector2f& pointA, const sf::Vector2f& pointB);
+			
+				struct Line
+				{
+					sf::Vertex m_line[2];
+				};
+				Ray* m_parent;
+				sf::Color m_pointColor;
+				sf::Color m_lineColor;
+				float m_pointRadius;
+
+				mutable std::vector<sf::Vector2f> m_points;
+				mutable std::vector<Line> m_lines;
+			};
+
+			RayPainter *createRayPainter();
+
+			private:
+			bool raycast_internal(const Components::Shape& shape, float& outDistanceFactor, size_t& outEdge) const;
+			bool raycast_internal(const AABB& aabb, float& outDistanceFactor, size_t& outEdge) const;
+
+
 			sf::Vector2f m_pos;
 			sf::Vector2f m_dir;
 			float m_dirLength;
+
+			RayPainter* m_rayPainter;
 		};
 	}
 }

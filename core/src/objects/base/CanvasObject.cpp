@@ -1024,7 +1024,7 @@ void CanvasObject::update_internal()
     if (!m_enabled || !m_updateControlls.enableUpdateLoop) return;
     QSFMLP_FUNCTION(QSFMLP_OBJECT_COLOR_1);
     QSFMLP_BLOCK("Object update", QSFMLP_OBJECT_COLOR_2);
-    update();
+    Updatable::emitUpdate();
     QSFMLP_END_BLOCK;
 
     QSFMLP_BLOCK("Components update", QSFMLP_OBJECT_COLOR_3);
@@ -1034,7 +1034,7 @@ void CanvasObject::update_internal()
         Components::Component* comp1 = dynamic_cast<Components::Component*>(comp);
         if (!comp1->isEnabled())
             continue;
-        comp->update();
+        comp->emitUpdate();
     }
     QSFMLP_END_BLOCK;
 
