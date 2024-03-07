@@ -93,6 +93,49 @@ SandBox::SandBox(QWidget *parent)
         m_canvas_2->addObject(mouseCollider);
 
 
+
+        QSFML::Objects::CanvasObject* obj = new QSFML::Objects::CanvasObject();
+        QSFML::Components::Shape *shape = new QSFML::Components::Shape();
+        QSFML::Utilities::Ray *testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
+        obj->setPositionAbsolute(sf::Vector2f(100, 100));
+        //delete testRay->createRayPainter();
+
+        obj->addComponent(testRay->createRayPainter());
+        
+
+        shape->setPoints(
+            {
+                sf::Vector2f(0,0),
+                sf::Vector2f(100,0),
+                sf::Vector2f(100,100),
+                sf::Vector2f(0,100)
+            });
+
+        sf::Transform t = shape->getTransform();
+        t.translate(obj->getPositionAbsolute());
+        shape->setTransform(t);
+        obj->setUpdateFunction([shape, testRay, obj]()
+		{
+			sf::Transform t = shape->getTransform();
+            t.rotate(0.1);
+            shape->setTransform(t);
+
+
+            testRay->setDirection(obj->getMouseWorldPosition() - testRay->getPos());
+            testRay->normalize();
+            float d1;
+            size_t d2;
+            testRay->raycast(*shape, d1, d2);
+		});
+        obj->setRenderLayer(RenderLayer::layer_2);
+        shape->setFillColor(sf::Color::Red);
+        shape->setOutlineColor(sf::Color::Blue);
+        //shape->setOutlineThickness(5);
+        
+        shape->setFill(true);
+        
+        obj->addComponent(shape);
+        m_canvas_2->addObject(obj);
        
     }
 

@@ -9,16 +9,31 @@
 // Profiling
 #ifdef QSFML_PROFILING
 	#include <easy/profiler.h>
+	#include <easy/arbitrary_value.h> // EASY_VALUE, EASY_ARRAY are defined here
 
-	#define QSFMLP_BLOCK(text, color) EASY_BLOCK(text, profiler::colors:: color)
+	#define QSFMLP_BLOCK_C(text, color) EASY_BLOCK(text, color)
+	#define QSFMLP_NONSCOPED_BLOCK_C(text, color) EASY_NONSCOPED_BLOCK(text, color)
 	#define QSFMLP_END_BLOCK EASY_END_BLOCK
-	#define QSFMLP_FUNCTION(color) EASY_FUNCTION(profiler::colors:: color)
+	#define QSFMLP_FUNCTION_C(color) EASY_FUNCTION(color)
+	#define QSFMLP_BLOCK(text, colorStage) QSFMLP_BLOCK_C(text,profiler::colors::  colorStage)
+	#define QSFMLP_NONSCOPED_BLOCK(text, colorStage) QSFMLP_NONSCOPED_BLOCK_C(text,profiler::colors::  colorStage)
+	#define QSFMLP_FUNCTION(colorStage) QSFMLP_FUNCTION_C(profiler::colors:: colorStage)
 	#define QSFMLP_THREAD(name) EASY_THREAD(name)
+
+	#define QSFMLP_VALUE(name, value) EASY_VALUE(name, value)
+	#define QSFMLP_TEXT(name, value) EASY_TEXT(name, value)
 #else
-	#define QSFMLP_BLOCK(text, color)
+	#define QSFMLP_BLOCK_C(text, color) 
+	#define QSFMLP_NONSCOPED_BLOCK_C(text, color) 
 	#define QSFMLP_END_BLOCK
-	#define QSFMLP_FUNCTION(color)
+	#define QSFMLP_FUNCTION_C(color) 
+	#define QSFMLP_BLOCK(text, colorStage) 
+	#define QSFMLP_NONSCOPED_BLOCK(text, colorStage) 
+	#define QSFMLP_FUNCTION(colorStage)
 	#define QSFMLP_THREAD(name)
+
+	#define QSFMLP_VALUE(name, value) 
+	#define QSFMLP_TEXT(name, value)
 #endif
 #define CONCAT_SYMBOLS_IMPL(x, y) x##y
 #define CONCAT_SYMBOLS(x, y) CONCAT_SYMBOLS_IMPL(x, y)
@@ -39,6 +54,68 @@
 #define QSFMLP_COLOR_STAGE_13 A400 
 #define QSFMLP_COLOR_STAGE_14 A700 
 
+
+// General
+#define QSFMLP_GENERAL_COLORBASE Cyan
+#define QSFMLP_GENERAL_BLOCK_C(text, color) QSFMLP_BLOCK_C(text, color)
+#define QSFMLP_GENERAL_NONSCOPED_BLOCK_C(text, color) QSFMLP_NONSCOPED_BLOCK_C(text, color)
+#define QSFMLP_GENERAL_END_BLOCK QSFMLP_END_BLOCK;
+#define QSFMLP_GENERAL_FUNCTION_C(color) QSFMLP_FUNCTION_C(color)
+#define QSFMLP_GENERAL_BLOCK(text, colorStage) QSFMLP_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_GENERAL_COLORBASE, colorStage))
+#define QSFMLP_GENERAL_NONSCOPED_BLOCK(text, colorStage) QSFMLP_NONSCOPED_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_GENERAL_COLORBASE, colorStage))
+#define QSFMLP_GENERAL_FUNCTION(colorStage) QSFMLP_FUNCTION(CONCAT_SYMBOLS(QSFMLP_GENERAL_COLORBASE, colorStage))
+#define QSFMLP_GENERAL_VALUE(name, value) QSFMLP_VALUE(name, value)
+#define QSFMLP_GENERAL_TEXT(name, value) QSFMLP_TEXT(name, value)
+
+// Canvas
+#define QSFMLP_CANVAS_COLORBASE Green
+#define QSFMLP_CANVAS_BLOCK_C(text, color) QSFMLP_BLOCK_C(text, color)
+#define QSFMLP_CANVAS_NONSCOPED_BLOCK_C(text, color) QSFMLP_NONSCOPED_BLOCK_C(text, color)
+#define QSFMLP_CANVAS_END_BLOCK QSFMLP_END_BLOCK;
+#define QSFMLP_CANVAS_FUNCTION_C(color) QSFMLP_FUNCTION_C(color)
+#define QSFMLP_CANVAS_BLOCK(text, colorStage) QSFMLP_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_CANVAS_COLORBASE, colorStage))
+#define QSFMLP_CANVAS_NONSCOPED_BLOCK(text, colorStage) QSFMLP_NONSCOPED_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_CANVAS_COLORBASE, colorStage))
+#define QSFMLP_CANVAS_FUNCTION(colorStage) QSFMLP_FUNCTION(CONCAT_SYMBOLS(QSFMLP_CANVAS_COLORBASE, colorStage))
+#define QSFMLP_CANVAS_VALUE(name, value) QSFMLP_VALUE(name, value)
+#define QSFMLP_CANVAS_TEXT(name, value) QSFMLP_TEXT(name, value)
+
+// Objects
+#define QSFMLP_OBJECT_COLORBASE Orange
+#define QSFMLP_OBJECT_BLOCK_C(text, color) QSFMLP_BLOCK_C(text, color)
+#define QSFMLP_OBJECT_NONSCOPED_BLOCK_C(text, color) QSFMLP_NONSCOPED_BLOCK_C(text, color)
+#define QSFMLP_OBJECT_END_BLOCK QSFMLP_END_BLOCK;
+#define QSFMLP_OBJECT_FUNCTION_C(color) QSFMLP_FUNCTION_C(color)
+#define QSFMLP_OBJECT_BLOCK(text, colorStage) QSFMLP_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_OBJECT_COLORBASE, colorStage))
+#define QSFMLP_OBJECT_NONSCOPED_BLOCK(text, colorStage) QSFMLP_NONSCOPED_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_OBJECT_COLORBASE, colorStage))
+#define QSFMLP_OBJECT_FUNCTION(colorStage) QSFMLP_FUNCTION(CONCAT_SYMBOLS(QSFMLP_OBJECT_COLORBASE, colorStage))
+#define QSFMLP_OBJECT_VALUE(name, value) QSFMLP_VALUE(name, value)
+#define QSFMLP_OBJECT_TEXT(name, value) QSFMLP_TEXT(name, value)
+
+// Components
+#define QSFMLP_COMPONENT_COLORBASE Yellow
+#define QSFMLP_COMPONENT_BLOCK_C(text, color) QSFMLP_BLOCK_C(text, color)
+#define QSFMLP_COMPONENT_NONSCOPED_BLOCK_C(text, color) QSFMLP_NONSCOPED_BLOCK_C(text, color)
+#define QSFMLP_COMPONENT_END_BLOCK QSFMLP_END_BLOCK;
+#define QSFMLP_COMPONENT_FUNCTION_C(color) QSFMLP_FUNCTION_C(color)
+#define QSFMLP_COMPONENT_BLOCK(text, colorStage) QSFMLP_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_COMPONENT_COLORBASE, colorStage))
+#define QSFMLP_COMPONENT_NONSCOPED_BLOCK(text, colorStage) QSFMLP_NONSCOPED_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_COMPONENT_COLORBASE, colorStage))
+#define QSFMLP_COMPONENT_FUNCTION(colorStage) QSFMLP_FUNCTION(CONCAT_SYMBOLS(QSFMLP_COMPONENT_COLORBASE, colorStage))
+#define QSFMLP_COMPONENT_VALUE(name, value) QSFMLP_VALUE(name, value)
+#define QSFMLP_COMPONENT_TEXT(name, value) QSFMLP_TEXT(name, value)
+
+// Physics
+#define QSFMLP_PHYSICS_COLORBASE Blue
+#define QSFMLP_PHYSICS_BLOCK_C(text, color) QSFMLP_BLOCK_C(text, color)
+#define QSFMLP_PHYSICS_NONSCOPED_BLOCK_C(text, color) QSFMLP_NONSCOPED_BLOCK_C(text, color)
+#define QSFMLP_PHYSICS_END_BLOCK QSFMLP_END_BLOCK;
+#define QSFMLP_PHYSICS_FUNCTION_C(color) QSFMLP_FUNCTION_C(color)
+#define QSFMLP_PHYSICS_BLOCK(text, colorStage) QSFMLP_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_PHYSICS_COLORBASE, colorStage))
+#define QSFMLP_PHYSICS_NONSCOPED_BLOCK(text, colorStage) QSFMLP_NONSCOPED_BLOCK(text, CONCAT_SYMBOLS(QSFMLP_PHYSICS_COLORBASE, colorStage))
+#define QSFMLP_PHYSICS_FUNCTION(colorStage) QSFMLP_FUNCTION(CONCAT_SYMBOLS(QSFMLP_PHYSICS_COLORBASE, colorStage))
+#define QSFMLP_PHYSICS_VALUE(name, value) QSFMLP_VALUE(name, value)
+#define QSFMLP_PHYSICS_TEXT(name, value) QSFMLP_TEXT(name, value)
+
+/*
 // Colors for Canvas 
 #define QSFMLP_CANVAS_COLORBASE Green
 #define QSFMLP_CANVAS_COLOR_1  CONCAT_SYMBOLS(QSFMLP_CANVAS_COLORBASE , QSFMLP_COLOR_STAGE_1 )
@@ -141,3 +218,4 @@
 #define QSFMLP_PHYSICS_COLOR_12 CONCAT_SYMBOLS(QSFMLP_PHYSICS_COLORBASE , QSFMLP_COLOR_STAGE_12) 
 #define QSFMLP_PHYSICS_COLOR_13 CONCAT_SYMBOLS(QSFMLP_PHYSICS_COLORBASE , QSFMLP_COLOR_STAGE_13) 
 #define QSFMLP_PHYSICS_COLOR_14 CONCAT_SYMBOLS(QSFMLP_PHYSICS_COLORBASE , QSFMLP_COLOR_STAGE_14) 
+*/

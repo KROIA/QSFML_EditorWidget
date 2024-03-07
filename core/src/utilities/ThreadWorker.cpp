@@ -276,9 +276,9 @@ namespace QSFML
 
                     ++m_runCount;
                     // Execute the member function
-                    QSFMLP_BLOCK("Start thread work", QSFMLP_THREAD_COLOR_1);
+                    QSFMLP_GENERAL_BLOCK("Start thread work", QSFMLP_COLOR_STAGE_1);
                     (*func)();
-                    QSFMLP_END_BLOCK;
+                    QSFMLP_GENERAL_END_BLOCK;
 
                     // Reset the signal flag
                     shouldExecute->store(false);
@@ -298,9 +298,9 @@ namespace QSFML
 
                     ++m_runCount;
                     // Execute the member function
-                    QSFMLP_BLOCK("Start thread work", QSFMLP_THREAD_COLOR_1);
+                    QSFMLP_GENERAL_BLOCK("Start thread work", QSFMLP_COLOR_STAGE_1);
                     work->process(threadIndex);
-                    QSFMLP_END_BLOCK;
+                    QSFMLP_GENERAL_END_BLOCK;
 
                     // Reset the signal flag
                     shouldExecute->store(false);

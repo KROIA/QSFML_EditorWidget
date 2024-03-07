@@ -8,7 +8,10 @@
 #include "utilities/Updatable.h"
 #include "utilities/AABB.h"
 
+#include "events/DestroyEvent.h"
+
 #include <vector>
+#include <functional>
 #include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 
@@ -167,7 +170,7 @@ namespace Objects
  * \endcode
  */
 
-class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
+class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, public Events::DestroyEvent
 {
         friend Canvas;
         friend CanvasObjectGroup;
@@ -333,6 +336,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: protected Utilities::Updatable
         Canvas *m_canvasParent;
         CanvasObject *m_parent;
         CanvasObject *m_rootParent;
+
+       
 
         
         std::vector<CanvasObject*> m_childs;

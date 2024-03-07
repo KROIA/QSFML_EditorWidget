@@ -30,7 +30,7 @@ namespace QSFML
 
     void CanvasObjectGroup::addObject(CanvasObject* obj)
     {
-        QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
+        QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
 
         if (obj->getCanvasParent() != m_parent && obj->getCanvasParent())
             obj->getCanvasParent()->removeObject(obj);
@@ -39,7 +39,7 @@ namespace QSFML
     }
     void CanvasObjectGroup::addObject(const std::vector<CanvasObject*>& objs)
     {
-        QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
+        QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
         for (size_t i = 0; i < objs.size(); ++i)
         {
             addObject(objs[i]);
@@ -66,7 +66,7 @@ namespace QSFML
 
     void CanvasObjectGroup::removeObject(CanvasObject* obj)
     {
-        QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
+        QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
         size_t index = getObjectIndex(obj);
         if (index == npos) return;
         obj->setCanvasParent(nullptr);
@@ -74,7 +74,7 @@ namespace QSFML
     }
     void CanvasObjectGroup::removeObject(const std::vector<CanvasObject*>& objs)
     {
-        QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
+        QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
         for (size_t i = 0; i < objs.size(); ++i)
         {
             removeObject(objs[i]);
@@ -82,13 +82,13 @@ namespace QSFML
     }
     void CanvasObjectGroup::deleteObject(Objects::CanvasObject* obj)
     {
-        QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
+        QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
         removeObject(obj);
         delete obj;
     }
     void CanvasObjectGroup::deleteObject(const std::vector<Objects::CanvasObject*>& objs)
     {
-        QSFMLP_FUNCTION(QSFMLP_OBJECTGROUP_COLOR_1);
+        QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
         removeObject(objs);
         for (size_t i = 0; i < objs.size(); ++i)
         {

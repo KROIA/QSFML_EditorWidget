@@ -29,7 +29,7 @@ CanvasThreadWorker::~CanvasThreadWorker()
 
 void CanvasThreadWorker::process()
 {
-    QSFMLP_BLOCK("Process threaded update", QSFMLP_THREAD_COLOR_1);
+    QSFMLP_CANVAS_BLOCK("Process threaded update", QSFMLP_COLOR_STAGE_1);
     m_threadNextIndex = 0;
     size_t threadCount = m_threads.size();
     m_threadMaxIndex = m_groups->size();
@@ -58,7 +58,7 @@ void CanvasThreadWorker::setupThreads(size_t count)
 {
     if(m_threads.size() > 0)
         return;
-    QSFMLP_FUNCTION(QSFMLP_THREAD_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
     m_cycleCount = 0;
     m_threadReleaseToWork = false;
     m_threadMaxIndex = m_groups->size();
@@ -99,7 +99,7 @@ void CanvasThreadWorker::threadFunc(ThreadsData data)
         {
             std::this_thread::sleep_for(5us);
         }
-        QSFMLP_BLOCK("Threaded update", QSFMLP_THREAD_COLOR_2);
+        QSFMLP_CANVAS_BLOCK("Threaded update", QSFMLP_COLOR_STAGE_1);
         releaseThreadToWorkComp = !releaseThreadToWorkComp;
         bool workOnGroups = true;
         CanvasObjectGroup *currentGroup = nullptr;

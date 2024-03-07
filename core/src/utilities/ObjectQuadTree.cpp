@@ -166,7 +166,7 @@ namespace QSFML
 		void ObjectQuadTree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
 											 bool onlyFirstCollision)
 		{
-			QSFMLP_FUNCTION(QSFMLP_PHYSICS_COLOR_1);
+			QSFMLP_PHYSICS_FUNCTION(QSFMLP_COLOR_STAGE_1);
 			if (m_threadWorker)
 			{
 				std::vector<Utilities::Collisioninfo> sector1;
@@ -194,7 +194,7 @@ namespace QSFML
 				//this->m_tree.checkCollisionsSingleLayerSelfDeep(3, *this->m_collisions2, this->m_onlyFirstCollision);
 				
 				m_threadWorker->waitForThreadsNoDelayNoExec();
-				QSFMLP_BLOCK("Collisions copy", QSFMLP_PHYSICS_COLOR_2);
+				QSFMLP_PHYSICS_BLOCK("Collisions copy", QSFMLP_COLOR_STAGE_2);
 				size_t cap = collisions.size() + sector1.size() + sector2.size() + sector3.size() + sector4.size() + sector5.size() + sector6.size();
 				collisions.reserve(cap);
 				collisions.insert(collisions.end(), sector1.begin(), sector1.end());
@@ -203,7 +203,7 @@ namespace QSFML
 				collisions.insert(collisions.end(), sector4.begin(), sector4.end());
 				collisions.insert(collisions.end(), sector5.begin(), sector5.end());
 				collisions.insert(collisions.end(), sector6.begin(), sector6.end());
-				QSFMLP_END_BLOCK;
+				QSFMLP_PHYSICS_END_BLOCK;
 			}
 			else
 			{

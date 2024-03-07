@@ -74,7 +74,7 @@ void CanvasObjectContainer::deinitializeThreads()
 
 void CanvasObjectContainer::addObject(CanvasObject *obj)
 {
-    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
 
     if(obj->getCanvasParent() != m_parent && obj->getCanvasParent())
         obj->getCanvasParent()->removeObject(obj);
@@ -90,7 +90,7 @@ void CanvasObjectContainer::addObject(CanvasObject *obj)
 }
 void CanvasObjectContainer::addObject(const std::vector<CanvasObject*> &objs)
 {
-    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
     for(size_t i=0; i<objs.size(); ++i)
     {
         addObject(objs[i]);
@@ -120,7 +120,7 @@ void CanvasObjectContainer::deleteObject_internal()
 
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
 {
-    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
     m_allObjects->removeObject(obj);
     if(m_threadWorker)
     {
@@ -134,7 +134,7 @@ void CanvasObjectContainer::removeObject(CanvasObject *obj)
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 {
-    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
     for(size_t i=0; i<objs.size(); ++i)
     {
         removeObject(objs[i]);
@@ -142,13 +142,13 @@ void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 }
 void CanvasObjectContainer::deleteObject(Objects::CanvasObject *obj)
 {
-    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
     removeObject(obj);
     delete obj;
 }
 void CanvasObjectContainer::deleteObject(const std::vector<Objects::CanvasObject*> &objs)
 {
-    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
     removeObject(objs);
     for(size_t i=0; i<objs.size(); ++i)
     {
@@ -213,7 +213,7 @@ void CanvasObjectContainer::renderLayerSwitch(Objects::CanvasObject *obj, Render
 
 void CanvasObjectContainer::updateNewElements()
 {
-    QSFMLP_FUNCTION(QSFMLP_CANVASCONTAINER_COLOR_1);
+    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
     deleteObject_internal();
     const std::vector<Objects::CanvasObject*> &toAdd = m_allObjects->getObjectsToAdd();
 
@@ -244,7 +244,7 @@ void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {
     for(size_t i=0; i< m_renderLayerGroup.size(); ++i)
     {
-        QSFMLP_BLOCK("Draw layer", QSFMLP_CANVASCONTAINER_COLOR_1);
+        QSFMLP_CANVAS_BLOCK("Draw layer", QSFMLP_COLOR_STAGE_1);
         m_renderLayerGroup[i].draw(window);
         QSFMLP_END_BLOCK;
     }

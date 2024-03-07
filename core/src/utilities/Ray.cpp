@@ -1,5 +1,6 @@
 ﻿#include "utilities/Ray.h"
 #include "utilities/VectorOperations.h"
+#include "components/drawable/Shape.h"
 
 namespace QSFML
 {
@@ -9,6 +10,7 @@ namespace QSFML
 			: m_pos(0,0)
 			, m_dir(1,0)
 			, m_dirLength(1)
+			, m_rayPainter(nullptr)
 		{
 
 		}
@@ -16,6 +18,7 @@ namespace QSFML
 			: m_pos(other.m_pos)
 			, m_dir(other.m_dir)
 			, m_dirLength(other.m_dirLength)
+			, m_rayPainter(nullptr)
 		{
 			
 		}
@@ -23,6 +26,7 @@ namespace QSFML
 			: m_pos(position)
 			, m_dir(direction)
 			, m_dirLength(sqrt(direction.x * direction.x + direction.y * direction.y))
+			, m_rayPainter(nullptr)
 		{
 
 		}
@@ -30,8 +34,18 @@ namespace QSFML
 			: m_pos(posX, posY)
 			, m_dir(dirX, dirY)
 			, m_dirLength(sqrt(dirX * dirX + dirY * dirY))
+			, m_rayPainter(nullptr)
 		{
 
+		}
+
+		Ray::~Ray()
+		{
+			if (m_rayPainter)
+			{
+				m_rayPainter->disconnect_onDestroy(this, &Ray::onRayPainterDestroyed);
+				m_rayPainter = nullptr;
+			}
 		}
 
 		Ray& Ray::operator=(const Ray& other)
@@ -218,10 +232,20 @@ namespace QSFML
 		}
 
 		bool Ray::raycast(const Ray& other,
-										   float& outDistanceFactorA,
-										   float& outDistanceFactorB) const
+						  float& outDistanceFactorA,
+						  float& outDistanceFactorB) const
 		{
-			return raycast(m_pos, m_dir, other.m_pos, other.m_dir, outDistanceFactorA, outDistanceFactorB);
+			bool ret = raycast(m_pos, m_dir, other.m_pos, other.m_dir, outDistanceFactorA, outDistanceFactorB);
+			if(ret && m_rayPainter)
+			{
+				sf::Vector2f pointA = getPoint(outDistanceFactorA);
+				sf::Vector2f pointB = other.getPoint(outDistanceFactorB);
+				m_rayPainter->addPoint(pointA);
+				m_rayPainter->addPoint(pointB);
+				m_rayPainter->addLine(m_pos, pointA);
+				m_rayPainter->addLine(other.m_pos, pointB);
+			}
+			return ret;
 		}
 
 		int Ray::getCircleCollisionFactors(const sf::Vector2f& circlePos, float circleRadius,
@@ -258,6 +282,190 @@ namespace QSFML
 			if (diskrim == 0)
 				return 1;
 			return 2;
+		}
+
+		bool Ray::raycast(const Components::Shape& shape, float& outDistanceFactor, size_t& outEdge) const
+		{
+			bool ret = raycast_internal(shape, outDistanceFactor, outEdge);
+			if (ret && m_rayPainter)
+			{
+				sf::Vector2f point = getPoint(outDistanceFactor);
+				m_rayPainter->addPoint(point);
+				m_rayPainter->addLine(m_pos, point);
+			}
+			return ret;
+		}
+		bool Ray::raycast(const std::vector<Components::Shape>& shapes, 
+			float& outDistanceFactor, 
+			size_t& outShapeIndex, 
+			size_t& outEdge) const
+		{
+			float minDistance = std::numeric_limits<float>::max();
+			bool ret = false;
+			for (size_t i = 0; i < shapes.size(); ++i)
+			{
+				float distanceFactor;
+				size_t edge;
+				if (raycast(shapes[i], distanceFactor, edge))
+				{
+					if (distanceFactor < minDistance)
+					{
+						minDistance = distanceFactor;
+						outShapeIndex = i;
+						outEdge = edge;
+						ret = true;
+					}
+				}
+			}
+			if (ret && m_rayPainter)
+			{
+				sf::Vector2f point = getPoint(outDistanceFactor);
+				m_rayPainter->addPoint(point);
+				m_rayPainter->addLine(m_pos, point);
+			}
+			return ret;
+		}
+		bool Ray::raycast(const AABB& aabb, float& outDistanceFactor, size_t& outEdge) const
+		{
+			bool ret = raycast_internal(aabb, outDistanceFactor, outEdge);
+			if (ret && m_rayPainter)
+			{
+				sf::Vector2f point = getPoint(outDistanceFactor);
+				m_rayPainter->addPoint(point);
+				m_rayPainter->addLine(m_pos, point);
+			}
+			return ret;
+		}
+		bool Ray::raycast_internal(const Components::Shape& shape, float& outDistanceFactor, size_t& outEdge) const
+		{
+			Utilities::AABB aabb = shape.getGlobalBounds();
+			float dummy1;
+			size_t edge;
+			if (!raycast_internal(aabb, dummy1, edge))
+				return false;
+
+			const std::vector<sf::Vector2f>& points = shape.getTransformedPoints();
+
+			float minDistance = std::numeric_limits<float>::max();
+			for (size_t i = 0; i < points.size(); ++i)
+			{
+				const sf::Vector2f& pointA = points[i];
+				const sf::Vector2f& pointB = points[(i + 1) % points.size()];
+				sf::Vector2f direction = pointB - pointA;
+				float distanceFactor;
+				float dummy;
+				if (raycast(m_pos, m_dir, pointA, direction, distanceFactor, dummy))
+				{
+					if (distanceFactor < 0 || dummy < 0 || dummy > 1)
+						continue;
+
+					if (distanceFactor < minDistance)
+					{
+						outEdge = i;
+						minDistance = distanceFactor;
+					}
+				}
+			}
+			if (minDistance < std::numeric_limits<float>::max() - 1)
+			{
+				outDistanceFactor = minDistance;
+				return true;
+			}
+			return false;
+		}
+		bool Ray::raycast_internal(const AABB& aabb, float& outDistanceFactor, size_t& outEdge) const
+		{
+			float minDistance = std::numeric_limits<float>::max();
+
+			sf::Vector2f points[4] = { aabb.TL(), aabb.TR(), aabb.BR(), aabb .BL()};
+
+			for (size_t i = 0; i < 4; ++i)
+			{
+				const sf::Vector2f &pointA = points[i];
+				const sf::Vector2f &pointB = points[(i+1) % 4];
+				sf::Vector2f direction = pointB - pointA;
+				float distanceFactor;
+				float dummy;
+				if (raycast(m_pos, m_dir, pointA, direction, distanceFactor, dummy))
+				{
+					if (distanceFactor < 0 || dummy < 0 || dummy > 1)
+						continue;
+					
+					if (distanceFactor < minDistance)
+					{
+						outEdge = i;
+						minDistance = distanceFactor;
+					}
+				}
+			}
+			if (minDistance < std::numeric_limits<float>::max() - 1)
+			{
+				outDistanceFactor = minDistance;
+				return true;
+			}
+			return false;
+		}
+
+		Ray::RayPainter* Ray::createRayPainter()
+		{
+			if (m_rayPainter)
+				return m_rayPainter;
+			m_rayPainter = new Ray::RayPainter();
+			m_rayPainter->connect_onDestroy(this, &Ray::onRayPainterDestroyed);
+			return m_rayPainter;
+		}
+		void Ray::onRayPainterDestroyed()
+		{
+			m_rayPainter = nullptr;
+		}
+
+
+		Ray::RayPainter::RayPainter(const std::string& name)
+			: Drawable(name)
+			, m_pointColor(sf::Color::Red)
+			, m_lineColor(sf::Color::White)
+			, m_pointRadius(2)
+		{
+
+		}
+		
+		Ray::RayPainter::~RayPainter()
+		{
+
+		}
+
+		void Ray::RayPainter::addPoint(const sf::Vector2f& point)
+		{
+			m_points.push_back(point);
+		}
+		void Ray::RayPainter::addLine(const sf::Vector2f& pointA, const sf::Vector2f& pointB)
+		{
+			Line line;
+			line.m_line[0].position = pointA;
+			line.m_line[1].position = pointB;
+
+			line.m_line[0].color = m_lineColor;
+			line.m_line[1].color = m_lineColor;
+
+			m_lines.push_back(line);
+		}
+
+		void Ray::RayPainter::draw(sf::RenderTarget& target, sf::RenderStates states) const
+		{
+			for (size_t i = 0; i < m_lines.size(); ++i)
+			{
+				target.draw(m_lines[i].m_line, 2, sf::Lines, states);
+			}
+			sf::CircleShape point(m_pointRadius);
+			point.setFillColor(m_pointColor);
+			point.setOrigin(m_pointRadius, m_pointRadius);
+			for (size_t i = 0; i < m_points.size(); ++i)
+			{
+				point.setPosition(m_points[i]);
+				target.draw(point, states);
+			}
+			m_lines.clear();
+			m_points.clear();
 		}
 
 	}

@@ -43,8 +43,15 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
         sf::Vector2f BL() const;                   //!<\return the position of the bottom left corner.
         const sf::Vector2f &getSize() const;       //!<\return the size of this.
 
-        sf::Vector2f getLeft() const;              //!<\return the left edges vector.
-        sf::Vector2f getTop() const;               //!<\return the top edges vector.
+        float getLeft() const;                     //!<\return the left edges X coordinate.
+        float getRight() const;                    //!<\return the right edges X coordinate.
+        float getTop() const;                      //!<\return the top edges Y coordinate.
+        float getBottom() const;                   //!<\return the bottom edges Y coordinate.
+
+        void setLeft(float x);                     //!<\brief Sets the left edges X coordinate.
+        void setRight(float x);                    //!<\brief Sets the right edges X coordinate.
+        void setTop(float y);                      //!<\brief Sets the top edges Y coordinate.
+        void setBottom(float y);                   //!<\brief Sets the bottom edges Y coordinate.
 
         bool contains(const sf::Vector2f &point) const;  //!<\return true if the point is inside the rectangle.
         bool intersects(const AABB &b) const;            //!<\return true if there is any intersection of this and b.
@@ -80,5 +87,6 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
         sf::Vector2f m_pos;
         sf::Vector2f m_size;
 };
+
 }
 }
