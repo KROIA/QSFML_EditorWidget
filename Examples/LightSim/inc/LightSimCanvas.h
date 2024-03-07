@@ -6,8 +6,9 @@
 #include "Mirror.h"
 #include "CurvedMirror.h"
 #include "Laser.h"
-#include "ConvexLense.h"
-#include "ConcaveLense.h"
+#include "ConvexLens.h"
+#include "ConcaveLens.h"
+#include "SimpleLens.h"
 #include "GlasRectangle.h"
 
 
@@ -36,6 +37,6 @@ private:
 
     std::vector<Mirror*> m_mirrors;
     std::vector<Laser*> m_lasers;
-    std::vector<ConvexLense*> m_convexLenses;
+    std::vector<ConvexLens*> m_convexLenss;
 
 };

@@ -209,7 +209,7 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 
 	float distance;
 	bool doReflectBounce = true;
-	if (m_doesReflect)
+	if (m_doesRefract)
 	{
 		if (data1.doesRefract)
 		{
