@@ -25,5 +25,5 @@ private:
 
     QSFML::Canvas* m_canvas;
 
-    Pendulum* m_pendulum;
+    //Pendulum* m_pendulum;
 };
