@@ -11,6 +11,7 @@
 #include "components/drawable/Line.h"
 #include "components/drawable/PointPainter.h"
 #include "components/drawable/VectorPainter.h"
+#include "components/drawable/PixelPainter.h"
 #include "components/drawable/Image.h"
 #include "components/drawable/Shape.h"
 #include "components/Button.h"
@@ -35,5 +36,6 @@
 #include "utilities/Stats.h"
 #include "utilities/ObjectQuadTree.h"
 #include "utilities/Origin.h"
+#include "utilities/PerlinNoise.h"
 
 

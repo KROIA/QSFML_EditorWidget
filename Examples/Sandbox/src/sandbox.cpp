@@ -13,6 +13,97 @@
 using namespace QSFML;
 using namespace QSFML::Objects;
 
+void addLineChart(Canvas* canvas)
+{
+    LineChart* m_chart = new LineChart();
+    m_chart->setDataPoints({ 0,1,-1,0.5,-0.5,0 });
+    m_chart->setOrigin(sf::Vector2f(50, 50));
+    m_chart->setSize(sf::Vector2f(200, 100));
+    canvas->addObject(m_chart);
+}
+void addMouseCollider(Canvas* canvas)
+{
+	MouseCollider* mouseCollider = new MouseCollider();
+	canvas->addObject(mouseCollider);
+}
+void addShape(Canvas* canvas)
+{
+
+    QSFML::Objects::CanvasObject* obj = new QSFML::Objects::CanvasObject();
+    QSFML::Components::Shape* shape = new QSFML::Components::Shape();
+    QSFML::Utilities::Ray* testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
+    obj->setPositionAbsolute(sf::Vector2f(100, 100));
+    //delete testRay->createRayPainter();
+
+    obj->addComponent(testRay->createRayPainter());
+
+
+    shape->setPoints(
+        {
+            sf::Vector2f(0,0),
+            sf::Vector2f(100,0),
+            sf::Vector2f(100,100),
+            sf::Vector2f(0,100)
+        });
+
+    sf::Transform t = shape->getTransform();
+    t.translate(obj->getPositionAbsolute());
+    shape->setTransform(t);
+    obj->setUpdateFunction([shape, testRay, obj]()
+        {
+            sf::Transform t = shape->getTransform();
+            t.rotate(0.1);
+            shape->setTransform(t);
+
+
+            testRay->setDirection(obj->getMouseWorldPosition() - testRay->getPos());
+            testRay->normalize();
+            float d1;
+            size_t d2;
+            testRay->raycast(*shape, d1, d2);
+        });
+    obj->setRenderLayer(RenderLayer::layer_2);
+    shape->setFillColor(sf::Color::Red);
+    shape->setOutlineColor(sf::Color::Blue);
+    //shape->setOutlineThickness(5);
+
+    shape->setFill(true);
+
+    obj->addComponent(shape);
+    canvas->addObject(obj);
+}
+void addPerlinNoise(Canvas* canvas)
+{
+    CanvasObject* obj = new CanvasObject();
+
+    sf::Vector2u size(100, 100);
+    QSFML::Utilities::PerlinNoise* perlinNoise = new QSFML::Utilities::PerlinNoise();
+    QSFML::Components::PixelPainter* pixelPainter = new QSFML::Components::PixelPainter();
+    pixelPainter->setPixelCount(size);
+    pixelPainter->setPixelSize(2);
+    pixelPainter->setPosition(sf::Vector2f(0, 0));
+
+
+    for (size_t x = 0; x < size.x; ++x)
+    {
+        for (size_t y = 0; y < size.y; ++y)
+        {
+			float value = perlinNoise->noise((float)x/(float)size.x, (float)y / (float)size.y);
+			sf::Color color = sf::Color(255 * value, 255 * value, 255 * value, 255);
+			pixelPainter->setPixel(sf::Vector2u(x, y), color);
+		}
+	}
+
+    //obj->setUpdateFunction([obj, perlinNoise, pixelPainter]()
+    //    {
+    //
+	//	});
+    obj->setRenderLayer(RenderLayer::layer_2);
+    obj->addComponent(pixelPainter);
+    canvas->addObject(obj);
+}
+
+
 SandBox::SandBox(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::SandBox)
@@ -82,61 +173,10 @@ SandBox::SandBox(QWidget *parent)
 
 
 
-        LineChart *m_chart = new LineChart();
-        m_chart->setDataPoints({0,1,-1,0.5,-0.5,0});
-        m_chart->setOrigin(sf::Vector2f(50,50));
-        m_chart->setSize(sf::Vector2f(200,100));
-        m_canvas_2->addObject(m_chart);
-
-        
-        MouseCollider* mouseCollider = new MouseCollider();
-        m_canvas_2->addObject(mouseCollider);
-
-
-
-        QSFML::Objects::CanvasObject* obj = new QSFML::Objects::CanvasObject();
-        QSFML::Components::Shape *shape = new QSFML::Components::Shape();
-        QSFML::Utilities::Ray *testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
-        obj->setPositionAbsolute(sf::Vector2f(100, 100));
-        //delete testRay->createRayPainter();
-
-        obj->addComponent(testRay->createRayPainter());
-        
-
-        shape->setPoints(
-            {
-                sf::Vector2f(0,0),
-                sf::Vector2f(100,0),
-                sf::Vector2f(100,100),
-                sf::Vector2f(0,100)
-            });
-
-        sf::Transform t = shape->getTransform();
-        t.translate(obj->getPositionAbsolute());
-        shape->setTransform(t);
-        obj->setUpdateFunction([shape, testRay, obj]()
-		{
-			sf::Transform t = shape->getTransform();
-            t.rotate(0.1);
-            shape->setTransform(t);
-
-
-            testRay->setDirection(obj->getMouseWorldPosition() - testRay->getPos());
-            testRay->normalize();
-            float d1;
-            size_t d2;
-            testRay->raycast(*shape, d1, d2);
-		});
-        obj->setRenderLayer(RenderLayer::layer_2);
-        shape->setFillColor(sf::Color::Red);
-        shape->setOutlineColor(sf::Color::Blue);
-        //shape->setOutlineThickness(5);
-        
-        shape->setFill(true);
-        
-        obj->addComponent(shape);
-        m_canvas_2->addObject(obj);
-       
+        addLineChart(m_canvas_2);
+        addMouseCollider(m_canvas_2);
+        addShape(m_canvas_2);
+        addPerlinNoise(m_canvas_2);
     }
 
     QSFML::Utilities::Ray func1(sf::Vector2f(0, 0), sf::Vector2f(0, 1));
