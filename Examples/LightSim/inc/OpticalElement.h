@@ -70,7 +70,7 @@ public:
        /param n2: refraction index of the medium 2
        /param outData: Reflection data
     */
-    void reflectAndRefract(float rayAngle, float normalAngle, float n1, float n2,
+    virtual void reflectAndRefract(float rayAngle, float normalAngle, float n1, float n2,
         ReflectionAndRefractionData &outData) const;
 
     bool reflectAndRefract(const LightRay& ray, const Shape& shape, float n1, float n2,

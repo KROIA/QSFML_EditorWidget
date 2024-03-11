@@ -2,15 +2,15 @@
 
 #include "OpticalElement.h"
 
-class ConvexLense : public OpticalElement
+class ConcaveLens : public OpticalElement
 {
-	class LensePainter;
-	friend LensePainter;
+	class LensPainter;
+	friend LensPainter;
 public:
-	ConvexLense(const std::string& name = "ConvexLense");
-	ConvexLense(const ConvexLense& other);
-	~ConvexLense();
-	OBJECT_DECL(ConvexLense);
+	ConcaveLens(const std::string& name = "ConcaveLens");
+	ConcaveLens(const ConcaveLens& other);
+	~ConcaveLens();
+	OBJECT_DECL(ConcaveLens);
 
 
 	void setColor(const sf::Color& c);
@@ -22,7 +22,7 @@ public:
 	void setRotation(float angle);
 	float getRotation() const;
 
-	void serDiameter(float w);
+	void setDiameter(float w);
 	float getDiameter() const;
 
 	void setThickness(float t);
@@ -47,7 +47,7 @@ private:
 	void update() override;
 
 	
-	class LenseShape : public Shape
+	class LensShape : public Shape
 	{
 	public:
 		bool getCollisionData(const LightRay& ray,
@@ -60,7 +60,7 @@ private:
 
 		float getFocusLength() const;
 	
-		bool getLenseCollisionFactor(const LightRay& ray, bool outgoingRay, float& smalestFactor, float& collisionNormal, bool &rayInsideShape) const;
+		bool getLensCollisionFactor(const LightRay& ray, bool outgoingRay, float& smalestFactor, float& collisionNormal, bool &rayInsideShape) const;
 
 		// calculates the malest factor in ray which collides on the edge of one part of the lense
 		bool getCircleElementCollisionFactor(const LightRay& ray, const sf::Vector2f& center,
@@ -95,30 +95,30 @@ private:
 
 		
 		float m_diameter;
-		float m_lenseThickness;
+		float m_lensThickness;
 		float m_parableParamA;
 		float m_parableParamB;
 		
 		float m_angle;
-		float m_lenseRadius;
+		float m_lensRadius;
 		float m_openingAngle;
 		sf::Vector2f m_pos;
 		sf::Vector2f m_circlePos1; // Pos of first circle element
 		sf::Vector2f m_circlePos2;
 
-		class LensePainter : public QSFML::Components::Drawable
+		class LensPainter : public QSFML::Components::Drawable
 		{
 		public:
-			LensePainter(LenseShape* lense, const std::string& name = "LensePainter");
-			LensePainter(const LensePainter& other);
-			COMPONENT_DECL(LensePainter);
+			LensPainter(LensShape* lense, const std::string& name = "LensPainter");
+			LensPainter(const LensPainter& other);
+			COMPONENT_DECL(LensPainter);
 
 			
 			void draw(sf::RenderTarget& target,
 				sf::RenderStates states) const override;
 
 			sf::Color m_color;
-			LenseShape* m_lense;
+			LensShape* m_lens;
 			unsigned int m_resolution;
 			
 		private:
@@ -126,11 +126,11 @@ private:
 		};
 
 		mutable std::vector<sf::Drawable*> m_tmpDraw;
-		LensePainter* m_painter;
-		ConvexLense* m_lense;
+		LensPainter* m_painter;
+		ConcaveLens* m_lens;
 	};
 
-	LenseShape m_shape;
+	LensShape m_shape;
 
 	
 
