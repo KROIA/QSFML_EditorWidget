@@ -57,7 +57,6 @@ namespace QSFML
 
         void DefaultEditor::onToggleRuntimeInfo()
         {
-            qDebug() << "toggle";
             m_runtimeInfo->setEnabled(!m_runtimeInfo->isEnabled());
         }
         void DefaultEditor::onEnableRuntimeInfo()

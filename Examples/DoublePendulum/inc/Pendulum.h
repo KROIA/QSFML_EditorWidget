@@ -11,7 +11,7 @@ class Pendulum : public QObject, public QSFML::Objects::CanvasObject
 		double angleVelocity = 0;
 		double angleAcceleration = 0;
 		double length = 100;
-		double damping = 0.03;
+		double damping = 0.01;
 		double mass = 1;
 		sf::Vector2f endPos;
 		QSFML::Components::Line* line = nullptr;
@@ -21,6 +21,8 @@ public:
              CanvasObject* parent = nullptr);
 
 	void setStart(double angle1, double angle2);
+	void setLength(double length1, double length2);
+	void setLinesEnabled(bool enabled);
     void update() override;
 
 private slots:
@@ -47,4 +49,5 @@ private:
 	sf::Vector2f m_origin;
 
 	int m_dragingIndex = -1;
+	bool m_linesEnabled = true;
 };

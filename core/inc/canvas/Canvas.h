@@ -40,6 +40,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         const sf::ContextSettings &getContextSettings() const;
         void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
         const CanvasSettings::UpdateControlls &getUpdateControlls() const;
+        void setColorSettings(const CanvasSettings::Colors& colors);
+        const CanvasSettings::Colors& getColorSettings() const;
 
         void start();
         void stop();

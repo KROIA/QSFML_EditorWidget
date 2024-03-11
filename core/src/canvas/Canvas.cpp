@@ -77,6 +77,7 @@ void Canvas::setSettings(const CanvasSettings &settings)
     setTiming(settings.timing);
     setContextSettings(settings.contextSettings);
     setUpdateControlls(settings.updateControlls);
+    setColorSettings(settings.colors);
 
     if(!m_textfont.loadFromFile(settings.fontPath))
     {
@@ -134,6 +135,14 @@ void Canvas::setUpdateControlls(const CanvasSettings::UpdateControlls &controlls
 const CanvasSettings::UpdateControlls &Canvas::getUpdateControlls() const
 {
     return m_settings.updateControlls;
+}
+void Canvas::setColorSettings(const CanvasSettings::Colors& colors)
+{
+	m_settings.colors = colors;
+}
+const CanvasSettings::Colors& Canvas::getColorSettings() const
+{
+	return m_settings.colors;
 }
 
 void Canvas::start()

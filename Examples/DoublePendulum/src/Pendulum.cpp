@@ -6,7 +6,8 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
 {
     m_pointPainter = new QSFML::Components::PointPainter();
     m_pointPainter->setRadius(m_pendulumRadius);
-    m_pointPainter->setColor(sf::Color(255, 100, 100));
+
+    
 
     for (size_t i = 0; i < m_count; ++i)
     {
@@ -18,7 +19,7 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
         m_pendulumData[1].angle = 0.0;
     
     addComponent(m_pointPainter);
-    m_origin = sf::Vector2f(500, 200);
+    m_origin = sf::Vector2f(500, 500);
   
 
     m_mousePressEvent = new QSFML::Components::MousePressEvent();
@@ -27,6 +28,7 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
     connect(m_mousePressEvent, &QSFML::Components::MousePressEvent::risingEdge, this, &Pendulum::onMouseRessing);
     addComponent(m_mousePressEvent);
 
+    
 
    /* m_text = new QSFML::Components::Text();
     //m_text->setText("Pendulum");
@@ -39,13 +41,37 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
 void Pendulum::setStart(double angle1, double angle2)
 {
 	m_pendulumData[0].angle = angle1;
-	m_pendulumData[1].angle = angle2;
+	m_pendulumData[1].angle = -angle2;
+
+    int r = (1+sin(angle1)) * 127.5;
+    int g = (1+sin(angle1+M_PI*2/3.f))*127.5;
+    int b = (1+sin(angle1+M_PI*4/3.f))*127.5;
+    m_pointPainter->setColor(sf::Color(r,g,b));
+    for (size_t i = 0; i < m_count; ++i)
+    {
+        m_pendulumData[i].line->setColor(sf::Color(r,g,b));
+        m_pendulumData[i].angleAcceleration = 0;
+        m_pendulumData[i].angleVelocity = 0;
+    }
+}
+void Pendulum::setLength(double length1, double length2)
+{
+	m_pendulumData[0].length = length1;
+	m_pendulumData[1].length = length2;
+}
+void Pendulum::setLinesEnabled(bool enabled)
+{
+    m_linesEnabled = enabled;
+	for (size_t i = 0; i < m_count; ++i)
+	{
+		m_pendulumData[i].line->setEnabled(enabled);
+	}
 }
 void Pendulum::update() 
 {
     double dt = getDeltaT();
     std::vector<sf::Vector2f> points{
-        m_origin
+       // m_origin
     };
 
     double acceleration1 = getAngleAcceleration1(m_pendulumData[0], m_pendulumData[1]);
@@ -75,8 +101,11 @@ void Pendulum::update()
         
         points.push_back(m_pendulumData[i].endPos);
         
-        m_pendulumData[i].line->setStartPos(startPos);
-        m_pendulumData[i].line->setEndPos(m_pendulumData[i].endPos);
+        if (m_linesEnabled)
+        {
+            m_pendulumData[i].line->setStartPos(startPos);
+            m_pendulumData[i].line->setEndPos(m_pendulumData[i].endPos);
+        }
 
         double energy = getEnergy(m_pendulumData[i]);
         sumEnergy += energy;
