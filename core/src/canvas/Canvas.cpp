@@ -285,14 +285,14 @@ void Canvas::update()
     StatsManager::setFPS(1 / elapsed.count());
     StatsManager::addTick();
 
-    if (m_settings.timing.physicsUseFixedTimeInterval)
-    {
-        StatsManager::setDeltaT(m_settings.timing.physicsFixedDeltaT);
-    }
-    else
-    {
+    //if (m_settings.timing.physicsUseFixedTimeInterval)
+    //{
+    //    StatsManager::setDeltaT(m_settings.timing.physicsFixedDeltaT);
+    //}
+    //else
+    //{
         StatsManager::setDeltaT(m_currentStats.getFrameTime() * m_settings.timing.physicsDeltaTScale);
-    }
+    //}
 
     QSFMLP_CANVAS_BLOCK("Delete unused objects", QSFMLP_COLOR_STAGE_2);
     CanvasObjectContainer::updateNewElements();
@@ -394,6 +394,10 @@ size_t Canvas::getTick() const
 double Canvas::getDeltaT() const
 {
     return m_currentStats.getDeltaT();
+}
+double Canvas::getFixedDeltaT() const
+{
+    return m_settings.timing.physicsFixedDeltaT;
 }
 double Canvas::getFPS() const
 {

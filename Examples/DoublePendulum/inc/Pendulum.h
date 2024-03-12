@@ -13,7 +13,8 @@ class Pendulum : public QObject, public QSFML::Objects::CanvasObject
 		double length = 100;
 		double damping = 0.01;
 		double mass = 1;
-		sf::Vector2f endPos;
+		QSFML::VectorMath::Vector2d endPos;
+		QSFML::VectorMath::Vector2d lastEndPos;
 		QSFML::Components::Line* line = nullptr;
 	};
 public:
@@ -33,20 +34,22 @@ private:
 
 	double getAngleAcceleration1(const PendulumData& p1, const PendulumData& p2);
 	double getAngleAcceleration2(const PendulumData& p1, const PendulumData& p2);
-	double getCineticEnergy(const PendulumData& p);
+	double getKineticEnergy(const PendulumData& p, double dt);
 	double getPotentialEnergy(const PendulumData& p);
-	double getEnergy(const PendulumData& p);
+	double getEnergy(const PendulumData& p, double dt);
 
     QSFML::Components::PointPainter *m_pointPainter;
 	QSFML::Components::MousePressEvent *m_mousePressEvent;
 	QSFML::Components::Text *m_text = nullptr;
+	QSFML::Objects::LineChart *m_chart = nullptr;
+	std::vector<float> m_chartData;
     //QSFML::Components::Line *m_linePainters[2];
 
 	static constexpr size_t m_count = 2;
 	PendulumData m_pendulumData[m_count];
 	const double m_gravity = 9.81f;
 	const double m_pendulumRadius = 5;
-	sf::Vector2f m_origin;
+	QSFML::VectorMath::Vector2d m_origin;
 
 	int m_dragingIndex = -1;
 	bool m_linesEnabled = true;

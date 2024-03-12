@@ -778,6 +778,11 @@ double CanvasObject::getDeltaT() const
     if(!m_canvasParent) return 0;
     return m_canvasParent->getDeltaT();
 }
+double CanvasObject::getFixedDeltaT() const
+{
+    if (!m_canvasParent) return 0;
+    return m_canvasParent->getFixedDeltaT();
+}
 
 const CanvasSettings::UpdateControlls &CanvasObject::getUpdateControlls() const
 {

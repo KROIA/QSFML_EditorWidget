@@ -69,7 +69,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         static void saveProfilerFile(const std::string &fileName);
 
         size_t getTick() const; // returns the count of updates done
-        double getDeltaT() const; // Gets delta Time in 
+        double getDeltaT() const; // Gets delta Time in seconds
+        double getFixedDeltaT() const; // Gets fixed delta Time in seconds
         double getFPS() const;
 
         //static void startEventLoop();

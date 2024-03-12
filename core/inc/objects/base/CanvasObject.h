@@ -284,6 +284,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
 
         size_t getTick() const;
         double getDeltaT() const; // Returns delta Time since last update in seconds
+        double getFixedDeltaT() const; // Returns the fixed physics delta time in seconds
 
         Canvas* getCanvasParent() const;
         // ---------

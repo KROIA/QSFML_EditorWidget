@@ -33,7 +33,7 @@ void MainWindow::on_startStop_pushButton_clicked()
         if(settings.timing.physicsFixedDeltaT > 0)
 			settings.timing.physicsFixedDeltaT = 0;
 		else
-			settings.timing.physicsFixedDeltaT = float(ui->speed_slider->value())/1000.f;
+			settings.timing.physicsFixedDeltaT = float(ui->speed_slider->value())/100000.f;
         m_canvas->setSettings(settings);
 	}
 }
@@ -54,7 +54,7 @@ void MainWindow::on_speed_slider_valueChanged(int value)
 {
     auto settings = m_canvas->getSettings();
     if (settings.timing.physicsFixedDeltaT > 0)
-        settings.timing.physicsFixedDeltaT = float(value) / 1000.f;
+        settings.timing.physicsFixedDeltaT = float(value) / 100000.f;
     m_canvas->setSettings(settings);
 }
 void MainWindow::on_L1_verticalSlider_valueChanged(int value)
@@ -94,9 +94,10 @@ void MainWindow::setupCanvas()
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 0.01;
+    settings.timing.frameTime = 0.00;
+
     settings.timing.physicsFixedDeltaT = 0.1;
-    settings.updateControlls.enableMultithreading = true;
+    settings.updateControlls.enableMultithreading = false;
     settings.updateControlls.threadSettings.threadCount = 32;
     settings.updateControlls.threadSettings.objectGroups = 64;
     settings.timing.physicsFixedDeltaT = 0;
@@ -113,19 +114,23 @@ void MainWindow::setupCanvas()
 
     qDebug() << defaultEditor->toString().c_str();
 
-    double angle1 = 0;
-    double angle2 = 0;
-    int count = 10000;
+    double angle1 = M_PI_2;
+    double angle2 = M_PI_2;
+    int count = 1000;
     for (int i = 0; i < count; ++i)
     {
         Pendulum * pendulum = new Pendulum();
         m_pendulums.push_back(pendulum);
-        pendulum->setStart(angle1, angle1);
+        pendulum->setPositionAbsolute(sf::Vector2f(500, 500));
+        pendulum->setStart(angle1, angle2);
         angle1 += M_PI*2/(double)count;
+        angle2 += M_PI*2/(double)count;
+        //angle2 += 0.01;
         m_canvas->addObject(pendulum);
 
-        m_pendulums[i]->setLength(ui->L1_verticalSlider->value(), 
-                                  ui->L2_verticalSlider->value());
+        pendulum->setLength(ui->L1_verticalSlider->value(),
+                            ui->L2_verticalSlider->value());
+        
     }
     
 }

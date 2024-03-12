@@ -8,12 +8,8 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
-    
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    QSFML::Canvas::setProfilerOutputFileName("Pendelum.prof");
-    int ret = a.exec();
-    
-    return ret;
+    return a.exec();
 }
