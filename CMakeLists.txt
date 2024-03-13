@@ -27,7 +27,7 @@ cmake_minimum_required(VERSION 3.20)
 ## --------------------------------------------------------------------------------
 
 # Name of the library
-set(LIBRARY_NAME SFML_EditorWidget)                   # <AUTO_REPLACED>
+set(LIBRARY_NAME QSFML_EditorWidget)                   # <AUTO_REPLACED>
 
 # Define is only active if the library is built
 set(LIB_DEFINE QSFML_EDITOR_WIDGET_LIB)                # <AUTO_REPLACED>
