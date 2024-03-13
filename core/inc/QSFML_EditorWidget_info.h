@@ -36,7 +36,7 @@ namespace QSFML
 
 		// Library name
 		static constexpr const char* name				= "QSFML_EditorWidget";
-		static constexpr const char* author				= "";
+		static constexpr const char* author				= "Alex Krieg";
 		static constexpr const char* email				= "";
 		static constexpr const char* website			= "";
 		static constexpr const char* license			= "MIT";
