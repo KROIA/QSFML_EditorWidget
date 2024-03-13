@@ -1,5 +1,8 @@
 #include "utilities/Stats.h"
 #include "canvas/Canvas.h"
+
+#include <QDebug>
+
 namespace QSFML
 {
 	namespace Utilities

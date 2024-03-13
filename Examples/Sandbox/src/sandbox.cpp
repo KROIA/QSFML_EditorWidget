@@ -9,6 +9,7 @@
 
 #include <QTimer>
 #include <QCloseEvent>
+#include <QDebug>
 
 using namespace QSFML;
 using namespace QSFML::Objects;

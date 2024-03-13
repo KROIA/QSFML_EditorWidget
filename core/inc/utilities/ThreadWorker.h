@@ -1,10 +1,11 @@
 #pragma once
 
-#include "QSFML_base.h"
+#include "QSFML_EditorWidget_base.h"
 
 #include <thread>
 #include <functional>
 #include <condition_variable>
+#include <vector>
 
 namespace QSFML
 {

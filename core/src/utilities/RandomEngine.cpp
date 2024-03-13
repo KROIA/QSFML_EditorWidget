@@ -8,9 +8,10 @@ namespace QSFML
 	namespace Utilities
 	{
 		RandomEngine::RandomEngine()
+			: m_seed(static_cast<unsigned int>(std::time(nullptr)))
 		{
 			// Seed the random number generator with the current time
-			setSeed(static_cast<unsigned int>(std::time(nullptr)));
+			std::srand(m_seed);
 		}
 		RandomEngine& RandomEngine::getInstance()
 		{

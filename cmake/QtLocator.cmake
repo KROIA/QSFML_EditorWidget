@@ -38,6 +38,7 @@ IF(MSVC AND QT_MISSING)
     
     
     # Create a list of version numbers
+	set(version_numbers )
     foreach(path ${QT_VERSIONS})
         get_version_number(version ${path})
         #message("Extracted version: "${version})

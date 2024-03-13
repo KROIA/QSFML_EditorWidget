@@ -2,6 +2,9 @@
 #include "ui_MainWindow.h"
 #include <iostream>
 #include <QCloseEvent>
+#include <QDebug>
+
+
 
 using namespace QSFML;
 using namespace QSFML::Objects;

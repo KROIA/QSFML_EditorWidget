@@ -1,4 +1,6 @@
 #include "SandboxObject.h"
+
+#include <QDebug>
 using namespace QSFML;
 using namespace QSFML::Objects;
 using namespace QSFML::Components;

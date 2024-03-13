@@ -1,10 +1,11 @@
 #pragma once
 
-#include "QSFML_base.h"
+#include "QSFML_EditorWidget_base.h"
 
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
+#include <vector>
 
 
 namespace QSFML

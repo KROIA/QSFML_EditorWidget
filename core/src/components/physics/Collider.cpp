@@ -121,7 +121,7 @@ void Collider::checkCollision(const std::vector<Objects::CanvasObject*>& objs,
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
-    QSFMLP_PHYSICS_FUNCTION(QSFMLP_COLOR_STAGE_1);
+    QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
     Objects::CanvasObject* thisRootParent = getParent()->getRootParent();
     for (auto obj : objs)
     {
@@ -133,7 +133,7 @@ void Collider::checkCollision(const std::vector<Components::Collider*>& other,
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
-    QSFMLP_PHYSICS_FUNCTION(QSFMLP_COLOR_STAGE_2);
+    QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);
     for (auto otherCollider : other)
     {
         checkCollision(otherCollider, collisions, onlyFirstCollisionPerObject);
@@ -143,16 +143,16 @@ void Collider::checkCollision(const std::vector<Components::Collider*>& other,
 
 bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 { 
-    QSFMLP_PHYSICS_FUNCTION(QSFMLP_COLOR_STAGE_3);
+    QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
     if(m_canvasParent)
         m_canvasParent->addBoundingBoxCollisionCheck();
-    QSFMLP_PHYSICS_BLOCK("AABB check", QSFMLP_COLOR_STAGE_4);
+    QSFMLP_PHYSICS_BLOCK("AABB check", QSFML_COLOR_STAGE_4);
     if (!m_boundingBox.intersects(other->m_boundingBox))
     {
-        QSFMLP_END_BLOCK;
+        QSFML_PROFILING_END_BLOCK;
         return false;
     }
-    QSFMLP_END_BLOCK;
+    QSFML_PROFILING_END_BLOCK;
     
     return checkCollision_noAABB(other, collisions, onlyFirstCollision);
 }
@@ -163,7 +163,7 @@ void Collider::checkCollision_noAABB(const std::vector<Components::Collider*>& o
 }
 bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 {
-    QSFMLP_PHYSICS_FUNCTION(QSFMLP_COLOR_STAGE_3);
+    QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
     
 #define FAST_COLLISION_CHECK
 
@@ -296,7 +296,7 @@ bool Collider::doLineSegmentsIntersect(const sf::Vector2f& p0, const sf::Vector2
 }
 bool Collider::contains(const sf::Vector2f& point)
 {
-    QSFMLP_PHYSICS_FUNCTION(QSFMLP_COLOR_STAGE_1);
+    QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
     
     if(m_canvasParent)
         m_canvasParent->addBoundingBoxCollisionCheck();
@@ -315,7 +315,7 @@ bool Collider::contains(const sf::Vector2f& point)
 bool Collider::contains(const std::vector<sf::Vector2f>& polygon, 
                         const sf::Vector2f& point)
 {
-    QSFMLP_PHYSICS_FUNCTION(QSFMLP_COLOR_STAGE_2);
+    QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);
     // Get the number of vertices in the polygon
     std::size_t numVertices = polygon.size();
 

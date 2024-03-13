@@ -1,8 +1,9 @@
 #pragma once
 
-#include "QSFML_base.h"
+#include "QSFML_EditorWidget_base.h"
 #include "CanvasObjectGroup.h"
 
+#include <vector>
 
 namespace QSFML
 {

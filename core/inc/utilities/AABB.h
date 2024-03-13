@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "QSFML_base.h"
+#include "QSFML_EditorWidget_base.h"
 
 namespace QSFML
 {

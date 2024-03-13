@@ -4,7 +4,9 @@
 #include "objects/VisibleCamera.h"
 #include "objects/BackgroundGrid.h"
 #include "objects/RuntimeInfo.h"
-#include "QSFML_base.h"
+#include "QSFML_EditorWidget_base.h"
+
+#include <QObject>
 
 namespace QSFML
 {

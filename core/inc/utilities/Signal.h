@@ -1,8 +1,9 @@
 #pragma once
 
-#include "QSFML_base.h"
+#include "QSFML_EditorWidget_base.h"
 #include <functional>
 #include <vector>
+#include <string>
 
 namespace QSFML
 {
@@ -85,9 +86,9 @@ namespace QSFML
 
             void emitSignal(Args... args) const
             {
-                QSFMLP_GENERAL_BLOCK(m_profilerName.c_str(), QSFMLP_COLOR_STAGE_10);
+                QSFMLP_GENERAL_BLOCK(m_profilerName.c_str(), QSFML_COLOR_STAGE_10);
                 for (const auto& slot : m_slotsWithArgs) {
-                    QSFMLP_GENERAL_BLOCK("Slot", QSFMLP_COLOR_STAGE_11);
+                    QSFMLP_GENERAL_BLOCK("Slot", QSFML_COLOR_STAGE_11);
                     (*slot.m_func)(args...);
                 }
             }

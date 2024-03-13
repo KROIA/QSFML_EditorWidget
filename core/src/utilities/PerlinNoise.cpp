@@ -1,4 +1,5 @@
 #include "utilities/PerlinNoise.h"
+#include <cmath>
 
 namespace QSFML
 {

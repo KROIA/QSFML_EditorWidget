@@ -21,6 +21,7 @@ function(exampleMaster
 			QT_ENABLE 
 			QT_DEPLOY 
 			QT_MODULES
+            ADDITIONAL_SOURCES
             INSTALL_BIN_PATH)
 
 			
@@ -44,7 +45,6 @@ project(${PROJECT_NAME})
 
 # QT settings
 if(QT_ENABLE)
-    include(${QT_LOCATOR_CMAKE})
     find_package(Qt5Widgets REQUIRED)
 
     set(CMAKE_AUTOMOC ON)
@@ -88,10 +88,14 @@ if(QT_ENABLE)
 
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${ADDITIONAL_SOURCES})
 
 
 if(${PROFILING_NAME})
+    if(NOT TARGET ${PARENT_LIBRARY_STATIC_PROFILE})
+        message("ERROR: Target: PARENT_LIBRARY_STATIC_PROFILE does not exist")
+        message("ERROR: Target: Make shure you have added the dependency: easy_profiler.cmake and set(EASY_PROFILER_IS_AVAILABLE ON)")
+    endif()
     target_link_libraries(${PROJECT_NAME} ${PARENT_LIBRARY_STATIC_PROFILE} ${QT_LIBS})
 else()
     target_link_libraries(${PROJECT_NAME} ${PARENT_LIBRARY_STATIC} ${QT_LIBS})
@@ -101,8 +105,8 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC BUILD_STATIC)
 install(TARGETS ${PROJECT_NAME} DESTINATION "${INSTALL_BIN_PATH}")
 
 if(QT_ENABLE AND QT_DEPLOY)
-    DEPLOY_QT(${QT_PATH} "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
-    DEPLOY_QT(${QT_PATH} "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:${PROJECT_NAME}>" "${INSTALL_BIN_PATH}")
+   DEPLOY_QT(${PROJECT_NAME} "${INSTALL_BIN_PATH}")
+   DEPLOY_QT(${PROJECT_NAME} "$<TARGET_FILE_DIR:${PROJECT_NAME}>") # Also deploy on the compile output path
 endif()
 
 endfunction()

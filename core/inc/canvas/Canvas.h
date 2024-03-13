@@ -1,6 +1,6 @@
 #pragma once
 
-#include "QSFML_base.h"
+#include "QSFML_EditorWidget_base.h"
 #include "canvas/CanvasSettings.h"
 #include "canvas/CanvasObjectContainer.h"
 

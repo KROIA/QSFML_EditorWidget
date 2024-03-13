@@ -229,7 +229,7 @@ namespace QSFML
         }
         void ThreadWorker::threadFunction(ThreadData& data)
         {
-            QSFMLP_THREAD((m_name + "[" + std::to_string(data.threadIndex) + "]").c_str());
+            QSFML_PROFILING_THREAD((m_name + "[" + std::to_string(data.threadIndex) + "]").c_str());
             class CrashDetector
             {
             public:
@@ -276,7 +276,7 @@ namespace QSFML
 
                     ++m_runCount;
                     // Execute the member function
-                    QSFMLP_GENERAL_BLOCK("Start thread work", QSFMLP_COLOR_STAGE_1);
+                    QSFMLP_GENERAL_BLOCK("Start thread work", QSFML_COLOR_STAGE_1);
                     (*func)();
                     QSFMLP_GENERAL_END_BLOCK;
 
@@ -298,7 +298,7 @@ namespace QSFML
 
                     ++m_runCount;
                     // Execute the member function
-                    QSFMLP_GENERAL_BLOCK("Start thread work", QSFMLP_COLOR_STAGE_1);
+                    QSFMLP_GENERAL_BLOCK("Start thread work", QSFML_COLOR_STAGE_1);
                     work->process(threadIndex);
                     QSFMLP_GENERAL_END_BLOCK;
 

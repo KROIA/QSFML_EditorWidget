@@ -15,28 +15,24 @@ MACRO(FILE_DIRECTORIES return_list ending)
 ENDMACRO()
 
 
-
-
 function(get_filename_from_path FILE_PATH FILE_NAME_VAR)
     get_filename_component(${FILE_NAME_VAR} ${FILE_PATH} NAME)
 endfunction()
 
 
-
-# Deploys the QT dependencies for a given exe file to a specific output path
-
 # Function name: DEPLOY_QT
 # Params: QT_PATH           Path to the QT installation. C:\Qt\5.15.2\msvc2015_64
 #         targetExePath     Path to the exe file: "$<TARGET_FILE_DIR:profiler_gui>/$<TARGET_FILE_NAME:profiler_gui>"
-#         outputPath        Path in which the dependencies will be saved to project/bin
+#     
+ function(DEPLOY_QT targetName outputPath)
+    
+ # check if QT_PATH is empty
+    if (NOT QT_PATH)
+		message("QT_PATH is not set. include QtLocator.cmake first, to find a qt installation or assign a 
+                 QT pat to it. example: set(QT_PATH \"C:/Qt/5.14.2\")")
+        return()
+    endif()
 
-
-# Initialize a counter if it doesn't exist
-if (NOT DEFINED TARGET_COUNTER)
-    set(TARGET_COUNTER 0 CACHE INTERNAL "Target counter")
-endif()
-
-function(DEPLOY_QT QT_PATH targetExePath outputPath)
     set(DEPLOY_COMMAND  "${QT_PATH}/bin/windeployqt.exe"
                 --no-compiler-runtime
                 --no-translations
@@ -47,9 +43,16 @@ function(DEPLOY_QT QT_PATH targetExePath outputPath)
                 --pdb)
 
 
-   string(RANDOM LENGTH 20 UNIQUE_TARGET_NAME)
-   message("DummyTargetName: ${UNIQUE_TARGET_NAME}")
+   set(targetExePath "$<TARGET_FILE_DIR:${targetName}>/$<TARGET_FILE_NAME:${targetName}>")
 
+   string(MD5 TARGETPATH_HASH ${outputPath})
+   set(UNIQUE_TARGET_NAME "deploy_${TARGETPATH_HASH}_${targetName}")
+   message("DeploymentTargetName: ${UNIQUE_TARGET_NAME}")
+
+   if(TARGET ${UNIQUE_TARGET_NAME})
+	   message("Target ${UNIQUE_TARGET_NAME} already exists")
+	   return()
+   endif()
    add_custom_target(${UNIQUE_TARGET_NAME} ALL
        DEPENDS "${targetExePath}"
    )

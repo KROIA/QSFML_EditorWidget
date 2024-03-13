@@ -29,7 +29,7 @@ CanvasThreadWorker::~CanvasThreadWorker()
 
 void CanvasThreadWorker::process()
 {
-    QSFMLP_CANVAS_BLOCK("Process threaded update", QSFMLP_COLOR_STAGE_1);
+    QSFMLP_CANVAS_BLOCK("Process threaded update", QSFML_COLOR_STAGE_1);
     m_threadNextIndex = 0;
     size_t threadCount = m_threads.size();
     m_threadMaxIndex = m_groups->size();
@@ -52,13 +52,13 @@ void CanvasThreadWorker::process()
             anyRunning |= m_threadRunning[i].load();
         }
     }while(anyRunning);
-    QSFMLP_END_BLOCK;
+    QSFML_PROFILING_END_BLOCK;
 }
 void CanvasThreadWorker::setupThreads(size_t count)
 {
     if(m_threads.size() > 0)
         return;
-    QSFMLP_CANVAS_FUNCTION(QSFMLP_COLOR_STAGE_1);
+    QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
     m_cycleCount = 0;
     m_threadReleaseToWork = false;
     m_threadMaxIndex = m_groups->size();
@@ -99,7 +99,7 @@ void CanvasThreadWorker::threadFunc(ThreadsData data)
         {
             std::this_thread::sleep_for(5us);
         }
-        QSFMLP_CANVAS_BLOCK("Threaded update", QSFMLP_COLOR_STAGE_1);
+        QSFMLP_CANVAS_BLOCK("Threaded update", QSFML_COLOR_STAGE_1);
         releaseThreadToWorkComp = !releaseThreadToWorkComp;
         bool workOnGroups = true;
         CanvasObjectGroup *currentGroup = nullptr;
@@ -123,7 +123,7 @@ void CanvasThreadWorker::threadFunc(ThreadsData data)
         }
 
 
-        QSFMLP_END_BLOCK;
+        QSFML_PROFILING_END_BLOCK;
         {
             std::lock_guard<std::mutex> lk(*data.finishedMutex);
             doExit = *data.exit;

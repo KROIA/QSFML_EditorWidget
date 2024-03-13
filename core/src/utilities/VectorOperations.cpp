@@ -1,6 +1,9 @@
 #include "utilities/VectorOperations.h"
 #include "utilities/RandomEngine.h"
+
+#define _USE_MATH_DEFINES
 #include <math.h>
+#define M_2PI (2 * M_PI)
 
 namespace QSFML
 {

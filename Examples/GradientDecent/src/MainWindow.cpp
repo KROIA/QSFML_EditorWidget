@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 #include <iostream>
 #include <QCloseEvent>
+#include <QDebug>
 #include "Gradient.h"
 
 using namespace QSFML;

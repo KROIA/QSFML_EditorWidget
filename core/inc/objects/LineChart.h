@@ -3,7 +3,7 @@
 #include <vector>
 #include "objects/base/CanvasObject.h"
 #include "components/base/Drawable.h"
-#include "QSFML_base.h"
+#include "QSFML_EditorWidget_base.h"
 
 
 namespace QSFML

@@ -1,5 +1,15 @@
 #pragma once
 
+/// USER_SECTION_START 1
+
+/// USER_SECTION_END
+
+#include "QSFML_EditorWidget_info.h"
+
+/// USER_SECTION_START 2
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "canvas/Canvas.h"
 
 #include "components/base/Component.h"
@@ -37,5 +47,4 @@
 #include "utilities/ObjectQuadTree.h"
 #include "utilities/Origin.h"
 #include "utilities/PerlinNoise.h"
-
-
+/// USER_SECTION_END

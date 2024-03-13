@@ -1,11 +1,12 @@
 #pragma once
 
-#include "QSFML_base.h"
-#include "QSFML_ForwardDeclaration.h"
+#include "QSFML_EditorWidget_base.h"
+#include "QSFML_EditorWidget_ForwardDeclaration.h"
 
 #include "utilities/Singelton.h"
 #include <unordered_map>
 #include <atomic>
+#include <string>
 
 namespace QSFML
 {

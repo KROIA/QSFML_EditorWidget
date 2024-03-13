@@ -1,4 +1,6 @@
 #include "Pendulum.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
     : QObject()

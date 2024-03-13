@@ -1,53 +1,120 @@
-﻿cmake_minimum_required(VERSION 3.15)
+﻿## USER_SECTION_START 1
+cmake_minimum_required(VERSION 3.20)
+## USER_SECTION_END
 
-project(SFML_EditorWidget)
-set(PARALLEL_BUILD ON)
+## INFO
+## Template version: 1.0.0
+##
+## This is a template for a CMake project.
+## It is designed to be used with the Visual Studio
+## IDE and the Qt framework.
+##
+## ********************************************************************************
+##  !!! IMPORTANT !!!
+##  CMAKE SETTINGS WITH THE MARK "<AUTO_REPLACED>" ARE AUTOMATICLY REPLACED
+##  BY THE LIBRARY MANAGER. DO NOT CHANGE NAMES OF SUCH PARAMETERS IF YOU USE
+##  THE LIBRARY MANAGER.
+##
+##
+## ********************************************************************************
+##
+## You can add your own settings in between the USER SECTION START and USER SECTION END markers.
+## Do not add more USER SECTION START or USER SECTION END markers. 
+## Code outside of the USER SECTION START and USER SECTION END markers will be overwritten by the library manager.
+## 
+## --------------------------------------------------------------------------------
+## -------------------- Project settings ------------------------------------------
+## --------------------------------------------------------------------------------
 
-#
-# -----------------------------------------
-#
-# Check if variable is set, otherwise set to default
-if(NOT RELATIVE_BUILD_FOLDER)
-	set(RELATIVE_BUILD_FOLDER build)
-endif()
-if(NOT CMAKE_INSTALL_PREFIX)
-	set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
-endif()
-if(NOT RELATIVE_INSTALL_FOLDER)
-	set(RELATIVE_INSTALL_FOLDER lib)
-endif()
+# Name of the library
+set(LIBRARY_NAME SFML_EditorWidget)                   # <AUTO_REPLACED>
 
-if(CMAKE_GENERATOR STREQUAL "Ninja")
-    message("CMake was configured using Ninja")
-else()
-    set(PARALLEL_BUILD OFF) # Multithreading does mostly not work if not configured using ninja
-    message("CMake was not configured using Ninja")
-endif()
+# Define is only active if the library is built
+set(LIB_DEFINE QSFML_EDITOR_WIDGET_LIB)                # <AUTO_REPLACED>
+
+# macro to enable profiling
+set(LIB_PROFILE_DEFINE QSFML_PROFILING)  # <LIB_PROFILE_DEFINE>  
+
+
+# Enable/disable QT modules
+set(QT_ENABLE ON)	                            # <AUTO_REPLACED> 
+# Enable/disable QT deployment
+set(QT_DEPLOY ON)	                            # <AUTO_REPLACED> 
+
+# Needed QT modules                             # <AUTO_REPLACED> 
+set(QT_MODULES                                  
+    Core
+    Widgets
+)
+
+# Library file name settings
+set(DEBUG_POSTFIX_STR  "-d")                    # <AUTO_REPLACED> 
+set(STATIC_POSTFIX_STR "-s")                    # <AUTO_REPLACED> 
+set(PROFILING_POSTFIX_STR "-p")                 # <AUTO_REPLACED>  
+
+# Langauge settings
+set(CMAKE_CXX_STANDARD 14)                      # <AUTO_REPLACED> 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)             # <AUTO_REPLACED> 
+
+## USER_SECTION_START 2
+
+## USER_SECTION_END
+
+# --------------------------------------------------------------------------------
+# -------------------- Build settings --------------------------------------------
+# --------------------------------------------------------------------------------
+
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})   # Default install path
+set(RELATIVE_BUILD_FOLDER build)                # Relative path to the build folder
+set(RELATIVE_INSTALL_FOLDER lib)                # Relative path to the install folder
+
+
+set(COMPILE_EXAMPLES ON)						# <AUTO_REPLACED> 
+set(COMPILE_UNITTESTS ON)						# <AUTO_REPLACED> 
+
+## USER_SECTION_START 3
+
+## USER_SECTION_END
+
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+
+project(${LIBRARY_NAME})
  
 # Set output paths
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 
-
 set(INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
 set(INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
 # create bin folder
-file(MAKE_DIRECTORY ${INSTALL_BIN_PATH})
-
-set(QT_LOCATOR_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/QtLocator.cmake")
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
-if(PARALLEL_BUILD)
-	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} /MP)
-	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} /MP)
-endif()
+## USER_SECTION_START 4
+
+## USER_SECTION_END
 
 
-include(utility.cmake)
-include(dependencies.cmake)
+include(cmake/QtLocator.cmake)
+include(cmake/utility.cmake)
+include(cmake/dependencies.cmake)
+include(cmake/ExampleMaster.cmake)
+
+## USER_SECTION_START 5
+
+## USER_SECTION_END
 
 add_subdirectory(core)
-add_subdirectory(Examples)
+if(COMPILE_EXAMPLES AND NOT LIBRARY_NAME_NO_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+if(COMPILE_UNITTESTS AND NOT LIBRARY_NAME_NO_UNITTESTS)
+    add_subdirectory(unitTests)
+endif()
 
+## USER_SECTION_START 6
+
+## USER_SECTION_END

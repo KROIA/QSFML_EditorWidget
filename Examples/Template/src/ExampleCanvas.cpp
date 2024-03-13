@@ -2,6 +2,7 @@
 #include "ui_exampleCanvas.h"
 #include <iostream>
 #include <QCloseEvent>
+#include <QDebug>
 
 using namespace QSFML;
 using namespace QSFML::Objects;

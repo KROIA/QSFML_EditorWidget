@@ -4,6 +4,9 @@
 #include "QSFML_EditorWidget.h"
 #include "Pendulum.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE

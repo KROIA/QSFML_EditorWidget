@@ -9,6 +9,7 @@
 #include "utilities/Stats.h"
 #include "utilities/ObjectQuadTree.h"
 
+#include <QDebug>
 
 
 using namespace QSFML;
@@ -989,7 +990,7 @@ void CanvasObject::setCanvasParent(Canvas *parent)
 
 void CanvasObject::updateNewElements()
 {
-    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     removeChild_internal();
     deleteChild_internal();
     removeComponent_internal();
@@ -1003,8 +1004,8 @@ void CanvasObject::updateNewElements()
 void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
 {
     if (!m_enabled || !m_updateControlls.enableEventLoop || !m_thisNeedsEventUpdate) return;
-    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
-    QSFMLP_OBJECT_BLOCK("Components event", QSFMLP_COLOR_STAGE_2);
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_BLOCK("Components event", QSFML_COLOR_STAGE_2);
     for (auto component : m_eventComponents)
     {
         if (!component->isEnabled())
@@ -1016,7 +1017,7 @@ void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
     }
     QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_OBJECT_BLOCK("Childs event", QSFMLP_COLOR_STAGE_3);
+    QSFMLP_OBJECT_BLOCK("Childs event", QSFML_COLOR_STAGE_3);
     for (auto obj : m_childs)
     {
         if (obj->m_enabled)
@@ -1027,12 +1028,12 @@ void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
 void CanvasObject::update_internal()
 {
     if (!m_enabled || !m_updateControlls.enableUpdateLoop) return;
-    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
-    QSFMLP_OBJECT_BLOCK("Object update", QSFMLP_COLOR_STAGE_2);
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_BLOCK("Object update", QSFML_COLOR_STAGE_2);
     Updatable::emitUpdate();
     QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_OBJECT_BLOCK("Components update", QSFMLP_COLOR_STAGE_2);
+    QSFMLP_OBJECT_BLOCK("Components update", QSFML_COLOR_STAGE_2);
     for (size_t i = 0; i < m_updatableComponents.size(); ++i)
     {
         Utilities::Updatable* comp = m_updatableComponents[i];
@@ -1043,7 +1044,7 @@ void CanvasObject::update_internal()
     }
     QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_OBJECT_BLOCK("Childs update", QSFMLP_COLOR_STAGE_4);
+    QSFMLP_OBJECT_BLOCK("Childs update", QSFML_COLOR_STAGE_4);
     for (size_t i = 0; i < m_childs.size(); ++i)
     {
         CanvasObject* obj = m_childs[i];
@@ -1054,12 +1055,12 @@ void CanvasObject::update_internal()
 }
 void CanvasObject::inCanvasAdded_internal()
 {
-    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
-    QSFMLP_OBJECT_BLOCK("Object inCanvasAdded", QSFMLP_COLOR_STAGE_2);
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_BLOCK("Object inCanvasAdded", QSFML_COLOR_STAGE_2);
     inCanvasAdded();
     QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_OBJECT_BLOCK("Childs inCanvasAdded", QSFMLP_COLOR_STAGE_4);
+    QSFMLP_OBJECT_BLOCK("Childs inCanvasAdded", QSFML_COLOR_STAGE_4);
     for (size_t i = 0; i < m_childs.size(); ++i)
     {
         m_childs[i]->inCanvasAdded_internal();
@@ -1069,8 +1070,8 @@ void CanvasObject::inCanvasAdded_internal()
 void CanvasObject::draw(sf::RenderWindow &window) const
 {
     if(!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate) return;
-    QSFMLP_OBJECT_FUNCTION(QSFMLP_COLOR_STAGE_1);
-    QSFMLP_OBJECT_BLOCK("Components draw", QSFMLP_COLOR_STAGE_2);
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
     for(size_t i=0; i<m_drawableComponents.size(); ++i)
     {
         if(!m_drawableComponents[i]->isEnabled())
@@ -1079,7 +1080,7 @@ void CanvasObject::draw(sf::RenderWindow &window) const
     }
     QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_OBJECT_BLOCK("Childs draw", QSFMLP_COLOR_STAGE_3);
+    QSFMLP_OBJECT_BLOCK("Childs draw", QSFML_COLOR_STAGE_3);
     for(size_t i=0; i<m_childs.size(); ++i)
     {
         if(m_childs[i]->m_enabled)
