@@ -84,7 +84,7 @@ namespace QSFML
 #else
 	QWidget* LibraryInfo::createInfoWidget(QWidget* parent)
 	{
-		LIBRARY_NAME_SHORT_UNUSED(parent);
+		QSFML_UNUSED(parent);
 		return nullptr;
 	}
 #endif

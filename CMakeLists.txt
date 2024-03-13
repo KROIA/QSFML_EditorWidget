@@ -1,4 +1,4 @@
-﻿## USER_SECTION_START 1
+## USER_SECTION_START 1
 cmake_minimum_required(VERSION 3.20)
 ## USER_SECTION_END
 
@@ -42,13 +42,12 @@ set(QT_ENABLE ON)	                            # <AUTO_REPLACED>
 set(QT_DEPLOY ON)	                            # <AUTO_REPLACED> 
 
 # Needed QT modules                             # <AUTO_REPLACED> 
-set(QT_MODULES                                  
-    Core
-    Widgets
-)
+set(QT_MODULES
+  Core
+  Widgets)
 
 # Library file name settings
-set(DEBUG_POSTFIX_STR  "-d")                    # <AUTO_REPLACED> 
+set(DEBUG_POSTFIX_STR "-d")                    # <AUTO_REPLACED> 
 set(STATIC_POSTFIX_STR "-s")                    # <AUTO_REPLACED> 
 set(PROFILING_POSTFIX_STR "-p")                 # <AUTO_REPLACED>  
 
@@ -108,10 +107,10 @@ include(cmake/ExampleMaster.cmake)
 ## USER_SECTION_END
 
 add_subdirectory(core)
-if(COMPILE_EXAMPLES AND NOT LIBRARY_NAME_NO_EXAMPLES)
+if(COMPILE_EXAMPLES AND NOT QSFML_EditorWidget_NO_EXAMPLES)
     add_subdirectory(examples)
 endif()
-if(COMPILE_UNITTESTS AND NOT LIBRARY_NAME_NO_UNITTESTS)
+if(COMPILE_UNITTESTS AND NOT QSFML_EditorWidget_NO_UNITTESTS)
     add_subdirectory(unitTests)
 endif()
 

@@ -38,9 +38,9 @@
 // MSVC Compiler
 #ifdef _MSC_VER 
 #define __PRETTY_FUNCTION__ __FUNCSIG__
-	typedef std::chrono::steady_clock::time_point TimePoint;
+typedef std::chrono::steady_clock::time_point TimePoint;
 #else
-	typedef std::chrono::system_clock::time_point TimePoint;
+typedef std::chrono::system_clock::time_point TimePoint;
 #endif
 
 

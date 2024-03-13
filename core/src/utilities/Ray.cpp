@@ -1,4 +1,4 @@
-﻿#include "utilities/Ray.h"
+#include "utilities/Ray.h"
 #include "utilities/VectorOperations.h"
 #include "components/drawable/Shape.h"
 

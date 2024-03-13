@@ -1,4 +1,4 @@
-﻿#include "utilities/Stats.h"
+#include "utilities/Stats.h"
 
 #include "objects/base/CanvasObject.h"
 
