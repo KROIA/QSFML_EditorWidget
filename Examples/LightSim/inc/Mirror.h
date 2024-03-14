@@ -40,7 +40,7 @@ private:
 	};
 
 	MirrorShape m_shape;
-	QSFML::Components::Line* m_mirrorLine;
+	QSFML::Components::LinePainter* m_mirrorLine;
 	
 	float m_rotationSpeed;
 };

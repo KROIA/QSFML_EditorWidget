@@ -60,6 +60,8 @@ private:
     {
         sf::Vector2f pos;
         Lines* line;
+       // int iterationCunt = 0;
     };
     std::vector<Instance> m_lines;
+    QSFML::Components::Text* m_text;
 };

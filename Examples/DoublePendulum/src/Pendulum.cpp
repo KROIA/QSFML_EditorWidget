@@ -13,7 +13,7 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
 
     for (size_t i = 0; i < m_count; ++i)
     {
-        m_pendulumData[i].line = new QSFML::Components::Line();
+        m_pendulumData[i].line = new QSFML::Components::LinePainter();
         m_pendulumData[i].line->setThickness(2);
         addComponent(m_pendulumData[i].line);
     }

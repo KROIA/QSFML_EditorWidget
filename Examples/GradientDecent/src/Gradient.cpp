@@ -86,7 +86,8 @@ void Gradient::update()
 	for (size_t i = 0; i < m_lines.size(); ++i)
 	{
 		Instance& instance = m_lines[i];
-		if (counter > maxCounter/2)
+		if (0)
+		//if (counter < maxCounter/2)
 		{
 			instance.pos = newtenDecend(instance.pos);
 		}
@@ -95,17 +96,40 @@ void Gradient::update()
 			instance.pos = decend(instance.pos, 0.01f);
 		}
 		//instance.pos = decend(instance.pos, 0.01f);
-		if (counter > 25)
+		if (counter > 5)
 		{
 			instance.line->removePoint();
 		}
+		
 		instance.line->addPoint(getWorldCoord(instance.pos));
 	}
 }
 sf::Vector2f Gradient::decend(sf::Vector2f p, float amount)
 {
 	sf::Vector2f dir = grad(p);
-	p -= dir * amount;
+	float length = QSFML::VectorMath::getLength(dir);
+	float dxx = dfxx(p);
+	float dyy = dfyy(p);
+	float l2 = sqrt(dxx * dxx + dyy * dyy);
+	sf::Vector2f dir2(dxx, dyy);
+	//if (length < 10)
+	{
+		if (dxx < 0 && dir.x < 0)
+		{
+			dir.x += -100;
+			length = 100;
+		}
+		if (dyy < 0 && dir.y < 0)
+		{
+			dir.y += -100;
+			length = 100;
+		}
+	}
+	//float factor = amount * ( length/l2);
+	//if(factor > 100)
+	//	factor = 100;
+	dir = QSFML::VectorMath::getNormalized(dir);
+	p -= (dir) * amount * length;
 	return p;
 }
 sf::Vector2f Gradient::newtenDecend(sf::Vector2f p)

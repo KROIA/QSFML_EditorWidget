@@ -440,7 +440,7 @@ namespace QSFML
 		}
 		void Ray::RayPainter::addLine(const sf::Vector2f& pointA, const sf::Vector2f& pointB)
 		{
-			Line line;
+			LinePainter line;
 			line.m_line[0].position = pointA;
 			line.m_line[1].position = pointB;
 

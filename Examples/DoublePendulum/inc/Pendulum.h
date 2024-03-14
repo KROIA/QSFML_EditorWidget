@@ -15,7 +15,7 @@ class Pendulum : public QObject, public QSFML::Objects::CanvasObject
 		double mass = 1;
 		QSFML::VectorMath::Vector2d endPos;
 		QSFML::VectorMath::Vector2d lastEndPos;
-		QSFML::Components::Line* line = nullptr;
+		QSFML::Components::LinePainter* line = nullptr;
 	};
 public:
     Pendulum(const std::string& name = "Pendulum",
@@ -43,7 +43,7 @@ private:
 	QSFML::Components::Text *m_text = nullptr;
 	QSFML::Objects::LineChart *m_chart = nullptr;
 	std::vector<float> m_chartData;
-    //QSFML::Components::Line *m_linePainters[2];
+    //QSFML::Components::LinePainter *m_linePainters[2];
 
 	static constexpr size_t m_count = 2;
 	PendulumData m_pendulumData[m_count];

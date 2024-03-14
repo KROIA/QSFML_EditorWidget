@@ -30,7 +30,7 @@ namespace QSFML
         class Button;
         class VectorPainter;
         class KeyPressEvent;
-        class Line;
+        class LinePainter;
         class MouseFollower;
         class MousePressEvent;
         class PointPainter;

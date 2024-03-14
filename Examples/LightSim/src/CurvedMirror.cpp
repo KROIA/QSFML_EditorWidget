@@ -7,7 +7,7 @@ CurvedMirror::CurvedMirror(unsigned int resolution, const std::string& name)
 {
 	for (size_t i = 0; i < resolution; ++i)
 	{
-		QSFML::Components::Line* line = new QSFML::Components::Line();
+		QSFML::Components::LinePainter* line = new QSFML::Components::LinePainter();
 		m_mirrorLines.push_back(line);
 		m_shape.m_mirrorRays.push_back(QSFML::Utilities::Ray());
 		addComponent(line);
@@ -34,7 +34,7 @@ CurvedMirror::CurvedMirror(const CurvedMirror& other)
 	m_shape = other.m_shape;
 	for (size_t i = 0; i < m_shape.m_resolution; ++i)
 	{
-		QSFML::Components::Line* line = new QSFML::Components::Line();
+		QSFML::Components::LinePainter* line = new QSFML::Components::LinePainter();
 		m_mirrorLines.push_back(line);
 		m_shape.m_mirrorRays.push_back(QSFML::Utilities::Ray());
 		addComponent(line);

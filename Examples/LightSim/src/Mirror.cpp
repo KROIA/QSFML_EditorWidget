@@ -4,7 +4,7 @@
 Mirror::Mirror(const std::string& name)
 	: OpticalElement(name)
 {
-	m_mirrorLine = new QSFML::Components::Line();
+	m_mirrorLine = new QSFML::Components::LinePainter();
 	m_shape.m_width = 30;
 	m_shape.m_angle = M_PI / 4;
 	m_shape.m_pos = sf::Vector2f(0, 0);
@@ -18,7 +18,7 @@ Mirror::Mirror(const std::string& name)
 Mirror::Mirror(const Mirror& other)
 	: OpticalElement(other)
 {
-	m_mirrorLine = new QSFML::Components::Line();
+	m_mirrorLine = new QSFML::Components::LinePainter();
 	m_shape = other.m_shape;
 	
 	m_rotationSpeed = other.m_rotationSpeed;

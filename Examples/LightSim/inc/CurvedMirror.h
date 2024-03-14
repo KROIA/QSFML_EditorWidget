@@ -55,6 +55,6 @@ private:
 	MirrorShape m_shape;
 
 
-	std::vector<QSFML::Components::Line*> m_mirrorLines;	 
+	std::vector<QSFML::Components::LinePainter*> m_mirrorLines;	 
 	float m_rotationSpeed;
 };

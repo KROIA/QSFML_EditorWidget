@@ -176,7 +176,7 @@ namespace QSFML
 				void addPoint(const sf::Vector2f& point);
 				void addLine(const sf::Vector2f& pointA, const sf::Vector2f& pointB);
 			
-				struct Line
+				struct LinePainter
 				{
 					sf::Vertex m_line[2];
 				};
@@ -185,7 +185,7 @@ namespace QSFML
 				float m_pointRadius;
 
 				mutable std::vector<sf::Vector2f> m_points;
-				mutable std::vector<Line> m_lines;
+				mutable std::vector<LinePainter> m_lines;
 			};
 
 			RayPainter *createRayPainter();
