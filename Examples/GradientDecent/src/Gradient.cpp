@@ -55,6 +55,7 @@ Gradient::Gradient(const std::string& name,
 		{
 			sf::Vector2f pos = sf::Vector2f((float)i / 100.f, (float)j / 100.f) + offset;
 			drawPixel(sf::Vector2u(i,j), f(pos));
+			//drawPixel(sf::Vector2u(i,j), dfy(pos));
 		}
 	}
 }
@@ -69,8 +70,9 @@ void Gradient::setStart(const sf::Vector2f& start)
 void Gradient::update()
 {
 	static int counter = 0;
+	const int maxCounter = 50;
 	counter++;
-	if(counter > 100)
+	if(counter > maxCounter)
 	{
 		counter = 0;
 		for (size_t i = 0; i < m_lines.size(); ++i)
@@ -84,8 +86,19 @@ void Gradient::update()
 	for (size_t i = 0; i < m_lines.size(); ++i)
 	{
 		Instance& instance = m_lines[i];
-		instance.pos = decend(instance.pos, 0.01f);
-		//instance.pos = newtenDecend(instance.pos);
+		if (counter > maxCounter/2)
+		{
+			instance.pos = newtenDecend(instance.pos);
+		}
+		else
+		{
+			instance.pos = decend(instance.pos, 0.01f);
+		}
+		//instance.pos = decend(instance.pos, 0.01f);
+		if (counter > 25)
+		{
+			instance.line->removePoint();
+		}
 		instance.line->addPoint(getWorldCoord(instance.pos));
 	}
 }
@@ -186,6 +199,15 @@ void Gradient::Lines::addPoint(const sf::Vector2f& pos)
 	m_vertices.push_back(pos);
 	m_vertices.back().color = m_color;
 	//updateShape();
+}
+void Gradient::Lines::removePoint(size_t index)
+{
+	if (index >= m_vertices.size())
+	{
+		m_vertices.pop_back();
+		return;
+	}
+	m_vertices.erase(m_vertices.begin() + index);
 }
 
 void Gradient::Lines::clear()

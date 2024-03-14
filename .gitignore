@@ -43,7 +43,6 @@ extern/SFML-2.5.1/doc
 extern/SFML-2.5.1/examples
 doxygen
 out
-dependencies
 include
 lib
 LICENSE.APACHE

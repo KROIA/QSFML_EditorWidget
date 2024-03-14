@@ -35,6 +35,7 @@ private:
         COMPONENT_DECL(Lines);
 
         void addPoint(const sf::Vector2f& pos);
+        void removePoint(size_t index = 0);
         void clear();
 
         //void setThickness(float thickness);
