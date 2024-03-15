@@ -41,7 +41,6 @@ namespace QSFML
 
             sf::Uint8* m_pixels;
             mutable sf::Texture m_texture;
-            //mutable sf::Sprite m_sprite;
         };
     }
 }

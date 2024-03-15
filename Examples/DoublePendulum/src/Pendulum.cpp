@@ -153,8 +153,7 @@ void Pendulum::update()
         }
         if (m_linesEnabled)
         {
-            m_pendulumData[i].line->setStartPos(sf::Vector2f(startPos.x, startPos.y));
-            m_pendulumData[i].line->setEndPos(sf::Vector2f(m_pendulumData[i].endPos.x, m_pendulumData[i].endPos.y));
+            m_pendulumData[i].line->setPos(sf::Vector2f(startPos.x, startPos.y), sf::Vector2f(m_pendulumData[i].endPos.x, m_pendulumData[i].endPos.y));
         }
     }
     m_pointPainter->setPoints(points);   

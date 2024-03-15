@@ -22,8 +22,8 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
         LinePainter(const LinePainter &other);
         COMPONENT_DECL(LinePainter);
 
-        void set(const sf::Vector2f &start, const sf::Vector2f &end);
-        void set(size_t index, const sf::Vector2f &start, const sf::Vector2f &end);
+        void setPos(const sf::Vector2f &start, const sf::Vector2f &end);
+        void setPos(size_t index, const sf::Vector2f &start, const sf::Vector2f &end);
         const sf::Vector2f &getStartPos() const;
         const sf::Vector2f &getStartPos(size_t index) const;
         const sf::Vector2f &getEndPos() const;
@@ -43,14 +43,8 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
                   sf::RenderStates states) const override;
 
     private:
-        //void updateShape();
-        //void updateColor();
-
-        //sf::Vertex m_relativeVertices[4];
         float m_thickness;
         sf::Color m_color;
-        //sf::Vector2f m_begin;
-        //sf::Vector2f m_end;
 
         std::vector<LineData> m_lines;
 };

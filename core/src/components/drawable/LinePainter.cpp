@@ -11,8 +11,6 @@ LinePainter::LinePainter(const std::string &name)
     : Drawable(name)
     , m_thickness(1)
     , m_color(sf::Color::Green)
-    //, m_begin(0,0)
-    //, m_end(1,1)
 {
 
 }
@@ -21,16 +19,14 @@ LinePainter::LinePainter(const LinePainter &other)
     , m_thickness(other.m_thickness)
     , m_color(other.m_color)
     , m_lines(other.m_lines)
-    //, m_begin(other.m_begin)
-    //, m_end(other.m_end)
 {
-   // updateShape();
+
 }
-void LinePainter::set(const sf::Vector2f& start, const sf::Vector2f& end)
+void LinePainter::setPos(const sf::Vector2f& start, const sf::Vector2f& end)
 {
 	m_lines = { {start, end, m_color, m_thickness} };
 }
-void LinePainter::set(size_t index, const sf::Vector2f& start, const sf::Vector2f& end)
+void LinePainter::setPos(size_t index, const sf::Vector2f& start, const sf::Vector2f& end)
 {
    LineData &data = m_lines[index];
    data.start = start;
@@ -92,29 +88,6 @@ const sf::Color& LinePainter::getColor(size_t index) const
 {
     return m_lines[index].color;
 }
-/*
-void LinePainter::updateShape()
-{
-    sf::Vector2f direction = m_end - m_begin;
-    float dist =  sqrt(direction.x*direction.x+direction.y*direction.y);
-    if(dist == 0)
-        return;
-    sf::Vector2f unitDirection = direction / dist;
-    sf::Vector2f unitPerpendicular(-unitDirection.y,unitDirection.x);
-
-    sf::Vector2f offset = (m_thickness/2.f)*unitPerpendicular;
-
-    m_relativeVertices[0].position = m_begin + offset;
-    m_relativeVertices[1].position = m_end + offset;
-    m_relativeVertices[2].position = m_end - offset;
-    m_relativeVertices[3].position = m_begin - offset;
-}
-void LinePainter::updateColor()
-{
-    for (int i=0; i<4; ++i)
-        m_relativeVertices[i].color = m_color;
-}
-*/
 void LinePainter::draw(sf::RenderTarget& target,
                 sf::RenderStates) const
 {
