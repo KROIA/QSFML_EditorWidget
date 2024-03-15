@@ -30,7 +30,7 @@ namespace QSFML
 		LibraryInfo(const LibraryInfo&) = delete;
 	public:
 		// Current version of the library
-		static constexpr int versionMajor				= 0;
+		static constexpr int versionMajor				= 1;
 		static constexpr int versionMinor				= 0;
 		static constexpr int versionPatch				= 0;
 
