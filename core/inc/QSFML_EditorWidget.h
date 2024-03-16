@@ -47,4 +47,5 @@
 #include "utilities/ObjectQuadTree.h"
 #include "utilities/Origin.h"
 #include "utilities/PerlinNoise.h"
+#include "utilities/Color.h"
 /// USER_SECTION_END

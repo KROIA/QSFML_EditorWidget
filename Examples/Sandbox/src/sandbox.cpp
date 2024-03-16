@@ -78,7 +78,7 @@ void addPerlinNoise(Canvas* canvas)
     CanvasObject* obj = new CanvasObject();
 
     sf::Vector2u size(100, 100);
-    QSFML::Utilities::PerlinNoise* perlinNoise = new QSFML::Utilities::PerlinNoise();
+    QSFML::Utilities::PerlinNoise* perlinNoise = new QSFML::Utilities::PerlinNoise(0);
     QSFML::Components::PixelPainter* pixelPainter = new QSFML::Components::PixelPainter();
     pixelPainter->setPixelCount(size);
     pixelPainter->setPixelSize(2);
@@ -89,8 +89,17 @@ void addPerlinNoise(Canvas* canvas)
     {
         for (size_t y = 0; y < size.y; ++y)
         {
-			float value = perlinNoise->noise((float)x/(float)size.x, (float)y / (float)size.y);
-			sf::Color color = sf::Color(255 * value, 255 * value, 255 * value, 255);
+			float value = perlinNoise->noise((float)x, (float)y, 2, sf::Vector2u(20,20));
+			value += perlinNoise->noise((float)x, (float)y, 8, sf::Vector2u(10,10));
+            if (value < -1)
+                value = -1;
+			else if(value > 1)
+				value = 1;
+
+            value = (value+1)/2;
+
+            
+            sf::Color color = QSFML::Color::lerpCubic({ sf::Color::Red, sf::Color::Green, sf::Color::Blue}, value);
 			pixelPainter->setPixel(sf::Vector2u(x, y), color);
 		}
 	}

@@ -146,7 +146,7 @@ void Gradient::drawPixel(sf::Vector2u point, double value)
 sf::Color Gradient::getColor(double value)
 {
 	// Color fade depending on value
-	sf::Color color1 = sf::Color::Red;
+	/*sf::Color color1 = sf::Color::Red;
 	sf::Color color2 = sf::Color::Green;
 	sf::Color color;
 	value *= 0.05;
@@ -159,8 +159,11 @@ sf::Color Gradient::getColor(double value)
 		color.g = 0;
 		color.b = 0;
 	}
-	color.a = 255;
-	return color;
+	color.a = 255;*/
+
+
+
+	return QSFML::Color::lerpLinear({sf::Color::Magenta, sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow }, value*0.005);
 }
 sf::Vector2u Gradient::getPixelCoord(sf::Vector2f point)
 {
