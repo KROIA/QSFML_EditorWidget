@@ -6,16 +6,16 @@
 
 // Debugging
 #ifdef NDEBUG
-#define QSFML_CONSOLE(msg)
-#define QSFML_CONSOLE_FUNCTION(msg)
+	#define QSFML_CONSOLE(msg)
+	#define QSFML_CONSOLE_FUNCTION(msg)
 #else
-#include <iostream>
+	#include <iostream>
 
-#define QSFML_DEBUG
-#define QSFML_CONSOLE_STREAM std::cout
+	#define QSFML_DEBUG
+	#define QSFML_CONSOLE_STREAM std::cout
 
-#define QSFML_CONSOLE(msg) QSFML_CONSOLE_STREAM << msg;
-#define QSFML_CONSOLE_FUNCTION(msg) QSFML_CONSOLE_STREAM << __PRETTY_FUNCTION__ << " " << msg;
+	#define QSFML_CONSOLE(msg) QSFML_CONSOLE_STREAM << msg;
+	#define QSFML_CONSOLE_FUNCTION(msg) QSFML_CONSOLE_STREAM << __PRETTY_FUNCTION__ << " " << msg;
 #endif
 
 /// USER_SECTION_START 2
@@ -23,33 +23,33 @@
 /// USER_SECTION_END
 
 #ifdef QSFML_PROFILING
-#include "easy/profiler.h"
-#include <easy/arbitrary_value.h> // EASY_VALUE, EASY_ARRAY are defined here
+	#include "easy/profiler.h"
+	#include <easy/arbitrary_value.h> // EASY_VALUE, EASY_ARRAY are defined here
 
-#define QSFML_PROFILING_BLOCK_C(text, color) EASY_BLOCK(text, color)
-#define QSFML_PROFILING_NONSCOPED_BLOCK_C(text, color) EASY_NONSCOPED_BLOCK(text, color)
-#define QSFML_PROFILING_END_BLOCK EASY_END_BLOCK
-#define QSFML_PROFILING_FUNCTION_C(color) EASY_FUNCTION(color)
-#define QSFML_PROFILING_BLOCK(text, colorStage) QSFML_PROFILING_BLOCK_C(text,profiler::colors::  colorStage)
-#define QSFML_PROFILING_NONSCOPED_BLOCK(text, colorStage) QSFML_PROFILING_NONSCOPED_BLOCK_C(text,profiler::colors::  colorStage)
-#define QSFML_PROFILING_FUNCTION(colorStage) QSFML_PROFILING_FUNCTION_C(profiler::colors:: colorStage)
-#define QSFML_PROFILING_THREAD(name) EASY_THREAD(name)
+	#define QSFML_PROFILING_BLOCK_C(text, color) EASY_BLOCK(text, color)
+	#define QSFML_PROFILING_NONSCOPED_BLOCK_C(text, color) EASY_NONSCOPED_BLOCK(text, color)
+	#define QSFML_PROFILING_END_BLOCK EASY_END_BLOCK
+	#define QSFML_PROFILING_FUNCTION_C(color) EASY_FUNCTION(color)
+	#define QSFML_PROFILING_BLOCK(text, colorStage) QSFML_PROFILING_BLOCK_C(text,profiler::colors::  colorStage)
+	#define QSFML_PROFILING_NONSCOPED_BLOCK(text, colorStage) QSFML_PROFILING_NONSCOPED_BLOCK_C(text,profiler::colors::  colorStage)
+	#define QSFML_PROFILING_FUNCTION(colorStage) QSFML_PROFILING_FUNCTION_C(profiler::colors:: colorStage)
+	#define QSFML_PROFILING_THREAD(name) EASY_THREAD(name)
 
-#define QSFML_PROFILING_VALUE(name, value) EASY_VALUE(name, value)
-#define QSFML_PROFILING_TEXT(name, value) EASY_TEXT(name, value)
+	#define QSFML_PROFILING_VALUE(name, value) EASY_VALUE(name, value)
+	#define QSFML_PROFILING_TEXT(name, value) EASY_TEXT(name, value)
 
 #else
-#define QSFML_PROFILING_BLOCK_C(text, color)
-#define QSFML_PROFILING_NONSCOPED_BLOCK_C(text, color)
-#define QSFML_PROFILING_END_BLOCK
-#define QSFML_PROFILING_FUNCTION_C(color)
-#define QSFML_PROFILING_BLOCK(text, colorStage)
-#define QSFML_PROFILING_NONSCOPED_BLOCK(text, colorStage)
-#define QSFML_PROFILING_FUNCTION(colorStage)
-#define QSFML_PROFILING_THREAD(name)
+	#define QSFML_PROFILING_BLOCK_C(text, color)
+	#define QSFML_PROFILING_NONSCOPED_BLOCK_C(text, color)
+	#define QSFML_PROFILING_END_BLOCK
+	#define QSFML_PROFILING_FUNCTION_C(color)
+	#define QSFML_PROFILING_BLOCK(text, colorStage)
+	#define QSFML_PROFILING_NONSCOPED_BLOCK(text, colorStage)
+	#define QSFML_PROFILING_FUNCTION(colorStage)
+	#define QSFML_PROFILING_THREAD(name)
 
-#define QSFML_PROFILING_VALUE(name, value)
-#define QSFML_PROFILING_TEXT(name, value)
+	#define QSFML_PROFILING_VALUE(name, value)
+	#define QSFML_PROFILING_TEXT(name, value)
 #endif
 
 // Special expantion tecniques are required to combine the color name

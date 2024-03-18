@@ -1,5 +1,4 @@
 ## description: SFML: Simple and fast multimedia library
-cmake_minimum_required(VERSION 3.1.0)
 include(FetchContent)
 
 # Define the git repository and tag to download from

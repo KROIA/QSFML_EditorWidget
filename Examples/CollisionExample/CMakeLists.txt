@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.1.0)
 
 # Find the necessary QT modules
 set(QT_MODULES
