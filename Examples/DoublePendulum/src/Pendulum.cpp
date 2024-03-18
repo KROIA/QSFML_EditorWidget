@@ -76,6 +76,11 @@ void Pendulum::setLength(double length1, double length2)
 	m_pendulumData[0].length = length1;
 	m_pendulumData[1].length = length2;
 }
+void Pendulum::setDamping(float damping1, float damping2)
+{
+    m_pendulumData[0].damping = damping1;
+    m_pendulumData[1].damping = damping2;
+}
 void Pendulum::setLinesEnabled(bool enabled)
 {
     m_linesEnabled = enabled;

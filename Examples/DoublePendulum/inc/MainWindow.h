@@ -25,11 +25,13 @@ private slots:
     void on_speed_slider_valueChanged(int value);
     void on_L1_verticalSlider_valueChanged(int value);
     void on_L2_verticalSlider_valueChanged(int value);
+    void on_damping_verticalSlider_valueChanged(int value);
     void on_enableLines_checkBox_stateChanged(int arg1);
 
 private:
     void setupCanvas();
     void closeEvent(QCloseEvent* event) override;
+    void createPendulums();
 
 
     Ui::MainWindow* ui;

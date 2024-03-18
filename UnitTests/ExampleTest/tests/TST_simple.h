@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../test.h"
+#include "UnitTest.h"
 #include <QObject>
 #include <QCoreapplication>
 
 
+#define STRINGIFY(x) 
 
 
-
-class TST_simple : public Test
+class TST_simple : public UnitTest::Test
 {
 	TEST_CLASS(TST_simple)
 public:
@@ -26,7 +26,7 @@ private:
 	bool test1(TestResults& results)
 	{
 		TEST_START(results);
-
+		//TEST_MESSAGE(std::to_string(__LINE__));
 		int a = 0;
 		TEST_MESSAGE("is a == 0?");
 		TEST_ASSERT(a == 0);

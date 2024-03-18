@@ -88,6 +88,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}
 
 set(INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
 set(INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
+set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies/cache")
 # create bin folder
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
@@ -108,9 +109,11 @@ include(cmake/ExampleMaster.cmake)
 
 add_subdirectory(core)
 if(COMPILE_EXAMPLES AND NOT QSFML_EditorWidget_NO_EXAMPLES)
+    message("Include examples for ${LIBRARY_NAME}")
     add_subdirectory(examples)
 endif()
 if(COMPILE_UNITTESTS AND NOT QSFML_EditorWidget_NO_UNITTESTS)
+    message("Include unittests for ${LIBRARY_NAME}")
     add_subdirectory(unitTests)
 endif()
 

@@ -27,10 +27,10 @@ int main(int argc, char* argv[])
 
 	QSFML::LibraryInfo::printInfo();
 
-	std::cout << "Running "<< Test::getTests().size() << " tests...\n";
-	Test::TestResults results;
-	Test::runAllTests(results);
-	Test::printResults(results);
+	std::cout << "Running "<< UnitTest::Test::getTests().size() << " tests...\n";
+	UnitTest::Test::TestResults results;
+	UnitTest::Test::runAllTests(results);
+	UnitTest::Test::printResults(results);
 
 #ifdef QT_WIDGETS_ENABLED
 	QWidget* widget = EcoSystem::LibraryInfo::createInfoWidget();

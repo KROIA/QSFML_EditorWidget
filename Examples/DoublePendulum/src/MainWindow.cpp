@@ -44,13 +44,7 @@ void MainWindow::on_restart_pushButton_clicked()
 {
 	if (m_canvas)
 	{
-        double angle1 = M_PI_2;
-        double angle2 = M_PI;
-        for (int i = 0; i < m_pendulums.size(); ++i)
-        {
-            m_pendulums[i]->setStart(angle1, angle1);
-            angle1 += M_PI * 2 / (double)m_pendulums.size();
-        }
+        createPendulums();
 	}
 }
 void MainWindow::on_speed_slider_valueChanged(int value)
@@ -79,6 +73,17 @@ void MainWindow::on_L2_verticalSlider_valueChanged(int value)
             m_pendulums[i]->setLength(ui->L1_verticalSlider->value(), value);
         }
     }
+}
+void MainWindow::on_damping_verticalSlider_valueChanged(int value)
+{
+	if (m_canvas)
+	{
+        float damping = (float)value/ui->damping_verticalSlider->maximum();
+        for (int i = 0; i < m_pendulums.size(); ++i)
+		{
+			m_pendulums[i]->setDamping(damping, damping);
+		}
+	}
 }
 void MainWindow::on_enableLines_checkBox_stateChanged(int arg1)
 {
@@ -117,24 +122,8 @@ void MainWindow::setupCanvas()
 
     qDebug() << defaultEditor->toString().c_str();
 
-    double angle1 = M_PI_2;
-    double angle2 = M_PI_2;
-    int count = 1000;
-    for (int i = 0; i < count; ++i)
-    {
-        Pendulum * pendulum = new Pendulum();
-        m_pendulums.push_back(pendulum);
-        pendulum->setPositionAbsolute(sf::Vector2f(500, 500));
-        pendulum->setStart(angle1, angle2);
-        angle1 += M_PI*2/(double)count;
-        angle2 += M_PI*2/(double)count;
-        //angle2 += 0.01;
-        m_canvas->addObject(pendulum);
-
-        pendulum->setLength(ui->L1_verticalSlider->value(),
-                            ui->L2_verticalSlider->value());
-        
-    }
+    ui->pendulumCount_spinBox->setValue(2);
+    createPendulums();
     
 }
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -142,5 +131,34 @@ void MainWindow::closeEvent(QCloseEvent* event)
     if (m_canvas)
         m_canvas->stop();
     event->accept();
+}
+
+void MainWindow::createPendulums()
+{
+    for (size_t i = 0; i < m_pendulums.size(); ++i)
+    {
+        m_canvas->deleteObject(m_pendulums[i]);
+    }
+    m_pendulums.clear();
+    double angle1 = M_PI_2;
+    double angle2 = M_PI_2;
+    int count = ui->pendulumCount_spinBox->value();
+    for (int i = 0; i < count; ++i)
+    {
+        Pendulum* pendulum = new Pendulum();
+        m_pendulums.push_back(pendulum);
+        pendulum->setPositionAbsolute(sf::Vector2f(500, 500));
+        pendulum->setStart(angle1, angle2);
+        angle1 += M_PI * 2 / (double)count;
+        angle2 += M_PI * 2 / (double)count;
+        //angle2 += 0.01;
+        m_canvas->addObject(pendulum);
+
+        float length = ui->L1_verticalSlider->value();
+        float damping = (float)ui->damping_verticalSlider->value() / ui->damping_verticalSlider->maximum();
+        pendulum->setLength(length, length);
+        pendulum->setDamping(damping, damping);
+
+    }
 }
 

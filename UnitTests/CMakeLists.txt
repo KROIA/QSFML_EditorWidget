@@ -6,7 +6,7 @@ file(GLOB subdirectories RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
 ## USER_SECTION_START 1
 
 ## USER_SECTION_END
-
+include(UnitTest.cmake)
 # Loop over each subdirectory and add it as a subdirectory in the project
 foreach(subdirectory ${subdirectories})
     if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${subdirectory})

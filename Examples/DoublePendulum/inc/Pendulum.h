@@ -23,8 +23,10 @@ public:
 
 	void setStart(double angle1, double angle2);
 	void setLength(double length1, double length2);
+	void setDamping(float damping1, float damping2);
 	void setLinesEnabled(bool enabled);
     void update() override;
+
 
 private slots:
 	void onMouseFalling();
