@@ -1,6 +1,5 @@
 # Credits: 
 # https://stackoverflow.com/questions/15639781/how-to-find-the-qt5-cmake-module-on-windows
-cmake_minimum_required(VERSION 3.12)
 
 SET(QT_MISSING True)
 

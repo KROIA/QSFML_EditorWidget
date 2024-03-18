@@ -1,3 +1,11 @@
+## 
+## This file will build the library in 3 different ways:
+##  1. Shared library
+##  2. Static library
+##  3. Static library with profiling using easy_profiler
+##     This option is only available if the easy_profiler library is added to the dependencies
+##
+
 ## USER_SECTION_START 1
 cmake_minimum_required(VERSION 3.20)
 ## USER_SECTION_END
@@ -159,7 +167,6 @@ if(EASY_PROFILER_IS_AVAILABLE)
 else()
     install(TARGETS ${LIBRARY_NAME_SHARED} ${LIBRARY_NAME_STATIC} DESTINATION "${INSTALL_BIN_PATH}")
 endif()
-#install(TARGETS ${LIBRARY_NAME_SHARED} ${LIBRARY_NAME_STATIC}  ${LIBRARY_NAME_STATIC_PROFILE} DESTINATION "${INSTALL_LIB_PATH}")
 
 copyLibraryHeaders("${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}" "${CMAKE_INSTALL_PREFIX}/include" "${LIBRARY_NAME}")
 

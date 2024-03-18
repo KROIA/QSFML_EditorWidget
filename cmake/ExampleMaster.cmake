@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.1.0)
 
 # This functions creates a default example project using the given library
 # Function name: exampleMaster

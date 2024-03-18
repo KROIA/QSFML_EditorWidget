@@ -21,8 +21,8 @@ endfunction()
 
 
 # Function name: DEPLOY_QT
-# Params: QT_PATH           Path to the QT installation. C:\Qt\5.15.2\msvc2015_64
-#         targetExePath     Path to the exe file: "$<TARGET_FILE_DIR:profiler_gui>/$<TARGET_FILE_NAME:profiler_gui>"
+# Params: targetName        Name of the target created using add_executable(...)
+#         outputPath        Path where the deployment will be done
 #     
  function(DEPLOY_QT targetName outputPath)
     
@@ -68,30 +68,17 @@ endfunction()
 
 
 function(copyLibraryHeaders headerRootFolder destinationPath destinationFolderName)
-     # Copy the folder
-    #message("COPY ${headerRootFolder} DESTINATION ${CMAKE_BINARY_DIR}")
+    # Copy the folder
     file(COPY ${headerRootFolder}
          DESTINATION ${CMAKE_BINARY_DIR})
 
-    
     get_filename_component(FOLDER_NAME ${headerRootFolder} NAME)
-    #message("FOLDER_NAME ${FOLDER_NAME}")
-
-
-    #message("REMOVE_RECURSE ${CMAKE_BINARY_DIR}/${destinationFolderName}")
     file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/${destinationFolderName}")
-
-
-
-    #message("RENAME ${CMAKE_BINARY_DIR}/${FOLDER_NAME}
-    #            ${CMAKE_BINARY_DIR}/${destinationFolderName}")
 
     # Rename the copied folder
     file(RENAME ${CMAKE_BINARY_DIR}/${FOLDER_NAME}
                 ${CMAKE_BINARY_DIR}/${destinationFolderName})
 
-    #message("DIRECTORY ${CMAKE_BINARY_DIR}/${destinationFolderName}
-    #        DESTINATION ${destinationPath}")
     # Install the modified folder
     install(DIRECTORY ${CMAKE_BINARY_DIR}/${destinationFolderName}
             DESTINATION ${destinationPath})
