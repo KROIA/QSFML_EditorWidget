@@ -5,7 +5,7 @@
 #include <QCoreapplication>
 
 
-#define STRINGIFY(x) 
+ 
 
 
 class TST_simple : public UnitTest::Test

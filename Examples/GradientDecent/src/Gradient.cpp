@@ -55,7 +55,7 @@ Gradient::Gradient(const std::string& name,
 		{
 			sf::Vector2f pos = sf::Vector2f((float)i / 100.f, (float)j / 100.f) + offset;
 			drawPixel(sf::Vector2u(i,j), f(pos));
-			//drawPixel(sf::Vector2u(i,j), dfy(pos));
+			//drawPixel(sf::Vector2u(i,j), dfy(pos)+dfx(pos));
 		}
 	}
 }
@@ -87,7 +87,7 @@ void Gradient::update()
 	{
 		Instance& instance = m_lines[i];
 		if (0)
-		//if (counter < maxCounter/2)
+		//if (counter < 5)
 		{
 			instance.pos = newtenDecend(instance.pos);
 		}

@@ -32,14 +32,15 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
 
     
     m_text = nullptr;
-    /*m_text = new QSFML::Components::Text();
+    m_text = new QSFML::Components::Text();
     //m_text->setText("Pendulum");
 	m_text->setCharacterSize(20);
     m_text->setScale(1);
     m_text->setOrigin(QSFML::Utilities::Origin::Center);
 	
 	addComponent(m_text);
-    */
+    enableText(false);
+    
     //m_chart = new QSFML::Objects::LineChart();
     //m_chart->setOrigin();
    // m_chart->setPositionRelative(sf::Vector2f(0, -50));
@@ -49,13 +50,9 @@ void Pendulum::setStart(double angle1, double angle2)
 	m_pendulumData[0].angle = angle1;
 	m_pendulumData[1].angle = angle2;
 
-    int r = (1+sin(angle1)) * 127.5;
-    int g = (1+sin(angle1+M_PI*2/3.f))*127.5;
-    int b = (1+sin(angle1+M_PI*4/3.f))*127.5;
-    m_pointPainter->setColor(sf::Color(r,g,b));
+    
     for (size_t i = 0; i < m_count; ++i)
     {
-        m_pendulumData[i].line->setColor(sf::Color(r,g,b));
         m_pendulumData[i].angleAcceleration = 0;
         m_pendulumData[i].angleVelocity = 0;
         PendulumData* prev = nullptr;
@@ -67,6 +64,8 @@ void Pendulum::setStart(double angle1, double angle2)
         }
         updatePendulum(m_pendulumData[i], prev, 0);
     }
+
+    
     if(m_text)
         m_text->setPosition(getPositionAbsolute() + sf::Vector2f(10, -40));
     m_origin = QSFML::VectorMath::Vector2d(getPositionAbsolute().x, getPositionAbsolute().y);
@@ -88,6 +87,22 @@ void Pendulum::setLinesEnabled(bool enabled)
 	{
 		m_pendulumData[i].line->setEnabled(enabled);
 	}
+}
+void Pendulum::setColor(const sf::Color& color)
+{
+    for (size_t i = 0; i < m_count; ++i)
+    {
+        m_pendulumData[i].line->setColor(color);
+    }
+    m_pointPainter->setColor(color);
+}
+void Pendulum::enableText(bool enabled)
+{
+    m_text->setEnabled(enabled);
+}
+void Pendulum::enableEnergyCorrection(bool enabled)
+{
+    m_energyCorrectionEnabled = enabled;
 }
 void Pendulum::update() 
 {
@@ -132,7 +147,7 @@ void Pendulum::update()
             updatePendulum(m_pendulumData[i], prev, dt);
             
             
-            /*
+            
             
             double ePot = getPotentialEnergy(m_pendulumData[i]);
             double eKin = getKineticEnergy(m_pendulumData[i], dt);
@@ -140,11 +155,11 @@ void Pendulum::update()
 
             text += "E_Pot" + std::to_string(i) + ": " + std::to_string(ePot) + "\n";
             text += "E_Kin" + std::to_string(i) + ": " + std::to_string(eKin) + "\n";
-            */
+            
         }
    // }
 
-   // text += "SUM E: " + std::to_string(sumEnergy) + "\n";
+    text += "SUM E: " + std::to_string(sumEnergy) + "\n";
     if(m_text)
         m_text->setText(text);
     for (size_t i = 0; i < m_count; ++i)
@@ -162,6 +177,11 @@ void Pendulum::update()
         }
     }
     m_pointPainter->setPoints(points);   
+
+    if (m_energyCorrectionEnabled)
+    {
+        applyEnergyCorrection(m_pendulumData[0], m_pendulumData[1], 0, dt);
+    }
     //m_chart->setDataPoints(m_chartData);
 }
 
@@ -179,16 +199,39 @@ void Pendulum::updatePendulum(PendulumData& pendulumData, PendulumData *prev, do
         startPos = prev->endPos;
     pendulumData.endPos = startPos + (double)pendulumData.length * QSFML::VectorMath::getRotatedUnitVector((double)pendulumData.angle + (float)M_PI_2);
 }
+void Pendulum::applyEnergyCorrection(PendulumData& p1, PendulumData& p2, double targetEnergy, double dt)
+{
+    if (dt <= 0.00000001)
+        return;
+    double ePot1 = getPotentialEnergy(p1);
+    double ePot2 = getPotentialEnergy(p2);
+
+    double eKin1 = getKineticEnergy(p1, dt);
+    double eKin2 = getKineticEnergy(p2, dt);
+
+    double eSum = ePot1 + ePot2 + eKin1 + eKin2;
+    double eDiff = targetEnergy - eSum;
+
+    double eDiffKin1 = eKin1;
+    double eDiffKin2 = eKin2;
+
+    double newVel1 = sqrt(2 * eDiffKin1 / p1.mass) / p1.length;
+    double newVel2 = sqrt(2 * eDiffKin2 / p2.mass) / p2.length;
+    if(p1.angleVelocity < 0)
+        p1.angleVelocity = -newVel1;
+    else
+        p1.angleVelocity = newVel1;
+    
+    if(p2.angleVelocity < 0)
+        p2.angleVelocity = -newVel2;
+    else
+        p2.angleVelocity = newVel2;
+
+    
+}
 
 double Pendulum::getAngleAcceleration1(const PendulumData& p1, const PendulumData& p2)
 {
-    /*double num1 = -m_gravity * (2 * p1.mass + p2.mass) * sin(p1.angle);
-    double num2 = -p2.mass * m_gravity * sin(p1.angle - 2 * p2.angle);
-    double num3 = -2 * sin(p1.angle - p2.angle) * p2.mass * 
-                  (p2.angleVelocity * p2.angleVelocity * p2.length + p1.angleVelocity * p1.angleVelocity * p1.length * cos(p1.angle - p2.angle));
-    double den = p1.length * (2 * p1.mass + p2.mass - p2.mass * cos(2 * p1.angle - 2 * p2.angle));
-
-    return (num1 + num2 + num3) / den;*/
     double m1 = p1.mass;
     double m2 = p2.mass;
     double l1 = p1.length;
@@ -200,13 +243,21 @@ double Pendulum::getAngleAcceleration1(const PendulumData& p1, const PendulumDat
     double v2 = p2.angleVelocity;
     double phi1 = p1.angle;
     double phi2 = p2.angle;
+    /*
+    double lm = -m2 / (m1 + m2) * l2 / l1;
+    double sum1 = a2 * cos(phi1 - phi2);
+    double sum2 = v2 * v2 * sin(phi1 - phi2);
+    double sum3 = -g / l1 * sin(phi1);
 
-    double num1 = -g * (2 * m1 + m2)* sin(phi1);
+    double acc = lm * (sum1 + sum2) + sum3;
+    return acc;*/
+
+    double num1 = -g * (2 * m1 + m2) * sin(phi1);
     double num2 = -m2 * g * sin(phi1 - 2 * phi2);
     double num3 = -2 * sin(phi1 - phi2) * m2 * (v2 * v2 * l2 + v1 * v1 * l1 * cos(phi1 - phi2));
     double den = l1 * (2 * m1 + m2 - m2 * cos(2 * phi1 - 2 * phi2));
 
-    double a = (num1+num2+num3)/den;
+    double a = (num1+num2+num3)/den;    
     return a;
 }
 double Pendulum::getAngleAcceleration2(const PendulumData& p1, const PendulumData& p2)
@@ -218,6 +269,7 @@ double Pendulum::getAngleAcceleration2(const PendulumData& p1, const PendulumDat
 	double den = p2.length * (2 * p1.mass + p2.mass - p2.mass * cos(2 * p1.angle - 2 * p2.angle));
 
 	return num1 * (num2 + num3 + num4) / den;
+    
     /*double m1 = p1.mass;
     double m2 = p2.mass;
     double l1 = p1.length;
@@ -230,11 +282,13 @@ double Pendulum::getAngleAcceleration2(const PendulumData& p1, const PendulumDat
     double phi1 = p1.angle;
     double phi2 = p2.angle;
 
-    double num2 = v1 * v1 * sin(phi1 - phi2);
-    double num1 = -l1 / l2 * (a1 * cos(phi1 - phi2) - num2);
-    double num3 = -g / l2 * sin(phi2);
-    double a = num1 + num3;
-    return a;*/
+    double l = -l1 / l2;
+    double sum1 = a1 * cos(phi1 - phi2);
+    double sum2 = -v1 * v1 * sin(phi1 - phi2);
+    double sum3 = -g / l2 * sin(phi2);
+    
+    double acc = l * (sum1 + sum2) + sum3;
+    return acc;*/
 }
 double Pendulum::getKineticEnergy(const PendulumData& p, double dt)
 {

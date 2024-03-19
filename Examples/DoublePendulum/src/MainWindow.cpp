@@ -145,12 +145,35 @@ void MainWindow::createPendulums()
     int count = ui->pendulumCount_spinBox->value();
     for (int i = 0; i < count; ++i)
     {
-        Pendulum* pendulum = new Pendulum();
+        Pendulum* pendulum = nullptr;
+        if (i % 2 == 0)
+        {
+            pendulum = new Pendulum();
+            pendulum->setColor(sf::Color(255,0,0));
+        }
+        else
+        {
+            pendulum = new WikiPendulum();
+            pendulum->setColor(sf::Color(0,255,0));
+		}
+
         m_pendulums.push_back(pendulum);
         pendulum->setPositionAbsolute(sf::Vector2f(500, 500));
         pendulum->setStart(angle1, angle2);
-        angle1 += M_PI * 2 / (double)count;
-        angle2 += M_PI * 2 / (double)count;
+        
+        /*
+        int r = (1 + sin(angle1)) * 127.5;
+        int g = (1 + sin(angle1 + M_PI * 2 / 3.f)) * 127.5;
+        int b = (1 + sin(angle1 + M_PI * 4 / 3.f)) * 127.5;
+        pendulum->setColor(sf::Color(r, g, b));
+        */
+
+        if (i % 2 != 0)
+        {
+            angle1 += M_PI * 2 / (double)count;
+            angle2 += M_PI * 2 / (double)count;
+        }
+        
         //angle2 += 0.01;
         m_canvas->addObject(pendulum);
 

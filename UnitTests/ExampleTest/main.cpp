@@ -12,7 +12,7 @@
 
 // Instantiate Tests here:
 // TEST_INSTANTIATE(Test_simple); // Where Test_simple is a derived class from the Test class
-TEST_INSTANTIATE(TST_simple); // Where Test_simple is a derived class from the Test class
+TEST_INSTANTIATE(TST_VectorOperations); // Where Test_simple is a derived class from the Test class
 
 int main(int argc, char* argv[])
 {

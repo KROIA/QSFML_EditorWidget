@@ -5,18 +5,7 @@
 class Pendulum : public QObject, public QSFML::Objects::CanvasObject
 {
 	Q_OBJECT
-	struct PendulumData
-	{
-		double angle = 0.3;
-		double angleVelocity = 0;
-		double angleAcceleration = 0;
-		double length = 100;
-		double damping = 0.01;
-		double mass = 1;
-		QSFML::VectorMath::Vector2d endPos;
-		QSFML::VectorMath::Vector2d lastEndPos;
-		QSFML::Components::LinePainter* line = nullptr;
-	};
+	
 public:
     Pendulum(const std::string& name = "Pendulum",
              CanvasObject* parent = nullptr);
@@ -25,17 +14,38 @@ public:
 	void setLength(double length1, double length2);
 	void setDamping(float damping1, float damping2);
 	void setLinesEnabled(bool enabled);
+	void setColor(const sf::Color& color);
+
+	void enableText(bool enabled);
+	void enableEnergyCorrection(bool enabled);
     void update() override;
 
+protected:
+	struct PendulumData
+	{
+		double angle = 0.3;
+		double angleVelocity = 0;
+		double angleAcceleration = 0;
+		double length = 100;
+		double damping = 0.00;
+		double mass = 1;
+		QSFML::VectorMath::Vector2d endPos;
+		QSFML::VectorMath::Vector2d lastEndPos;
+		QSFML::Components::LinePainter* line = nullptr;
+	};
+	virtual double getAngleAcceleration1(const PendulumData& p1, const PendulumData& p2);
+	virtual double getAngleAcceleration2(const PendulumData& p1, const PendulumData& p2);
+
+
+	const double m_gravity = 9.81f;
 
 private slots:
 	void onMouseFalling();
 	void onMouseRessing();
 private:
 	void updatePendulum(PendulumData& pendulumData, PendulumData *prev, double dt);
-
-	double getAngleAcceleration1(const PendulumData& p1, const PendulumData& p2);
-	double getAngleAcceleration2(const PendulumData& p1, const PendulumData& p2);
+	void applyEnergyCorrection(PendulumData& p1, PendulumData& p2, double targetEnergy, double dt);
+	
 	double getKineticEnergy(const PendulumData& p, double dt);
 	double getPotentialEnergy(const PendulumData& p);
 	double getEnergy(const PendulumData& p, double dt);
@@ -49,9 +59,11 @@ private:
 
 	static constexpr size_t m_count = 2;
 	PendulumData m_pendulumData[m_count];
-	const double m_gravity = 9.81f;
+	
 	const double m_pendulumRadius = 5;
 	QSFML::VectorMath::Vector2d m_origin;
+
+	bool m_energyCorrectionEnabled = false;
 
 	int m_dragingIndex = -1;
 	bool m_linesEnabled = true;

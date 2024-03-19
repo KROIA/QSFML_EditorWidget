@@ -115,7 +115,31 @@ namespace VectorMath
     }
     float getAngle(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
+        // Calculate the dot product
         float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
+
+        // Calculate the magnitudes of the vectors
+        float magVec1 = sqrt(vec1.x * vec1.x + vec1.y * vec1.y);
+        float magVec2 = sqrt(vec2.x * vec2.x + vec2.y * vec2.y);
+
+        // Calculate the cosine of the angle between the vectors
+        float cosAngle = dotProduct / (magVec1 * magVec2);
+
+        // Calculate the angle in radians using the arc cosine function (acos)
+        float angle = acos(cosAngle);
+
+        // Determine the sign of the angle using the cross product
+        float crossProduct = vec1.x * vec2.y - vec1.y * vec2.x;
+        if (crossProduct < 0) {
+            angle = -angle; // Adjust angle if it's negative
+        }
+        return angle;
+        /*float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
+        float lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
+        float angle = acos(dotProduct / lengthProduct);
+        return getNormalzedAngle(angle);
+        */
+        /*float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
         float determinant = vec1.x * vec2.y - vec1.y * vec2.x;
         float length = getLength(vec1) * getLength(vec2);
 
@@ -128,11 +152,15 @@ namespace VectorMath
             angle = 2 * M_PI - acos(dotProduct/ length);
         }
 
-        return getNormalzedAngle(angle);
+        return getNormalzedAngle(angle);*/
     }
     double getAngle(const Vector2d& vec1, const Vector2d& vec2)
     {
         double dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
+        double lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
+        double angle = acos(dotProduct / lengthProduct);
+        return getNormalzedAngle(angle);
+        /*double dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
         double determinant = vec1.x * vec2.y - vec1.y * vec2.x;
         double length = getLength(vec1) * getLength(vec2);
 
@@ -145,7 +173,7 @@ namespace VectorMath
             angle = 2 * M_PI - acos(dotProduct / length);
         }
 
-        return getNormalzedAngle(angle);
+        return getNormalzedAngle(angle);*/
     }
     float dotProduct(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
