@@ -156,10 +156,32 @@ namespace VectorMath
     }
     double getAngle(const Vector2d& vec1, const Vector2d& vec2)
     {
+        // Calculate the dot product
+        double dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
+
+        // Calculate the magnitudes of the vectors
+        double magVec1 = sqrt(vec1.x * vec1.x + vec1.y * vec1.y);
+        double magVec2 = sqrt(vec2.x * vec2.x + vec2.y * vec2.y);
+
+        // Calculate the cosine of the angle between the vectors
+        double cosAngle = dotProduct / (magVec1 * magVec2);
+
+        // Calculate the angle in radians using the arc cosine function (acos)
+        double angle = acos(cosAngle);
+
+        // Determine the sign of the angle using the cross product
+        double crossProduct = vec1.x * vec2.y - vec1.y * vec2.x;
+        if (crossProduct < 0) {
+            angle = -angle; // Adjust angle if it's negative
+        }
+        return angle;
+        /*
         double dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
         double lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
         double angle = acos(dotProduct / lengthProduct);
         return getNormalzedAngle(angle);
+        */
+        
         /*double dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
         double determinant = vec1.x * vec2.y - vec1.y * vec2.x;
         double length = getLength(vec1) * getLength(vec2);
