@@ -109,44 +109,58 @@ namespace VectorMath
     }
     float getAngle(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
-        float angle1 = atan2(vec1.y, vec1.x);
+        /*float angle1 = atan2(vec1.y, vec1.x);
         float angle2 = atan2(vec2.y, vec2.x);
 
         float angle = angle2 - angle1;
         angle = fmod(angle + M_PI, 2 * M_PI);
-        return (angle < 0) ? angle + M_PI : angle - M_PI;
+        return (angle < 0) ? angle + M_PI : angle - M_PI;*/
 
-        /*float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
+        // Calculate the magnitudes of the vectors
         float lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
-        float angle = acos(dotProduct / lengthProduct);
-        return getNormalzedAngle(angle);
-        */
-        /*float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
-        float determinant = vec1.x * vec2.y - vec1.y * vec2.x;
-        float length = getLength(vec1) * getLength(vec2);
 
-        float angle = 0.0f;
+        if(lengthProduct == 0)
+			return 0;
 
-        if (determinant >= 0) {
-            angle = acos(dotProduct/ length);
+        // Calculate the dot product
+        float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
+
+        // Calculate the cosine of the angle between the vectors
+        float cosAngle = dotProduct / lengthProduct;
+        if (cosAngle > 1.0)
+            cosAngle = 1.0;
+        else if (cosAngle < -1.0)
+            cosAngle = -1.0;
+
+        // Calculate the angle in radians using the arc cosine function (acos)
+        float angle = acos(cosAngle);
+
+        // Determine the sign of the angle using the cross product
+        float crossProduct = vec1.x * vec2.y - vec1.y * vec2.x;
+        if (crossProduct < 0) {
+            return -angle; // Adjust angle if it's negative
         }
-        else {
-            angle = 2 * M_PI - acos(dotProduct/ length);
-        }
+        return angle;
 
-        return getNormalzedAngle(angle);*/
+        
     }
     double getAngle(const Vector2d& vec1, const Vector2d& vec2)
     {
+        // Calculate the magnitudes of the vectors
+        double lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
+
+        if (lengthProduct == 0)
+			return 0;
+
         // Calculate the dot product
         double dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
 
-        // Calculate the magnitudes of the vectors
-        double magVec1 = sqrt(vec1.x * vec1.x + vec1.y * vec1.y);
-        double magVec2 = sqrt(vec2.x * vec2.x + vec2.y * vec2.y);
-
         // Calculate the cosine of the angle between the vectors
-        double cosAngle = dotProduct / (magVec1 * magVec2);
+        double cosAngle = dotProduct / lengthProduct;
+        if(cosAngle > 1.0)
+			cosAngle = 1.0;
+		else if(cosAngle < -1.0)
+			cosAngle = -1.0;
 
         // Calculate the angle in radians using the arc cosine function (acos)
         double angle = acos(cosAngle);
@@ -154,7 +168,7 @@ namespace VectorMath
         // Determine the sign of the angle using the cross product
         double crossProduct = vec1.x * vec2.y - vec1.y * vec2.x;
         if (crossProduct < 0) {
-            angle = -angle; // Adjust angle if it's negative
+            return -angle; // Adjust angle if it's negative
         }
         return angle;
         /*

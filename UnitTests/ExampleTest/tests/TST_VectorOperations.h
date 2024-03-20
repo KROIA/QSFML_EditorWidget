@@ -264,7 +264,7 @@ private:
 	{
 		TEST_START(results);
 
-		size_t iterations = 100000000;
+		size_t iterations = 10000000;
 
 		{
 			size_t time = 0;
@@ -299,6 +299,36 @@ private:
 			clock_t cpuTimeMs = (clock() - cpuTime) / (CLOCKS_PER_SEC / 1000);
 			TEST_MESSAGE("getAngle mesurement: " + std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count()) + 
 						 "ns, CPU time: " + std::to_string(cpuTimeMs) + "ms");
+		}
+
+
+		{
+			clock_t cpuTime = clock();
+			TimePoint start = std::chrono::high_resolution_clock::now();
+			for (size_t i = 0; i < iterations; i++)
+			{
+				float x = (float)(rand() % 1000) / 1000.0f;
+				float y = (float)(rand() % 1000) / 1000.0f;
+				float angle = QSFML::VectorMath::getAngle(sf::Vector2f(x, y), sf::Vector2f(y,x+5));
+			}
+			TimePoint end = std::chrono::high_resolution_clock::now();
+			clock_t cpuTimeMs = (clock() - cpuTime) / (CLOCKS_PER_SEC / 1000);
+			TEST_MESSAGE("getAngle between two vectors mesurement: " + std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count()) +
+				"ns, CPU time: " + std::to_string(cpuTimeMs) + "ms");
+		}
+		{
+			clock_t cpuTime = clock();
+			TimePoint start = std::chrono::high_resolution_clock::now();
+			for (size_t i = 0; i < iterations; i++)
+			{
+				double x = (double)(rand() % 1000) / 1000.0f;
+				double y = (double)(rand() % 1000) / 1000.0f;
+				double angle = QSFML::VectorMath::getAngle(sf::Vector2<double>(x, y), sf::Vector2<double>(y, x + 5));
+			}
+			TimePoint end = std::chrono::high_resolution_clock::now();
+			clock_t cpuTimeMs = (clock() - cpuTime) / (CLOCKS_PER_SEC / 1000);
+			TEST_MESSAGE("getAngle between two vectors<D> mesurement: " + std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count()) +
+				"ns, CPU time: " + std::to_string(cpuTimeMs) + "ms");
 		}
 
 
