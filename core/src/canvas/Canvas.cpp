@@ -28,12 +28,15 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
 #endif
     m_window = nullptr;
     // Setup layout of this widget
-    if(!parentWidget()->layout())
+    if (parentWidget())
     {
-        QHBoxLayout *layout = new QHBoxLayout(parentWidget());
-        parentWidget()->setLayout(layout);
+        if (!parentWidget()->layout())
+        {
+            QHBoxLayout* layout = new QHBoxLayout(parentWidget());
+            parentWidget()->setLayout(layout);
+        }
+        parentWidget()->layout()->addWidget(this);
     }
-    parentWidget()->layout()->addWidget(this);
 
     // Setup some states to allow direct rendering into the widget
     setAttribute(Qt::WA_PaintOnScreen);
@@ -52,7 +55,8 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
 Canvas::~Canvas()
 {
     stop();
-    parentWidget()->layout()->removeWidget(this);
+    if(parentWidget())
+        parentWidget()->layout()->removeWidget(this);
     m_window->close();
     delete m_window;
 #ifdef QSFML_PROFILING
@@ -92,10 +96,11 @@ const CanvasSettings &Canvas::getSettings() const
 void Canvas::setLayout(const CanvasSettings::Layout &layout)
 {
     m_settings.layout = layout;
-    parentWidget()->layout()->setContentsMargins(m_settings.layout.margin.left,
-                                                 m_settings.layout.margin.top,
-                                                 m_settings.layout.margin.right,
-                                                 m_settings.layout.margin.bottom);
+    if(parentWidget())
+        parentWidget()->layout()->setContentsMargins(m_settings.layout.margin.left,
+                                                     m_settings.layout.margin.top,
+                                                     m_settings.layout.margin.right,
+                                                     m_settings.layout.margin.bottom);
     if(!m_settings.layout.autoAjustSize)
     {
         QWidget::setFixedSize(m_settings.layout.fixedSize.x, m_settings.layout.fixedSize.y);
@@ -279,11 +284,16 @@ void Canvas::update()
     QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1); // Magenta block with name "foo"
 
     TimePoint t2 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - m_deltaT_t1);
+    //std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
     m_deltaT_t1 = t2;
     StatsManager::resetFrame();
-    StatsManager::setFrameTime(elapsed.count());
-    StatsManager::setFPS(1 / elapsed.count());
+    long long elapsedMs = elapsed.count();
+    StatsManager::setFrameTime(elapsedMs);
+    if(elapsedMs > 0)
+        StatsManager::setFPS(1 / elapsed.count());
+    else
+        StatsManager::setFPS(9999999);
     StatsManager::addTick();
 
     //if (m_settings.timing.physicsUseFixedTimeInterval)
@@ -314,7 +324,7 @@ void Canvas::update()
         sfEvent(events);
         internal_event(events);
         TimePoint t2 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = t2 - t1;
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - t1);
         StatsManager::setEventTime(elapsed.count());
         QSFMLP_GENERAL_END_BLOCK;
     }
@@ -328,7 +338,7 @@ void Canvas::update()
 
         CanvasObjectContainer::update();
         TimePoint t2 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = t2 - t1;
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - t1);
         StatsManager::setUpdateTime(elapsed.count());
         QSFMLP_GENERAL_END_BLOCK;
     }
@@ -348,7 +358,7 @@ void Canvas::update()
         // Display on screen
         m_window->display();
         TimePoint t2 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = t2 - t1;
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - t1);
         StatsManager::setDrawTime(elapsed.count());
         QSFMLP_GENERAL_END_BLOCK;
     }

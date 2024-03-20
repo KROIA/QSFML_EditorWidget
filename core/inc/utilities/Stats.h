@@ -31,11 +31,12 @@ namespace QSFML
 			unsigned int getBoundingBoxCollisionCheckCount() const;
 			unsigned int getCollisionCount() const;
 
+
 			double getFPS() const;
-			double getFrameTime() const;
-			double getEventTime() const;
-			double getUpdateTime() const;
-			double getDrawTime() const;
+			double getFrameTime() const;	// Time in ms
+			double getEventTime() const;	// Time in ms
+			double getUpdateTime() const;	// Time in ms
+			double getDrawTime() const;		// Time in ms
 
 			double getDeltaT() const;
 			double getElapsedTime() const;

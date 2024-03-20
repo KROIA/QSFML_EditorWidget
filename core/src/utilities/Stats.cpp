@@ -152,12 +152,12 @@ namespace QSFML
 				"  Collisions:          " + std::to_string(m_collisions) + "\n" +
 				" Timing:\n"
 				"  FPS:                 " + std::to_string(m_fps) + "\n" +
-				"  DeltaT:              " + std::to_string(m_deltaT * 1000) + " ms\n" +
+				"  DeltaT:              " + std::to_string(m_deltaT) + " ms\n" +
 				"  Elapsed time:        " + std::to_string(m_elapsedTime) + " s\n" +
-				"  Frame time:          " + std::to_string(m_frameTime * 1000) + " ms\n" +
-				"   Event  time:        " + std::to_string(m_eventTime * 1000) + " ms\n" +
-				"   Update time:        " + std::to_string(m_updateTime * 1000) + " ms\n" +
-				"   Draw   time:        " + std::to_string(m_drawTime * 1000) + " ms\n";
+				"  Frame time:          " + std::to_string(m_frameTime) + " ms\n" +
+				"   Event  time:        " + std::to_string(m_eventTime) + " ms\n" +
+				"   Update time:        " + std::to_string(m_updateTime) + " ms\n" +
+				"   Draw   time:        " + std::to_string(m_drawTime) + " ms\n";
 
 		}
 		void Stats::print() const

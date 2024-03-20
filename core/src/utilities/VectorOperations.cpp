@@ -1,8 +1,7 @@
 #include "utilities/VectorOperations.h"
 #include "utilities/RandomEngine.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+
 #define M_2PI (2 * M_PI)
 
 namespace QSFML
@@ -53,18 +52,13 @@ namespace VectorMath
     {
         return getRotated(vec - origin, rad) + origin;
     }
-    float getAngle(const sf::Vector2f &vec)
+    float getAngle(const sf::Vector2f& vec)
     {
 #ifdef QSFML_OPTIMIZED
-        float sqrL = vec.x * vec.x + vec.y * vec.y;
-
-        if (sqrL == 0)
-            return 0;
-
         float angle = atan2(vec.y, vec.x);
         angle = fmod(angle + M_PI, 2 * M_PI);
-        
         return (angle < 0) ? angle + 2 * M_PI - M_PI : angle - M_PI;
+
 #else
 
         float sqrL = getSquareLength(vec);
@@ -115,25 +109,13 @@ namespace VectorMath
     }
     float getAngle(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
-        // Calculate the dot product
-        float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
+        float angle1 = atan2(vec1.y, vec1.x);
+        float angle2 = atan2(vec2.y, vec2.x);
 
-        // Calculate the magnitudes of the vectors
-        float magVec1 = sqrt(vec1.x * vec1.x + vec1.y * vec1.y);
-        float magVec2 = sqrt(vec2.x * vec2.x + vec2.y * vec2.y);
+        float angle = angle2 - angle1;
+        angle = fmod(angle + M_PI, 2 * M_PI);
+        return (angle < 0) ? angle + M_PI : angle - M_PI;
 
-        // Calculate the cosine of the angle between the vectors
-        float cosAngle = dotProduct / (magVec1 * magVec2);
-
-        // Calculate the angle in radians using the arc cosine function (acos)
-        float angle = acos(cosAngle);
-
-        // Determine the sign of the angle using the cross product
-        float crossProduct = vec1.x * vec2.y - vec1.y * vec2.x;
-        if (crossProduct < 0) {
-            angle = -angle; // Adjust angle if it's negative
-        }
-        return angle;
         /*float dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
         float lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
         float angle = acos(dotProduct / lengthProduct);
@@ -242,7 +224,7 @@ namespace VectorMath
     {
 #ifdef QSFML_OPTIMIZED
         angle = fmod(angle + M_PI, 2 * M_PI);
-        return (angle < 0) ? angle + 2 * M_PI - M_PI : angle - M_PI;
+        return (angle < 0) ? angle + M_PI : angle - M_PI;
 #else
         angle = fmod(angle + M_PI, 2 * M_PI);
         if (angle < 0)
@@ -254,7 +236,7 @@ namespace VectorMath
     {
 #ifdef QSFML_OPTIMIZED
         angle = fmod(angle + M_PI, 2 * M_PI);
-        return (angle < 0) ? angle + 2 * M_PI - M_PI : angle - M_PI;
+        return (angle < 0) ? angle + M_PI : angle - M_PI;
 #else
         angle = fmod(angle + M_PI, 2 * M_PI);
         if (angle < 0)

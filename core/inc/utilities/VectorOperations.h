@@ -1,6 +1,9 @@
 #pragma once
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include "QSFML_EditorWidget_base.h"
+
 
 namespace QSFML
 {
@@ -17,8 +20,9 @@ namespace VectorMath
     QSFML_EDITOR_WIDGET_EXPORT extern Vector2d getRotated(const Vector2d&vec, double rad);
     QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f getRotated(const sf::Vector2f &vec, const sf::Vector2f &origin, float rad);
     QSFML_EDITOR_WIDGET_EXPORT extern Vector2d getRotated(const Vector2d &vec, const Vector2d&origin, double rad);
-    QSFML_EDITOR_WIDGET_EXPORT extern float getAngle(const sf::Vector2f &vec);
-    QSFML_EDITOR_WIDGET_EXPORT extern double getAngle(const Vector2d &vec);
+    QSFML_EDITOR_WIDGET_EXPORT extern float getAngle(const sf::Vector2f& vec);
+    QSFML_EDITOR_WIDGET_EXPORT extern double getAngle(const Vector2d& vec);
+    
 
     /*
         Returns the counterclockwise angle in radiant between vec1 and vec2.

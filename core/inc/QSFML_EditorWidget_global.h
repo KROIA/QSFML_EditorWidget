@@ -32,7 +32,7 @@
 #endif
 
 /// USER_SECTION_START 3
-
+//#define QSFML_OPTIMIZED
 /// USER_SECTION_END
 
 // MSVC Compiler
