@@ -117,27 +117,31 @@ const sf::Vector2f& Collider::getPos() const
     return m_pos;
 }
 
-void Collider::checkCollision(const std::vector<Objects::CanvasObject*>& objs,
+bool Collider::checkCollision(const std::vector<Objects::CanvasObject*>& objs,
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
     Objects::CanvasObject* thisRootParent = getParent()->getRootParent();
+    bool hasCollision = false;
     for (auto obj : objs)
     {
         if(obj->isEnabled())
-            checkCollision(obj->getCollider(), collisions, onlyFirstCollisionPerObject);
+            hasCollision |= checkCollision(obj->getCollider(), collisions, onlyFirstCollisionPerObject);
     }
+    return hasCollision;
 }
-void Collider::checkCollision(const std::vector<Components::Collider*>& other,
+bool Collider::checkCollision(const std::vector<Components::Collider*>& other,
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);
+    bool hasCollision = false;
     for (auto otherCollider : other)
     {
-        checkCollision(otherCollider, collisions, onlyFirstCollisionPerObject);
+        hasCollision |= checkCollision(otherCollider, collisions, onlyFirstCollisionPerObject);
     }
+    return hasCollision;
 }
 
 

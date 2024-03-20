@@ -77,8 +77,8 @@ CanvasObject::~CanvasObject()
     m_childs.clear();
 
     
-    for(size_t i=0; i<m_components.size(); ++i)
-        delete m_components[i];
+    for(auto &comp : m_components)
+        delete comp;
     m_components.clear();
     m_toAddComponents.clear();
     m_updatableComponents.clear();
@@ -437,7 +437,8 @@ void CanvasObject::removeComponent_internal()
         }
     }
     m_toRemoveComponents.clear();
-    m_canvasParent->removeComponent(removedCount);
+    if(m_canvasParent)
+        m_canvasParent->removeComponent(removedCount);
 
 }
 void CanvasObject::deleteComponent(Component *comp)
@@ -457,7 +458,8 @@ void CanvasObject::deleteComponent(Component *comp)
     size_t index = getComponentIndex(comp);
     if(index == npos) return;
     m_components.erase(m_components.begin() + index);
-    m_canvasParent->removeComponent();
+    if (m_canvasParent)
+        m_canvasParent->removeComponent();
 
     // Check for sfEventHandles
     SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(comp);
@@ -563,7 +565,8 @@ void CanvasObject::addComponent_internal()
 
         toAdd->setParent(this);
         toAdd->setCanvasParent(m_canvasParent);
-        m_canvasParent->addComponent();
+        if (m_canvasParent)
+            m_canvasParent->addComponent();
         m_components.push_back(toAdd);
 
         // Check for sfEventHandles
@@ -624,7 +627,8 @@ void CanvasObject::deleteComponents()
         comp->setCanvasParent(nullptr);
         delete comp;
     }
-    m_canvasParent->removeComponent(m_components.size());
+    if (m_canvasParent)
+        m_canvasParent->removeComponent(m_components.size());
     for(size_t i=0; i<m_components.size(); ++i)
     {
         Component* comp = m_components[i];
@@ -669,14 +673,13 @@ bool CanvasObject::checkCollision(const CanvasObject* other,
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollision) const
 {
-    std::vector<Components::Collider*> otherColliders = other->getCollider();
+    const std::vector<Components::Collider*> &otherColliders = other->getCollider();
+    bool hasCollision = false;
     for (auto thisCollider : m_colliders)
     {
-        thisCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
+        hasCollision |= thisCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
     }
-    if (collisions.size() > 0)
-        return true;
-    return false;
+    return hasCollision;
 }
 void CanvasObject::checkCollision(const Utilities::ObjectQuadTree& tree, 
                                   std::vector<Utilities::Collisioninfo>& collisions,

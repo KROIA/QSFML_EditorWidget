@@ -291,7 +291,7 @@ void Canvas::update()
     long long elapsedMs = elapsed.count();
     StatsManager::setFrameTime(elapsedMs);
     if(elapsedMs > 0)
-        StatsManager::setFPS(1 / elapsed.count());
+        StatsManager::setFPS(1.0 / elapsed.count());
     else
         StatsManager::setFPS(9999999);
     StatsManager::addTick();

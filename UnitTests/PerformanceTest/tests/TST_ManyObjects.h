@@ -17,14 +17,16 @@ class TST_ManyObjects : public QObject, public UnitTest::Test
 public:
 	TST_ManyObjects()
 		: Test("TST_ManyObjects")
+		, m_tree(nullptr, QSFML::Utilities::AABB({ 0,0 }, { 800,600 }), 4)
 	{
-		ADD_TEST(TST_ManyObjects::test);
+		ADD_TEST(TST_ManyObjects::drawTest);
+		ADD_TEST(TST_ManyObjects::collisionTest);
 
 
 		setBreakOnFail(false);
 
 		connect(&m_stopTimer, &QTimer::timeout, this, &TST_ManyObjects::onTimeout);
-		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onUpdate);
+		
 	}
 
 private slots:
@@ -32,8 +34,11 @@ private slots:
 	{
 		m_update.stop();
 		qApp->quit();
+
+		m_averageCollisionCheckTimeFull/= m_stats.size();
+		m_averageCollisionCheckTime/= m_stats.size();
 	}
-	void onUpdate()
+	void onDrawTest_Update()
 	{
 		if(!m_currentCanvas)
 			return;
@@ -41,13 +46,54 @@ private slots:
 
 		m_stats.push_back(m_currentCanvas->getLastStats());
 	}
+	void onCollisionTest_Update()
+	{
+		if (!m_currentCanvas)
+			return;
+
+		m_stats.push_back(m_currentCanvas->getLastStats());
+
+		TimePoint t1 = std::chrono::high_resolution_clock::now();
+		m_tree.clear();
+		m_tree.shrink();
+		m_tree.insert(m_currentCanvas->getObjects());
+
+		std::vector<QSFML::Utilities::Collisioninfo> collisions;
+		std::vector<sf::Vector2f> collisionPoints;
+
+		TimePoint t11 = std::chrono::high_resolution_clock::now();
+		m_tree.checkCollisions(collisions, false);
+		TimePoint t22 = std::chrono::high_resolution_clock::now();
+		auto millis2 = std::chrono::duration_cast<std::chrono::milliseconds>(t22 - t11).count();
+
+		collisionPoints.reserve(collisions.size());
+		for (auto& el : collisions)
+			collisionPoints.push_back(el.collisionPos);
+
+		TimePoint t2 = std::chrono::high_resolution_clock::now();
+		auto millis1 = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+
+		if(m_pointPainter)
+			m_pointPainter->setPoints(collisionPoints);
+
+		m_averageCollisionCheckTimeFull += millis1;
+		m_averageCollisionCheckTime += millis2;
+	}
 private:
 	// Vars
 	QTimer m_stopTimer;
 	QTimer m_update;
 
 	QSFML::Canvas *m_currentCanvas;
+	//QSFML::Objects::CanvasObject* m_pointPainterObj = nullptr;
+	QSFML::Components::PointPainter* m_pointPainter = nullptr;
+	TestResults *m_currentResults;
 	std::vector<QSFML::Utilities::Stats> m_stats;
+	QSFML::Utilities::ObjectQuadTree m_tree;
+
+	double m_averageCollisionCheckTimeFull = 0;
+	double m_averageCollisionCheckTime = 0;
+
 
 	// Functions
 	void onFail(const std::string& message) override
@@ -65,7 +111,7 @@ private:
 	bool processStats(TestResults& results)
 	{
 		TEST_START(results);
-		TEST_MESSAGE("Stats: ");
+		TEST_MESSAGE("Stats:");
 
 		double averageFPS = 0;
 		double averageFrameTime = 0;
@@ -93,6 +139,8 @@ private:
 		TEST_MESSAGE("Average Event Time: " + std::to_string(averageEventTime) + " ms");
 		TEST_MESSAGE("Average Update Time: " + std::to_string(averageUpdateTime) + " ms");
 		TEST_MESSAGE("Average Draw Time: " + std::to_string(averageDrawTime) + " ms");
+		TEST_MESSAGE("Average CollisionCheckFull Time: " + std::to_string(m_averageCollisionCheckTimeFull) + " ms");
+		TEST_MESSAGE("Average CollisionCheck Time: " + std::to_string(m_averageCollisionCheckTime) + " ms");
 
 
 
@@ -100,11 +148,11 @@ private:
 	}
 
 	// Tests
-	bool test(TestResults& results)
+	bool drawTest(TestResults& results)
 	{
 		TEST_START(results);
-		size_t objectCount = 1000;
-		size_t verteciesCount = 10;
+		size_t objectCount = 10000;
+		size_t verteciesCount = 5;
 
 		
 		QSFML::CanvasSettings settings;
@@ -112,9 +160,11 @@ private:
 		QSFML::Canvas canvas(nullptr, settings);
 		canvas.show();
 		canvas.start();
-		m_stopTimer.start(5000);
+		m_stopTimer.start(10000);
 		m_update.start(10);
+		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
 		m_currentCanvas = &canvas;
+		m_currentResults = &results;
 		m_stats.clear();
 		m_stats.reserve(m_stopTimer.interval()/ m_update.interval() + 50);
 
@@ -127,17 +177,68 @@ private:
 		{
 			sf::Vector2f randPos = QSFML::Utilities::RandomEngine::getVector() * 1000.f;
 			sf::Color color = QSFML::Color::lerpLinear(color1, color2, (float)i / objectCount);
-			canvas.addObject(Factories::randomShapeObject(randPos, 10, color, verteciesCount));
+			canvas.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
 		}
 
 
 
 		qApp->exec();
 		m_currentCanvas = nullptr;
+		m_currentResults = nullptr;
 		processStats(results);
 		TEST_END;
 	}
 
+	bool collisionTest(TestResults& results)
+	{
+		TEST_START(results);
+		size_t objectCount = 10000;
+		size_t verteciesCount = 5;
 
+
+		QSFML::CanvasSettings settings;
+		settings.timing.frameTime = 0;
+		QSFML::Canvas canvas(nullptr, settings);
+		canvas.show();
+		canvas.start();
+		m_tree.setStatsManager(&canvas);
+		m_stopTimer.start(10000);
+		m_update.start(10);
+		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onCollisionTest_Update);
+		m_currentCanvas = &canvas;
+		m_currentResults = &results;
+		m_stats.clear();
+		m_stats.reserve(m_stopTimer.interval() / m_update.interval() + 50);
+
+		sf::Color color1 = sf::Color::Red;
+		sf::Color color2 = sf::Color::Green;
+
+		canvas.addObject(new QSFML::Objects::DefaultEditor());
+		QSFML::Objects::CanvasObject * pointPainterObj = new QSFML::Objects::CanvasObject();
+		m_pointPainter = new QSFML::Components::PointPainter();
+		m_pointPainter->setColor(sf::Color::Yellow);
+		pointPainterObj->addComponent(m_pointPainter);
+		pointPainterObj->addComponent(m_tree.createPainter());
+
+		canvas.addObject(pointPainterObj);
+
+
+		for (size_t i = 0; i < objectCount; ++i)
+		{
+			sf::Vector2f randPos = QSFML::Utilities::RandomEngine::getVector({ 0,0 }, { 800,600 });
+			sf::Color color = QSFML::Color::lerpLinear(color1, color2, (float)i / objectCount);
+			canvas.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
+		}
+
+
+
+		qApp->exec();
+		m_currentCanvas = nullptr;
+		m_currentResults = nullptr;
+		processStats(results);
+		m_tree.setStatsManager(nullptr);
+		m_pointPainter = nullptr;
+		TEST_END;
+	}
 
 };

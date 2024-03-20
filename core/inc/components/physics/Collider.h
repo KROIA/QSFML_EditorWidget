@@ -48,10 +48,10 @@ namespace Components
             void move(const sf::Vector2f& offset);
             const sf::Vector2f& getPos() const;
 
-            void checkCollision(const std::vector<Objects::CanvasObject*>& objs,
+            bool checkCollision(const std::vector<Objects::CanvasObject*>& objs,
                                 std::vector<Utilities::Collisioninfo>& collisions,
                                 bool onlyFirstCollisionPerObject = true) const;
-            void checkCollision(const std::vector<Components::Collider*> &other,
+            bool checkCollision(const std::vector<Components::Collider*> &other,
                 std::vector<Utilities::Collisioninfo>& collisions,
                 bool onlyFirstCollisionPerObject = true) const;
 

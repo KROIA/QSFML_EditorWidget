@@ -30,7 +30,22 @@ CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, CanvasSettings &set
 CanvasObjectContainer::~CanvasObjectContainer()
 {
     m_parent->setRootCanvesObject(0);
+    for(auto &group : m_threadGroups)
+	{
+        group->clearObjects();
+        delete group;
+	}
     delete m_allObjects;
+    delete m_threadWorker;
+
+    std::vector<Objects::CanvasObject*> objs = m_allObjects->getObjects();
+    m_allObjects->clearObjects();
+    m_renderLayerGroup.clearObjects();
+    for(auto &obj : objs)
+	{
+        obj->setCanvasParent(nullptr);
+		delete obj;
+	}
 }
 void CanvasObjectContainer::applyObjectChanges()
 {
@@ -103,10 +118,10 @@ void CanvasObjectContainer::addObject_internal()
     
     if(m_threadWorker)
     {
-        for(size_t i=0; i<m_threadGroups.size(); ++i)
-        {
-            m_threadGroups[i]->addObject_internal();
-        }
+        for(auto &group : m_threadGroups)
+		{
+			group->addObject_internal();
+		}
     }
     m_renderLayerGroup.addObject_internal();
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());    

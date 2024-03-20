@@ -442,7 +442,8 @@ namespace QSFML
 					tree3.checkCollision(objA, collisions, onlyFirstCollision);
 				}
 			}
-			m_statsManager->addBoundingBoxCollisionCheck(4 * m_objects.size());
+			if(m_statsManager)
+				m_statsManager->addBoundingBoxCollisionCheck(4 * m_objects.size());
 		}
 		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(size_t index, std::vector<Utilities::Collisioninfo>& collisions,
 															          bool onlyFirstCollision)

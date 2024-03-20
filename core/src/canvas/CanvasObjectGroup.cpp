@@ -16,15 +16,17 @@ namespace QSFML
     }
     CanvasObjectGroup::~CanvasObjectGroup()
     {
-        for (size_t i = 0; i < m_toAddContainer.size(); ++i)
+        for (auto& obj : m_toAddContainer)
         {
-            delete m_toAddContainer[i];
+            obj->setCanvasParent(nullptr);
+            delete obj;
         }
         m_toAddContainer.clear();
-        for (size_t i = 0; i < m_container.size(); ++i)
-        {
-            delete m_container[i];
-        }
+        for(auto & obj : m_container)
+		{
+            obj->setCanvasParent(nullptr);
+			delete obj;
+		}
         m_container.clear();
     }
 
@@ -47,11 +49,17 @@ namespace QSFML
     }
     void CanvasObjectGroup::addObject_internal()
     {
-        for (size_t i = 0; i < m_toAddContainer.size(); ++i)
+        m_container.reserve(m_container.size() + m_toAddContainer.size());
+
+        for(auto & obj : m_toAddContainer)
+		{
+			if (objectExists(obj))
+				obj = nullptr;
+		}
+        for (auto& obj : m_toAddContainer)
         {
-            if (objectExists(m_toAddContainer[i]))
-                continue;
-            m_container.push_back(m_toAddContainer[i]);
+            if (obj)
+                m_container.push_back(obj);
         }
         m_toAddContainer.clear();
     }
