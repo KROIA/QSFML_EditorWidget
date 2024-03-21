@@ -192,6 +192,7 @@ namespace QSFML
 
 		//Stats StatsManager::m_currentStats;
 		//Stats StatsManager::m_lastStats;
+		/*
 		const Stats& StatsManager::getCurrentStats() const
 		{
 			return m_currentStats;
@@ -281,7 +282,7 @@ namespace QSFML
 		void StatsManager::addTick()
 		{
 			m_currentStats.m_tick++;
-		}
+		}*/
 
 		void StatsManager::resetFrame()
 		{

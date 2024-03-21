@@ -17,7 +17,6 @@ namespace QSFML
 namespace Components
 {
     class Collider;
-    
 
     class QSFML_EDITOR_WIDGET_EXPORT Collider: public Component
     {
@@ -99,7 +98,6 @@ namespace Components
 
 
         protected:
-
             static inline bool doLineSegmentsIntersect(const sf::Vector2f &p0, const sf::Vector2f& p1, const sf::Vector2f& p2, const sf::Vector2f& p3, float &scalar1, float &scalar2);
 
             void calculateBoundingBox();

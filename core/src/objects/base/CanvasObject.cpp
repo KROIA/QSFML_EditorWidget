@@ -673,6 +673,12 @@ bool CanvasObject::checkCollision(const CanvasObject* other,
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollision) const
 {
+    // Check if bounding box intersects
+    const Utilities::AABB &otherBox = other->getBoundingBox();
+    if (!m_boundingBox.intersects(otherBox))
+		return false;
+
+    // Check for collisions
     const std::vector<Components::Collider*> &otherColliders = other->getCollider();
     bool hasCollision = false;
     for (auto thisCollider : m_colliders)

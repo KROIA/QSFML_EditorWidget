@@ -160,7 +160,8 @@ private:
 		QSFML::Canvas canvas(nullptr, settings);
 		canvas.show();
 		canvas.start();
-		m_stopTimer.start(10000);
+		QSFML::Canvas::setProfilerOutputFileName("drawTest.prof");
+		m_stopTimer.start(1000);
 		m_update.start(10);
 		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
 		m_currentCanvas = &canvas;
@@ -201,8 +202,9 @@ private:
 		QSFML::Canvas canvas(nullptr, settings);
 		canvas.show();
 		canvas.start();
+		QSFML::Canvas::setProfilerOutputFileName("collisionTest.prof");
 		m_tree.setStatsManager(&canvas);
-		m_stopTimer.start(10000);
+		m_stopTimer.start(1000);
 		m_update.start(10);
 		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onCollisionTest_Update);
 		m_currentCanvas = &canvas;

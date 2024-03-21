@@ -77,11 +77,17 @@ namespace QSFML
 			friend Components::Collider;
 			friend Utilities::ObjectQuadTree;
 		public:
-			const Stats& getCurrentStats() const;
-			const Stats& getLastStats() const;
+			const Stats& getCurrentStats() const
+			{
+				return m_currentStats;
+			}
+			const Stats& getLastStats() const
+			{
+				return m_lastStats;
+			}
 
 		protected:
-
+			/*
 			void setRootCanvesObject(unsigned int count);
 			void addRootCanvesObject(unsigned int count = 1);
 			void addCanvesObject(unsigned int count = 1);
@@ -103,14 +109,96 @@ namespace QSFML
 
 			void setDeltaT(double t);
 
-			void addTick();
+			void addTick();*/
+			
+			
+
+			void setRootCanvesObject(unsigned int count = 1)
+			{
+				m_currentStats.m_rootObjectsCount = count;
+			}
+			void addRootCanvesObject(unsigned int count = 1)
+			{
+				m_currentStats.m_rootObjectsCount += count;
+			}
+			void addCanvesObject(unsigned int count = 1)
+			{
+				m_currentStats.m_objectsCount += count;
+			}
+
+			void removeRootCanvasObject(unsigned int count = 1)
+			{
+				m_currentStats.m_rootObjectsCount -= count;
+			}
+			void removeCanvasObject(unsigned int count= 1)
+			{
+				m_currentStats.m_objectsCount -= count;
+			}
+
+			void addComponent(unsigned int count= 1)
+			{
+				m_currentStats.m_componentsCount += count;
+			}
+			void removeComponent(unsigned int count = 1)
+			{
+				m_currentStats.m_componentsCount -= count;
+			}
+			void addCollisionCheck(unsigned int count = 1)
+			{
+				m_currentStats.m_collisionChecks += count;
+			}
+			void addBoundingBoxCollisionCheck(unsigned int count = 1)
+			{
+				m_currentStats.m_boundingBoxCollisionChecks += count;
+			}
+			void addCollision(unsigned int count = 1)
+			{
+				m_currentStats.m_collisions += count;
+			}
+
+			void setFPS(double fps)
+			{
+				m_currentStats.m_fps = fps;
+			}
+			void setFrameTime(double t)
+			{
+				m_currentStats.m_frameTime = t;
+			}
+			void setEventTime(double t)
+			{
+				m_currentStats.m_eventTime = t;
+			}
+			void setUpdateTime(double t)
+			{
+				m_currentStats.m_updateTime = t;
+			}
+			void setDrawTime(double t)
+			{
+				m_currentStats.m_drawTime = t;
+			}
+
+			void setDeltaT(double t)
+			{
+				m_currentStats.m_deltaT = t;
+			}
+
+			void addTick()
+			{
+				m_currentStats.m_tick++;
+			}
 
 			void resetFrame();
 			void resetTiming();
 
 		protected:
-			Stats& getCurrentStats_internal();
-			Stats& getLastStats_internal();
+			Stats& getCurrentStats_internal()
+			{
+				return m_currentStats;
+			}
+			Stats& getLastStats_internal()
+			{
+				return m_lastStats;
+			}
 
 
 
