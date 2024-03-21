@@ -14,7 +14,7 @@ namespace Utilities
 class QSFML_EDITOR_WIDGET_EXPORT AABB
 {
     public:
-        AABB();
+        /*AABB();
         AABB(const AABB &other);
         AABB(const sf::Vector2f &pos, const sf::Vector2f &size);
         AABB(float x, float y, float width, float height);
@@ -78,6 +78,296 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
         static bool intersectsLeftOf(const AABB &a, const AABB &b);        //!<\return true if a intersects the left edge of b. a will be true even if both may not intersect.
         static bool intersectsBottomOf(const AABB &a, const AABB &b);      //!<\return true if a intersects the bottom edge of b. a will be true even if both may not intersect.
         static bool intersectsRightOf(const AABB &a, const AABB &b);       //!<\return true if a intersects the right edge of b. a will be true even if both may not intersect.
+        */
+        AABB()
+        {
+            setPos({ 0,0 });
+            setSize({ 0,0 });
+        }
+        AABB(const AABB& other)
+        {
+            this->m_pos = other.m_pos;
+            this->m_size = other.m_size;
+        }
+        AABB(const sf::Vector2f& pos, const sf::Vector2f& size)
+        {
+            setPos(pos);
+            setSize(size);
+        }
+        AABB(float x, float y, float width, float height)
+        {
+            setPos({ x,y });
+            setSize({ width,height });
+        }
+        ~AABB()
+        {
+
+        }
+        const AABB& operator=(const AABB& other)
+        {
+            this->m_pos = other.m_pos;
+            this->m_size = other.m_size;
+            return *this;
+        }
+        bool operator==(const AABB& other) const
+        {
+            return this->m_size == other.m_size &&
+                this->m_pos == other.m_pos;
+        }
+        bool operator!=(const AABB& other) const
+        {
+            return this->m_size != other.m_size ||
+                this->m_pos != other.m_pos;
+        }
+        bool operator<(const AABB& other) const
+        {
+            return m_size.x * m_size.y < other.m_size.x * other.m_size.y;
+        }
+        bool operator>(const AABB& other) const
+        {
+            return m_size.x * m_size.y > other.m_size.x * other.m_size.y;
+        }
+        bool operator<=(const AABB& other) const
+        {
+            return m_size.x * m_size.y <= other.m_size.x * other.m_size.y;
+        }
+        bool operator>=(const AABB& other) const
+        {
+            return m_size.x * m_size.y >= other.m_size.x * other.m_size.y;
+        }
+
+        void setPos(const sf::Vector2f& pos)
+        {
+            m_pos = pos;
+        }
+        void setCenterPos(const sf::Vector2f& pos)
+        {
+            setPos(pos - m_size / 2.f);
+        }
+        void setX(float x)
+        {
+            m_pos.x = x;
+        }
+        void setY(float y)
+        {
+            m_pos.y = y;
+        }
+        void setSize(const sf::Vector2f& size)
+        {
+            m_size = size;
+#ifdef AABB_VALID_RECT_CHECK
+            if (m_size.x < 0)
+            {
+                m_pos.x += m_size.x;
+                m_size.x = -m_size.x;
+            }
+            if (m_size.y < 0)
+            {
+                m_pos.y += m_size.y;
+                m_size.y = -m_size.y;
+            }
+#endif
+        }
+        void setWidth(float width)
+        {
+            m_size.x = width;
+#ifdef AABB_VALID_RECT_CHECK
+            if (m_size.x < 0)
+            {
+                m_pos.x += m_size.x;
+                m_size.x = -m_size.x;
+            }
+#endif
+        }
+        void setHeight(float height)
+        {
+            m_size.y = height;
+#ifdef AABB_VALID_RECT_CHECK
+            if (m_size.y < 0)
+            {
+                m_pos.y += m_size.y;
+                m_size.y = -m_size.y;
+            }
+#endif
+        }
+        void move(const sf::Vector2f& delta)
+        {
+            m_pos += delta;
+        }
+        const sf::Vector2f& getPos() const
+        {
+            return m_pos;
+        }
+        const sf::Vector2f& TL() const
+        {
+            return m_pos;
+        }
+        sf::Vector2f TR() const
+        {
+            sf::Vector2f p = m_pos;
+            p.x += m_size.x;
+            return p;
+        }
+        sf::Vector2f BR() const
+        {
+            return m_pos + m_size;
+        }
+        sf::Vector2f BL() const
+        {
+            sf::Vector2f p = m_pos;
+            p.y += m_size.y;
+            return p;
+        }
+        const sf::Vector2f& getSize() const
+        {
+            return m_size;
+        }
+        float getLeft() const
+        {
+            return m_pos.x;
+        }
+        float getRight() const
+        {
+            return m_pos.x + m_size.x;
+        }
+        float getTop() const
+        {
+            return m_pos.y;
+        }
+        float getBottom() const
+        {
+            return m_pos.y + m_size.y;
+        }
+
+        void setLeft(float x)
+        {
+            float right = m_pos.x + m_size.x;
+            m_pos.x = x;
+            m_size.x = right - x;
+        }
+        void setRight(float x)
+        {
+            m_size.x = x - m_pos.x;
+        }
+        void setTop(float y)
+        {
+            float bottom = m_pos.y + m_size.y;
+            m_pos.y = y;
+            m_size.y = bottom - y;
+        }
+        void setBottom(float y)
+        {
+            m_pos.y = y - m_size.y;
+        }
+
+        bool contains(const sf::Vector2f& point) const
+        {
+            return (m_pos.x <= point.x && m_pos.x + m_size.x >= point.x) &&
+                (m_pos.y <= point.y && m_pos.y + m_size.y >= point.y);
+        }
+        bool intersects(const AABB& b) const
+        {
+            return (m_pos.x <= b.m_pos.x + b.m_size.x && m_pos.x + m_size.x >= b.m_pos.x) &&
+                (m_pos.y <= b.m_pos.y + b.m_size.y && m_pos.y + m_size.y >= b.m_pos.y);
+        }
+        bool intersectsInverseOf(const AABB& b) const
+        {
+            return !(m_pos.x < b.m_pos.x && m_pos.x + m_size.x > b.m_pos.x + b.m_size.x &&
+                m_pos.y < b.m_pos.y && m_pos.y + m_size.y > b.m_pos.y + b.m_size.y);
+        }
+        bool contains(const AABB& b) const
+        {
+            return (m_pos.x < b.m_pos.x && m_pos.x + m_size.x > b.m_pos.x + b.m_size.x &&
+                m_pos.y < b.m_pos.y && m_pos.y + m_size.y > b.m_pos.y + b.m_size.y);
+        }
+        bool isLeftOf(const AABB& b) const
+        {
+            return b.m_pos.x > m_pos.x + m_size.x;
+        }
+        bool isRightOf(const AABB& b) const
+        {
+            return m_pos.x > b.m_pos.x + b.m_size.x;
+        }
+        bool isOnTopOf(const AABB& b) const
+        {
+            return b.m_pos.y > m_pos.y + m_size.y;
+        }
+        bool isBelowOf(const AABB& b) const
+        {
+            return m_pos.y > b.m_pos.y + b.m_size.y;
+        }
+        bool intersectsTopOf(const AABB& b) const
+        {
+            return m_pos.y < b.m_pos.y && m_pos.y + m_size.y > b.m_pos.y;
+        }
+        bool intersectsLeftOf(const AABB& b) const
+        {
+            return m_pos.x < b.m_pos.x && m_pos.x + m_size.x > b.m_pos.x;
+        }
+        bool intersectsBottomOf(const AABB& b) const
+        {
+            return m_pos.y < b.m_pos.y + b.m_size.y && m_pos.y + m_size.y > b.m_pos.y + b.m_size.y;
+        }
+        bool intersectsRightOf(const AABB& b) const
+        {
+            return m_pos.x < b.m_pos.x + b.m_size.x && m_pos.x + m_size.x > b.m_pos.x + b.m_size.x;
+        }
+
+        static bool contains(const AABB& a, const sf::Vector2f& point)
+        {
+            return (a.m_pos.x <= point.x && a.m_pos.x + a.m_size.x >= point.x) &&
+                (a.m_pos.y <= point.y && a.m_pos.y + a.m_size.y >= point.y);
+        }
+        static bool intersects(const AABB& a, const AABB& b)
+        {
+            return (a.m_pos.x <= b.m_pos.x + b.m_size.x && a.m_pos.x + a.m_size.x >= b.m_pos.x) &&
+                (a.m_pos.y <= b.m_pos.y + b.m_size.y && a.m_pos.y + a.m_size.y >= b.m_pos.y);
+        }
+        static bool intersectsInverseOf(const AABB& a, const AABB& b)
+        {
+            return !(a.m_pos.x < b.m_pos.x && a.m_pos.x + a.m_size.x > b.m_pos.x + b.m_size.x &&
+                a.m_pos.y < b.m_pos.y && a.m_pos.y + a.m_size.y > b.m_pos.y + b.m_size.y);
+        }
+        static bool contains(const AABB& a, const AABB& b)
+        {
+            return (a.m_pos.x < b.m_pos.x && a.m_pos.x + a.m_size.x > b.m_pos.x + b.m_size.x &&
+                a.m_pos.y < b.m_pos.y && a.m_pos.y + a.m_size.y > b.m_pos.y + b.m_size.y);
+
+        }
+        static bool isLeftOf(const AABB& a, const AABB& b)
+        {
+            return b.m_pos.x > a.m_pos.x + a.m_size.x;
+        }
+        static bool isRightOf(const AABB& a, const AABB& b)
+        {
+            return a.m_pos.x > b.m_pos.x + b.m_size.x;
+        }
+        static bool isOnTopOf(const AABB& a, const AABB& b)
+        {
+            return b.m_pos.y > a.m_pos.y + a.m_size.y;
+        }
+        static bool isBelowOf(const AABB& a, const AABB& b)
+        {
+            return a.m_pos.y > b.m_pos.y + b.m_size.y;
+        }
+        static bool intersectsTopOf(const AABB& a, const AABB& b)
+        {
+            return a.m_pos.y < b.m_pos.y && a.m_pos.y + a.m_size.y > b.m_pos.y;
+        }
+        static bool intersectsLeftOf(const AABB& a, const AABB& b)
+        {
+            return a.m_pos.x < b.m_pos.x && a.m_pos.x + a.m_size.x > b.m_pos.x;
+        }
+        static bool intersectsBottomOf(const AABB& a, const AABB& b)
+        {
+            return a.m_pos.y < b.m_pos.y + b.m_size.y && a.m_pos.y + a.m_size.y > b.m_pos.y + b.m_size.y;
+        }
+        static bool intersectsRightOf(const AABB& a, const AABB& b)
+        {
+            return a.m_pos.x < b.m_pos.x + b.m_size.x && a.m_pos.x + a.m_size.x > b.m_pos.x + b.m_size.x;
+        }
+
+
 
         static AABB getFrame(const std::vector<AABB> &list);               //!<\return a AABB with the position and size, so that all AABB's in the list would fit in it.
                                                                            //!<        Its a frame around all rects from the list.

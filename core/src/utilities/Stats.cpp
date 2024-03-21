@@ -21,6 +21,7 @@ namespace QSFML
 			, m_drawTime(0)
 			, m_tick(0)
 			, m_deltaT(0)
+			, m_fixedDeltaT(0)
 			, m_elapsedTime(0)
 		{
 
@@ -39,6 +40,7 @@ namespace QSFML
 			, m_drawTime(other.m_drawTime)
 			, m_tick(other.m_tick)
 			, m_deltaT(other.m_deltaT)
+			, m_fixedDeltaT(other.m_fixedDeltaT)
 			, m_elapsedTime(other.m_elapsedTime)
 		{
 
@@ -59,6 +61,7 @@ namespace QSFML
 			m_drawTime = other.m_drawTime;
 
 			m_deltaT = other.m_deltaT;
+			m_fixedDeltaT = other.m_fixedDeltaT;
 			m_elapsedTime = other.m_elapsedTime;
 
 			m_tick = other.m_tick;
@@ -129,6 +132,10 @@ namespace QSFML
 		{
 			return m_deltaT;
 		}
+		double Stats::getFixedDeltaT() const
+		{
+			return m_fixedDeltaT;
+		}
 		double Stats::getElapsedTime() const
 		{
 			return m_elapsedTime;
@@ -152,12 +159,13 @@ namespace QSFML
 				"  Collisions:          " + std::to_string(m_collisions) + "\n" +
 				" Timing:\n"
 				"  FPS:                 " + std::to_string(m_fps) + "\n" +
-				"  DeltaT:              " + std::to_string(m_deltaT) + " ms\n" +
+				"  DeltaT:              " + std::to_string(m_deltaT * 1000) + " ms\n" +
 				"  Elapsed time:        " + std::to_string(m_elapsedTime) + " s\n" +
-				"  Frame time:          " + std::to_string(m_frameTime) + " ms\n" +
-				"   Event  time:        " + std::to_string(m_eventTime) + " ms\n" +
-				"   Update time:        " + std::to_string(m_updateTime) + " ms\n" +
-				"   Draw   time:        " + std::to_string(m_drawTime) + " ms\n";
+				"  Elapsed fixed time:  " + std::to_string(m_fixedDeltaT * m_tick) + " s\n" +
+				"  Frame time:          " + std::to_string(m_frameTime * 1000) + " ms\n" +
+				"   Event  time:        " + std::to_string(m_eventTime * 1000) + " ms\n" +
+				"   Update time:        " + std::to_string(m_updateTime * 1000) + " ms\n" +
+				"   Draw   time:        " + std::to_string(m_drawTime * 1000) + " ms\n";
 
 		}
 		void Stats::print() const

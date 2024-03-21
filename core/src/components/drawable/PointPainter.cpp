@@ -9,7 +9,7 @@ namespace QSFML
         PointPainter::PointPainter(const std::string& name)
             : Drawable(name)
             , m_defaultRadius(1)
-            , m_verteciesCount(16)
+            , m_verteciesCount(8)
             , m_defaultColor(sf::Color::White)
         {
 
@@ -29,12 +29,14 @@ namespace QSFML
             m_defaultRadius = radius;
             for (auto& point : m_points)
             {
+                //updateShape(point, radius, point.position);
                 point.radius = radius;
             }
         }
         void PointPainter::setRadius(size_t index, float radius)
         {
             m_points[index].radius = radius;
+            //updateShape(m_points[index], radius, m_points[index].position);
         }
         float PointPainter::getRadius() const
         {
@@ -43,6 +45,7 @@ namespace QSFML
         float PointPainter::getRadius(size_t index) const
         {
             return m_points[index].radius;
+            //return m_points[index].vertecies[0].position.x - m_points[index].position.x;
         }
 
         void PointPainter::setVerteciesCount(size_t count)
@@ -59,11 +62,13 @@ namespace QSFML
             m_defaultColor = color;
             for (auto& point : m_points)
             {
+                //updateColor(point, color);
 				point.color = color;
 			}
         }
         void PointPainter::setColor(size_t index, const sf::Color& color)
         {
+            //updateColor(m_points[index], color);
 		    m_points[index].color = color;
         }
         const sf::Color& PointPainter::getColor() const
@@ -72,16 +77,22 @@ namespace QSFML
         }
         const sf::Color& PointPainter::getColor(size_t index) const
         {
+            //return m_points[index].vertecies[0].color;
             return m_points[index].color;
         }
 
         void PointPainter::setPoint(const sf::Vector2f& pos)
         {
-            m_points = { {pos, m_defaultColor, m_defaultRadius} };
+            //m_points = { {pos, m_defaultColor, m_defaultRadius} };
+            m_points = { {pos, m_defaultColor, m_defaultRadius}};
+            //m_points.back().buffer.create(m_verteciesCount);
+           // updateShape(m_points[0], m_defaultRadius, pos);
         }
         void PointPainter::setPoint(const sf::Vector2f& pos, float radius, const sf::Color& color)
         {
-            m_points = { { pos, color, radius } };
+            m_points = { {pos, color, radius} };
+           // m_points.back().buffer.create(m_verteciesCount);
+            //updateAll(m_points[0], radius, pos, color);
         }
         void PointPainter::setPoints(const std::vector<sf::Vector2f>& points)
         {
@@ -89,16 +100,24 @@ namespace QSFML
             m_points.reserve(points.size());
             for (auto& pos : points)
             {
+				//m_points.push_back({ pos, m_defaultColor, m_defaultRadius });
 				m_points.push_back({ pos, m_defaultColor, m_defaultRadius });
+                //updateAll(m_points.back(), m_defaultRadius, pos, m_defaultColor);
+                //m_points.back().buffer.create(m_verteciesCount);
 			}
         }
         void PointPainter::addPoint(const sf::Vector2f& pos)
         {
-            m_points.push_back({pos, m_defaultColor, m_defaultRadius});
+            //m_points.push_back({pos, m_defaultColor, m_defaultRadius});
+            m_points.push_back({ pos, m_defaultColor, m_defaultRadius});
+            //m_points.back().buffer.create(m_verteciesCount);
         }
         void PointPainter::addPoint(const sf::Vector2f& pos, float radius, const sf::Color& color)
         {
-            m_points.push_back({ pos, color, radius });
+            //m_points.push_back({ pos, color, radius });
+            m_points.push_back({ pos, m_defaultColor, m_defaultRadius});
+            //m_points.back().buffer.create(m_verteciesCount);
+           // updateAll(m_points.back(), radius, pos, color);
         }
         PointPainter::PointData& PointPainter::getPoint(size_t index)
         {
@@ -113,6 +132,7 @@ namespace QSFML
             m_points.clear();
         }
 
+        /*
         void PointPainter::draw(sf::RenderTarget& target,
             sf::RenderStates states) const
         {
@@ -128,6 +148,6 @@ namespace QSFML
                 target.draw(circle, states);
             }
         }
-
+        */
     }
 }

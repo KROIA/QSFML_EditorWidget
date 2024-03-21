@@ -1,6 +1,5 @@
 #include "CurvedMirror.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
+
 
 CurvedMirror::CurvedMirror(unsigned int resolution, const std::string& name)
 	: OpticalElement(name)

@@ -71,18 +71,47 @@ namespace QSFML
 				COMPONENT_DECL(ObjectQuadTreePainter);
 				~ObjectQuadTreePainter();
 
+				void enableText(bool enable)
+				{
+					m_enableText = enable;
+				}
+
 				void assignTree(ObjectQuadTree* tree);
 				ObjectQuadTree* getTree() const;
 
 				void setColor(const sf::Color& color);
 				const sf::Color& getColor() const;
 
-				void draw(sf::RenderTarget& target,
-					sf::RenderStates states) const override;
+				//void draw(sf::RenderTarget& target,
+				//	sf::RenderStates states) const override;
+				void ObjectQuadTree::ObjectQuadTreePainter::draw(sf::RenderTarget& target,
+					sf::RenderStates states) const override
+				{
+					if (m_tree)
+					{
+						sf::RectangleShape rect;
+						//rect.setPosition(m_area.TL());
+						//rect.setSize(m_area.getSize());
+						rect.setFillColor(sf::Color(0, 0, 0, 0));
+
+						rect.setOutlineColor(m_color);
+						rect.setOutlineThickness(0.5);
+						if (m_enableText)
+						{
+							sf::Text text;
+							text.setFont(getTextFont()); // font is a sf::Font
+							text.setScale(sf::Vector2f(0.08, 0.08));
+							text.setCharacterSize(40);
+							m_tree->m_tree.draw(text, rect, m_color, target, states);
+						}
+						else
+							m_tree->m_tree.draw(rect, m_color, target, states);
+					}
+				}
 
 				void destroy();
 			private:
-
+				bool m_enableText = true;
 				ObjectQuadTree* m_tree;
 				sf::Color m_color;
 			};
@@ -137,7 +166,10 @@ namespace QSFML
 					std::vector<Utilities::Collisioninfo>& collisions,
 					bool onlyFirstCollision);
 				
-				void draw(const sf::Font& font, const sf::Color& color, sf::RenderTarget& target,
+				void draw(sf::Text& text, sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,
+					sf::RenderStates states) const;
+
+				void draw(sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,
 					sf::RenderStates states) const;
 
 

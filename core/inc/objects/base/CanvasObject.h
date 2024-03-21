@@ -7,6 +7,7 @@
 #include "utilities/CollisionInfo.h"
 #include "utilities/Updatable.h"
 #include "utilities/AABB.h"
+#include "components/base/Drawable.h"
 
 #include "events/DestroyEvent.h"
 
@@ -381,7 +382,35 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
         void sfEvent(const std::vector<sf::Event> &events);
         void update_internal();
         void inCanvasAdded_internal();
-        void draw(sf::RenderWindow &window) const;
+        //void draw(sf::RenderWindow &window) const;
+        void draw(sf::RenderWindow& window) const
+        {
+            if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate)
+                return;
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+            if (m_drawableComponents.size())
+            {
+                QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
+                for (auto& comp : m_drawableComponents)
+                {
+                    if (!comp->isEnabled())
+                        continue;
+                    window.draw(*comp);
+                }
+                QSFMLP_OBJECT_END_BLOCK;
+            }
+
+            if (m_childs.size())
+            {
+                QSFMLP_OBJECT_BLOCK("Childs draw", QSFML_COLOR_STAGE_3);
+                for (auto& child : m_childs)
+                {
+                    if (child->m_enabled)
+                        child->draw(window);
+                }
+                QSFMLP_OBJECT_END_BLOCK;
+            }
+        }
 
         // Static
         static size_t s_objNameCounter;

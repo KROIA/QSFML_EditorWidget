@@ -51,8 +51,25 @@ namespace QSFML
 			Utilities::AABB getLocalBounds() const;
 			Utilities::AABB getGlobalBounds() const;
 
-			void draw(sf::RenderTarget& target,
-				sf::RenderStates states) const override;
+			//void draw(sf::RenderTarget& target,
+			//	sf::RenderStates states) const override;
+
+			void draw(sf::RenderTarget& target, sf::RenderStates states) const override
+			{
+				if (m_fill)
+				{
+					target.draw(&m_transformedVertecies[0], m_transformedVertecies.size(), sf::TriangleFan, states);
+				}
+				if (m_outline)
+				{
+					std::vector<sf::Vertex> outline = m_transformedVertecies;
+					for (auto& vertex : outline)
+					{
+						vertex.color = m_outlineColor;
+					}
+					target.draw(&outline[0], outline.size(), sf::LineStrip, states);
+				}
+			}
 		private:
 			void updateTranformedPoints();
 			void updateVertexColors();

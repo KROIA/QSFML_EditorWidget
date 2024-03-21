@@ -116,6 +116,7 @@ void Canvas::setTiming(const CanvasSettings::Timing &timing)
 
     // Setup the timer
     m_frameTimer.setInterval(m_settings.timing.frameTime*1000);
+    StatsManager::setFixedDeltaT(m_settings.timing.physicsFixedDeltaT);
     //m_updateTimer.setInterval(m_settings.timing.frameTime);
 }
 const CanvasSettings::Timing &Canvas::getTiming() const
@@ -257,6 +258,10 @@ void Canvas::showEvent(QShowEvent*)
         m_oldCanvasSize = getCanvasSize();
     }
 }
+void Canvas::closeEvent(QCloseEvent*) 
+{
+	stop();
+}
 void Canvas::paintEvent(QPaintEvent*)
 {
 
@@ -284,14 +289,15 @@ void Canvas::update()
     QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1); // Magenta block with name "foo"
 
     TimePoint t2 = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - m_deltaT_t1);
+    double elapsedSeconds = std::chrono::duration<double>(t2 - m_deltaT_t1).count();
+    //auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - m_deltaT_t1);
     //std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
     m_deltaT_t1 = t2;
     StatsManager::resetFrame();
-    long long elapsedMs = elapsed.count();
-    StatsManager::setFrameTime(elapsedMs);
-    if(elapsedMs > 0)
-        StatsManager::setFPS(1.0 / elapsed.count());
+   // long long elapsedSec= elapsedSeconds.count();
+    StatsManager::setFrameTime(elapsedSeconds);
+    if(elapsedSeconds > 0)
+        StatsManager::setFPS(1.0 / elapsedSeconds);
     else
         StatsManager::setFPS(9999999);
     StatsManager::addTick();
@@ -302,7 +308,7 @@ void Canvas::update()
     //}
     //else
     //{
-        StatsManager::setDeltaT(m_currentStats.getFrameTime() * m_settings.timing.physicsDeltaTScale);
+        StatsManager::setDeltaT(elapsedSeconds * m_settings.timing.physicsDeltaTScale);
     //}
 
     QSFMLP_CANVAS_BLOCK("Delete unused objects", QSFML_COLOR_STAGE_2);
@@ -324,8 +330,8 @@ void Canvas::update()
         sfEvent(events);
         internal_event(events);
         TimePoint t2 = std::chrono::high_resolution_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - t1);
-        StatsManager::setEventTime(elapsed.count());
+        double elapsed = std::chrono::duration<double>(t2 - t1).count();
+        StatsManager::setEventTime(elapsed);
         QSFMLP_GENERAL_END_BLOCK;
     }
 
@@ -338,13 +344,14 @@ void Canvas::update()
 
         CanvasObjectContainer::update();
         TimePoint t2 = std::chrono::high_resolution_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - t1);
-        StatsManager::setUpdateTime(elapsed.count());
+        double elapsed = std::chrono::duration<double>(t2 - t1).count();
+        StatsManager::setUpdateTime(elapsed);
         QSFMLP_GENERAL_END_BLOCK;
     }
 
     if(m_settings.updateControlls.enablePaintLoop)
     {
+        
         QSFMLP_CANVAS_BLOCK("Clear Display", QSFML_COLOR_STAGE_5);
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         m_window->clear(m_settings.colors.defaultBackground);
@@ -358,11 +365,11 @@ void Canvas::update()
         // Display on screen
         m_window->display();
         TimePoint t2 = std::chrono::high_resolution_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - t1);
-        StatsManager::setDrawTime(elapsed.count());
+        double elapsed = std::chrono::duration<double>(t2 - t1).count();
+        StatsManager::setDrawTime(elapsed);
         QSFMLP_GENERAL_END_BLOCK;
     }
-    m_window->setActive(false);
+    //m_window->setActive(false);
 }
 
 void Canvas::sfEvent(const std::vector<sf::Event> &events)

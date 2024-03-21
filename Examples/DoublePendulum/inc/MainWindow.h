@@ -5,8 +5,7 @@
 #include "Pendulum.h"
 #include "WikiPendulum.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

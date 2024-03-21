@@ -220,7 +220,9 @@ private:
 		m_pointPainter = new QSFML::Components::PointPainter();
 		m_pointPainter->setColor(sf::Color::Yellow);
 		pointPainterObj->addComponent(m_pointPainter);
-		pointPainterObj->addComponent(m_tree.createPainter());
+		QSFML::Utilities::ObjectQuadTree::ObjectQuadTreePainter* treePainter = m_tree.createPainter();
+		//treePainter->enableText(false);
+		pointPainterObj->addComponent(treePainter);
 
 		canvas.addObject(pointPainterObj);
 
@@ -231,7 +233,7 @@ private:
 			sf::Color color = QSFML::Color::lerpLinear(color1, color2, (float)i / objectCount);
 			canvas.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
 		}
-
+		
 
 
 		qApp->exec();

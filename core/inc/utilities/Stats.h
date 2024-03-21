@@ -39,6 +39,7 @@ namespace QSFML
 			double getDrawTime() const;		// Time in ms
 
 			double getDeltaT() const;
+			double getFixedDeltaT() const;
 			double getElapsedTime() const;
 
 			size_t getTick() const;
@@ -65,8 +66,9 @@ namespace QSFML
 			double m_updateTime;
 			double m_drawTime;
 
-			double m_deltaT;
-			double m_elapsedTime;
+			double m_deltaT;		// Time in s
+			double m_fixedDeltaT;	// Time in s
+			double m_elapsedTime;	// Time in s
 
 			size_t m_tick;
 		};
@@ -180,6 +182,10 @@ namespace QSFML
 			void setDeltaT(double t)
 			{
 				m_currentStats.m_deltaT = t;
+			}
+			void setFixedDeltaT(double t)
+			{
+				m_currentStats.m_fixedDeltaT = t;
 			}
 
 			void addTick()

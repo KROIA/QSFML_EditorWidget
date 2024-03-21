@@ -474,37 +474,63 @@ namespace QSFML
 			m_childTrees[3].checkCollision(other, collisions, onlyFirstCollision);
 		}
 		
-		void ObjectQuadTree::Tree::draw(const sf::Font& font, const sf::Color& color, sf::RenderTarget& target,
+		std::string toStr(size_t i)
+		{
+			char buffer[20];
+			buffer[19] = 0;
+			char * p = &buffer[18];
+			while (i > 0)
+			{
+				*p = '0' + (i % 10);
+				i /= 10;
+				--p;
+			}
+			return p + 1;
+		}
+
+		void ObjectQuadTree::Tree::draw(sf::Text& text, sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,
 			sf::RenderStates states) const
 		{
-			sf::RectangleShape rect;
 			rect.setPosition(m_area.TL());
 			rect.setSize(m_area.getSize());
-			rect.setFillColor(sf::Color(0, 0, 0, 0));
-			
-			rect.setOutlineColor(color);
-			rect.setOutlineThickness(0.5);
 
-			sf::Text text;
-			text.setFont(font); // font is a sf::Font
-			text.setString(std::to_string(m_objects.size()));
+			//text.setString(std::to_string(m_objects.size()));
+			//text.setString(toStr(m_objects.size()));
 			text.setPosition((m_area.TL() + m_area.BR())*0.5f);
-			text.setScale(sf::Vector2f(0.08, 0.08));
-			text.setCharacterSize(40);
+
+			
+			target.draw(rect);
+			target.draw(text);
+			if (m_childTrees)
+			{
+				float fade = 0.7;
+				sf::Color col = color;
+				col.a *= fade;
+				rect.setOutlineColor(col);
+				m_childTrees[0].draw(text, rect, col, target, states);
+				m_childTrees[1].draw(text, rect, col, target, states);
+				m_childTrees[2].draw(text, rect, col, target, states);
+				m_childTrees[3].draw(text, rect, col, target, states);
+			}
+		}
+		void ObjectQuadTree::Tree::draw(sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,
+			sf::RenderStates states) const
+		{
+			rect.setPosition(m_area.TL());
+			rect.setSize(m_area.getSize());
 
 			if (m_childTrees)
 			{
 				float fade = 0.7;
-				//sf::Color col(color.r * fade, color.g * fade, color.b * fade, color.a * fade);
 				sf::Color col = color;
 				col.a *= fade;
-				m_childTrees[0].draw(font, col, target, states);
-				m_childTrees[1].draw(font, col, target, states);
-				m_childTrees[2].draw(font, col, target, states);
-				m_childTrees[3].draw(font, col, target, states);
+				rect.setOutlineColor(col);
+				m_childTrees[0].draw(rect, col, target, states);
+				m_childTrees[1].draw(rect, col, target, states);
+				m_childTrees[2].draw(rect, col, target, states);
+				m_childTrees[3].draw(rect, col, target, states);
 			}
 			target.draw(rect);
-			target.draw(text);
 		}
 
 		ObjectQuadTree::ObjectQuadTreePainter* ObjectQuadTree::createPainter()
@@ -582,12 +608,12 @@ namespace QSFML
 		{
 			return m_color;
 		}
-		void ObjectQuadTree::ObjectQuadTreePainter::draw(sf::RenderTarget& target,
+		/*void ObjectQuadTree::ObjectQuadTreePainter::draw(sf::RenderTarget& target,
 			sf::RenderStates states) const
 		{
 			if (m_tree)
 				m_tree->m_tree.draw(getTextFont(), m_color, target, states);
-		}
+		}*/
 		void ObjectQuadTree::ObjectQuadTreePainter::destroy()
 		{
 			deleteThis();

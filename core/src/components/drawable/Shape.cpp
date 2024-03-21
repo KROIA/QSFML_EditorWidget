@@ -167,7 +167,7 @@ namespace QSFML
 				vertex.color = m_fillColor;
 			}
 		}
-		void Shape::draw(sf::RenderTarget& target, sf::RenderStates states) const
+		/*void Shape::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			if (m_fill)
 			{
@@ -182,6 +182,6 @@ namespace QSFML
 				}
 				target.draw(&outline[0], outline.size(), sf::LineStrip, states);
 			}
-		}
+		}*/
 	}
 }

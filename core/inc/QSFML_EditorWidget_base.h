@@ -1,7 +1,8 @@
 #pragma once
 
 /// USER_SECTION_START 1
-
+#define _USE_MATH_DEFINES
+#include <math.h>
 /// USER_SECTION_END
 
 #include "QSFML_EditorWidget_global.h"

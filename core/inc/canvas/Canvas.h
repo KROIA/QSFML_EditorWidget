@@ -79,6 +79,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
     protected:
         QPaintEngine* paintEngine() const override;
         void showEvent(QShowEvent*) override;
+        void closeEvent(QCloseEvent*) override;
         void paintEvent(QPaintEvent*) override;
 
         void resizeEvent(QResizeEvent *event) override;
