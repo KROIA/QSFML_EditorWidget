@@ -16,7 +16,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         CanvasObjectContainer(Canvas *parent, CanvasSettings &settings);
         ~CanvasObjectContainer();
 
-        void applyObjectChanges(); // Will be called automaticly if not manual
+       
 
         void addObject(Objects::CanvasObject *obj);
         void addObject(const std::vector<Objects::CanvasObject*> &objs);
@@ -39,6 +39,38 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
 
         bool objectExists(Objects::CanvasObject *obj);
         size_t getObjectIndex(Objects::CanvasObject *obj);
+
+        /// <summary>
+        /// Searches the object with the given name in the object list.
+        /// Searches only the top layer objects.
+        /// </summary>
+        /// <param name="name">name of the object</param>
+        /// <returns>pointer to the object, or nullptr if not found</returns>
+        Objects::CanvasObject* findFirstObject(const std::string &name);
+
+        /// <summary>
+        /// Searches all objects with the given name in the object list.
+        /// Searches only the top layer objects.
+        /// </summary>
+        /// <param name="name">name of the object</param>
+        /// <returns>a list of found objects</returns>
+        std::vector<Objects::CanvasObject*> findAllObjects(const std::string &name);
+
+        /// <summary>
+        /// Searches the object with the given name in the object list.
+        /// Searches all object tree hirarchies
+        /// </summary>
+        /// <param name="name">name of the object</param>
+        /// <returns>pointer to the object, or nullptr if not found</returns>
+        Objects::CanvasObject* findFirstObjectRecursive(const std::string& name);
+
+        /// <summary>
+        /// Searches all objects with the given name in the object list.
+        /// Searches all object tree hirarchies
+        /// </summary>
+        /// <param name="name">name of the object</param>
+        /// <returns>a list of found objects</returns>
+        std::vector<Objects::CanvasObject*> findAllObjectsRecursive(const std::string& name);
 
         void deleteLater(Objects::CanvasObject *obj);
 

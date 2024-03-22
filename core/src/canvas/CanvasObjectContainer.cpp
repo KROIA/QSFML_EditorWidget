@@ -47,10 +47,7 @@ CanvasObjectContainer::~CanvasObjectContainer()
 		delete obj;
 	}
 }
-void CanvasObjectContainer::applyObjectChanges()
-{
-    updateNewElements();
-}
+
 
 void CanvasObjectContainer::initializeThreads(size_t threadCount)
 {
@@ -206,6 +203,73 @@ size_t CanvasObjectContainer::getObjectIndex(CanvasObject *obj)
 
     return m_allObjects->getObjectIndex(obj);
 }
+Objects::CanvasObject* CanvasObjectContainer::findFirstObject(const std::string& name)
+{
+    size_t nameSize = name.size();
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        const std::string &objName = obj->getName();
+        if(objName.size() != nameSize)
+			continue;
+		if(objName == name)
+			return obj;
+    }
+    return nullptr;
+}
+std::vector<Objects::CanvasObject*> CanvasObjectContainer::findAllObjects(const std::string& name)
+{
+    std::vector<Objects::CanvasObject*> results;
+    results.reserve(20);
+    size_t nameSize = name.size();
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        const std::string& objName = obj->getName();
+        if (objName.size() != nameSize)
+            continue;
+        if (objName == name)
+            results.push_back(obj);
+    }
+    return results;
+}
+Objects::CanvasObject* CanvasObjectContainer::findFirstObjectRecursive(const std::string& name)
+{
+    size_t nameSize = name.size();
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        const std::string& objName = obj->getName();
+        if (objName.size() != nameSize)
+        {
+			Objects::CanvasObject* child = obj->findFirstChildRecursive(name);
+			if (child)
+				return child;
+            continue;
+        }
+        if (objName == name)
+            return obj;
+    }
+    return nullptr;
+}
+std::vector<Objects::CanvasObject*> CanvasObjectContainer::findAllObjectsRecursive(const std::string& name)
+{
+    std::vector<Objects::CanvasObject*> results;
+    results.reserve(50);
+    size_t nameSize = name.size();
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        const std::string& objName = obj->getName();
+        if (objName.size() != nameSize)
+        {
+            std::vector<CanvasObject*> childs = obj->findAllChildsRecursive(name);
+            if (childs.size())
+                results.insert(results.end(), childs.begin(), childs.end());
+            continue;
+        }
+        if (objName == name)
+            results.push_back(obj);
+    }
+    return results;
+}
+
 void CanvasObjectContainer::deleteLater(Objects::CanvasObject *obj)
 {
     m_allObjects->deleteLater(obj);
@@ -219,9 +283,9 @@ void CanvasObjectContainer::renderLayerSwitch(Objects::CanvasObject *obj, Render
     if(obj->m_canvasParent != m_parent)
         return; // not owner of this object
     if(from < RenderLayer::count)
-        m_renderLayerGroup.removeObject(obj, obj->getRenderLayer());
+        m_renderLayerGroup.removeObject(obj, from);
     if(to < RenderLayer::count)
-        m_renderLayerGroup.addObject(obj, obj->getRenderLayer());
+        m_renderLayerGroup.addObject(obj, to);
 }
 
 
@@ -234,7 +298,7 @@ void CanvasObjectContainer::updateNewElements()
 
     addObject_internal();
     m_allObjects->updateNewElements();
-    m_renderLayerGroup.updateNewElements();
+   // m_renderLayerGroup.updateNewElements();
     for (auto obj : toAdd)
         obj->inCanvasAdded_internal();
 }
@@ -257,7 +321,8 @@ void CanvasObjectContainer::update()
 }
 void CanvasObjectContainer::draw(sf::RenderWindow &window)
 {
-    for(size_t i=0; i< m_renderLayerGroup.size(); ++i)
+    size_t size = m_renderLayerGroup.size();
+    for(size_t i=0; i < size; ++i)
     {
         QSFMLP_CANVAS_BLOCK("Draw layer", QSFML_COLOR_STAGE_1);
         m_renderLayerGroup[i].draw(window);

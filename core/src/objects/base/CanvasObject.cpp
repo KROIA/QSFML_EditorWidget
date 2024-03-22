@@ -112,8 +112,6 @@ void CanvasObject::setParent(CanvasObject *parent)
         parent->addChild_internal(this);
         return;
     }
-
-
 }
 void CanvasObject::setEnabled(bool enable)
 {
@@ -136,10 +134,36 @@ void CanvasObject::setName(const std::string &name)
 {
     m_name = name;
 }
-const std::string CanvasObject::getName() const
+const std::string &CanvasObject::getName() const
 {
     return m_name;
 }
+
+double CanvasObject::getAge() const
+{
+    if (!m_canvasParent) return 0;
+    return m_canvasParent->getElapsedTime() - m_birthTime;
+}
+double CanvasObject::getBirthTime() const
+{
+    return m_birthTime;
+}
+size_t CanvasObject::getAgeTicks() const
+{
+    if (!m_canvasParent) return 0;
+    return m_canvasParent->getTick() - m_birthTick;
+}
+size_t CanvasObject::getBirthTick() const
+{
+    return m_birthTick;
+}
+double CanvasObject::getAgeFixed() const
+{
+    if (!m_canvasParent) return 0;
+    return m_canvasParent->getFixedDeltaT() * (m_canvasParent->getTick() - m_birthTick);
+}
+
+
 void CanvasObject::setPositionRelative(const sf::Vector2f& pos)
 {
     m_position = pos;
@@ -330,6 +354,59 @@ size_t CanvasObject::getChildCount() const
     return m_childs.size();
 }
 
+CanvasObject* CanvasObject::findFirstChild(const std::string& name)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    size_t nameSize = name.size();
+    for (size_t i = 0; i < m_childs.size(); ++i)
+    {
+        const std::string& objName = m_childs[i]->getName();
+        if (nameSize != objName.size())
+            continue;
+        if (objName == name)
+        {
+            return m_childs[i];
+        }
+        //found |= m_childs[i]->findAllChilds_internal(name, foundList);
+    }
+    return nullptr;
+}
+std::vector<CanvasObject*> CanvasObject::findAllChilds(const std::string& name)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    std::vector<CanvasObject*> results;
+    results.reserve(m_childs.size());
+    findAllChilds_internal(name, results);
+    return results;
+}
+
+CanvasObject* CanvasObject::findFirstChildRecursive(const std::string& name)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    size_t nameSize = name.size();
+    for (size_t i = 0; i < m_childs.size(); ++i)
+    {
+        const std::string& objName = m_childs[i]->getName();
+        if (nameSize != objName.size())
+            continue;
+        if (objName == name)
+        {
+            return m_childs[i];
+        }
+        CanvasObject *obj = m_childs[i]->findFirstChildRecursive(name);
+        if(obj)
+            return obj;
+    }
+    return nullptr;
+}
+std::vector<CanvasObject*> CanvasObject::findAllChildsRecursive(const std::string& name)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    std::vector<CanvasObject*> results;
+    results.reserve(m_childs.size()*2);
+    findAllChildsRecursive_internal(name, results);
+    return results;
+}
 
 void CanvasObject::addComponent(Component *comp)
 {
@@ -660,6 +737,87 @@ const std::vector<Component*> &CanvasObject::getComponents() const
 {
     return m_components;
 }
+
+Components::Component* CanvasObject::findFirstComponent(const std::string& name)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    size_t nameSize = name.size();
+    for (const auto &comp : m_components)
+    {
+		const std::string& objName = comp->getName();
+		if (nameSize != objName.size())
+			continue;
+        if (objName == name)
+			return comp;
+	}
+	return nullptr;
+}
+std::vector<Components::Component*> CanvasObject::findAllComponents(const std::string& name)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+	std::vector<Components::Component*> results;
+	results.reserve(m_components.size());
+    size_t nameSize = name.size();
+    for (const auto& comp : m_components)
+    {
+		const std::string& objName = comp->getName();
+        if (nameSize != objName.size())
+            continue;
+		if (objName == name)
+			results.push_back(comp);
+	}
+	return results;
+}
+
+Components::Component* CanvasObject::findFirstComponentRecursive(const std::string& name)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    size_t nameSize = name.size();
+    for (const auto& comp : m_components)
+    {
+        const std::string& objName = comp->getName();
+        if (nameSize != objName.size())
+            continue;
+        if (objName == name)
+            return comp;
+    }
+    for (const auto &obj : m_childs)
+    {
+		Components::Component* comp = obj->findFirstComponentRecursive(name);
+		if (comp)
+			return comp;
+	}
+    return nullptr;
+}
+std::vector<Components::Component*> CanvasObject::findAllComponentsRecursive(const std::string& name)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    std::vector<Components::Component*> results;
+    results.reserve(m_components.size());
+    findAllComponentsRecursive_internal(name, results);
+    return results;
+}
+bool CanvasObject::findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    bool found = false;
+    size_t nameSize = name.size();
+    for (const auto& comp : m_components)
+    {
+        const std::string& objName = comp->getName();
+        if (nameSize != objName.size())
+            continue;
+        if (objName == name)
+            foundList.push_back(comp);
+    }
+    for (const auto& obj : m_childs)
+    {
+		found |= obj->findAllComponentsRecursive_internal(name, foundList);
+	}
+    return found;
+}
+
+
 const std::vector<Components::Collider*> &CanvasObject::getCollider() const
 {
     return m_colliders;
@@ -793,6 +951,17 @@ double CanvasObject::getFixedDeltaT() const
     if (!m_canvasParent) return 0;
     return m_canvasParent->getFixedDeltaT();
 }
+double CanvasObject::getElapsedTime() const
+{
+    if(!m_canvasParent) return 0;
+    return m_canvasParent->getElapsedTime();
+}
+double CanvasObject::getFixedElapsedTime() const
+{
+    if (!m_canvasParent) return 0;
+	return m_canvasParent->getFixedElapsedTime();
+}
+
 
 const CanvasSettings::UpdateControlls &CanvasObject::getUpdateControlls() const
 {
@@ -835,12 +1004,39 @@ Canvas* CanvasObject::getCanvasParent() const
 {
     return m_canvasParent;
 }
+
+Objects::CanvasObject* CanvasObject::findFirstObjectGlobal(const std::string& name)
+{
+    if (!m_canvasParent) return nullptr;
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    return m_canvasParent->findFirstObject(name);
+}
+std::vector<Objects::CanvasObject*> CanvasObject::findAllObjectsGlobal(const std::string& name)
+{
+    if (!m_canvasParent) return std::vector<CanvasObject*>();
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    return m_canvasParent->findAllObjects(name);
+}
+Objects::CanvasObject* CanvasObject::findFirstObjectGlobalRecursive(const std::string& name)
+{
+    if (!m_canvasParent) return nullptr;
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    return m_canvasParent->findFirstObjectRecursive(name);
+}
+std::vector<Objects::CanvasObject*> CanvasObject::findAllObjectsGlobalRecusive(const std::string& name)
+{
+    if (!m_canvasParent) return std::vector<CanvasObject*>();
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+	return m_canvasParent->findAllObjectsRecursive(name);
+}
+
 void CanvasObject::update()
 {
 
 }
 std::vector<std::string> CanvasObject::toStringInternal(const std::string &preStr) const
 {
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     using std::string;
     std::vector<string> lines;
     const CanvasObject *t = this;
@@ -868,6 +1064,44 @@ std::vector<std::string> CanvasObject::toStringInternal(const std::string &preSt
     }
     lines.push_back(preStr+" ----");
     return lines;
+}
+bool CanvasObject::findAllChilds_internal(const std::string& name, std::vector<CanvasObject*>& foundList)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
+    size_t nameSize = name.size();
+    bool found = false;
+    for (size_t i = 0; i < m_childs.size(); ++i)
+    {
+        const std::string &objName = m_childs[i]->getName();
+        if(nameSize != objName.size())
+			continue;
+        if (objName == name)
+        {
+			foundList.push_back(m_childs[i]);
+            found = true;
+		}
+		//found |= m_childs[i]->findAllChilds_internal(name, foundList);
+	}
+    return found;
+}
+bool CanvasObject::findAllChildsRecursive_internal(const std::string& name, std::vector<CanvasObject*>& foundList)
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
+    size_t nameSize = name.size();
+    bool found = false;
+    for (size_t i = 0; i < m_childs.size(); ++i)
+    {
+        const std::string& objName = m_childs[i]->getName();
+        if (nameSize != objName.size())
+            continue;
+        if (objName == name)
+        {
+            foundList.push_back(m_childs[i]);
+            found = true;
+        }
+        found |= m_childs[i]->findAllChilds_internal(name, foundList);
+    }
+    return found;
 }
 
 void CanvasObject::onCanvasParentChange(Canvas *oldParent, Canvas *newParent) {}
@@ -979,6 +1213,10 @@ void CanvasObject::setCanvasParent(Canvas *parent)
     {
         m_canvasParent->addCanvesObject();
         m_canvasParent->addComponent(m_components.size());
+
+        // Set the birth time and tick
+        m_birthTick = m_canvasParent->getTick();
+        m_birthTime = m_canvasParent->getElapsedTime();
     }
 
     for (size_t i = 0; i < m_components.size(); ++i)

@@ -184,16 +184,86 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
 
         virtual CLONE_FUNC_DEC(CanvasObject);
 
-
+        /// <summary>
+        /// Sets the object as a child of the parent
+        /// This removes the object from the old parent
+        /// </summary>
+        /// <param name="parent">new parent</param>
         void setParent(CanvasObject *parent);
+
+        /// <summary>
+        /// Gets the parent of the object
+        /// </summary>
+        /// <returns>Parent object</returns>
         CanvasObject *getParent() const;
+
+        /// <summary>
+        /// Gets the root parent of the object
+        /// The root is the topmost parent in the hirarchy
+        /// </summary>
+        /// <returns>Root object</returns>
         CanvasObject *getRootParent() const;
 
+        /// <summary>
+        /// Enables/Disables the object
+        /// If the object is disabled, it will not be updated or drawn
+        /// and no events get received
+        /// </summary>
+        /// <param name="enable">enable=true, disable=false</param>
         void setEnabled(bool enable);
+
+        /// <summary>
+        /// Gets the current enabled state of the object
+        /// </summary>
+        /// <returns>true if the object is enabled</returns>
         bool isEnabled() const;
 
+        /// <summary>
+        /// Sets the name of the object
+        /// </summary>
+        /// <param name="name">name text</param>
         void setName(const std::string &name);
-        const std::string getName() const;
+
+        /// <summary>
+        /// Gets the name of the object
+        /// </summary>
+        /// <returns>name text</returns>
+        const std::string &getName() const;
+
+        /// <summary>
+        /// Gets the age of the object in seconds
+        /// Timedomain: Real simulation time
+        /// </summary>
+        /// <returns>Age</returns>
+        double getAge() const;
+
+        /// <summary>
+        /// Gets the time in seconds where the object was added to a canvas
+        /// Timedomain: Real simulation time
+        /// </summary>
+        /// <returns>Time of birth</returns>
+        double getBirthTime() const;
+
+        /// <summary>
+        /// Gets the age of the object in ticks
+        /// </summary>
+        /// <returns>Age in ticks</returns>
+        size_t getAgeTicks() const;
+
+        /// <summary>
+        /// Gets the tick where the object was added to a canvas
+        /// </summary>
+        /// <returns>Birth tick</returns>
+        size_t getBirthTick() const;
+
+        /// <summary>
+        /// Gets the age of the object in seconds
+        /// Timedomain: Fixed simulation time
+        /// </summary>
+        /// <returns>Age in fixed timedomain</returns>
+        double getAgeFixed() const;
+
+
 
         void setPositionRelative(const sf::Vector2f& pos); // Sets the position relative to its parent
         void setPositionAbsolute(const sf::Vector2f& pos); // Sets the position in the absolute world coords.
@@ -231,11 +301,26 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
         bool childExists(CanvasObject *child) const;
         size_t getChildIndex(CanvasObject *child) const;
         const std::vector<CanvasObject*> &getChilds() const;
+
         template<typename T>
         std::vector<T*> getChilds() const;
+
+        template<typename T>
+        std::vector<T*> getChildsRecusrive() const;
+
         size_t getChildCount() const;
+
         template<typename T>
         size_t getChildCount() const;
+
+        template<typename T>
+        size_t getChildCountRecusrive() const;
+
+        CanvasObject* findFirstChild(const std::string &name);
+        std::vector<CanvasObject*> findAllChilds(const std::string &name);
+
+        CanvasObject* findFirstChildRecursive(const std::string &name);
+        std::vector<CanvasObject*> findAllChildsRecursive(const std::string &name);
         // ---------
 
         // Component operations
@@ -261,6 +346,17 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
         size_t getComponentCount() const;
         template<typename T>
         size_t getComponentCount() const;
+
+        template<typename T>
+        size_t getComponentCountRecusrive() const;
+
+        Components::Component* findFirstComponent(const std::string& name);
+        std::vector<Components::Component*> findAllComponents(const std::string& name);
+
+        Components::Component* findFirstComponentRecursive(const std::string& name);
+        std::vector<Components::Component*> findAllComponentsRecursive(const std::string& name);
+
+
         const std::vector<Components::Collider*> &getCollider() const;
         bool checkCollision(const CanvasObject* other) const;
         bool checkCollision(const CanvasObject* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
@@ -283,11 +379,77 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
 
         const sf::Font &getTextFont() const;
 
+        /// <summary>
+        /// Gets the current canvas tick count
+        /// </summary>
+        /// <returns>current tick</returns>
         size_t getTick() const;
-        double getDeltaT() const; // Returns delta Time since last update in seconds
-        double getFixedDeltaT() const; // Returns the fixed physics delta time in seconds
 
+        /// <summary>
+        /// Gets the time in seconds between each update call
+        /// Timedomain: Real simulation time
+        /// </summary>
+        /// <returns>Delta time</returns>
+        double getDeltaT() const;
+
+        /// <summary>
+        /// Gets the time in seconds between each update call
+        /// Timedomain: Fixed simulation time
+        /// </summary>
+        /// <returns>Delta time</returns>
+        double getFixedDeltaT() const;
+
+        /// <summary>
+        /// Gets the time in seconds since the start of the canvas
+        /// Timedomain: Real simulation time
+        /// </summary>
+        /// <returns>Time since start</returns>
+        double getElapsedTime() const; 
+
+        /// <summary>
+        /// Gets the time in seconds since the start of the canvas
+        /// Timedomain: Fixed simulation time
+        /// </summary>
+        /// <returns>Time since start</returns>
+        double getFixedElapsedTime() const; 
+
+        /// <summary>
+        /// Gets the canvas this object is contained in
+        /// </summary>
+        /// <returns>Parent canvas</returns>
         Canvas* getCanvasParent() const;
+
+        /// <summary>
+        /// Searches the object with the given name in the canvas.
+        /// Searches only the top layer objects.
+        /// </summary>
+        /// <param name="name">name of the object</param>
+        /// <returns>pointer to the object, or nullptr if not found</returns>
+        Objects::CanvasObject* findFirstObjectGlobal(const std::string& name);
+
+        /// <summary>
+        /// Searches all objects with the given name in the canvas
+        /// Searches only the top layer objects.
+        /// </summary>
+        /// <param name="name">name of the object</param>
+        /// <returns>a list of found objects</returns>
+        std::vector<Objects::CanvasObject*> findAllObjectsGlobal(const std::string& name);
+
+        /// <summary>
+        /// Searches the object with the given name in the canvas
+        /// Searches all object tree hirarchies
+        /// </summary>
+        /// <param name="name">name of the object</param>
+        /// <returns>pointer to the object, or nullptr if not found</returns>
+        Objects::CanvasObject* findFirstObjectGlobalRecursive(const std::string& name);
+
+        /// <summary>
+        /// Searches all objects with the given name in the canvas
+        /// Searches all object tree hirarchies
+        /// </summary>
+        /// <param name="name">name of the object</param>
+        /// <returns>a list of found objects</returns>
+        std::vector<Objects::CanvasObject*> findAllObjectsGlobalRecusive(const std::string& name);
         // ---------
 
         
@@ -316,6 +478,13 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
 
     private:
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
+        bool findAllChilds_internal(const std::string& name, std::vector<CanvasObject*>& foundList);
+        bool findAllChildsRecursive_internal(const std::string& name, std::vector<CanvasObject*>& foundList);
+        bool findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList);
+
+        template<typename T>
+        void getChildsRecusrive_internal(std::vector<T*> &listOut) const;
+
 
         void removeChild_internal();
         void removeComponent_internal();
@@ -333,6 +502,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
         bool m_enabled;
         std::string m_name;
         sf::Vector2f m_position;
+        double m_birthTime; // Time of the canvas, in seconds where the object was added to a canvas (Time domain: real simulation time)
+        size_t m_birthTick; // Tick of the canvas, where the object was added to a canvas
 
         // Hirarchy
         Canvas *m_canvasParent;
@@ -438,6 +609,28 @@ std::vector<T*> CanvasObject::getChilds() const
     }
     return list;
 }
+
+template<typename T>
+std::vector<T*> CanvasObject::getChildsRecusrive() const
+{
+    std::vector<T*> list;
+    list.reserve(m_childs.size()*2);
+    getChildsRecusrive_internal(list);
+    return list;
+}
+template<typename T>
+void CanvasObject::getChildsRecusrive_internal(std::vector<T*>& listOut) const
+{
+    for (CanvasObject* obj : m_childs)
+    {
+		T* child = dynamic_cast<T*>(obj);
+		if(child)
+			listOut.push_back(child);
+        obj->getChildsRecusrive_internal(listOut);
+	}
+}
+
+
 template<typename T>
 size_t CanvasObject::getChildCount() const
 {
@@ -450,6 +643,21 @@ size_t CanvasObject::getChildCount() const
     }
     return counter;
 }
+
+template<typename T>
+size_t CanvasObject::getChildCountRecusrive() const
+{
+	size_t counter = 0;
+    for (CanvasObject* obj : m_childs)
+    {
+		T* child = dynamic_cast<T*>(obj);
+		if(child)
+			++counter;
+		counter += obj->getChildCountRecusrive<T>();
+	}
+	return counter;
+}
+
 template<typename T>
 void CanvasObject::removeComponents()
 {
@@ -486,6 +694,17 @@ size_t CanvasObject::getComponentCount() const
             ++count;
     }
     return count;
+}
+
+template<typename T>
+size_t CanvasObject::getComponentCountRecusrive() const
+{
+    size_t count = getComponentCount<T>();
+    for (const CanvasObject* &obj : m_childs)
+    {
+		count += obj->getComponentCountRecusrive<T>();
+	}
+	return count;
 }
 }
 }

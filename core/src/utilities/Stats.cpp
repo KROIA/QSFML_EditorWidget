@@ -15,6 +15,7 @@ namespace QSFML
 			, m_boundingBoxCollisionChecks(0)
 			, m_collisions(0)
 			, m_fps(0)
+			, m_tps(0)
 			, m_frameTime(0)
 			, m_eventTime(0)
 			, m_updateTime(0)
@@ -34,6 +35,7 @@ namespace QSFML
 			, m_boundingBoxCollisionChecks(other.m_boundingBoxCollisionChecks.load())
 			, m_collisions(other.m_collisions.load())
 			, m_fps(other.m_fps)
+			, m_tps(other.m_tps)
 			, m_frameTime(other.m_frameTime)
 			, m_eventTime(other.m_eventTime)
 			, m_updateTime(other.m_updateTime)
@@ -55,6 +57,7 @@ namespace QSFML
 			m_collisions = other.m_collisions.load();
 
 			m_fps = other.m_fps;
+			m_tps = other.m_tps;
 			m_frameTime = other.m_frameTime;
 			m_eventTime = other.m_eventTime;
 			m_updateTime = other.m_updateTime;
@@ -73,6 +76,7 @@ namespace QSFML
 			Stats s(*this);
 			double diff = 1 - smothness;
 			s.m_fps = diff * m_fps + smothness * oldStats.m_fps;
+			s.m_tps = diff * m_tps + smothness * oldStats.m_tps;
 			s.m_frameTime = diff * m_frameTime + smothness * oldStats.m_frameTime;
 			s.m_eventTime = diff * m_eventTime + smothness * oldStats.m_eventTime;
 			s.m_updateTime = diff * m_updateTime + smothness * oldStats.m_updateTime;
@@ -111,6 +115,10 @@ namespace QSFML
 		{
 			return m_fps;
 		}
+		double Stats::getTPS() const
+		{
+			return m_tps;
+		}
 		double Stats::getFrameTime() const
 		{
 			return m_frameTime;
@@ -140,6 +148,10 @@ namespace QSFML
 		{
 			return m_elapsedTime;
 		}
+		double Stats::getFiexedElapsedTime() const
+		{
+			return m_fixedDeltaT * m_tick;
+		}
 
 		size_t Stats::getTick() const
 		{
@@ -159,6 +171,7 @@ namespace QSFML
 				"  Collisions:          " + std::to_string(m_collisions) + "\n" +
 				" Timing:\n"
 				"  FPS:                 " + std::to_string(m_fps) + "\n" +
+				"  TPS:                 " + std::to_string(m_tps) + "\n" +
 				"  DeltaT:              " + std::to_string(m_deltaT * 1000) + " ms\n" +
 				"  Elapsed time:        " + std::to_string(m_elapsedTime) + " s\n" +
 				"  Elapsed fixed time:  " + std::to_string(m_fixedDeltaT * m_tick) + " s\n" +
@@ -172,22 +185,54 @@ namespace QSFML
 		{
 			qDebug() << toString().c_str();
 		}
-		void Stats::resetFrame()
+		void Stats::resetFrame_synced(Stats& copyTo)
 		{
+			copyTo.m_frameTime = m_frameTime;
+			m_frameTime = 0;
+			//resetFrame_eventloop(copyTo);
+			//resetFrame_updateLoop(copyTo);
+			//resetFrame_paintLoop(copyTo);
+			//copyTo.copyObjectCounts(*this);
+		}
+		void Stats::resetFrame_eventloop(Stats& copyTo)
+		{
+			copyTo.m_eventTime = m_eventTime;
+			m_eventTime = 0;
+		}
+		void Stats::resetFrame_updateLoop(Stats& copyTo)
+		{
+			copyTo.m_updateTime = m_updateTime;
+			copyTo.m_collisionChecks.store(m_collisionChecks);
+			copyTo.m_boundingBoxCollisionChecks.store(m_boundingBoxCollisionChecks);
+			copyTo.m_collisions.store(m_collisions);
+			copyTo.m_tick = m_tick;
+			copyTo.m_deltaT = m_deltaT;
+			copyTo.m_fixedDeltaT = m_fixedDeltaT;
+			copyTo.m_elapsedTime = m_elapsedTime;
+			copyTo.m_tps = m_tps;
+
+			m_updateTime = 0;
 			m_collisionChecks = 0;
 			m_boundingBoxCollisionChecks = 0;
 			m_collisions = 0;
+		}
+		void Stats::resetFrame_paintLoop(Stats& copyTo)
+		{
+			copyTo.m_fps = m_fps;
+			copyTo.m_drawTime = m_drawTime;
 
-			m_fps = 0;
-			m_frameTime = 0;
-			m_eventTime = 0;
-			m_updateTime = 0;
+			//m_fps = 0;
 			m_drawTime = 0;
 		}
-
+		void Stats::copyObjectCounts(const Stats& from)
+		{
+			m_rootObjectsCount = from.m_rootObjectsCount.load();
+			m_objectsCount = from.m_objectsCount.load();
+			m_componentsCount = from.m_componentsCount.load();
+		}
 		void Stats::resetTiming()
 		{
-			m_fps = 0;
+			//m_fps = 0;
 			m_frameTime = 0;
 			m_eventTime = 0;
 			m_updateTime = 0;
@@ -292,11 +337,28 @@ namespace QSFML
 			m_currentStats.m_tick++;
 		}*/
 
-		void StatsManager::resetFrame()
+		void StatsManager::resetFrame_synced()
+		{
+			
+			//m_lastStats = m_currentStats;
+			m_currentStats.resetFrame_synced(m_lastStats);
+		}
+		void StatsManager::resetFrame_eventloop()
+		{
+			m_currentStats.resetFrame_eventloop(m_lastStats);
+		}
+		void StatsManager::resetFrame_updateLoop()
 		{
 			m_currentStats.m_elapsedTime += m_currentStats.m_deltaT;
-			m_lastStats = m_currentStats;
-			m_currentStats.resetFrame();
+			m_currentStats.resetFrame_updateLoop(m_lastStats);
+		}
+		void StatsManager::resetFrame_paintLoop()
+		{
+			m_currentStats.resetFrame_paintLoop(m_lastStats);
+		}
+		void StatsManager::copyObjectCounts()
+		{
+			m_lastStats.copyObjectCounts(m_currentStats);
 		}
 		void StatsManager::resetTiming()
 		{

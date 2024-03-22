@@ -29,6 +29,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
 
         virtual ~Canvas();
 
+        void applyObjectChanges(); // Will be called automaticly if not manual
 
         void setSettings(const CanvasSettings &settings);
         const CanvasSettings &getSettings() const;
@@ -63,6 +64,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         void sfEvent(const std::vector<sf::Event> &events);
 
         const sf::Font &getTextFont() const;
+
         static void setProfilerOutputFileName(const std::string& fileName);
         static const std::string& getProfilerOutputFileName();
         static void saveProfilerFile();
@@ -70,8 +72,11 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
 
         size_t getTick() const; // returns the count of updates done
         double getDeltaT() const; // Gets delta Time in seconds
+        double getElapsedTime() const; // Gets elapsed Time in seconds
         double getFixedDeltaT() const; // Gets fixed delta Time in seconds
+        double getFixedElapsedTime() const; // Gets fixed elapsed Time in seconds
         double getFPS() const;
+        double getTPS() const;
 
         //static void startEventLoop();
         //static void stopEventLoop();
@@ -92,6 +97,10 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
     private slots:
         
         void update();
+        void checkEvents();
+        void updateObjects();
+        void paint();
+
 
     private:
 
@@ -100,7 +109,10 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
 
 
         QTimer m_frameTimer;
-        TimePoint m_deltaT_t1;
+        TimePoint m_syncedUpdateT_t1;
+        TimePoint m_update_t1;
+        TimePoint m_paint_t1;
+
 
         CanvasSettings m_settings;
         sf::RenderWindow *m_window;

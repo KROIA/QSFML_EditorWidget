@@ -33,6 +33,7 @@ namespace QSFML
 
 
 			double getFPS() const;
+			double getTPS() const;
 			double getFrameTime() const;	// Time in ms
 			double getEventTime() const;	// Time in ms
 			double getUpdateTime() const;	// Time in ms
@@ -40,27 +41,32 @@ namespace QSFML
 
 			double getDeltaT() const;
 			double getFixedDeltaT() const;
-			double getElapsedTime() const;
+			double getElapsedTime() const;	// Time in s
+			double getFiexedElapsedTime() const;	// Time in s
 
 			size_t getTick() const;
 
 			std::string toString() const;
 			void print() const;
 
-
-
 		private:
-			void resetFrame();
+			void resetFrame_synced(Stats &copyTo);
+			void resetFrame_eventloop(Stats &copyTo);
+			void resetFrame_updateLoop(Stats &copyTo);
+			void resetFrame_paintLoop(Stats &copyTo);
+			void copyObjectCounts(const Stats& from);
 			void resetTiming();
 
 			std::atomic<unsigned int> m_rootObjectsCount;
 			std::atomic<unsigned int> m_objectsCount;
 			std::atomic<unsigned int> m_componentsCount;
+
 			std::atomic<unsigned int> m_collisionChecks;
 			std::atomic<unsigned int> m_boundingBoxCollisionChecks;
 			std::atomic<unsigned int> m_collisions;
 
 			double m_fps;
+			double m_tps;
 			double m_frameTime;
 			double m_eventTime;
 			double m_updateTime;
@@ -162,6 +168,10 @@ namespace QSFML
 			{
 				m_currentStats.m_fps = fps;
 			}
+			void setTPS(double tps)
+			{
+				m_currentStats.m_tps = tps;
+			}
 			void setFrameTime(double t)
 			{
 				m_currentStats.m_frameTime = t;
@@ -193,7 +203,11 @@ namespace QSFML
 				m_currentStats.m_tick++;
 			}
 
-			void resetFrame();
+			void resetFrame_synced();
+			void resetFrame_eventloop();
+			void resetFrame_updateLoop();
+			void resetFrame_paintLoop();
+			void copyObjectCounts();
 			void resetTiming();
 
 		protected:
