@@ -24,7 +24,7 @@ void addLineChart(Canvas* canvas)
 }
 void addMouseCollider(Canvas* canvas)
 {
-	MouseCollider* mouseCollider = new MouseCollider();
+	MouseCollider* mouseCollider = new MouseCollider("MOUSE_COLLIDER");
 	canvas->addObject(mouseCollider);
 }
 void addShape(Canvas* canvas)
@@ -33,6 +33,8 @@ void addShape(Canvas* canvas)
     QSFML::Objects::CanvasObject* obj = new QSFML::Objects::CanvasObject();
     QSFML::Components::Shape* shape = new QSFML::Components::Shape();
     QSFML::Utilities::Ray* testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
+    QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
+    linePainter->useGlobalPosition(true);
     obj->setPositionAbsolute(sf::Vector2f(100, 100));
     //delete testRay->createRayPainter();
 
@@ -50,7 +52,7 @@ void addShape(Canvas* canvas)
     sf::Transform t = shape->getTransform();
     t.translate(obj->getPositionAbsolute());
     shape->setTransform(t);
-    obj->setUpdateFunction([shape, testRay, obj]()
+    obj->setUpdateFunction([shape, testRay, obj, linePainter]()
         {
             sf::Transform t = shape->getTransform();
             t.rotate(0.1);
@@ -62,6 +64,19 @@ void addShape(Canvas* canvas)
             float d1;
             size_t d2;
             testRay->raycast(*shape, d1, d2);
+
+            CanvasObject* mouseFollowerObj = obj->findFirstObjectGlobal("MOUSE_COLLIDER");
+            if (mouseFollowerObj)
+            {
+                sf::Vector2f pos = mouseFollowerObj->getPositionAbsolute();
+                linePainter->setPoints(obj->getPositionAbsolute(), pos);
+                linePainter->setColor(sf::Color::Green);
+            }
+            else
+            {
+				linePainter->setPoints(obj->getPositionAbsolute(), obj->getMouseWorldPosition());
+                linePainter->setColor(sf::Color::Red);
+			}
         });
     obj->setRenderLayer(RenderLayer::layer_2);
     shape->setFillColor(sf::Color::Red);
@@ -71,6 +86,7 @@ void addShape(Canvas* canvas)
     shape->setFill(true);
 
     obj->addComponent(shape);
+    obj->addComponent(linePainter);
     canvas->addObject(obj);
 }
 void addPerlinNoise(Canvas* canvas)
@@ -110,6 +126,8 @@ void addPerlinNoise(Canvas* canvas)
 	//	});
     obj->setRenderLayer(RenderLayer::layer_2);
     obj->addComponent(pixelPainter);
+    //obj->setPositionAbsolute(sf::Vector2f(300, 100));
+    pixelPainter->setPosition(sf::Vector2f(300, 100));
     canvas->addObject(obj);
 }
 
@@ -128,7 +146,7 @@ SandBox::SandBox(QWidget *parent)
         //settings.layout.autoAjustSize = false;
         settings.layout.fixedSize = sf::Vector2u(300,100);
         settings.contextSettings.antialiasingLevel = 8;
-        settings.timing.frameTime = 0;
+        settings.timing.frameTime = 0.02;
         //settings.updateControlls.enableMultithreading = false;
         //settings.updateControlls.enablePaintLoop = false;
         //settings.updateControlls.enableEventLoop = false;
@@ -165,6 +183,7 @@ SandBox::SandBox(QWidget *parent)
         //settings.layout.autoAjustSize = false;
         settings.layout.fixedSize = sf::Vector2u(300,100);
         settings.contextSettings.antialiasingLevel = 8;
+        settings.timing.frameTime = 0;
         //settings.timing.frameTime = 0;
        //settings.updateControlls.enableMultithreading = false;
        //settings.updateControlls.enablePaintLoop = false;

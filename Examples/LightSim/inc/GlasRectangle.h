@@ -32,7 +32,7 @@ private:
             Painter(const Painter& other);
             COMPONENT_DECL(Painter);
 
-            void draw(sf::RenderTarget& target,
+            void drawComponent(sf::RenderTarget& target,
                 sf::RenderStates states) const override;
 
             sf::Color m_color;

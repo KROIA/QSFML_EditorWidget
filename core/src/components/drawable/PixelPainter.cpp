@@ -8,7 +8,7 @@ namespace QSFML
 
         PixelPainter::PixelPainter(const std::string& name)
             : Drawable(name)
-            , m_position(0, 0)
+//            , m_position(0, 0)
             , m_pixelCount(0, 0)
             , m_pixelSize(1.0f)
             , m_pixels(nullptr)
@@ -19,7 +19,7 @@ namespace QSFML
         }
         PixelPainter::PixelPainter(const PixelPainter& other)
             : Drawable(other)
-            , m_position(other.m_position)
+          //  , m_position(other.m_position)
             , m_pixelCount(other.m_pixelCount)
             , m_pixelSize(other.m_pixelSize)
             , m_pixels(new sf::Uint8[other.m_pixelCount.x * other.m_pixelCount.y * 4])         
@@ -78,14 +78,14 @@ namespace QSFML
             return m_pixelCount;
         }
 
-        void PixelPainter::setPosition(const sf::Vector2f& pos)
+        /*void PixelPainter::setPosition(const sf::Vector2f& pos)
         {
             m_position = pos;
         }
         const sf::Vector2f& PixelPainter::getPosition() const
         {
             return m_position;
-        }
+        }*/
 
         void PixelPainter::setPixel(const sf::Vector2u& pos, const sf::Color& c)
         {
@@ -116,10 +116,9 @@ namespace QSFML
             memset(m_pixels, 0, m_pixelCount.x * m_pixelCount.y * 4);
         }
 
-        void PixelPainter::draw(sf::RenderTarget& target,
+        void PixelPainter::drawComponent(sf::RenderTarget& target,
             sf::RenderStates states) const
         {
-            
 			m_texture.update(m_pixels);
             sf::Sprite sprite;
             sprite.setTexture(m_texture);

@@ -96,7 +96,7 @@ private:
         void drawNormalVec(float normalAngle, const sf::Vector2f& pos);
 
 
-        void draw(sf::RenderTarget& target,
+        void drawComponent(sf::RenderTarget& target,
             sf::RenderStates states) const override;
 
         mutable std::vector<QSFML::Utilities::Ray> m_normalList;

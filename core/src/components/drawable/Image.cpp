@@ -97,24 +97,24 @@ namespace QSFML
 				m_sprite->setTexture(*m_texture);
 		}
 
-		void Image::draw(sf::RenderTarget& target,
+		void Image::drawComponent(sf::RenderTarget& target,
 						 sf::RenderStates states) const
 		{
-			target.draw(*m_sprite);
+			target.draw(*m_sprite, states);
 		}
 
 
 
 
 
-        void Image::setPosition(float x, float y)
-		{
-			m_sprite->setPosition(x, y);
-		}
-        void Image::setPosition(const sf::Vector2f& position)
-		{
-			m_sprite->setPosition(position);
-		}
+        //void Image::setPosition(float x, float y)
+		//{
+		//	m_sprite->setPosition(x, y);
+		//}
+        //void Image::setPosition(const sf::Vector2f& position)
+		//{
+		//	m_sprite->setPosition(position);
+		//}
         void Image::setRotation(float angle)
 		{
 			m_sprite->setRotation(angle);

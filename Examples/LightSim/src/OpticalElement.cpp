@@ -293,7 +293,7 @@ void OpticalElement::Painter::drawNormalVec(float normalAngle, const sf::Vector2
 {
 	m_normalList.push_back(QSFML::Utilities::Ray(pos, QSFML::VectorMath::getRotatedUnitVector(normalAngle)));
 }
-void OpticalElement::Painter::draw(sf::RenderTarget& target,
+void OpticalElement::Painter::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates states) const
 {
 	sf::Color normalColor = sf::Color::Blue;

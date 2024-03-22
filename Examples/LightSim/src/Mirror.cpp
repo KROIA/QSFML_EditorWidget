@@ -76,7 +76,7 @@ void Mirror::updateLine()
 	sf::Vector2f start = m_shape.m_pos - direction * m_shape.m_width / 2.f;
 	sf::Vector2f end = m_shape.m_pos + direction * m_shape.m_width / 2.f;
 
-	m_mirrorLine->setPos(start, end);
+	m_mirrorLine->setPoints(start, end);
 
 	m_shape.m_mirrorRay.setPos(start);
 	m_shape.m_mirrorRay.setDirection(direction * m_shape.m_width);

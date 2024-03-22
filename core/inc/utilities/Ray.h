@@ -170,7 +170,7 @@ namespace QSFML
 				~RayPainter();
 				
 
-				void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+				void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 			private:
 				void addPoint(const sf::Vector2f& point);

@@ -22,8 +22,8 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
         LinePainter(const LinePainter &other);
         COMPONENT_DECL(LinePainter);
 
-        void setPos(const sf::Vector2f &start, const sf::Vector2f &end);
-        void setPos(size_t index, const sf::Vector2f &start, const sf::Vector2f &end);
+        void setPoints(const sf::Vector2f &start, const sf::Vector2f &end);
+        void setPoints(size_t index, const sf::Vector2f &start, const sf::Vector2f &end);
         const sf::Vector2f &getStartPos() const;
         const sf::Vector2f &getStartPos(size_t index) const;
         const sf::Vector2f &getEndPos() const;
@@ -39,12 +39,35 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
         const sf::Color &getColor() const;
         const sf::Color &getColor(size_t index) const;
 
-        void draw(sf::RenderTarget& target,
-                  sf::RenderStates states) const override;
+        /// <summary>
+        /// Setting to switch from relative to global position
+        /// </summary>
+        /// <description>
+        /// Using relative position means that the position of the lines is relative to the parent object.
+        /// Using global position means that the position of the lines is relative to the world.
+        /// </description>
+        /// <param name="useGlobal"></param>
+        void useGlobalPosition(bool useGlobal)
+        {
+			m_useGlobalPosition = useGlobal;
+        }
+
+        /// <summary>
+        /// Gets the positioning mode
+        /// </summary>
+        /// <returns>true if the mode is global positioning</returns>
+        bool isUsingGlobalPosition() const
+        {
+            return m_useGlobalPosition;
+        }
 
     private:
+        void drawComponent(sf::RenderTarget& target,
+            sf::RenderStates states) const override;
+
         float m_thickness;
         sf::Color m_color;
+        bool m_useGlobalPosition = false;
 
         std::vector<LineData> m_lines;
 };

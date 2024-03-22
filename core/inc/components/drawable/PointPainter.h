@@ -47,12 +47,38 @@ namespace QSFML
 
             void clear();
 
-            void draw(sf::RenderTarget& target,
-                sf::RenderStates states) const override
+            /// <summary>
+            /// Setting to switch from relative to global position
+            /// </summary>
+            /// <description>
+            /// Using relative position means that the position of the points is relative to the parent object.
+            /// Using global position means that the position of the points is relative to the world.
+            /// </description>
+            /// <param name="useGlobal"></param>
+            void useGlobalPosition(bool useGlobal)
             {
-               std::vector<sf::Vertex> shape(m_verteciesCount);
-               float dAngle = (float)(2 * M_PI / m_verteciesCount);
-                
+                m_useGlobalPosition = useGlobal;
+            }
+
+            /// <summary>
+            /// Gets the positioning mode
+            /// </summary>
+            /// <returns>true if the mode is global positioning</returns>
+            bool isUsingGlobalPosition() const
+            {
+                return m_useGlobalPosition;
+            }
+
+           
+
+        private: 
+            void drawComponent(sf::RenderTarget& target,
+            sf::RenderStates states) const override
+            {
+                std::vector<sf::Vertex> shape(m_verteciesCount);
+                float dAngle = (float)(2 * M_PI / m_verteciesCount);
+                if(m_useGlobalPosition)
+                    states = sf::RenderStates();
                 for (auto& point : m_points)
                 {
                     float angle = 0;
@@ -68,10 +94,10 @@ namespace QSFML
                 }
             }
 
-        private:
             float m_defaultRadius;
             size_t m_verteciesCount;
             sf::Color m_defaultColor;
+            bool m_useGlobalPosition = false;
 
             
             std::vector<PointData> m_points;

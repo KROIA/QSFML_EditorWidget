@@ -51,10 +51,10 @@ namespace QSFML
 			Utilities::AABB getLocalBounds() const;
 			Utilities::AABB getGlobalBounds() const;
 
-			//void draw(sf::RenderTarget& target,
+			//void drawComponent(sf::RenderTarget& target,
 			//	sf::RenderStates states) const override;
 
-			void draw(sf::RenderTarget& target, sf::RenderStates states) const override
+			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override
 			{
 				if (m_fill)
 				{

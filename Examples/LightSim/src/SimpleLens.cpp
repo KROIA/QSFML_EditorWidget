@@ -231,7 +231,7 @@ SimpleLens::LensShape::LensPainter::LensPainter(const LensPainter& other)
 COMPONENT_IMPL(SimpleLens::LensShape::LensPainter);
 
 
-void SimpleLens::LensShape::LensPainter::draw(sf::RenderTarget& target,
+void SimpleLens::LensShape::LensPainter::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates states) const
 {
 	const size_t resolution = 20;

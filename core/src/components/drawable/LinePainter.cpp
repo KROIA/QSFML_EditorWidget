@@ -22,11 +22,11 @@ LinePainter::LinePainter(const LinePainter &other)
 {
 
 }
-void LinePainter::setPos(const sf::Vector2f& start, const sf::Vector2f& end)
+void LinePainter::setPoints(const sf::Vector2f& start, const sf::Vector2f& end)
 {
 	m_lines = { {start, end, m_color, m_thickness} };
 }
-void LinePainter::setPos(size_t index, const sf::Vector2f& start, const sf::Vector2f& end)
+void LinePainter::setPoints(size_t index, const sf::Vector2f& start, const sf::Vector2f& end)
 {
    LineData &data = m_lines[index];
    data.start = start;
@@ -88,9 +88,11 @@ const sf::Color& LinePainter::getColor(size_t index) const
 {
     return m_lines[index].color;
 }
-void LinePainter::draw(sf::RenderTarget& target,
-                sf::RenderStates) const
+void LinePainter::drawComponent(sf::RenderTarget& target,
+                        sf::RenderStates states) const
 {
+    if (m_useGlobalPosition)
+        states = sf::RenderStates();
     for (auto& line : m_lines)
     {
         sf::Vertex m_relativeVertices[4];
@@ -109,7 +111,7 @@ void LinePainter::draw(sf::RenderTarget& target,
 		m_relativeVertices[3].position = line.start - offset;
 		for (int i=0; i<4; ++i)
 			m_relativeVertices[i].color = line.color;
-		target.draw(m_relativeVertices,4,sf::Quads);
+		target.draw(m_relativeVertices,4,sf::Quads, states);
     }
 }
 }

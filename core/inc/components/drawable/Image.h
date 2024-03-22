@@ -22,7 +22,7 @@ namespace QSFML
 
             bool loadFromImage(const std::string& imagePath);
 
-            void draw(sf::RenderTarget& target,
+            void drawComponent(sf::RenderTarget& target,
                 sf::RenderStates states) const override;
 
 
@@ -39,7 +39,7 @@ namespace QSFML
             /// \see move, getPosition
             ///
             ////////////////////////////////////////////////////////////
-            void setPosition(float x, float y);
+            //void setPosition(float x, float y);
 
             ////////////////////////////////////////////////////////////
             /// \brief set the position of the object
@@ -53,7 +53,7 @@ namespace QSFML
             /// \see move, getPosition
             ///
             ////////////////////////////////////////////////////////////
-            void setPosition(const sf::Vector2f& position);
+            //void setPosition(const sf::Vector2f& position);
 
             ////////////////////////////////////////////////////////////
             /// \brief set the orientation of the object

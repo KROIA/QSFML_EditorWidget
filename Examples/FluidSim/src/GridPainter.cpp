@@ -87,7 +87,7 @@ void GridPainter::updateShape()
 }
 
 
-void GridPainter::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void GridPainter::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_horizontalLines.data(), m_horizontalLines.size(), sf::Lines, states);
 	target.draw(m_verticalLines.data(), m_verticalLines.size(), sf::Lines, states);

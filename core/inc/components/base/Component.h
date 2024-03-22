@@ -52,40 +52,61 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          *        This will be called by the CanvasObject::addChild(...),
          *        So you don't have to call this manually.
          */
-        virtual void setParent(Objects::CanvasObject *parent);
+        virtual void setParent(Objects::CanvasObject* parent)
+        {
+			m_parent = parent;
+		}
 
-        virtual void setCanvasParent(Canvas* parent);
+        virtual void setCanvasParent(Canvas* parent)
+        {
+            m_canvasParent = parent;
+        }
 
         /**
          * \brief getParent
          * \return returns the parent CanvasObject, this component belongs to
          */
-        Objects::CanvasObject* getParent() const;
+        Objects::CanvasObject* getParent() const
+        {
+			return m_parent;
+        }
 
         /**
          * \brief setName
          * \param name of the Component
          */
-        void setName(const std::string &name);
+        void setName(const std::string& name)
+        {
+			m_name = name;
+        }
 
         /**
          * \brief getName
          * \param returns the name of this Component
          */
-        inline const std::string getName() const { return m_name; }
+        inline const std::string getName() const 
+        { 
+            return m_name; 
+        }
 
         /**
          * \brief setEnabled
          * \param enable or disable this Component
          *        If disabled, the component will not get processed
          */
-        void setEnabled(bool enable);
+        void setEnabled(bool enable)
+        {
+			m_enabled = enable;
+		}
 
         /**
          * \brief isEnabled
          * \param return true if this component is enabled, otherwise false
          */
-        inline bool isEnabled() const { return m_enabled; }
+        inline bool isEnabled() const 
+        { 
+            return m_enabled; 
+        }
 
 
     protected:

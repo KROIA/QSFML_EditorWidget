@@ -283,7 +283,7 @@ void Gradient::Lines::updateColor()
 		m_vertices[i].color = m_color;
 }
 
-void Gradient::Lines::draw(sf::RenderTarget& target,
+void Gradient::Lines::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates) const
 {
 	target.draw(m_vertices.data(), m_vertices.size(), sf::LineStrip);

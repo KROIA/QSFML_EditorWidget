@@ -27,7 +27,7 @@ class QSFML_EDITOR_WIDGET_EXPORT VisibleCamera : public CameraController
 
                 void setCam(VisibleCamera* cam);
             protected:
-                void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
+                void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const final;
                 void drawRect(sf::RenderTarget& target, const sf::FloatRect& rect, const sf::Color& color) const;
 
 

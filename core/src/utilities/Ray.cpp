@@ -450,7 +450,7 @@ namespace QSFML
 			m_lines.push_back(line);
 		}
 
-		void Ray::RayPainter::draw(sf::RenderTarget& target, sf::RenderStates states) const
+		void Ray::RayPainter::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			for (size_t i = 0; i < m_lines.size(); ++i)
 			{

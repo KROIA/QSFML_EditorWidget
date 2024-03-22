@@ -10,7 +10,7 @@ namespace QSFML
         COMPONENT_IMPL(Text);
         Text::Text(const std::string& name)
             : Drawable(name)
-            , m_pos(0, 0)
+           // , m_pos(0, 0)
             , m_origin(Utilities::Origin::Type::TopLeft)
             , m_font(nullptr)
         {
@@ -19,17 +19,17 @@ namespace QSFML
         }
         Text::Text(const Text &other)
             : Drawable(other)
-            , m_pos(other.m_pos)
+           // , m_pos(other.m_pos)
             , m_origin(other.m_origin)
             , m_font(other.m_font)
         {
             m_text = other.m_text;
-            updateCenter(other.m_pos);
+            updateCenter(other.m_position);
         }
         void Text::setText(const std::string &text)
         {
             m_text.setString(text);
-            updateCenter(m_pos);
+            updateCenter(m_position);
         }
         std::string Text::getText() const
         {
@@ -39,7 +39,7 @@ namespace QSFML
         void Text::setCharacterSize(unsigned int size)
         {
             m_text.setCharacterSize(size);
-            updateCenter(m_pos);
+            updateCenter(m_position);
         }
         unsigned int Text::getCharacterSize() const
         {
@@ -49,27 +49,27 @@ namespace QSFML
         void Text::setScale(float scale)
         {
             m_text.setScale(sf::Vector2f(scale, scale));
-            updateCenter(m_pos);
+            updateCenter(m_position);
         }
         float Text::getScale() const
         {
             return m_text.getScale().x;
         }
 
-        void Text::setPosition(const sf::Vector2f &pos)
-        {
-            m_pos = pos;
-            updateCenter(m_pos);
-        }
-        const sf::Vector2f &Text::getPosition() const
-        {
-            return m_pos;
-        }
+        //void Text::setPosition(const sf::Vector2f &pos)
+        //{
+        //    m_pos = pos;
+        //    updateCenter(m_pos);
+        //}
+        //const sf::Vector2f &Text::getPosition() const
+        //{
+        //    return m_pos;
+        //}
 
         void Text::setOrigin(const Utilities::Origin& origin)
         {
             m_origin = origin;
-            updateCenter(m_pos);
+            updateCenter(m_position);
         }
         const Utilities::Origin& Text::getOrigin() const
         {
@@ -107,9 +107,9 @@ namespace QSFML
             }
         }
 
-        void Text::draw(sf::RenderTarget& target, sf::RenderStates) const
+        void Text::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
         {
-            target.draw(m_text);
+            target.draw(m_text, states);
         }
 
         void Text::updateCenter(const sf::Vector2f &pos)
@@ -119,7 +119,7 @@ namespace QSFML
     
             sf::Vector2f originPos = m_origin.getOrigin(box);
             m_text.setOrigin(originPos);
-            m_text.setPosition(pos);
+            //m_text.setPosition(pos);
         }
 
     }

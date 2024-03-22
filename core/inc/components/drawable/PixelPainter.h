@@ -23,19 +23,19 @@ namespace QSFML
             void setPixelCount(const sf::Vector2u& count);
             const sf::Vector2u& getPixelCount() const;
 
-            void setPosition(const sf::Vector2f& pos);
-            const sf::Vector2f& getPosition() const;
+            //void setPosition(const sf::Vector2f& pos);
+            //const sf::Vector2f& getPosition() const;
 
             void setPixel(const sf::Vector2u& pos, const sf::Color &c);
             const sf::Color& getPixel(const sf::Vector2u& pos) const;
 
             void clear();
 
-            void draw(sf::RenderTarget& target,
+            void drawComponent(sf::RenderTarget& target,
                 sf::RenderStates states) const override;
 
         private:
-            sf::Vector2f m_position;
+           // sf::Vector2f m_position;
             sf::Vector2u m_pixelCount;
             float m_pixelSize;
 

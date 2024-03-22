@@ -33,8 +33,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
         void setScale(float scale);
         float getScale() const;
 
-        void setPosition(const sf::Vector2f &pos);
-        const sf::Vector2f &getPosition() const;
+        //void setPosition(const sf::Vector2f &pos);
+        //const sf::Vector2f &getPosition() const;
 
         void setOrigin(const Utilities::Origin& origin);
         const Utilities::Origin& getOrigin() const;
@@ -56,13 +56,13 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
          * \param target to draw on
          * \param states
          */
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     protected:
         void updateCenter(const sf::Vector2f &pos);
 
         sf::Text m_text;
-        sf::Vector2f m_pos;
+        //sf::Vector2f m_pos;
         Utilities::Origin m_origin;
         const sf::Font* m_font;
 };

@@ -10,58 +10,122 @@ namespace QSFML
 {
 namespace Components
 {
-
-/**
- * \brief Drawable to draw stuff
- * \details This is one of the predefined Components.<br>
- *          The Drawable overrides the draw(...)
- *          function from the sf::Drawable<br>
- *          The draw(...) function will be called on every frame.
- *
- *          You must inherit from this class and then override the draw(...) function<br>
- * \code
- * class MyDrawable : public QSFML::Components::Drawable
- * {
- *     public:
- *     MyDrawable(const std::string &name = "MyDrawable")
- *         : Drawable(name)
- *     {
- *
- *     }
- *     MyDrawable(const MyDrawable &other)
- *          : Drawable(other)
- *     {
- *
- *     }
- *
- *     void draw(sf::RenderTarget& target, sf::RenderStates states) const override
- *     {
- *          // target.draw(...) draw stuff
- *     }
- * };
- * \endcode
- *
- */
+/// <summary>
+/// Drawable component to draw stuff to the screen
+/// </summary>
+/// <description>
+///     This is one of the predefined Components.<br>
+///     The Drawable overrides the draw(...)
+///     function from the sf::Drawable<br>
+///     The draw(...) function will be called on every frame.
+/// 
+///     You must inherit from this class and then override the applyTransform(...) function<br>
+/// <code>
+///     class MyDrawable : public QSFML::Components::Drawable
+///     {
+///         public:
+///         MyDrawable(const std::string &name = "MyDrawable")
+///             : Drawable(name)
+///         {
+///     
+///         }
+///         MyDrawable(const MyDrawable &other)
+///              : Drawable(other)
+///         {
+///     
+///         }
+///     
+///         void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override
+///         {
+///              // Draw your stuff here
+///              // target.draw(...) 
+///     
+///              // If you want to draw using the relative position of the parent object, 
+///              // pass the states to the target.draw(...) function
+///              // target.draw(..., states) 
+///         }
+///     };
+/// </code>
+/// </description>
 class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawable
 {
     public:
-        /**
-         * \brief Drawable constructor
-         * \param name of this Component
-         * \see Component::setName()
-         */
-        Drawable(const std::string &name = "Drawable");
+        /// <summary>
+        /// Drawable constructor
+        /// </summary>
+        /// <param name="name">Name of the component</param>
+        Drawable(const std::string& name = "Drawable");
         Drawable(const Drawable &other);
-        ~Drawable();
+        virtual ~Drawable();
 
-        /**
-         * \brief draw
-         * \details This function will be automaticlly called from the
-         *          Canvas once per frame if the Component is enabled
-         * \param target to draw on
-         * \param states
-         */
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
+        /// <summary>
+        /// draw
+        /// </summary>
+        /// <description>
+        /// This function will be automaticlly called from the
+        /// Canvas once per frame if the Component is enabled
+        /// </description>
+        /// <param name="target"></param>
+        /// <param name="states"></param>
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const final override
+        {
+            applyTransform(states);
+            drawComponent(target, states);
+        }
+
+
+        /// <summary>
+        /// Set the relative position of the Drawable
+        /// </summary>
+        /// <param name="position"></param>
+        void setPosition(const sf::Vector2f& position)
+        {
+            m_position = position;
+        }
+
+        /// <summary>
+        /// Set the relative position of the Drawable
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        void setPosition(float x, float y)
+        {
+			m_position.x = x;
+			m_position.y = y;
+		}
+
+        /// <summary>
+        /// Gets the relative position of the Drawable
+        /// </summary>
+        /// <returns></returns>
+        const sf::Vector2f& getPosition() const
+        {
+			return m_position;
+        }
+
+    protected:
+        /// <summary>
+        /// Moves the states transform by the relative position of the Drawable
+        /// </summary>
+        /// <param name="states"></param>
+        void applyTransform(sf::RenderStates& states) const
+        {
+            states.transform.translate(m_position);
+        }
+
+        /// <summary>
+        /// User defined draw function
+        /// </summary>
+        /// <description>
+        /// This function will be called on every frame
+        /// You must override this function and draw your stuff here
+        /// The states transform will already be moved to the correct relative position uf the object
+        /// </description>
+        /// <param name="target"></param>
+        /// <param name="states"></param>
+        virtual void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
+
+        sf::Vector2f m_position;
 };
 }
 }

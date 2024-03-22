@@ -554,11 +554,12 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
         void update_internal();
         void inCanvasAdded_internal();
         //void draw(sf::RenderWindow &window) const;
-        void draw(sf::RenderWindow& window) const
+        void draw(sf::RenderWindow& window, sf::RenderStates states) const
         {
             if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate)
                 return;
             QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+            states.transform.translate(m_position);
             if (m_drawableComponents.size())
             {
                 QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
@@ -566,7 +567,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
                 {
                     if (!comp->isEnabled())
                         continue;
-                    window.draw(*comp);
+                    window.draw(*comp, states);
                 }
                 QSFMLP_OBJECT_END_BLOCK;
             }
@@ -577,7 +578,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
                 for (auto& child : m_childs)
                 {
                     if (child->m_enabled)
-                        child->draw(window);
+                        child->draw(window, states);
                 }
                 QSFMLP_OBJECT_END_BLOCK;
             }

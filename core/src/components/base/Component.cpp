@@ -34,28 +34,11 @@ Component::~Component()
 
 
 
-void Component::setParent(CanvasObject *parent)
-{
-    m_parent = parent;
-}
-void Component::setCanvasParent(Canvas* parent)
-{
-    m_canvasParent = parent;
-}
-QSFML::Objects::CanvasObject* Component::getParent() const
-{ 
-    return m_parent; 
-}
-void Component::setName(const std::string &name)
-{
-    m_name = name;
-}
 
 
-void Component::setEnabled(bool enable)
-{
-    m_enabled = enable;
-}
+
+
+
 
 void Component::deleteThis()
 {

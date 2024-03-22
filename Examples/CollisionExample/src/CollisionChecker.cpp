@@ -310,7 +310,7 @@ CollisionChecker::Painter::~Painter()
 }
 
 
-void CollisionChecker::Painter::draw(sf::RenderTarget& target,
+void CollisionChecker::Painter::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates states) const
 {
 	std::list< QSFML::Objects::CanvasObject*> possibleColliders;

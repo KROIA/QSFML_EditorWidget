@@ -150,7 +150,7 @@ GlasRectangle::RectShape::Painter::Painter(const Painter& other)
 }
 COMPONENT_IMPL(GlasRectangle::RectShape::Painter);
 
-void GlasRectangle::RectShape::Painter::draw(sf::RenderTarget& target,
+void GlasRectangle::RectShape::Painter::drawComponent(sf::RenderTarget& target,
     sf::RenderStates states) const
 {
     sf::Vertex line[] =

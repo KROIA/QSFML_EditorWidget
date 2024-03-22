@@ -113,7 +113,7 @@ void CurvedMirror::updateLine()
 		alpha += dAlpha;
 		sf::Vector2f end = QSFML::VectorMath::getRotatedUnitVector(alpha) * m_shape.m_radius;
 		end = QSFML::VectorMath::getRotated(end, rotationPoint, m_shape.m_angle) + m_shape.m_pos;
-		m_mirrorLines[i]->setPos(start, end);
+		m_mirrorLines[i]->setPoints(start, end);
 		m_shape.m_mirrorRays[i].setPos(start);
 		m_shape.m_mirrorRays[i].setDirection(end - start);
 		start = end;

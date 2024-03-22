@@ -608,7 +608,7 @@ namespace QSFML
 		{
 			return m_color;
 		}
-		/*void ObjectQuadTree::ObjectQuadTreePainter::draw(sf::RenderTarget& target,
+		/*void ObjectQuadTree::ObjectQuadTreePainter::drawComponent(sf::RenderTarget& target,
 			sf::RenderStates states) const
 		{
 			if (m_tree)

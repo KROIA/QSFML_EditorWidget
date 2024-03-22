@@ -44,7 +44,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public CanvasObject
         public:
             DrawableComp(const std::string& name = "DrawableComp");
             DrawableComp(const Drawable& other);
-            void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
+            void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const final;
 
             void drawGrid(sf::RenderTarget& target,
                 const sf::IntRect& area,

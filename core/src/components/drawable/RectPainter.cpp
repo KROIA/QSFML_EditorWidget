@@ -38,10 +38,10 @@ namespace QSFML
             return m_rectShape.getOutlineColor();
         }
 
-        void RectPainter::draw(sf::RenderTarget& target,
+        void RectPainter::drawComponent(sf::RenderTarget& target,
                                sf::RenderStates states) const
         {
-            target.draw(m_rectShape);
+            target.draw(m_rectShape, states);
         }
     }
 }

@@ -180,7 +180,8 @@ namespace QSFML
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {
-            m_container[i]->draw(window);
+            sf::RenderStates states;
+            m_container[i]->draw(window, states);
         }
     }
 

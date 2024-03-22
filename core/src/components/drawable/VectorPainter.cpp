@@ -87,10 +87,10 @@ namespace QSFML
         }
 
 
-        void VectorPainter::draw(sf::RenderTarget& target,
+        void VectorPainter::drawComponent(sf::RenderTarget& target,
             sf::RenderStates states) const
         {
-            target.draw(m_lines, 6, sf::Lines);
+            target.draw(m_lines, 6, sf::Lines, states);
         }
         void VectorPainter::setInvertedYAxis(bool doInvert)
         {

@@ -399,7 +399,7 @@ Collider::Painter::~Painter()
     if (m_collider)
         m_collider->onPainterDeleted(this);
 }
-void Collider::Painter::draw(sf::RenderTarget& target,
+void Collider::Painter::drawComponent(sf::RenderTarget& target,
                              sf::RenderStates states) const
 {
     if (!m_collider)

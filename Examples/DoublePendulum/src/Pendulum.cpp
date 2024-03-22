@@ -21,7 +21,7 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
         m_pendulumData[1].angle = 0.0;
     
     addComponent(m_pointPainter);
-    //m_origin = sf::Vector2f(0, 0);
+    m_origin = QSFML::VectorMath::Vector2d(0, 0);
   
 
     m_mousePressEvent = new QSFML::Components::MousePressEvent();
@@ -67,8 +67,8 @@ void Pendulum::setStart(double angle1, double angle2)
 
     
     if(m_text)
-        m_text->setPosition(getPositionAbsolute() + sf::Vector2f(10, -40));
-    m_origin = QSFML::VectorMath::Vector2d(getPositionAbsolute().x, getPositionAbsolute().y);
+        m_text->setPosition(sf::Vector2f(10, -40));
+    //m_origin = QSFML::VectorMath::Vector2d(getPositionAbsolute().x, getPositionAbsolute().y);
 }
 void Pendulum::setLength(double length1, double length2)
 {
@@ -173,7 +173,7 @@ void Pendulum::update()
         }
         if (m_linesEnabled)
         {
-            m_pendulumData[i].line->setPos(sf::Vector2f(startPos.x, startPos.y), sf::Vector2f(m_pendulumData[i].endPos.x, m_pendulumData[i].endPos.y));
+            m_pendulumData[i].line->setPoints(sf::Vector2f(startPos.x, startPos.y), sf::Vector2f(m_pendulumData[i].endPos.x, m_pendulumData[i].endPos.y));
         }
     }
     m_pointPainter->setPoints(points);   
@@ -302,7 +302,7 @@ double Pendulum::getKineticEnergy(const PendulumData& p, double dt)
 }
 double Pendulum::getPotentialEnergy(const PendulumData& p)
 {
-    double height = getPositionAbsolute().y - p.endPos.y;
+    double height = - p.endPos.y;
     return m_gravity * p.mass * height;
 }
 double Pendulum::getEnergy(const PendulumData& p, double dt)

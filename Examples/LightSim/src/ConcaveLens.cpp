@@ -235,7 +235,7 @@ ConcaveLens::LensShape::LensPainter::LensPainter(const LensPainter& other)
 COMPONENT_IMPL(ConcaveLens::LensShape::LensPainter);
 
 
-void ConcaveLens::LensShape::LensPainter::draw(sf::RenderTarget& target,
+void ConcaveLens::LensShape::LensPainter::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates states) const
 {
 	const size_t resolution = 20;

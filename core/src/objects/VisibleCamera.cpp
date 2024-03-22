@@ -25,7 +25,7 @@ namespace QSFML
             m_cam = cam;
         }
 
-        void VisibleCamera::DrawableComp::draw(sf::RenderTarget& target, sf::RenderStates states) const
+        void VisibleCamera::DrawableComp::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
         {
             sf::View view = m_cam->getCameraView();
             sf::FloatRect viewRect = sf::FloatRect(view.getCenter() - view.getSize() / 2.f, view.getSize());

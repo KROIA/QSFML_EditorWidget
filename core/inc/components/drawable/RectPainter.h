@@ -21,7 +21,7 @@ namespace QSFML
             void setColor(const sf::Color& color);
             const sf::Color& getColor() const;
 
-            void draw(sf::RenderTarget& target,
+            void drawComponent(sf::RenderTarget& target,
                 sf::RenderStates states) const override;
 
         private:

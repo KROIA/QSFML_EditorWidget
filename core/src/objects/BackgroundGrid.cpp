@@ -70,7 +70,7 @@ namespace QSFML
         {
             m_grid = nullptr;
         }
-        void BackgroundGrid::DrawableComp::draw(sf::RenderTarget& target,
+        void BackgroundGrid::DrawableComp::drawComponent(sf::RenderTarget& target,
             sf::RenderStates states) const
         {
             drawGrid(target, m_grid->m_gridArea, m_grid->m_gridSpacing,

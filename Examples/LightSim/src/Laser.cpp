@@ -150,7 +150,7 @@ Laser::LaserPainter::LaserPainter(const LaserPainter& other)
 }
 COMPONENT_IMPL(Laser::LaserPainter);
 
-void Laser::LaserPainter::draw(sf::RenderTarget& target,
+void Laser::LaserPainter::drawComponent(sf::RenderTarget& target,
 							   sf::RenderStates states) const
 {
 	for (size_t i = 0; i < m_lasers.size(); ++i)
