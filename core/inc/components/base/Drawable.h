@@ -2,6 +2,7 @@
 
 #include "QSFML_EditorWidget_base.h"
 #include "components/base/Component.h"
+#include "utilities/Transformable.h"
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Color.hpp>
@@ -47,7 +48,7 @@ namespace Components
 ///     };
 /// </code>
 /// </description>
-class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawable
+class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public Utilities::Transformable, public sf::Drawable
 {
     public:
         /// <summary>
@@ -73,35 +74,13 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
             drawComponent(target, states);
         }
 
-
         /// <summary>
-        /// Set the relative position of the Drawable
+        /// Gets the global world position of the Drawable
         /// </summary>
-        /// <param name="position"></param>
-        void setPosition(const sf::Vector2f& position)
-        {
-            m_position = position;
-        }
+        /// <returns>global position</returns>
+        sf::Vector2f getGlobalPosition() const;
 
-        /// <summary>
-        /// Set the relative position of the Drawable
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        void setPosition(float x, float y)
-        {
-			m_position.x = x;
-			m_position.y = y;
-		}
-
-        /// <summary>
-        /// Gets the relative position of the Drawable
-        /// </summary>
-        /// <returns></returns>
-        const sf::Vector2f& getPosition() const
-        {
-			return m_position;
-        }
+        float getGlobalRotation() const;
 
     protected:
         /// <summary>
@@ -110,7 +89,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
         /// <param name="states"></param>
         void applyTransform(sf::RenderStates& states) const
         {
-            states.transform.translate(m_position);
+            states.transform.translate(getPosition());
         }
 
         /// <summary>
@@ -125,7 +104,14 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
         /// <param name="states"></param>
         virtual void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 
-        sf::Vector2f m_position;
+        void positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition) override
+        {
+
+        }
+        void rotationChanged(float oldRotation, float newRotation) override
+        {
+
+        }
 };
 }
 }

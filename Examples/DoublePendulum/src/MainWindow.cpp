@@ -158,7 +158,7 @@ void MainWindow::createPendulums()
 		}
 
         m_pendulums.push_back(pendulum);
-        pendulum->setPositionAbsolute(sf::Vector2f(500, 500));
+        pendulum->setPosition(sf::Vector2f(500, 500));
         pendulum->setStart(angle1, angle2);
         
         /*

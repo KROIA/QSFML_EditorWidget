@@ -53,6 +53,7 @@ namespace QSFML
 
         class Stats;
         class StatsManager;
+        class Transformable;
     }
     
 

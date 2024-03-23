@@ -20,6 +20,9 @@ OBJECT_IMPL(CanvasObject)
 
 size_t CanvasObject::s_objNameCounter = 0;
 CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
+    : Transformable()
+    , Updatable()
+    , DestroyEvent()
 {
     m_name = name;
     if(m_name.size() == 0)
@@ -39,15 +42,18 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     m_objectsChanged = false;
     m_thisNeedsDrawUpdate = false;
     m_enabled = true;
-    m_position = sf::Vector2f(0, 0);
+    //m_position = sf::Vector2f(0, 0);
     m_renderLayer = RenderLayer::layer_0;
     
 }
 CanvasObject::CanvasObject(const CanvasObject &other)
+    : Transformable()
+    , Updatable()
+    , DestroyEvent()
 {
     m_enabled = other.m_enabled;
     m_name = other.m_name;
-    m_position = other.m_position;
+    //m_position = other.m_position;
     m_canvasParent = nullptr;
     m_parent = nullptr;
     m_rootParent = this;
@@ -164,17 +170,17 @@ double CanvasObject::getAgeFixed() const
 }
 
 
-void CanvasObject::setPositionRelative(const sf::Vector2f& pos)
+/*void CanvasObject::setPositionRelative(const sf::Vector2f& pos)
 {
     m_position = pos;
     for (size_t i = 0; i < m_colliders.size(); ++i)
         m_colliders[i]->setPos(m_position);
 }
-void CanvasObject::setPositionAbsolute(const sf::Vector2f& pos)
+void CanvasObject::setPosition(const sf::Vector2f& pos)
 {
     if (m_parent)
     {
-        sf::Vector2f parentPos = m_parent->getPositionAbsolute();
+        sf::Vector2f parentPos = m_parent->getPosition();
         m_position = pos - parentPos;
     }
     else
@@ -186,15 +192,38 @@ const sf::Vector2f& CanvasObject::getPositionRelative() const
 {
     return m_position;
 }
-sf::Vector2f CanvasObject::getPositionAbsolute() const
+sf::Vector2f CanvasObject::getPosition() const
 {
     if (m_parent)
     {
-        sf::Vector2f parentPos = m_parent->getPositionAbsolute();
+        sf::Vector2f parentPos = m_parent->getPosition();
         return m_position + parentPos;
     }
     return m_position;
+}*/
+sf::Vector2f CanvasObject::getGlobalPosition() const
+{
+    sf::Vector2f pos = getPosition();
+    CanvasObject *parent = m_parent;
+    while (parent)
+    {
+        pos += parent->getPosition();
+        parent = parent->m_parent;
+    }
+    return pos;
 }
+float CanvasObject::getGlobalRotation() const
+{
+	float rot = getRotation();
+	CanvasObject *parent = m_parent;
+	while (parent)
+	{
+		rot += parent->getRotation();
+		parent = parent->m_parent;
+	}
+	return rot;
+}
+
 void CanvasObject::setRenderLayer(RenderLayer layer)
 {
     if(m_renderLayer == layer)
@@ -204,6 +233,7 @@ void CanvasObject::setRenderLayer(RenderLayer layer)
     if(m_canvasParent)
         m_canvasParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
 }
+
 RenderLayer CanvasObject::getRenderLayer() const
 {
     return m_renderLayer;
@@ -680,7 +710,7 @@ void CanvasObject::addComponent_internal()
         if (collider)
         {
             m_colliders.push_back(collider);
-            collider->setPos(m_position);
+            collider->setPos(getPosition());
         }
     }
     m_toAddComponents.clear();
@@ -892,6 +922,11 @@ sf::Vector2f CanvasObject::getMouseWorldPosition() const
     if (!m_canvasParent) return sf::Vector2f(0, 0);
     return m_canvasParent->getMouseWorldPosition();
 }
+sf::Vector2f CanvasObject::getMouseObjectPosition() const
+{
+    return getMouseWorldPosition() - getGlobalPosition();
+}
+
 sf::Vector2f CanvasObject::getInWorldSpace(const sf::Vector2i& pixelSpace) const
 {
     if (!m_canvasParent) return sf::Vector2f(0, 0);
@@ -1119,6 +1154,17 @@ void CanvasObject::deleteThis()
     }
     else if(m_canvasParent)
         m_canvasParent->CanvasObjectContainer::deleteLater(this);
+
+}
+
+void CanvasObject::positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition)
+{
+    sf::Vector2f globalPos = getGlobalPosition();
+    for (auto &collider : m_colliders)
+        collider->setPos(globalPos);
+}
+void CanvasObject::rotationChanged(float oldRotation, float newRotation)
+{
 
 }
 

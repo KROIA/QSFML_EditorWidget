@@ -78,7 +78,7 @@ void Mirror::updateLine()
 
 	m_mirrorLine->setPoints(start, end);
 
-	m_shape.m_mirrorRay.setPos(start);
+	m_shape.m_mirrorRay.setPosition(start);
 	m_shape.m_mirrorRay.setDirection(direction * m_shape.m_width);
 }
 

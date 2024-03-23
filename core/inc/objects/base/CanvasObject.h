@@ -7,6 +7,7 @@
 #include "utilities/CollisionInfo.h"
 #include "utilities/Updatable.h"
 #include "utilities/AABB.h"
+#include "utilities/Transformable.h"
 #include "components/base/Drawable.h"
 
 #include "events/DestroyEvent.h"
@@ -171,7 +172,10 @@ namespace Objects
  * \endcode
  */
 
-class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, public Events::DestroyEvent
+class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: 
+    public Utilities::Transformable, 
+    public Utilities::Updatable, 
+    public Events::DestroyEvent
 {
         friend Canvas;
         friend CanvasObjectGroup;
@@ -265,10 +269,14 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
 
 
 
-        void setPositionRelative(const sf::Vector2f& pos); // Sets the position relative to its parent
-        void setPositionAbsolute(const sf::Vector2f& pos); // Sets the position in the absolute world coords.
-        const sf::Vector2f& getPositionRelative() const;   // Gets the position relative to its parent
-        sf::Vector2f getPositionAbsolute() const;          // Gets the position in absolute world coords
+        //void setPositionRelative(const sf::Vector2f& pos); // Sets the position relative to its parent
+        //void setPosition(const sf::Vector2f& pos); // Sets the position in the absolute world coords.
+        //const sf::Vector2f& getPositionRelative() const;   // Gets the position relative to its parent
+        //sf::Vector2f getPosition() const;          // Gets the position in absolute world coords
+        sf::Vector2f getGlobalPosition() const; // Gets the position in absolute world coords
+
+        float getGlobalRotation() const; // Gets the rotation in absolute world coords
+
 
         void setRenderLayer(RenderLayer layer);
         RenderLayer getRenderLayer() const;
@@ -365,8 +373,26 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
         // ---------
 
         // Canvas operations
+
+        /// <summary>
+        /// Gets the pixel coordinate of the mouse
+        /// </summary>
+        /// <returns>pixel pos</returns>
         sf::Vector2i getMousePosition() const;
+
+        /// <summary>
+        /// Gets the world coordinate of the mouse
+        /// </summary>
+        /// <returns>world mouse pos</returns>
         sf::Vector2f getMouseWorldPosition() const;
+
+        /// <summary>
+        /// Gets the world coordinate of the mouse, relative to this object
+        /// </summary>
+        /// <returns>relative mouse pos</returns>
+        sf::Vector2f getMouseObjectPosition() const;
+
+
         sf::Vector2f getInWorldSpace(const sf::Vector2i& pixelSpace) const;
         sf::Vector2i getInScreenSpace(const sf::Vector2f& worldSpace) const;
 
@@ -476,6 +502,9 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
 
         void deleteThis();
 
+        void positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition) override;
+        void rotationChanged(float oldRotation, float newRotation) override;
+
     private:
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
         bool findAllChilds_internal(const std::string& name, std::vector<CanvasObject*>& foundList);
@@ -501,7 +530,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
 
         bool m_enabled;
         std::string m_name;
-        sf::Vector2f m_position;
+        //sf::Vector2f m_position;
         double m_birthTime; // Time of the canvas, in seconds where the object was added to a canvas (Time domain: real simulation time)
         size_t m_birthTick; // Tick of the canvas, where the object was added to a canvas
 
@@ -559,7 +588,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: public Utilities::Updatable, publ
             if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate)
                 return;
             QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-            states.transform.translate(m_position);
+            states.transform.translate(getPosition());
             if (m_drawableComponents.size())
             {
                 QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);

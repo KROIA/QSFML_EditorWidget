@@ -203,7 +203,7 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 	LightRay bounced = ray;
 	
 	sf::Vector2f dirRefract = QSFML::VectorMath::getRotatedUnitVector(data1.refractAngle);
-	bounced.ray.setPos(outNextCollisionPoint + newPointOffset * dirRefract);
+	bounced.ray.setPosition(outNextCollisionPoint + newPointOffset * dirRefract);
 	bounced.ray.setDirection(dirRefract);
 
 
@@ -246,7 +246,7 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 		if (doReflectBounce)
 		{
 			sf::Vector2f dirReflect = QSFML::VectorMath::getRotatedUnitVector(data1.reflectAngle);
-			bounced.ray.setPos(outNextCollisionPoint + newPointOffset * dirReflect);
+			bounced.ray.setPosition(outNextCollisionPoint + newPointOffset * dirReflect);
 			bounced.ray.setDirection(dirReflect);
 			if (getRaycastDistance(bounced, distance))
 			{
@@ -301,8 +301,8 @@ void OpticalElement::Painter::drawComponent(sf::RenderTarget& target,
 	for (size_t i = 0; i < m_normalList.size(); ++i)
 	{
 		sf::Vertex normal[]{
-			sf::Vertex(m_normalList[i].getPos(), normalColor),
-			sf::Vertex(m_normalList[i].getPos() + m_normalList[i].getDirection()* vectorLength, normalColor)
+			sf::Vertex(m_normalList[i].getPosition(), normalColor),
+			sf::Vertex(m_normalList[i].getPosition() + m_normalList[i].getDirection()* vectorLength, normalColor)
 		};
 		target.draw(normal, 2, sf::Lines);
 	}

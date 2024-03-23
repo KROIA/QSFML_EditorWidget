@@ -16,8 +16,8 @@ public:
 	void setColor(const sf::Color& c);
 	const sf::Color& getColor() const;
 
-	void setPos(const sf::Vector2f& pos);
-	const sf::Vector2f& getPos() const;
+	void setPosition(const sf::Vector2f& pos);
+	const sf::Vector2f& getPosition() const;
 
 	void setRotation(float angle);
 	float getRotation() const;

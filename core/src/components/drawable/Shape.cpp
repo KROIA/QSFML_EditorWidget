@@ -20,7 +20,7 @@ namespace QSFML
 
 		}
 
-		void Shape::setTransform(const sf::Transform& transform)
+		/*void Shape::setTransform(const sf::Transform& transform)
 		{
 			m_transform = transform;
 			updateTranformedPoints();
@@ -28,7 +28,7 @@ namespace QSFML
 		const sf::Transform& Shape::getTransform() const
 		{
 			return m_transform;
-		}
+		}*/
 
 		void Shape::setFillColor(const sf::Color& color)
 		{
@@ -82,12 +82,12 @@ namespace QSFML
 		void Shape::setPoint(std::size_t index, const sf::Vector2f& point)
 		{
 			m_points[index] = point;
-			m_transformedPoints[index] = m_transform.transformPoint(point);
-			m_transformedVertecies[index].position = m_transformedPoints[index];
-			if (index == 0)
+			//m_transformedPoints[index] = m_transform.transformPoint(point);
+			//m_transformedVertecies[index].position = m_transformedPoints[index];
+			/*if (index == 0)
 			{
 				m_transformedVertecies[m_transformedVertecies.size() - 1] = m_transformedVertecies[0];
-			}
+			}*/
 		}
 		const sf::Vector2f& Shape::getPoint(std::size_t index) const
 		{
@@ -95,18 +95,23 @@ namespace QSFML
 		}
 		const sf::Vector2f& Shape::getTransformedPoint(std::size_t index) const
 		{
-			return m_transformedPoints[index];
+			sf::Transform transform;
+			transform.translate(getGlobalPosition());
+			transform.rotate(getRotation());
+			return transform.transformPoint(m_points[index]);
+			//return m_transformedPoints[index];
+
 		}
 
 		void Shape::addPoint(const sf::Vector2f& point)
 		{
 			m_points.push_back(point);
-			m_transformedPoints.push_back(m_transform.transformPoint(point));
-			m_transformedVertecies.push_back(sf::Vertex(m_transform.transformPoint(point), m_fillColor));
-			if (m_points.size() == 1)
-			{
-				m_transformedVertecies.push_back(m_transformedVertecies[0]);
-			}
+			//m_transformedPoints.push_back(m_transform.transformPoint(point));
+			//m_transformedVertecies.push_back(sf::Vertex(m_transform.transformPoint(point), m_fillColor));
+			//if (m_points.size() == 1)
+			//{
+			//	m_transformedVertecies.push_back(m_transformedVertecies[0]);
+			//}
 		}
 		void Shape::addPoints(const std::vector<sf::Vector2f>& points)
 		{
@@ -121,21 +126,30 @@ namespace QSFML
 		void Shape::removePoint(std::size_t index)
 		{
 			m_points.erase(m_points.begin() + index);
-			m_transformedPoints.erase(m_transformedPoints.begin() + index);
-			m_transformedVertecies.erase(m_transformedVertecies.begin() + index);
-			if (index == 0)
-			{
-				m_transformedVertecies[m_transformedVertecies.size()-1] = m_transformedVertecies[0];
-			}
+			//m_transformedPoints.erase(m_transformedPoints.begin() + index);
+			//m_transformedVertecies.erase(m_transformedVertecies.begin() + index);
+			//if (index == 0)
+			//{
+			//	m_transformedVertecies[m_transformedVertecies.size()-1] = m_transformedVertecies[0];
+			//}
 		}
 
 		const std::vector<sf::Vector2f>& Shape::getPoints() const
 		{
 			return m_points;
 		}
-		const std::vector<sf::Vector2f>& Shape::getTransformedPoints() const
+		std::vector<sf::Vector2f> Shape::getTransformedPoints() const
 		{
-			return m_transformedPoints;
+			std::vector<sf::Vector2f> transformedPoints;
+			sf::Transform transform;
+			transform.translate(getGlobalPosition());
+			transform.rotate(getRotation());
+			transformedPoints.reserve(m_points.size());
+			for (auto& point : m_points)
+			{
+				transformedPoints.push_back(transform.transformPoint(point));
+			}
+			return transformedPoints;
 		}
 
 		Utilities::AABB Shape::getLocalBounds() const
@@ -144,12 +158,12 @@ namespace QSFML
 		}
 		Utilities::AABB Shape::getGlobalBounds() const
 		{
-			return Utilities::AABB::getFrame(m_transformedPoints);
+			return Utilities::AABB::getFrame(getTransformedPoints());
 		}
 
 		void Shape::updateTranformedPoints()
 		{
-			m_transformedPoints.clear();
+			/*m_transformedPoints.clear();
 			m_transformedVertecies.clear();
 			m_transformedPoints.reserve(m_points.size());
 			m_transformedVertecies.reserve(m_points.size()+1);
@@ -158,14 +172,14 @@ namespace QSFML
 				m_transformedPoints.push_back(m_transform.transformPoint(point));
 				m_transformedVertecies.push_back(sf::Vertex(m_transform.transformPoint(point), m_fillColor));
 			}
-			m_transformedVertecies.push_back(m_transformedVertecies[0]);
+			m_transformedVertecies.push_back(m_transformedVertecies[0]);*/
 		}
 		void Shape::updateVertexColors()
 		{
-			for (auto& vertex : m_transformedVertecies)
+			/*for (auto& vertex : m_transformedVertecies)
 			{
 				vertex.color = m_fillColor;
-			}
+			}*/
 		}
 		/*void Shape::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
 		{

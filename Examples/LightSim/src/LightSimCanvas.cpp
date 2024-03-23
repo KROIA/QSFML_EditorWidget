@@ -88,7 +88,7 @@ void LightSimCanvas::setupCanvas()
      {
         ConvexLens* lense = new ConvexLens();
         //lense->setPos(sf::Vector2f(400, 200));
-        lense->setPos(sf::Vector2f(200, 200));
+        lense->setPosition(sf::Vector2f(200, 200));
         lense->setFocusLength(60);
         lense->setThickness(50);
         lense->setRotation(0);
@@ -102,7 +102,7 @@ void LightSimCanvas::setupCanvas()
     {
         ConcaveLens* lense = new ConcaveLens();
         //lense->setPos(sf::Vector2f(400, 200));
-        lense->setPos(sf::Vector2f(260, 201));
+        lense->setPosition(sf::Vector2f(260, 201));
         lense->setFocusLength(40);
         lense->setThickness(50);
         lense->setRotation(0);
@@ -246,7 +246,7 @@ void LightSimCanvas::setupCanvas()
         for (int i = 0; i < 20; ++i)
         {
             Laser* laser = new Laser();
-            laser->setPos(startPos + (float)i * offset);
+            laser->setPosition(startPos + (float)i * offset);
             laser->setDirection(sf::Vector2f(1, 0));
             laser->setColor(sf::Color::Green);
             m_canvas->addObject(laser);

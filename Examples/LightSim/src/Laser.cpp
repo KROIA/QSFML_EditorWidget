@@ -10,7 +10,7 @@ Laser::Laser(const std::string& name, CanvasObject* parent)
 	m_painter = new LaserPainter(m_lasers);
 	m_maxBounces = 100;
 
-	setPos(sf::Vector2f(0, 0));
+	setPosition(sf::Vector2f(0, 0));
 	setDirection(sf::Vector2f(1, 0));
 	setColor(sf::Color::Red);
 
@@ -32,13 +32,13 @@ Laser::~Laser()
 }
 
 
-void Laser::setPos(const sf::Vector2f& pos)
+void Laser::setPosition(const sf::Vector2f& pos)
 {
-	m_rootRay.ray.setPos(pos);
+	m_rootRay.ray.setPosition(pos);
 }
-const sf::Vector2f& Laser::getPos() const
+const sf::Vector2f& Laser::getPosition() const
 {
-	return m_rootRay.ray.getPos();
+	return m_rootRay.ray.getPosition();
 }
 void Laser::setDirection(const sf::Vector2f& dir)
 {
@@ -114,7 +114,7 @@ void Laser::updateRay(LightRay& r, LaserInfo& info, unsigned int iteration)
 	}
 
 	LaserInfo laserInfo(info);
-	laserInfo.start = ray.ray.getPos();
+	laserInfo.start = ray.ray.getPosition();
 	laserInfo.end = ray.ray.getPoint(minDistance);
 
 	m_lasers.push_back(laserInfo);
@@ -162,6 +162,6 @@ void Laser::LaserPainter::drawComponent(sf::RenderTarget& target,
 		};
 
 
-		target.draw(line, 2, sf::Lines);
+		target.draw(line, 2, sf::Lines, states);
 	}
 }

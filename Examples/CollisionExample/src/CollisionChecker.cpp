@@ -20,7 +20,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	{
 		CollisionObject* obj = new CollisionObject();
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector() * 100.f;
-		obj->setPositionAbsolute(pos);
+		obj->setPosition(pos);
 		m_collisionObjs.push_back(obj);
 		
 	}
@@ -45,7 +45,8 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 
 			}*/);
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector(range.getPos(), range.getSize() + range.getPos());
-		obj->setPositionAbsolute(pos);
+		obj->setPosition(pos);
+		//obj->setPosition({0,0});
 		obj->setRange(range);
 		obj->setDynamic(false);
 		

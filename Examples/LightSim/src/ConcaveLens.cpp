@@ -48,12 +48,12 @@ const sf::Color& ConcaveLens::getColor() const
 	return m_shape.m_painter->m_color;
 }
 
-void ConcaveLens::setPos(const sf::Vector2f& pos)
+void ConcaveLens::setPosition(const sf::Vector2f& pos)
 {
 	m_shape.m_pos = pos;
 	m_shape.updateShape();
 }
-const sf::Vector2f& ConcaveLens::getPos() const
+const sf::Vector2f& ConcaveLens::getPosition() const
 {
 	return m_shape.m_pos;
 }
@@ -169,7 +169,7 @@ bool ConcaveLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
 
 			reflectedOut.push_back(reflected);
 			LaserInfo info;
-			info.start = reflected.getPos();
+			info.start = reflected.getPosition();
 			info.end = reflected.getPoint(100);
 			//additionalLightPathsOut.push_back(info);
 		}
@@ -189,7 +189,7 @@ bool ConcaveLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
 			{
 				refracted.setPos(collisionPointOut);
 				LaserInfo info;
-				info.start = refracted.getPos();
+				info.start = refracted.getPosition();
 				
 
 				refracted.setPos(collisionPointOut + 0.001f * dir);
@@ -450,7 +450,7 @@ bool ConcaveLens::LensShape::getCircleElementCollisionFactor(const LightRay& ray
 	}
 
 
-	rayInsideSegment = QSFML::VectorMath::getLength(ray.ray.getPos() - center) < radius;
+	rayInsideSegment = QSFML::VectorMath::getLength(ray.ray.getPosition() - center) < radius;
 	if (minFac > 0)
 	{
 		angle1 = QSFML::VectorMath::getAngle(ray.ray.getPoint(minFac) - center);
@@ -486,7 +486,7 @@ bool ConcaveLens::LensShape::getCircleCollisionFactor(const LightRay& ray, const
 		return false; // No collision on circle
 
 	sf::Vector2f bd = ray.ray.getDirection();
-	sf::Vector2f bp = ray.ray.getPos();
+	sf::Vector2f bp = ray.ray.getPosition();
 
 	float bdx2 = bd.x * bd.x;
 	float bdy2 = bd.y * bd.y;
@@ -546,8 +546,8 @@ bool ConcaveLens::LensShape::getRaycastData(const LightRay& ray,
 	point2.x = cos(alpha2) * m_lensRadius;
 	point2.y = sin(alpha2) * m_lensRadius;
 
-	distance1 = QSFML::VectorMath::getLength(ray.ray.getPos() - point1);
-	distance2 = QSFML::VectorMath::getLength(ray.ray.getPos() - point2);
+	distance1 = QSFML::VectorMath::getLength(ray.ray.getPosition() - point1);
+	distance2 = QSFML::VectorMath::getLength(ray.ray.getPosition() - point2);
 
 
 	return true;
@@ -671,7 +671,7 @@ bool ConcaveLens::LensShape::getParableCollisionFactor(const QSFML::Utilities::R
 			(-(bdy^2 - 4*a*b*bdx^2 + 4*a*bdx^2*bpy - 4*a*bdx*bdy*bpx)^(1/2) + bdy - 2*a*bdx*bpx)/(2*a*bdx^2)
 		*/
 
-	QSFML::VectorMath::Vector2d rayPosRaw((double)ray.getPos().x - (double)parablePos.x, (double)ray.getPos().y - (double)parablePos.y);
+	QSFML::VectorMath::Vector2d rayPosRaw((double)ray.getPosition().x - (double)parablePos.x, (double)ray.getPosition().y - (double)parablePos.y);
 	QSFML::VectorMath::Vector2d rayDirRaw(ray.getDirection().x, ray.getDirection().y);
 
 

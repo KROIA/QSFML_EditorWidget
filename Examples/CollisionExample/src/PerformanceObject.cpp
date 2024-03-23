@@ -70,12 +70,11 @@ void PerformanceObject::update()
 		m_velocity = QSFML::VectorMath::getNormalized(m_velocity) * maxVelocity;
 	}
 	sf::Vector2f deltaPos = m_velocity * deltaT;
-	sf::Vector2f pos = getPositionAbsolute() + deltaPos;
+	sf::Vector2f pos = getPosition() + deltaPos;
 	if (!m_range.contains(pos))
 	{
 		m_velocity = -m_velocity;
-		pos = getPositionAbsolute() - deltaPos;
+		pos = getPosition() - deltaPos;
 	}
-	setPositionAbsolute(pos);
-
+	setPosition(pos);
 }

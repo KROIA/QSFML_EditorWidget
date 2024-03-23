@@ -55,7 +55,7 @@ namespace Factories
 		obj->addComponent(collider);
 		obj->addComponent(painter);
 
-		obj->setPositionAbsolute(position);
+		obj->setPosition(position);
 		return obj;
 	}
 }

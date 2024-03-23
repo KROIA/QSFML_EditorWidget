@@ -2,6 +2,7 @@
 
 #include "QSFML_EditorWidget_base.h"
 #include "components/base/Drawable.h"
+#include "utilities/Transformable.h"
 
 namespace QSFML
 {
@@ -12,7 +13,7 @@ namespace QSFML
 	namespace Utilities
 	{
 		class AABB;
-		class QSFML_EDITOR_WIDGET_EXPORT Ray
+		class QSFML_EDITOR_WIDGET_EXPORT Ray : public Utilities::Transformable
 		{
 			friend class RayPainter;
 		public:
@@ -45,9 +46,9 @@ namespace QSFML
 			 */
 			void normalize();
 
-			void setPos(const sf::Vector2f& pos);
-			void setPos(float posX, float posY);
-			const sf::Vector2f& getPos() const;
+			//void setPos(const sf::Vector2f& pos);
+			//void setPos(float posX, float posY);
+			//const sf::Vector2f& getPos() const;
 
 			void setDirection(const sf::Vector2f& dir);
 			void setDirection(float dirX, float dirY);
@@ -196,7 +197,12 @@ namespace QSFML
 
 			void onRayPainterDestroyed();
 
-			sf::Vector2f m_pos;
+			void positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition) override
+			{}
+			void rotationChanged(float oldRotation, float newRotation) override
+			{}
+
+			//sf::Vector2f m_pos;
 			sf::Vector2f m_dir;
 			float m_dirLength;
 

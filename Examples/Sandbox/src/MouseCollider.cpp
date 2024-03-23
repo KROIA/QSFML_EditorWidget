@@ -50,7 +50,7 @@ MouseCollider::~MouseCollider()
 void MouseCollider::onMousePosChanged(const sf::Vector2f& worldPos,
 									  const sf::Vector2i& pixelPos)
 {
-	setPositionAbsolute(worldPos);
+	setPosition(worldPos);
 	//m_collider->setPos(worldPos);
 }
 

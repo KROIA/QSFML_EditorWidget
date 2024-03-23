@@ -68,7 +68,7 @@ void Pendulum::setStart(double angle1, double angle2)
     
     if(m_text)
         m_text->setPosition(sf::Vector2f(10, -40));
-    //m_origin = QSFML::VectorMath::Vector2d(getPositionAbsolute().x, getPositionAbsolute().y);
+    //m_origin = QSFML::VectorMath::Vector2d(getPosition().x, getPosition().y);
 }
 void Pendulum::setLength(double length1, double length2)
 {

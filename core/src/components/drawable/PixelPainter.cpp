@@ -122,7 +122,7 @@ namespace QSFML
 			m_texture.update(m_pixels);
             sf::Sprite sprite;
             sprite.setTexture(m_texture);
-            sprite.setPosition(m_position);
+            sprite.setPosition(getPosition());
             sprite.setScale(m_pixelSize, m_pixelSize);
 			target.draw(sprite, states);
         }

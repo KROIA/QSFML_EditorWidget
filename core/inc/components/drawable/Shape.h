@@ -16,8 +16,8 @@ namespace QSFML
 			Shape(const std::string& name = "Shape");
 			~Shape();
 
-			void setTransform(const sf::Transform& transform);
-			const sf::Transform& getTransform() const;
+			//void setTransform(const sf::Transform& transform);
+			//const sf::Transform& getTransform() const;
 
 			void setFillColor(const sf::Color& color);
 			const sf::Color& getFillColor() const;
@@ -45,7 +45,7 @@ namespace QSFML
 			void removePoint(std::size_t index);
 
 			const std::vector<sf::Vector2f>& getPoints() const;
-			const std::vector<sf::Vector2f>& getTransformedPoints() const;
+			std::vector<sf::Vector2f> getTransformedPoints() const;
 			
 
 			Utilities::AABB getLocalBounds() const;
@@ -56,27 +56,32 @@ namespace QSFML
 
 			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override
 			{
+				std::vector<sf::Vector2f> transformedPoints = getTransformedPoints();
+				std::vector<sf::Vertex> transformedVertecies;
+				for (const auto& point : transformedPoints)
+				{
+					transformedVertecies.push_back(sf::Vertex(point, m_fillColor));
+				}
 				if (m_fill)
 				{
-					target.draw(&m_transformedVertecies[0], m_transformedVertecies.size(), sf::TriangleFan, states);
+					target.draw(&transformedVertecies[0], transformedVertecies.size(), sf::TriangleFan);
 				}
 				if (m_outline)
 				{
-					std::vector<sf::Vertex> outline = m_transformedVertecies;
-					for (auto& vertex : outline)
+					for (auto& vertex : transformedVertecies)
 					{
 						vertex.color = m_outlineColor;
 					}
-					target.draw(&outline[0], outline.size(), sf::LineStrip, states);
+					target.draw(&transformedVertecies[0], transformedVertecies.size(), sf::LineStrip);
 				}
 			}
 		private:
 			void updateTranformedPoints();
 			void updateVertexColors();
 			std::vector<sf::Vector2f> m_points;
-			std::vector<sf::Vector2f> m_transformedPoints;
-			std::vector<sf::Vertex> m_transformedVertecies;
-			sf::Transform m_transform;
+			//std::vector<sf::Vector2f> m_transformedPoints;
+			//std::vector<sf::Vertex> m_transformedVertecies;
+			//sf::Transform m_transform;
 			sf::Color m_fillColor;
 			sf::Color m_outlineColor;
 			//float m_outlineThickness;

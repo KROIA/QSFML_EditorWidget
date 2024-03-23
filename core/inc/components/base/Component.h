@@ -108,6 +108,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
             return m_enabled; 
         }
 
+        
+
 
     protected:
         void deleteThis();

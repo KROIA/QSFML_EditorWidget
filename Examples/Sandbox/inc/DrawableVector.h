@@ -74,10 +74,10 @@ class VectorDisplayer: public QSFML::Objects::CanvasObject
 
                             m_vec->m_image->setPosition(pos);
 
-                            m_vec->m_ray1.setPos(m_vec->m_vec1->getStart());
+                            m_vec->m_ray1.setPosition(m_vec->m_vec1->getStart());
                             m_vec->m_ray1.setDirection(m_vec->m_vec1->getDirection());
 
-                            m_vec->m_ray2.setPos(m_vec->m_vec2->getStart());
+                            m_vec->m_ray2.setPosition(m_vec->m_vec2->getStart());
                             m_vec->m_ray2.setDirection(m_vec->m_vec2->getDirection());
                             m_vec->m_vec3->setAngle(m_vec->m_ray1.getAngle(m_vec->m_ray2));
           

@@ -24,12 +24,12 @@ namespace QSFML
             , m_font(other.m_font)
         {
             m_text = other.m_text;
-            updateCenter(other.m_position);
+            updateCenter(other.getPosition());
         }
         void Text::setText(const std::string &text)
         {
             m_text.setString(text);
-            updateCenter(m_position);
+            updateCenter(getPosition());
         }
         std::string Text::getText() const
         {
@@ -39,7 +39,7 @@ namespace QSFML
         void Text::setCharacterSize(unsigned int size)
         {
             m_text.setCharacterSize(size);
-            updateCenter(m_position);
+            updateCenter(getPosition());
         }
         unsigned int Text::getCharacterSize() const
         {
@@ -49,7 +49,7 @@ namespace QSFML
         void Text::setScale(float scale)
         {
             m_text.setScale(sf::Vector2f(scale, scale));
-            updateCenter(m_position);
+            updateCenter(getPosition());
         }
         float Text::getScale() const
         {
@@ -69,7 +69,7 @@ namespace QSFML
         void Text::setOrigin(const Utilities::Origin& origin)
         {
             m_origin = origin;
-            updateCenter(m_position);
+            updateCenter(getPosition());
         }
         const Utilities::Origin& Text::getOrigin() const
         {
