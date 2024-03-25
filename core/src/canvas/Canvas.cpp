@@ -404,7 +404,7 @@ void Canvas::paint()
 
 void Canvas::sfEvent(const std::vector<sf::Event> &events)
 {
-
+    QSFML_UNUSED(events);
 }
 void Canvas::internal_event(const std::vector<sf::Event> &events)
 {

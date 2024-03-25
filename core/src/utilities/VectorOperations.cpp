@@ -240,10 +240,10 @@ namespace VectorMath
         angle = fmod(angle + M_PI, 2 * M_PI);
         return (angle < 0) ? angle + M_PI : angle - M_PI;
 #else
-        angle = fmod(angle + M_PI, 2 * M_PI);
+        angle = (float)fmod((double)angle + M_PI, 2 * M_PI);
         if (angle < 0)
             angle += 2 * M_PI;
-        return angle - M_PI;
+        return angle - (float)M_PI;
 #endif
     }
     double getNormalzedAngle(double angle)
@@ -261,15 +261,15 @@ namespace VectorMath
     bool isAngleInRange(float angle, float minAngle, float maxAngle)
     {
         // Normalize angles to be in the range [0, 2*pi)
-        angle = fmod(angle, M_2PI);
+        angle = (float)fmod((double)angle, M_2PI);
         if (angle < 0)
             angle += M_2PI;
 
-        minAngle = fmod(minAngle, M_2PI);
+        minAngle = (float)fmod((double)minAngle, M_2PI);
         if (minAngle < 0)
             minAngle += M_2PI;
 
-        maxAngle = fmod(maxAngle, M_2PI);
+        maxAngle = (float)fmod((double)maxAngle, M_2PI);
         if (maxAngle < 0)
             maxAngle += M_2PI;
 

@@ -1139,10 +1139,26 @@ bool CanvasObject::findAllChildsRecursive_internal(const std::string& name, std:
     return found;
 }
 
-void CanvasObject::onCanvasParentChange(Canvas *oldParent, Canvas *newParent) {}
-void CanvasObject::onParentChange(CanvasObject *oldParent, CanvasObject *newParent) {}
-void CanvasObject::internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent) {}
-void CanvasObject::internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent) {}
+void CanvasObject::onCanvasParentChange(Canvas *oldParent, Canvas *newParent) 
+{
+    QSFML_UNUSED(oldParent);
+    QSFML_UNUSED(newParent);
+}
+void CanvasObject::onParentChange(CanvasObject *oldParent, CanvasObject *newParent)
+{
+    QSFML_UNUSED(oldParent);
+    QSFML_UNUSED(newParent);
+}
+void CanvasObject::internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent)
+{
+    QSFML_UNUSED(oldParent);
+    QSFML_UNUSED(newParent);
+}
+void CanvasObject::internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent)
+{
+    QSFML_UNUSED(oldParent);
+    QSFML_UNUSED(newParent);
+}
 
 
 void CanvasObject::deleteThis()
@@ -1159,13 +1175,16 @@ void CanvasObject::deleteThis()
 
 void CanvasObject::positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition)
 {
+    QSFML_UNUSED(oldPosition);
+    QSFML_UNUSED(newPosition);
     sf::Vector2f globalPos = getGlobalPosition();
     for (auto &collider : m_colliders)
         collider->setPos(globalPos);
 }
 void CanvasObject::rotationChanged(float oldRotation, float newRotation)
 {
-
+    QSFML_UNUSED(oldRotation);
+    QSFML_UNUSED(newRotation);
 }
 
 

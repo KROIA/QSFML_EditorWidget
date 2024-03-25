@@ -122,7 +122,7 @@ bool Collider::checkCollision(const std::vector<Objects::CanvasObject*>& objs,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
-    Objects::CanvasObject* thisRootParent = getParent()->getRootParent();
+    //Objects::CanvasObject* thisRootParent = getParent()->getRootParent();
     bool hasCollision = false;
     for (auto obj : objs)
     {
@@ -402,6 +402,7 @@ Collider::Painter::~Painter()
 void Collider::Painter::drawComponent(sf::RenderTarget& target,
                              sf::RenderStates states) const
 {
+    QSFML_UNUSED(states);
     if (!m_collider)
         return;
 

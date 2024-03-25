@@ -27,6 +27,7 @@ namespace QSFML
 
         void VisibleCamera::DrawableComp::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
         {
+            QSFML_UNUSED(states);
             sf::View view = m_cam->getCameraView();
             sf::FloatRect viewRect = sf::FloatRect(view.getCenter() - view.getSize() / 2.f, view.getSize());
             float offset = 0.1;

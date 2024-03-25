@@ -47,7 +47,7 @@
 #define QSFML_UNUSED(x) (void)x;
 
 /// USER_SECTION_START 4
-/*
+
 /// USER_SECTION_END
 
 #if defined(QSFML_EDITOR_WIDGET_LIB)
@@ -65,5 +65,5 @@
 #endif
 
 /// USER_SECTION_START 5
-*/
+
 /// USER_SECTION_END

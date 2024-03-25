@@ -143,6 +143,7 @@ LineChart::LineChartPainter::LineChartPainter(const std::string &name)
 void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
                                        sf::RenderStates states) const
 {
+    QSFML_UNUSED(states);
     if(!m_chart)
         return;
 

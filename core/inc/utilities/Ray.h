@@ -198,9 +198,15 @@ namespace QSFML
 			void onRayPainterDestroyed();
 
 			void positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition) override
-			{}
+			{
+				QSFML_UNUSED(oldPosition);
+				QSFML_UNUSED(newPosition);
+			}
 			void rotationChanged(float oldRotation, float newRotation) override
-			{}
+			{
+				QSFML_UNUSED(oldRotation);
+				QSFML_UNUSED(newRotation);
+			}
 
 			//sf::Vector2f m_pos;
 			sf::Vector2f m_dir;

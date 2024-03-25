@@ -56,6 +56,7 @@ namespace QSFML
 
 			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override
 			{
+				QSFML_UNUSED(states);
 				std::vector<sf::Vector2f> transformedPoints = getTransformedPoints();
 				std::vector<sf::Vertex> transformedVertecies;
 				for (const auto& point : transformedPoints)
