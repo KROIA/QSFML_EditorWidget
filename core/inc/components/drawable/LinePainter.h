@@ -24,6 +24,10 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
 
         void setPoints(const sf::Vector2f &start, const sf::Vector2f &end);
         void setPoints(size_t index, const sf::Vector2f &start, const sf::Vector2f &end);
+
+        void addLine(const sf::Vector2f &start, const sf::Vector2f &end, const sf::Color &col, float thickness);
+        void addLine(const sf::Vector2f &start, const sf::Vector2f &end);
+
         const sf::Vector2f &getStartPos() const;
         const sf::Vector2f &getStartPos(size_t index) const;
         const sf::Vector2f &getEndPos() const;
