@@ -1,6 +1,7 @@
 #include "canvas/Canvas.h"
 #include "utilities/Stats.h"
 #include "utilities/AABB.h"
+#include "utilities/RandomEngine.h"
 #include <QResizeEvent>
 #include <QHBoxLayout>
 #include <qapplication.h>
@@ -22,7 +23,7 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
     s_instances.push_back(this);
     if (s_instances.size() == 1)
     {
-        Utilities::RandomEngine::getInstance();
+        Utilities::RandomEngine::init(); 
 #ifdef QSFML_PROFILING
         EASY_PROFILER_ENABLE;
 #endif

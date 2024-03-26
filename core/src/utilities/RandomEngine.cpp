@@ -18,6 +18,10 @@ namespace QSFML
 			static RandomEngine instance;
 			return instance;
 		}
+	    void RandomEngine::init()
+		{
+			getInstance();
+		}
 		void RandomEngine::setSeed(unsigned int seed)
 		{
 			getInstance().m_seed = seed;
