@@ -35,8 +35,8 @@ namespace QSFML
 			float t2 = t * t;
 			float t3 = t2 * t;
 			float a0 = 2 * t3 - 3 * t2 + 1;
-			float a1 = t3 - 2 * t2 + t;
-			float a2 = t3 - t2;
+			//float a1 = t3 - 2 * t2 + t;
+			//float a2 = t3 - t2;
 			float a3 = -2 * t3 + 3 * t2;
 			return sf::Color(
 				static_cast<sf::Uint8>(color1.r * a0 + color2.r * a3),

@@ -62,7 +62,7 @@ namespace QSFML
 			a *= 2048419325;
 			a ^= m_seed; // Incorporate the seed into the hash calculation
 
-			float random = a * (3.14159265 / ~(~0u >> 1)); // in [0, 2*Pi]
+			float random = (float)a * ((float)M_PI / (float)(~(~0u >> 1))); // in [0, 2*Pi]
 
 			// Create the vector from the angle
 			sf::Vector2f v;
@@ -88,7 +88,7 @@ namespace QSFML
 
 		float PerlinNoise::interpolate(float a0, float a1, float w) const
 		{
-			return (a1 - a0) * (3.0 - w * 2.0) * w * w + a0;
+			return (a1 - a0) * (3.0f - w * 2.0f) * w * w + a0;
 		}
 
 

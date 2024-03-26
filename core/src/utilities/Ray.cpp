@@ -249,6 +249,7 @@ namespace QSFML
 		{
 			bool failed;
 			float shortestFactorToCenter = getShortestDistanceFactor(circlePos, &failed);
+			QSFML_UNUSED(shortestFactorToCenter);
 			if (failed)
 				return 0; // No collision on circle
 
@@ -448,6 +449,7 @@ namespace QSFML
 
 		void Ray::RayPainter::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
 		{
+			QSFML_UNUSED(states);
 			for (size_t i = 0; i < m_lines.size(); ++i)
 			{
 				target.draw(m_lines[i].m_line, 2, sf::Lines);

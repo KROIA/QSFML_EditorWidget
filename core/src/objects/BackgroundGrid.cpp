@@ -73,6 +73,7 @@ namespace QSFML
         void BackgroundGrid::DrawableComp::drawComponent(sf::RenderTarget& target,
             sf::RenderStates states) const
         {
+            QSFML_UNUSED(states);
             drawGrid(target, m_grid->m_gridArea, m_grid->m_gridSpacing,
                 m_grid->m_alternatingColors);
         }
@@ -81,14 +82,14 @@ namespace QSFML
             unsigned int spacing,
             const std::vector<sf::Color>& alternatingColors) const
         {
-            sf::Vector2f start(area.left, area.top);
-            sf::Vector2f end(area.left,
-                area.top + area.height);
+            sf::Vector2f start((float)area.left, (float)area.top);
+            sf::Vector2f end((float)area.left,
+                (float)(area.top + area.height));
             sf::Vector2f VcurrentStart = start;
             sf::Vector2f VcurrentEnd = end;
 
             sf::Vector2f HcurrentStart = start;
-            sf::Vector2f HcurrentEnd = start + sf::Vector2f(area.width, 0);
+            sf::Vector2f HcurrentEnd = start + sf::Vector2f((float)area.width, 0.f);
 
 
             size_t verticalCount = area.height / spacing;

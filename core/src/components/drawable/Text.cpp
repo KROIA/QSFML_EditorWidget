@@ -114,6 +114,7 @@ namespace QSFML
 
         void Text::updateCenter(const sf::Vector2f &pos)
         {
+            QSFML_UNUSED(pos);
             sf::FloatRect bounds = m_text.getLocalBounds();
             Utilities::AABB box(bounds.left, bounds.top, bounds.width, bounds.height);
     

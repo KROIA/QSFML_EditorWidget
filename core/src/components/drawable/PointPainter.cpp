@@ -98,7 +98,7 @@ namespace QSFML
         }
         void PointPainter::addPoint(const sf::Vector2f& pos, float radius, const sf::Color& color)
         {
-            m_points.push_back({ pos, m_defaultColor, m_defaultRadius});
+            m_points.push_back({ pos, color, radius});
         }
         PointPainter::PointData& PointPainter::getPoint(size_t index)
         {

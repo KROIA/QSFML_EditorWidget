@@ -32,6 +32,16 @@ void LinePainter::setPoints(size_t index, const sf::Vector2f& start, const sf::V
    data.start = start;
    data.end = end;
 }
+void LinePainter::addLine(const sf::Vector2f& start, const sf::Vector2f& end, const sf::Color& col, float thickness)
+{
+    LineData data = {start, end, col, thickness};
+    m_lines.push_back(data);
+}
+void LinePainter::addLine(const sf::Vector2f& start, const sf::Vector2f& end)
+{
+    LineData data = {start, end, m_color, m_thickness};
+    m_lines.push_back(data);
+}
 const sf::Vector2f &LinePainter::getStartPos() const
 {
     return m_lines[0].start;
