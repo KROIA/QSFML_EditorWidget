@@ -20,12 +20,13 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
   CanvasObjectContainer(this, m_settings)
 {
     s_instances.push_back(this);
-#ifdef QSFML_PROFILING
-    if(s_instances.size() == 1)
+    if (s_instances.size() == 1)
     {
+        Utilities::RandomEngine::getInstance();
+#ifdef QSFML_PROFILING
         EASY_PROFILER_ENABLE;
-    }
 #endif
+    }
     m_window = nullptr;
     // Setup layout of this widget
     if (parentWidget())
