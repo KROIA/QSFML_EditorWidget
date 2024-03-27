@@ -36,8 +36,15 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
         //void setPosition(const sf::Vector2f &pos);
         //const sf::Vector2f &getPosition() const;
 
-        void setOrigin(const Utilities::Origin& origin);
-        const Utilities::Origin& getOrigin() const;
+        void setOrigin(const Utilities::Origin& origin)
+        {
+            m_origin = origin;
+            updateCenter(getPosition());
+        }
+        const Utilities::Origin& getOrigin() const
+        {
+            return m_origin;
+        }
 
         void setFont(const sf::Font& font);
         bool setFont(const std::string& path);

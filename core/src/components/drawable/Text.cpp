@@ -66,20 +66,14 @@ namespace QSFML
         //    return m_pos;
         //}
 
-        void Text::setOrigin(const Utilities::Origin& origin)
-        {
-            m_origin = origin;
-            updateCenter(getPosition());
-        }
-        const Utilities::Origin& Text::getOrigin() const
-        {
-            return m_origin;
-        }
+        
+       
 
         void Text::setFont(const sf::Font& font)
         {
             m_text.setFont(font);
             m_font = m_text.getFont();
+            updateCenter(getPosition());
         }
         bool Text::setFont(const std::string& path)
         {
