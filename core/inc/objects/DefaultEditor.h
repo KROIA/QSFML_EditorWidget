@@ -26,6 +26,8 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObj
         BackgroundGrid *getGrid() const;
         RuntimeInfo* getRuntimeInfo() const;
 
+        void setToggleRuntimeInfoKey(const sf::Keyboard::Key& key);
+
     public slots:
         void onToggleRuntimeInfo();
         void onEnableRuntimeInfo();
@@ -39,6 +41,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObj
         BackgroundGrid *m_grid;
         RuntimeInfo* m_runtimeInfo;
 
+        QSFML::Components::KeyPressEvent* m_toggleRuntimeInfoEvent;
 };
 }
 }

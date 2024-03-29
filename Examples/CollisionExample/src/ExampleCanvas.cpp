@@ -28,9 +28,9 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
 
     DefaultEditor *defaultEditor = new DefaultEditor();
     // Create a Key button to toggle the RuntimeInfo Text on and off
-    QSFML::Components::KeyPressEvent* runtimeInfoKeyToggler = new QSFML::Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
-    connect(runtimeInfoKeyToggler, &Components::KeyPressEvent::fallingEdge, defaultEditor, &DefaultEditor::onToggleRuntimeInfo);
-    defaultEditor->addComponent(runtimeInfoKeyToggler);
+    //QSFML::Components::KeyPressEvent* runtimeInfoKeyToggler = new QSFML::Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
+    //connect(runtimeInfoKeyToggler, &Components::KeyPressEvent::fallingEdge, defaultEditor, &DefaultEditor::onToggleRuntimeInfo);
+    //defaultEditor->addComponent(runtimeInfoKeyToggler);
     m_canvas->addObject(defaultEditor);
 
     

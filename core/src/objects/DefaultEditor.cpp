@@ -1,4 +1,5 @@
 #include "objects/DefaultEditor.h"
+#include "Components/KeyPressEvent.h"
 
 namespace QSFML
 {
@@ -37,6 +38,11 @@ namespace QSFML
             m_runtimeInfo = new RuntimeInfo();
             m_runtimeInfo->setEnabled(false);
 
+            m_toggleRuntimeInfoEvent = new Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
+            connect(m_toggleRuntimeInfoEvent, &Components::KeyPressEvent::fallingEdge, this, &DefaultEditor::onToggleRuntimeInfo);
+            addComponent(m_toggleRuntimeInfoEvent);
+
+
             addChild(m_grid);
             addChild(m_cam);
             addChild(m_runtimeInfo);
@@ -53,6 +59,11 @@ namespace QSFML
         RuntimeInfo* DefaultEditor::getRuntimeInfo() const
         {
             return m_runtimeInfo;
+        }
+
+        void DefaultEditor::setToggleRuntimeInfoKey(const sf::Keyboard::Key& key)
+        {
+            m_toggleRuntimeInfoEvent->setTriggerKey(key);
         }
 
         void DefaultEditor::onToggleRuntimeInfo()
