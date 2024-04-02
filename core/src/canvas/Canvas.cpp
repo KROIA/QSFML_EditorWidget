@@ -195,15 +195,24 @@ sf::Vector2u Canvas::getOldCanvasSize() const
 
 sf::Vector2i Canvas::getMousePosition() const
 {
-    if(m_window)
-        return sf::Mouse::getPosition(*m_window);
-    return sf::Mouse::getPosition();
+    if (m_window)
+    {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
+        mousePos.x /= m_dpiScale.x;
+        mousePos.y /= m_dpiScale.y;
+        return mousePos;
+    }
+    sf::Vector2i mousePos = sf::Mouse::getPosition();
+    mousePos.x /= m_dpiScale.x;
+    mousePos.y /= m_dpiScale.y;
+    return mousePos;
 }
 sf::Vector2f Canvas::getMouseWorldPosition() const
 {
-    if(!m_window) return sf::Vector2f(0,0);
-    sf::Vector2i pixelPos = getMousePosition();
-    return m_window->mapPixelToCoords(pixelPos);
+    if(!m_window) 
+        return sf::Vector2f(0,0);
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
+    return m_window->mapPixelToCoords(mousePos);
 }
 sf::Vector2f Canvas::getInWorldSpace(const sf::Vector2i &pixelSpace)
 {
@@ -259,6 +268,11 @@ void Canvas::showEvent(QShowEvent*)
         m_update_t1 = m_syncedUpdateT_t1;
         m_paint_t1 = m_syncedUpdateT_t1;
         m_oldCanvasSize = getCanvasSize();
+
+        // Calculate the dpi scale
+        QRect geometry = QWidget::geometry();
+        m_dpiScale.x = (float)m_oldCanvasSize.x / geometry.width();
+        m_dpiScale.y = (float)m_oldCanvasSize.y / geometry.height();
     }
 }
 void Canvas::closeEvent(QCloseEvent*) 

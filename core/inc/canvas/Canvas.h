@@ -119,8 +119,12 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         sf::Vector2u m_oldCanvasSize;
         sf::Font m_textfont;
         sf::View m_view;
+        sf::Vector2f m_dpiScale;
+
+
         static std::string m_profilerOutputFile;
 
         static std::vector<Canvas*> s_instances;
+
     };
 }
