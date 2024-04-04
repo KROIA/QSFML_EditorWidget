@@ -23,23 +23,21 @@ public:
 private:
 
 	// Tests
-	bool test1(TestResults& results)
+	TEST_FUNCTION(test1)
 	{
-		TEST_START(results);
-		//TEST_MESSAGE(std::to_string(__LINE__));
+		TEST_START;
+
 		int a = 0;
 		TEST_MESSAGE("is a == 0?");
 		TEST_ASSERT(a == 0);
-
-		TEST_END;
 	}
 
 
 
 
-	bool test2(TestResults& results)
+	TEST_FUNCTION(test2)
 	{
-		TEST_START(results);
+		TEST_START;
 
 		int a = 0;
 		TEST_ASSERT_M(a == 0, "is a == 0?");
@@ -52,8 +50,6 @@ private:
 
 		// fails if a != b
 		TEST_COMPARE(a, b);
-
-		TEST_END;
 	}
 
 };

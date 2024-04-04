@@ -108,7 +108,7 @@ private:
 	{ 
 	
 	}
-	bool processStats(TestResults& results)
+	TEST_FUNCTION(processStats)
 	{
 		TEST_START(results);
 		TEST_MESSAGE("Stats:");
@@ -141,14 +141,10 @@ private:
 		TEST_MESSAGE("Average Draw Time: " + std::to_string(averageDrawTime) + " ms");
 		TEST_MESSAGE("Average CollisionCheckFull Time: " + std::to_string(m_averageCollisionCheckTimeFull) + " ms");
 		TEST_MESSAGE("Average CollisionCheck Time: " + std::to_string(m_averageCollisionCheckTime) + " ms");
-
-
-
-		TEST_END;
 	}
 
 	// Tests
-	bool drawTest(TestResults& results)
+	TEST_FUNCTION(drawTest)
 	{
 		TEST_START(results);
 		size_t objectCount = 10000;
@@ -187,10 +183,9 @@ private:
 		m_currentCanvas = nullptr;
 		m_currentResults = nullptr;
 		processStats(results);
-		TEST_END;
 	}
 
-	bool collisionTest(TestResults& results)
+	TEST_FUNCTION(collisionTest)
 	{
 		TEST_START(results);
 		size_t objectCount = 10000;
@@ -242,7 +237,6 @@ private:
 		processStats(results);
 		m_tree.setStatsManager(nullptr);
 		m_pointPainter = nullptr;
-		TEST_END;
 	}
 
 };

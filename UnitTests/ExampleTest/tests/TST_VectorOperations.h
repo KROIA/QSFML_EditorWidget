@@ -160,9 +160,9 @@ private:
 	}
 
 	// Tests
-	bool vecLength(TestResults& results)
+	TEST_FUNCTION(vecLength)
 	{
-		TEST_START(results);
+		TEST_START;
 		
 		for (auto& data : m_singleVectorOperationData)
 		{
@@ -180,13 +180,12 @@ private:
 		{
 			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getSquareLength(data.vec), data.squareLength), "getSquareLength");
 		}
-		TEST_END;
 	}
 
 
 
 
-	bool vecRotating(TestResults& results)
+	TEST_FUNCTION(vecRotating)
 	{
 		TEST_START(results);
 
@@ -214,11 +213,9 @@ private:
 			sf::Vector2<double> correctRotated2 = sf::Vector2<double>(std::cos(rotation), std::sin(rotation));
 			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotatedUnitVector(rotation), correctRotated2), "getRotatedUnitVector");
 		}
-
-		TEST_END;
 	}
 
-	bool dotP(TestResults& results)
+	TEST_FUNCTION(dotP)
 	{
 		TEST_START(results);
 		for (auto& data : m_doubleVectorOperationData)
@@ -229,10 +226,9 @@ private:
 		{
 			TEST_ASSERT_M(isEqual(QSFML::VectorMath::dotProduct(data.vec1, data.vec2), data.dotProduct), "dotProduct");
 		}
-		TEST_END;
 	}
 
-	bool crossP(TestResults& results)
+	TEST_FUNCTION(crossP)
 	{
 		TEST_START(results);
 		for (auto& data : m_doubleVectorOperationData)
@@ -243,10 +239,9 @@ private:
 		{
 			TEST_ASSERT_M(isEqual(QSFML::VectorMath::crossProduct(data.vec1, data.vec2), data.crossProduct), "crossProduct");
 		}
-		TEST_END;
 	}
 
-	bool angle(TestResults& results)
+	TEST_FUNCTION(angle)
 	{
 		TEST_START(results);
 		for (auto& data : m_doubleVectorOperationData)
@@ -257,10 +252,9 @@ private:
 		{
 			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getAngle(data.vec1, data.vec2), data.angle), "getAngle");
 		}
-		TEST_END;
 	}
 
-	bool performanceTest(TestResults& results)
+	TEST_FUNCTION(performanceTest)
 	{
 		TEST_START(results);
 
@@ -330,10 +324,6 @@ private:
 			TEST_MESSAGE("getAngle between two vectors<D> mesurement: " + std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count()) +
 				"ns, CPU time: " + std::to_string(cpuTimeMs) + "ms");
 		}
-
-
-
-		TEST_END;
 	}
 
 };

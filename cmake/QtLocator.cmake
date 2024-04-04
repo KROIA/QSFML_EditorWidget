@@ -1,40 +1,36 @@
 # Credits: 
 # https://stackoverflow.com/questions/15639781/how-to-find-the-qt5-cmake-module-on-windows
+#
+# Note:
+# The variable QT_INSTALL_BASE must be set before this script gets executed
+# The variable points to the base directory where all versions of QT are installed. Default C:\Qt
+# If the variable is empty or not defined, the script try's to search for the installation of the QtCreator to find the 
+# installation folder.
+#
 
 SET(QT_MISSING True)
 
-#if(EXISTS ${QT_PATH})
-#	set(QT_MISSING False)
-#endif()
 
 # Function to extract the version number from a path
 function(get_version_number out path)
     string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" version ${path})
     set(${out} ${version} PARENT_SCOPE)
-    # message("Extracted version: "${version})
 endfunction()
 
 # msvc only; mingw will need different logic
 IF(MSVC AND QT_MISSING)
     MESSAGE("Searching for QT installs...")
 
-    # look for user-registry pointing to qtcreator
-    GET_FILENAME_COMPONENT(QT_BIN [HKEY_CURRENT_USER\\Software\\Classes\\Applications\\QtProject.QtCreator.cpp\\shell\\Open\\Command] PATH)
-    #message("QT Path: "${QT_BIN})
+    if(NOT DEFINED QT_INSTALL_BASE OR "${QT_INSTALL_BASE}" STREQUAL "")
+        # look for user-registry pointing to qtcreator
+        GET_FILENAME_COMPONENT(QT_BIN [HKEY_CURRENT_USER\\Software\\Classes\\Applications\\QtProject.QtCreator.cpp\\shell\\Open\\Command] PATH)
+         # get root path so we can search for 5.3, 5.4, 5.5, etc
+        STRING(REPLACE "/Tools" ";" QT_BIN "${QT_BIN}")
+        LIST(GET QT_BIN 0 QT_INSTALL_BASE)
+    endif()
+
     # get root path so we can search for 5.3, 5.4, 5.5, etc
-    STRING(REPLACE "/Tools" ";" QT_BIN "${QT_BIN}")
-    LIST(GET QT_BIN 0 QT_BIN)
-    FILE(GLOB QT_VERSIONS "${QT_BIN}/5.*")
-    #message("QT Version: "${QT_VERSIONS})
-    #message("QT Path: "${QT_BIN})
-
-
-    ####
-    
-    # List of paths with version numbers
-    #set(paths "C:/Qt/5.14.2" "C:/Qt/5.15.0" "C:/Qt/5.9.2")
-
-    
+    FILE(GLOB QT_VERSIONS "${QT_INSTALL_BASE}/5.*")
     
     # Create a list of version numbers
 	set(version_numbers )
@@ -46,16 +42,15 @@ IF(MSVC AND QT_MISSING)
 
     # Sort the list of paths in descending order based on their version number
     list(LENGTH version_numbers num_versions)
-    #message("List: "${version_numbers})
+
+    # Compare versions and find the newest one
     math(EXPR last_index "${num_versions} - 1")
     foreach(i RANGE ${last_index})
         foreach(j RANGE ${last_index})
             list(GET version_numbers ${i} version_i)
             list(GET version_numbers ${j} version_j)
 
-            #message("compare: "${version_i} " to "${version_j})
             if(version_i VERSION_GREATER version_j)
-                #message(" is greater than")
                 list(GET QT_VERSIONS ${i} path_i)
                 list(GET QT_VERSIONS ${j} path_j)
                 list(REMOVE_AT QT_VERSIONS ${i})
@@ -69,19 +64,8 @@ IF(MSVC AND QT_MISSING)
             endif()
         endforeach()
     endforeach()
-
-    # Print the sorted list of paths
-    #foreach(path ${QT_VERSIONS})
-    #    message(${path})
-    #endforeach()
-
-    ####
-
-    #message("QT Version: "${QT_VERSIONS})
-    
-
-    
     list(GET QT_VERSIONS 0 QT_VERSION)
+
     # fix any double slashes which seem to be common
     STRING(REPLACE "//" "/"  QT_VERSION "${QT_VERSION}")
 
