@@ -214,16 +214,22 @@ sf::Vector2f Canvas::getMouseWorldPosition() const
     sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
     return m_window->mapPixelToCoords(mousePos);
 }
-sf::Vector2f Canvas::getInWorldSpace(const sf::Vector2i &pixelSpace)
+sf::Vector2f Canvas::getInWorldSpace(sf::Vector2i pixelSpace)
 {
     if(!m_window) return sf::Vector2f(0,0);
+    pixelSpace.x *= m_dpiScale.x;
+    pixelSpace.y *= m_dpiScale.y;
     return m_window->mapPixelToCoords(pixelSpace);
 }
 sf::Vector2i Canvas::getInScreenSpace(const sf::Vector2f &worldSpace)
 {
-    if(!m_window) return sf::Vector2i(0,0);
-    return m_window->mapCoordsToPixel(worldSpace);
+    sf::Vector2i pos(0, 0);
+    if(!m_window) return pos;
 
+    pos = m_window->mapCoordsToPixel(worldSpace);
+    pos.x /= m_dpiScale.x;
+    pos.y /= m_dpiScale.y;
+    return pos;
 }
 
 

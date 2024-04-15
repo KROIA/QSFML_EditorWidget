@@ -56,7 +56,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
 
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;
-        sf::Vector2f getInWorldSpace(const sf::Vector2i &pixelSpace);
+        sf::Vector2f getInWorldSpace(sf::Vector2i pixelSpace);
         sf::Vector2i getInScreenSpace(const sf::Vector2f &worldSpace);
 
         

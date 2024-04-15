@@ -198,10 +198,11 @@ namespace QSFML
             case sf::Event::MouseWheelScrolled:
             {
                 float zoomAmount = 1.1;
+                sf::Vector2i mousePos = m_controller->getMousePosition();
                 if (e.mouseWheelScroll.delta > 0)
-                    m_controller->zoom(1 / zoomAmount, { e.mouseWheelScroll.x, e.mouseWheelScroll.y });
+                    m_controller->zoom(1 / zoomAmount, mousePos);
                 else if (e.mouseWheelScroll.delta < 0)
-                    m_controller->zoom(zoomAmount, { e.mouseWheelScroll.x, e.mouseWheelScroll.y });
+                    m_controller->zoom(zoomAmount, mousePos);
                 break;
             }
             case sf::Event::MouseButtonPressed:
@@ -209,6 +210,7 @@ namespace QSFML
                 if (e.mouseButton.button == m_controller->m_dragButton)
                 {
                     startPos = sf::Vector2f(m_controller->getMousePosition());
+                    //startPos = sf::Vector2f(m_controller->getMousePosition());
                     mousePressed = true;
                 }
                 break;
@@ -229,13 +231,14 @@ namespace QSFML
                 if (!mousePressed)
                     break;
                 // Determine the new position in world coordinates
-                sf::Vector2f newPos = sf::Vector2f(e.mouseMove.x, e.mouseMove.y);
+               // sf::Vector2f newPos = sf::Vector2f(e.mouseMove.x, e.mouseMove.y);
+                sf::Vector2f newPos = sf::Vector2f(m_controller->getMousePosition());
                 // Determine how the cursor has moved
                 // Swap these to invert the movement direction
 
-                //this->mapPixelToCoords(sf::Vector2i(m_movingOldPos*100.f - newPos*100.f))/100.f;
-                sf::Vector2f deltaPos = (m_controller->getInWorldSpace(sf::Vector2i(startPos * 100.f)) -
-                    m_controller->getInWorldSpace(sf::Vector2i(newPos * 100.f))) / 100.f;
+                //sf::Vector2f deltaPos = (m_controller->getInWorldSpace(sf::Vector2i(startPos * 100.f)) -
+                //    m_controller->getInWorldSpace(sf::Vector2i(newPos * 100.f))) / 100.f;
+                sf::Vector2f deltaPos = m_controller->getInWorldSpace(sf::Vector2i(startPos)) - m_controller->getInWorldSpace(sf::Vector2i(newPos));
 
                 m_controller->movePosition(deltaPos);
                 // Move our view accordingly and update the window
