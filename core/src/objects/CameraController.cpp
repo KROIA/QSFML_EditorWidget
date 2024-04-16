@@ -210,7 +210,6 @@ namespace QSFML
                 if (e.mouseButton.button == m_controller->m_dragButton)
                 {
                     startPos = sf::Vector2f(m_controller->getMousePosition());
-                    //startPos = sf::Vector2f(m_controller->getMousePosition());
                     mousePressed = true;
                 }
                 break;
@@ -223,32 +222,15 @@ namespace QSFML
             }
             case sf::Event::MouseMoved:
             {
-                /* if(mousePressed)
-                 {
-                     movePosition((getMouseWorldPosition() - startPos)*0.001f);
-                 }*/
                  // Ignore mouse movement unless a button is pressed (see above)
                 if (!mousePressed)
                     break;
-                // Determine the new position in world coordinates
-               // sf::Vector2f newPos = sf::Vector2f(e.mouseMove.x, e.mouseMove.y);
+                
                 sf::Vector2f newPos = sf::Vector2f(m_controller->getMousePosition());
-                // Determine how the cursor has moved
-                // Swap these to invert the movement direction
-
-                //sf::Vector2f deltaPos = (m_controller->getInWorldSpace(sf::Vector2i(startPos * 100.f)) -
-                //    m_controller->getInWorldSpace(sf::Vector2i(newPos * 100.f))) / 100.f;
                 sf::Vector2f deltaPos = m_controller->getInWorldSpace(sf::Vector2i(startPos)) - m_controller->getInWorldSpace(sf::Vector2i(newPos));
 
                 m_controller->movePosition(deltaPos);
-                // Move our view accordingly and update the window
-                //sf::View view = this->getView();
-                //view.move(deltaPos); // <-- Here I use move
-                //this->setView(view);
-
-                // Save the new position as the old one
-                // We're recalculating this, since we've changed the view
-                startPos = newPos; // With move, I don't need to recalculate
+                startPos = newPos;
                 break;
             }
             case sf::Event::Resized:
@@ -262,10 +244,6 @@ namespace QSFML
                 viewRect.width = viewRect.width / oldWindowSize.x * newWindowSize.x;
                 viewRect.height = viewRect.height / oldWindowSize.y * newWindowSize.y;
 
-                // qDebug() <<"old: "<< oldWindowSize.x << " " << oldWindowSize.y
-                //          << "  new: " << newWindowSize.x << " " << newWindowSize.y << " -- "
-                //          <<viewRect.width << " "<<viewRect.height;
-
                 view.setSize(viewRect.width, viewRect.height);
                 view.setCenter(viewRect.left + viewRect.width / 2.f, viewRect.top + viewRect.height / 2.f);
                 m_controller->positionCheck(view);
@@ -275,32 +253,13 @@ namespace QSFML
             }
 
         }
-        /*
-        void CameraController::internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent)
-        {
-
-        }
-        void CameraController::internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent)
-        {
-
-        }*/
 
         void CameraController::positionCheck(sf::View& view)
         {
-            //return;
             sf::FloatRect viewRect = sf::FloatRect(view.getCenter() - view.getSize() / 2.f, view.getSize());
             sf::Vector2f cameraPos = view.getCenter();
             sf::Vector2u windowSize = getCanvasSize();
             float aspectRatio = (float)windowSize.x / (float)windowSize.y;
-
-            //qDebug() << "1ViewRect= "<<viewRect.left << " " << viewRect.top << " w*h="<<viewRect.width<<" "<<viewRect.height;
-
-
-            // Fixes the gridsize
-            /*if(m_maxMovingBounds.width < viewRect.width)
-                viewRect.width = m_maxMovingBounds.width;
-            if(m_maxMovingBounds.height < viewRect.height)
-                viewRect.height = m_maxMovingBounds.height;*/
 
             if (viewRect.width / viewRect.height > aspectRatio)
             {
@@ -310,18 +269,6 @@ namespace QSFML
             {
                 viewRect.height = viewRect.width / aspectRatio;
             }
-            /*
-                if(m_maxMovingBounds.left+m_maxMovingBounds.width < viewRect.left+viewRect.width)
-                    viewRect.left = m_maxMovingBounds.left+m_maxMovingBounds.width-viewRect.width;
-                if(m_maxMovingBounds.top+m_maxMovingBounds.height < viewRect.top+viewRect.height)
-                    viewRect.top = m_maxMovingBounds.top+m_maxMovingBounds.height-viewRect.height;
-
-
-                if(m_maxMovingBounds.left > viewRect.left)
-                    viewRect.left = m_maxMovingBounds.left;
-                if(m_maxMovingBounds.top > viewRect.top)
-                    viewRect.top = m_maxMovingBounds.top;
-            */
             if (cameraPos.x < m_maxMovingBounds.left)
                 cameraPos.x = m_maxMovingBounds.left;
             else if (cameraPos.x > m_maxMovingBounds.left + m_maxMovingBounds.width)
@@ -332,27 +279,8 @@ namespace QSFML
             else if (cameraPos.y > m_maxMovingBounds.top + m_maxMovingBounds.height)
                 cameraPos.y = m_maxMovingBounds.top + m_maxMovingBounds.height;
 
-
-
-            //   qDebug() << "2ViewRect= "<<viewRect.left << " " << viewRect.top << " w*h="<<viewRect.width<<" "<<viewRect.height;
             view.setSize(viewRect.width, viewRect.height);
             view.setCenter(cameraPos);
-            //view.setCenter(viewRect.left+viewRect.width/2.f,viewRect.top+viewRect.height/2.f);
         }
-        /*bool CameraController::isOutsideBounds(sf::View &view)
-        {
-            sf::FloatRect viewRect = sf::FloatRect(view.getCenter()-view.getSize()/2.f,view.getSize());
-
-            if(m_maxMovingBounds.left+m_maxMovingBounds.width < viewRect.left+viewRect.width)
-                return true;
-            if(m_maxMovingBounds.top+m_maxMovingBounds.height < viewRect.top+viewRect.height)
-                return true;
-
-            if(m_maxMovingBounds.left > viewRect.left)
-                return true;
-            if(m_maxMovingBounds.top > viewRect.top)
-                return true;
-            return false;
-        }*/
     }
 }
