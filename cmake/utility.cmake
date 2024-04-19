@@ -38,8 +38,6 @@ endfunction()
                 --no-translations
                 --no-system-d3d-compiler
                 --no-opengl-sw
-                --no-angle
-                --no-webkit2
                 --pdb)
 
 
@@ -86,3 +84,11 @@ function(copyLibraryHeaders headerRootFolder destinationPath destinationFolderNa
     message("Installing headers from: ${headerRootFolder} to ${destinationPath}/${destinationFolderName}")
 
 endfunction()
+
+
+function(set_if_not_defined varName value)
+    if(NOT DEFINED ${varName})
+        set(${varName} ${value} PARENT_SCOPE)
+    endif()
+endfunction()
+

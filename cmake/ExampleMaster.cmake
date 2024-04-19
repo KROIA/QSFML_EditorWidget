@@ -47,13 +47,12 @@ project(${PROJECT_NAME})
 
 # QT settings
 if(QT_ENABLE)
-    find_package(Qt5Widgets REQUIRED)
+    message("Using QT modules: ${QT_MODULES} for Example: ${PROJECT_NAME}")
+    find_package(${QT_PACKAGE_NAME} REQUIRED COMPONENTS ${QT_MODULES})
 
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTORCC ON)
     #set(CMAKE_AUTOUIC ON)
-
-    find_package(Qt5 REQUIRED COMPONENTS ${QT_MODULES})
 endif()
 # end QT settings
 
@@ -74,9 +73,9 @@ if(QT_ENABLE)
     FILE_DIRECTORIES(UI_FILES *.ui)    
     FILE_DIRECTORIES(RES_FILES *.qrc)    
 
-    qt5_wrap_cpp(CPP_MOC_FILES ${H_FILES})
-    qt5_wrap_ui(UIS_HDRS ${UI_FILES})
-    qt5_add_resources(RESOURCE_FILES ${RES_FILES})
+    qt_wrap_internal_cpp(CPP_MOC_FILES ${H_FILES})
+    qt_wrap_internal_ui(UIS_HDRS ${UI_FILES})
+    qt_add_internal_resources(RESOURCE_FILES ${RES_FILES})
 
     list(APPEND DEFINES QT_ENABLED)
     # Check if QT_MODULES contains Widgets
@@ -92,7 +91,7 @@ if(QT_ENABLE)
 
     # Link the QT modules to your executable
     foreach(MODULE ${QT_MODULES})
-        set(QT_LIBS ${QT_LIBS} Qt5::${MODULE})
+        set(QT_LIBS ${QT_LIBS} ${QT_PACKAGE_NAME}::${MODULE})
     endforeach()
 
 endif()
