@@ -146,7 +146,7 @@ IF(NOT QT_MISSING)
         message("Using compiler: ${QT_PATH}")
 	    
         
-        SET(Qt5_DIR "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}")
+        SET(Qt${QT_MAJOR_VERSION}_DIR "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}")
         SET(Qt${QT_MAJOR_VERSION}Widgets_DIR  "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Widgets")
         SET(Qt${QT_MAJOR_VERSION}Test_DIR "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Test")
         SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${QT_PATH}/lib/cmake")
