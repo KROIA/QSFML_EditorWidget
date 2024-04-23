@@ -10,11 +10,11 @@ namespace VectorMath
 {
     float getLength(const sf::Vector2f &vec)
     {
-        return sqrt( vec.x * vec.x + vec.y * vec.y);
+        return (float)sqrt((double)(vec.x * vec.x + vec.y * vec.y));
     }
     double getLength(const Vector2d &vec)
     {
-        return sqrt( vec.x * vec.x + vec.y * vec.y);
+        return (float)sqrt((double)(vec.x * vec.x + vec.y * vec.y));
     }
     float getSquareLength(const sf::Vector2f &vec)
     {
@@ -26,7 +26,7 @@ namespace VectorMath
     }
     sf::Vector2f getRotatedUnitVector(float rad)
     {
-        return sf::Vector2f(cos(rad), sin(rad));
+        return sf::Vector2f((float)cos((double)rad), (float)sin((double)rad));
     }
     Vector2d getRotatedUnitVector(double rad)
     {
@@ -36,7 +36,7 @@ namespace VectorMath
     {
         float angle = getAngle(vec);
         angle += rad;
-        return sf::Vector2f(cos(angle), sin(angle)) * getLength(vec);
+        return sf::Vector2f((float)cos((double)angle), (float)sin((double)angle)) * getLength(vec);
     }
     Vector2d getRotated(const Vector2d& vec, double rad)
     {
@@ -65,13 +65,13 @@ namespace VectorMath
         if(sqrL <= 0)
             return 0;
         float angle;
-        sqrL = sqrt(sqrL);
+        sqrL = (float)sqrt((double)sqrL);
 
         if (vec.y <= 0) {
-            angle = -acos(vec.x / sqrL);
+            angle = -(float)acos((double)(vec.x / sqrL));
         }
         else {
-            angle = acos(vec.x / sqrL);
+            angle = (float)acos((double)(vec.x / sqrL));
         }
         return getNormalzedAngle(angle);
 #endif
@@ -117,7 +117,7 @@ namespace VectorMath
         return (angle < 0) ? angle + M_PI : angle - M_PI;*/
 
         // Calculate the magnitudes of the vectors
-        float lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
+        float lengthProduct = (float)sqrt((double)((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y)));
 
         if(lengthProduct == 0)
 			return 0;
@@ -133,7 +133,7 @@ namespace VectorMath
             cosAngle = -1.0;
 
         // Calculate the angle in radians using the arc cosine function (acos)
-        float angle = acos(cosAngle);
+        float angle = (float)acos((double)cosAngle);
 
         // Determine the sign of the angle using the cross product
         float crossProduct = vec1.x * vec2.y - vec1.y * vec2.x;
@@ -224,7 +224,7 @@ namespace VectorMath
         float l = vec.x * vec.x + vec.y * vec.y;
         if(l <= 0)
             return vec;
-        return(vec / (float)sqrt(l));
+        return(vec / (float)sqrt((double)l));
     }
     Vector2d getNormalized(const Vector2d& vec)
     {
