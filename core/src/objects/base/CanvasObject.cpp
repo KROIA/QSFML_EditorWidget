@@ -965,11 +965,9 @@ sf::Vector2u CanvasObject::getOldCanvasSize() const
     return m_canvasParent->getOldCanvasSize();
 }
 
-const sf::Font &CanvasObject::getTextFont() const
+const sf::Font &CanvasObject::getDefaultTextFont() const
 {
-    const static sf::Font dummy;
-    if(!m_canvasParent) return dummy;
-    return m_canvasParent->getTextFont();
+    return Canvas::getDefaultTextFont();
 }
 size_t CanvasObject::getTick() const
 {

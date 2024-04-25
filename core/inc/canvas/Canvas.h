@@ -63,7 +63,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
 
         void sfEvent(const std::vector<sf::Event> &events);
 
-        const sf::Font &getTextFont() const;
+        static const sf::Font& getDefaultTextFont();
 
         static void setProfilerOutputFileName(const std::string& fileName);
         static const std::string& getProfilerOutputFileName();
@@ -117,10 +117,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         CanvasSettings m_settings;
         sf::RenderWindow *m_window;
         sf::Vector2u m_oldCanvasSize;
-        sf::Font m_textfont;
         sf::View m_view;
         sf::Vector2f m_dpiScale;
-
 
         static std::string m_profilerOutputFile;
 

@@ -104,7 +104,7 @@ const sf::Font& Component::getTextFont() const
 {
     const static sf::Font dummy;
     if (!m_parent) return dummy;
-    return m_parent->getTextFont();
+    return m_parent->getDefaultTextFont();
 }
 size_t Component::getTick() const
 {

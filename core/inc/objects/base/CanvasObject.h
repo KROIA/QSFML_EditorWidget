@@ -403,7 +403,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         sf::Vector2u getCanvasSize() const;
         sf::Vector2u getOldCanvasSize() const;
 
-        const sf::Font &getTextFont() const;
+        const sf::Font& getDefaultTextFont() const;
 
         /// <summary>
         /// Gets the current canvas tick count

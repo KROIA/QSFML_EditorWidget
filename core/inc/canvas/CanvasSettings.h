@@ -88,7 +88,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT CanvasSettings
     /**
      * \brief Text settings
      */
-    std::string fontPath;
+    //std::string fontPath;
 
     struct QSFML_EDITOR_WIDGET_EXPORT UpdateControlls
     {
@@ -121,7 +121,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT CanvasSettings
 
     CanvasSettings()
     {
-        fontPath = "C:\\Windows\\Fonts\\Arial.ttf";
+       // fontPath = "C:\\Windows\\Fonts\\Arial.ttf";
     }
 };
 }
