@@ -1379,5 +1379,35 @@ void CanvasObject::inCanvasAdded_internal()
     }
     QSFMLP_OBJECT_END_BLOCK;
 }
+void CanvasObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
+{
+    if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate)
+        return;
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    states.transform.translate(getPosition());
+    if (m_drawableComponents.size())
+    {
+        QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
+        for (auto& comp : m_drawableComponents)
+        {
+            if (!comp->isEnabled())
+                continue;
+            window.draw(*comp, states);
+        }
+        QSFMLP_OBJECT_END_BLOCK;
+    }
+
+    if (m_childs.size())
+    {
+        QSFMLP_OBJECT_BLOCK("Childs draw", QSFML_COLOR_STAGE_3);
+        for (auto& child : m_childs)
+        {
+            if (child->m_enabled)
+                child->draw(window, states);
+        }
+        QSFMLP_OBJECT_END_BLOCK;
+    }
+}
+
 
 

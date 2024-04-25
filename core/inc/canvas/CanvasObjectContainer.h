@@ -75,6 +75,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         void deleteLater(Objects::CanvasObject *obj);
 
         void renderLayerSwitch(Objects::CanvasObject *obj, RenderLayer from, RenderLayer to);
+        void setRenderLayer(Objects::CanvasObject* obj, RenderLayer to);
 
         
 

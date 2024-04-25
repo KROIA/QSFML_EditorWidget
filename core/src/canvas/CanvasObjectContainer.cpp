@@ -280,12 +280,21 @@ void CanvasObjectContainer::renderLayerSwitch(Objects::CanvasObject *obj, Render
 {
     if(!obj)
         return;
-    if(obj->m_canvasParent != m_parent)
+    if (obj->m_canvasParent != m_parent)
         return; // not owner of this object
     if(from < RenderLayer::count)
         m_renderLayerGroup.removeObject(obj, from);
     if(to < RenderLayer::count)
         m_renderLayerGroup.addObject(obj, to);
+}
+void CanvasObjectContainer::setRenderLayer(Objects::CanvasObject* obj, RenderLayer to)
+{
+    if (!obj)
+        return;
+    if (obj->m_canvasParent != m_parent)
+        return; // not owner of this object
+    m_renderLayerGroup.removeObject(obj);
+    m_renderLayerGroup.addObject(obj, to);
 }
 
 
