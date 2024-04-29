@@ -403,7 +403,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         sf::Vector2u getCanvasSize() const;
         sf::Vector2u getOldCanvasSize() const;
 
-        const sf::Font &getTextFont() const;
+        const sf::Font& getDefaultTextFont() const;
 
         /// <summary>
         /// Gets the current canvas tick count
@@ -583,35 +583,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         void update_internal();
         void inCanvasAdded_internal();
         //void draw(sf::RenderWindow &window) const;
-        void draw(sf::RenderWindow& window, sf::RenderStates states) const
-        {
-            if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate)
-                return;
-            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-            states.transform.translate(getPosition());
-            if (m_drawableComponents.size())
-            {
-                QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
-                for (auto& comp : m_drawableComponents)
-                {
-                    if (!comp->isEnabled())
-                        continue;
-                    window.draw(*comp, states);
-                }
-                QSFMLP_OBJECT_END_BLOCK;
-            }
-
-            if (m_childs.size())
-            {
-                QSFMLP_OBJECT_BLOCK("Childs draw", QSFML_COLOR_STAGE_3);
-                for (auto& child : m_childs)
-                {
-                    if (child->m_enabled)
-                        child->draw(window, states);
-                }
-                QSFMLP_OBJECT_END_BLOCK;
-            }
-        }
+        void draw(sf::RenderWindow& window, sf::RenderStates states) const;
 
         // Static
         static size_t s_objNameCounter;
