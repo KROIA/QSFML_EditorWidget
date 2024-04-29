@@ -10,14 +10,14 @@ namespace QSFML
         DefaultEditor::DefaultEditor(const std::string &name,
                                      const sf::Vector2f &size)
             : CanvasObject(name)
-            , m_cam(new VisibleCamera("Camera"))
+            , m_cam(new CameraController("Camera"))
             , m_grid(new BackgroundGrid("Grid"))
         {
             setup(size);
         }
         DefaultEditor::DefaultEditor(const DefaultEditor &other)
             : CanvasObject(other)
-            , m_cam(new VisibleCamera("Camera"))
+            , m_cam(new CameraController("Camera"))
             , m_grid(new BackgroundGrid("Grid"))
         {
             setup(sf::Vector2f(other.m_grid->getSize().width, other.m_grid->getSize().height));
@@ -39,7 +39,7 @@ namespace QSFML
             m_runtimeInfo = new RuntimeInfo();
             m_runtimeInfo->setEnabled(false);
 
-            m_toggleRuntimeInfoEvent = new Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
+            m_toggleRuntimeInfoEvent = new Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::F3);
             connect(m_toggleRuntimeInfoEvent, &Components::KeyPressEvent::fallingEdge, this, &DefaultEditor::onToggleRuntimeInfo);
             addComponent(m_toggleRuntimeInfoEvent);
 
@@ -58,7 +58,7 @@ namespace QSFML
             if (newParent)
                 newParent->addObject(m_runtimeInfo);
         }
-        VisibleCamera *DefaultEditor::getCamera() const
+        CameraController* DefaultEditor::getCamera() const
         {
             return m_cam;
         }

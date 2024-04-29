@@ -118,6 +118,10 @@ namespace QSFML {
             QWidget::setFixedSize(m_settings.layout.fixedSize.x, m_settings.layout.fixedSize.y);
         }
     }
+    const CanvasSettings::Layout &Canvas::getLayout() const
+	{
+		return m_settings.layout;
+	}
     
 
     void Canvas::setTiming(const CanvasSettings::Timing& timing)
@@ -322,23 +326,11 @@ namespace QSFML {
 
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsedSeconds = std::chrono::duration<double>(t2 - m_syncedUpdateT_t1).count();
-        //auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds> (t2 - m_deltaT_t1);
-        //std::chrono::duration<double> elapsed = t2 - m_deltaT_t1;
+
         m_syncedUpdateT_t1 = t2;
         StatsManager::resetFrame_synced();
         StatsManager::setFrameTime(elapsedSeconds);
 
-        //if (m_settings.timing.physicsUseFixedTimeInterval)
-        //{
-        //    StatsManager::setDeltaT(m_settings.timing.physicsFixedDeltaT);
-        //}
-        //else
-        //{
-
-        //}
-
-
-        //m_window->setActive(true);
         applyObjectChanges();
 
         if (m_settings.updateControlls.enableEventLoop)

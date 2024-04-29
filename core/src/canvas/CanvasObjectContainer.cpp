@@ -343,6 +343,15 @@ void CanvasObjectContainer::setRenderLayer(Objects::CanvasObject* obj, RenderLay
     m_renderLayerGroup.addObject(obj, to);
 }
 
+std::string CanvasObjectContainer::getObjectsTreeString() const
+{
+    std::string str;
+    for(const auto &obj : m_allObjects->getObjects())
+	{
+		str += obj->toString();
+	}
+	return str;
+}
 
 
 void CanvasObjectContainer::updateNewElements()

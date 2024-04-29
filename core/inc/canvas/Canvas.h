@@ -34,7 +34,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         void setSettings(const CanvasSettings &settings);
         const CanvasSettings &getSettings() const;
         void setLayout(const CanvasSettings::Layout &layout);
-        const CanvasSettings::Layout getLayout() const;
+        const CanvasSettings::Layout &getLayout() const;
         void setTiming(const CanvasSettings::Timing &timing);
         const CanvasSettings::Timing &getTiming() const;
         void setContextSettings(const sf::ContextSettings &contextSettings);
@@ -77,9 +77,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         double getFixedElapsedTime() const; // Gets fixed elapsed Time in seconds
         double getFPS() const;
         double getTPS() const;
-
-        //static void startEventLoop();
-        //static void stopEventLoop();
 
     protected:
         QPaintEngine* paintEngine() const override;

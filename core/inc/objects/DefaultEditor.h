@@ -1,7 +1,7 @@
 #pragma once
 
 #include "objects/base/CanvasObject.h"
-#include "objects/VisibleCamera.h"
+#include "objects/CameraController.h"
 #include "objects/BackgroundGrid.h"
 #include "objects/RuntimeInfo.h"
 #include "QSFML_EditorWidget_base.h"
@@ -22,7 +22,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObj
         ~DefaultEditor();
         OBJECT_DECL(DefaultEditor);
 
-        VisibleCamera *getCamera() const;
+        CameraController* getCamera() const;
         BackgroundGrid *getGrid() const;
         RuntimeInfo* getRuntimeInfo() const;
 
@@ -40,7 +40,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObj
         void setup(const sf::Vector2f& size);
         void onCanvasParentChange(Canvas* oldParent, Canvas* newParent) override;
 
-        VisibleCamera *m_cam;
+        CameraController* m_cam;
         BackgroundGrid *m_grid;
         RuntimeInfo* m_runtimeInfo;
 

@@ -24,27 +24,76 @@ namespace QSFML
 			// Applys a filter to smooth the fast changing timing values.: f(x, smothness) = smothness*oldX + (1-smothness)*x 
 			Stats getSmothed(const Stats& oldStats, double smothness = 0.9);
 
-			unsigned int getRootObjectCount() const;
-			unsigned int getObjectCount() const;
-			unsigned int getComponentCount() const;
-			unsigned int getCollisionCheckCount() const;
-			unsigned int getBoundingBoxCollisionCheckCount() const;
-			unsigned int getCollisionCount() const;
+			unsigned int getRootObjectCount() const
+			{
+				return m_rootObjectsCount;
+			}
+			unsigned int getObjectCount() const
+			{
+				return m_objectsCount;
+			}
+			unsigned int getComponentCount() const
+			{
+				return m_componentsCount;
+			}
+			unsigned int getCollisionCheckCount() const
+			{
+				return m_collisionChecks;
+			}
+			unsigned int getBoundingBoxCollisionCheckCount() const
+			{
+				return m_boundingBoxCollisionChecks;
+			}
+			unsigned int getCollisionCount() const
+			{
+				return m_collisions;
+			}
+			double getFPS() const
+			{
+				return m_fps;
+			}
+			double getTPS() const
+			{
+				return m_tps;
+			}
+			double getFrameTime() const
+			{
+				return m_frameTime;
+			}
+			double getEventTime() const
+			{
+				return m_eventTime;
+			}
+			double getUpdateTime() const
+			{
+				return m_updateTime;
+			}
+			double getDrawTime() const
+			{
+				return m_drawTime;
+			}
 
+			double getDeltaT() const
+			{
+				return m_deltaT;
+			}
+			double getFixedDeltaT() const
+			{
+				return m_fixedDeltaT;
+			}
+			double getElapsedTime() const
+			{
+				return m_elapsedTime;
+			}
+			double getFiexedElapsedTime() const
+			{
+				return m_fixedDeltaT * m_tick;
+			}
 
-			double getFPS() const;
-			double getTPS() const;
-			double getFrameTime() const;	// Time in ms
-			double getEventTime() const;	// Time in ms
-			double getUpdateTime() const;	// Time in ms
-			double getDrawTime() const;		// Time in ms
-
-			double getDeltaT() const;
-			double getFixedDeltaT() const;
-			double getElapsedTime() const;	// Time in s
-			double getFiexedElapsedTime() const;	// Time in s
-
-			size_t getTick() const;
+			size_t getTick() const
+			{
+				return m_tick;
+			}
 
 			std::string toString() const;
 			void print() const;
@@ -94,32 +143,7 @@ namespace QSFML
 				return m_lastStats;
 			}
 
-		protected:
-			/*
-			void setRootCanvesObject(unsigned int count);
-			void addRootCanvesObject(unsigned int count = 1);
-			void addCanvesObject(unsigned int count = 1);
-			void removeRootCanvasObject(unsigned int count = 1);
-			void removeCanvasObject(unsigned int count = 1);
-
-			void addComponent(unsigned int count = 1);
-			void removeComponent(unsigned int count = 1);
-
-			void addCollisionCheck(unsigned int count = 1);
-			void addBoundingBoxCollisionCheck(unsigned int count = 1);
-			void addCollision(unsigned int count = 1);
-
-			void setFPS(double fps);
-			void setFrameTime(double t);
-			void setEventTime(double t);
-			void setUpdateTime(double t);
-			void setDrawTime(double t);
-
-			void setDeltaT(double t);
-
-			void addTick();*/
-			
-			
+		protected:	
 
 			void setRootCanvesObject(unsigned int count = 1)
 			{
@@ -203,12 +227,31 @@ namespace QSFML
 				m_currentStats.m_tick++;
 			}
 
-			void resetFrame_synced();
-			void resetFrame_eventloop();
-			void resetFrame_updateLoop();
-			void resetFrame_paintLoop();
-			void copyObjectCounts();
-			void resetTiming();
+			void resetFrame_synced()
+			{
+				m_currentStats.resetFrame_synced(m_lastStats);
+			}
+			void resetFrame_eventloop()
+			{
+				m_currentStats.resetFrame_eventloop(m_lastStats);
+			}
+			void resetFrame_updateLoop()
+			{
+				m_currentStats.m_elapsedTime += m_currentStats.m_deltaT;
+				m_currentStats.resetFrame_updateLoop(m_lastStats);
+			}
+			void resetFrame_paintLoop()
+			{
+				m_currentStats.resetFrame_paintLoop(m_lastStats);
+			}
+			void copyObjectCounts()
+			{
+				m_lastStats.copyObjectCounts(m_currentStats);
+			}
+			void resetTiming()
+			{
+				m_currentStats.resetTiming();
+			}
 
 		protected:
 			Stats& getCurrentStats_internal()

@@ -80,7 +80,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         void renderLayerSwitch(Objects::CanvasObject *obj, RenderLayer from, RenderLayer to);
         void setRenderLayer(Objects::CanvasObject* obj, RenderLayer to);
 
-        
+        std::string getObjectsTreeString() const;
 
         const static size_t npos = -1;
 
