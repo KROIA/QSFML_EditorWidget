@@ -351,7 +351,7 @@ namespace QSFML {
     void Canvas::applyObjectChanges()
     {
         QSFMLP_CANVAS_BLOCK("Delete unused objects and add new objects", QSFML_COLOR_STAGE_2);
-        CanvasObjectContainer::updateNewElements();
+        CanvasObjectContainer::applyObjectChanges();
         StatsManager::copyObjectCounts();
         QSFMLP_CANVAS_END_BLOCK;
     }

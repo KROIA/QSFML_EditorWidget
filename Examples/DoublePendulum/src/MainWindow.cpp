@@ -119,12 +119,13 @@ void MainWindow::setupCanvas()
     DefaultEditor* defaultEditor = new DefaultEditor("Editor",sf::Vector2f(1000, 1000));
     defaultEditor->getGrid()->setEnabled(false);
     m_canvas->addObject(defaultEditor);
-
-    qDebug() << defaultEditor->toString().c_str();
+    
+    
 
     ui->pendulumCount_spinBox->setValue(2);
     createPendulums();
-    
+    m_canvas->applyObjectChanges();
+    std::cout << m_canvas->getObjectsTreeString();
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {
