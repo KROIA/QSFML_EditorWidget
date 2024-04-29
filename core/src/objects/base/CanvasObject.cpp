@@ -10,6 +10,8 @@
 #include "utilities/ObjectQuadTree.h"
 
 #include <QDebug>
+#include <typeinfo>
+    
 
 
 using namespace QSFML;
@@ -1075,25 +1077,25 @@ std::vector<std::string> CanvasObject::toStringInternal(const std::string &preSt
     const CanvasObject *t = this;
 
     auto en = [](bool enabled) {
-        return enabled?"[Enabled ]":"[Disabled]";
+        return enabled?"[Enabled]":"[Disabled]";
       };
 
-    lines.push_back(preStr+" | "+string(typeid(t).name())+": \""+m_name + "\" "+en(t->isEnabled()));
+    const std::type_info &type = typeid(*t);
+    std::string name = type.name();
+    lines.push_back(preStr+" | "+string(typeid(*t).name())+": \""+m_name + "\" "+en(t->isEnabled()));
     lines.push_back(preStr+" |  Components:");
     for(size_t i=0; i<m_components.size(); ++i)
     {
-        lines.push_back(preStr+  " |  - " +string(typeid(m_components[i]).name())+": \""+m_components[i]->getName()+ "\" "+en(m_components[i]->isEnabled()));
+        const auto &comp = m_components[i];
+        lines.push_back(preStr+  " |  ["+std::to_string(i)+"] " + 
+            string(typeid(*comp).name()) + ": \"" + comp->getName() + "\" " + en(comp->isEnabled()));
     }
     lines.push_back(preStr+" |  Childs:");
     for(size_t i=0; i<m_childs.size(); ++i)
     {
 
-        std::vector<std::string> subList = m_childs[i]->toStringInternal(preStr+" | ");
-        for(size_t j=0; j<subList.size(); ++j)
-        {
-            lines.push_back(subList[j]);
-        }
-
+        std::vector<std::string> subList = m_childs[i]->toStringInternal(preStr+ " |  ");
+        lines.insert(lines.end(), subList.begin(), subList.end());
     }
     lines.push_back(preStr+" ----");
     return lines;
