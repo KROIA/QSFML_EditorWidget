@@ -23,15 +23,12 @@ namespace QSFML {
     };
 
     std::vector<Canvas*> Canvas::s_instances;
+    std::string Canvas::m_profilerOutputFile = "profiler_output.prof";
 
-
-Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) 
-    : QWidget(parent)
-    , Utilities::StatsManager()
-    , CanvasObjectContainer(this, m_settings)
-{
-    s_instances.push_back(this);
-    if (s_instances.size() == 1)
+    Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) 
+        : QWidget(parent)
+        , Utilities::StatsManager()
+        , CanvasObjectContainer(this, m_settings)
     {
         s_instances.push_back(this);
         if (s_instances.size() == 1)
@@ -65,7 +62,6 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings)
         connect(&m_frameTimer, &QTimer::timeout, this, &Canvas::update);
         setSettings(settings);
 
-
     }
     Canvas::~Canvas()
     {
@@ -74,6 +70,7 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings)
             parentWidget()->layout()->removeWidget(this);
         m_window->close();
         delete m_window;
+        m_window = nullptr;
 #ifdef QSFML_PROFILING
         if (s_instances.size() == 1)
         {
@@ -87,6 +84,7 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings)
                 s_instances.erase(s_instances.begin() + i);
             }
         }
+        CanvasObjectContainer::cleanup();
     }
 
 
@@ -120,8 +118,11 @@ Canvas::Canvas(QWidget* parent, const CanvasSettings &settings)
             QWidget::setFixedSize(m_settings.layout.fixedSize.x, m_settings.layout.fixedSize.y);
         }
     }
-    CanvasObjectContainer::cleanup();
-}
+    
+
+    void Canvas::setTiming(const CanvasSettings::Timing& timing)
+    {
+        m_settings.timing = timing;
 
         // Setup the timer
         m_frameTimer.setInterval(m_settings.timing.frameTime * 1000);
