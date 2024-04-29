@@ -16,18 +16,7 @@ namespace QSFML
     }
     CanvasObjectGroup::~CanvasObjectGroup()
     {
-        for (auto& obj : m_toAddContainer)
-        {
-            obj->setCanvasParent(nullptr);
-            delete obj;
-        }
-        m_toAddContainer.clear();
-        for(auto & obj : m_container)
-		{
-            obj->setCanvasParent(nullptr);
-			delete obj;
-		}
-        m_container.clear();
+        cleanup();
     }
 
     void CanvasObjectGroup::addObject(CanvasObject* obj)
@@ -107,6 +96,26 @@ namespace QSFML
     {
         m_toAddContainer.clear();
         m_container.clear();
+    }
+
+    void CanvasObjectGroup::cleanup()
+    {
+        if(m_container.empty() && m_toAddContainer.empty() && m_toDelete.empty()) 
+            return;
+        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        for (auto& obj : m_toAddContainer)
+        {
+            obj->setCanvasParent(nullptr);
+            delete obj;
+        }
+        m_toAddContainer.clear();
+        for (auto& obj : m_container)
+        {
+            obj->setCanvasParent(nullptr);
+            delete obj;
+        }
+        m_container.clear();
+        m_toDelete.clear();
     }
 
     void CanvasObjectGroup::reserveObjectsCount(size_t size)

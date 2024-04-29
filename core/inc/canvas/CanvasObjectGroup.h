@@ -27,6 +27,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectGroup
         void deleteObject(Objects::CanvasObject *obj);
         void deleteObject(const std::vector<Objects::CanvasObject*> &objs);
         void clearObjects();
+        void cleanup(); // removes and deletes all objects
 
         void reserveObjectsCount(size_t size);
         size_t getObjectsCount() const;

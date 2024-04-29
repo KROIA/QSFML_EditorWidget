@@ -16,9 +16,10 @@ std::vector<Canvas*> Canvas::s_instances;
 
 std::string Canvas::m_profilerOutputFile = "profile.prof";
 
-Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) :
-  QWidget(parent),
-  CanvasObjectContainer(this, m_settings)
+Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) 
+    : QWidget(parent)
+    , Utilities::StatsManager()
+    , CanvasObjectContainer(this, m_settings)
 {
     s_instances.push_back(this);
     if (s_instances.size() == 1)
@@ -74,6 +75,7 @@ Canvas::~Canvas()
             s_instances.erase(s_instances.begin() + i);
         }
     }
+    CanvasObjectContainer::cleanup();
 }
 
 

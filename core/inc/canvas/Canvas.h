@@ -17,8 +17,8 @@ namespace QSFML
 
 class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         public QWidget,
-        public CanvasObjectContainer,
-        public Utilities::StatsManager
+        public Utilities::StatsManager,
+        public CanvasObjectContainer
     {
         Q_OBJECT
         friend CanvasObjectContainer;

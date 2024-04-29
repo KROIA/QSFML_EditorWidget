@@ -1,5 +1,6 @@
 #include "objects/DefaultEditor.h"
 #include "Components/KeyPressEvent.h"
+#include "Canvas/Canvas.h"
 
 namespace QSFML
 {
@@ -45,8 +46,17 @@ namespace QSFML
 
             addChild(m_grid);
             addChild(m_cam);
-            addChild(m_runtimeInfo);
+            m_runtimeInfo->setRenderLayer(RenderLayer::layer_5);
+            //addChild(m_runtimeInfo);
 
+
+        }
+        void DefaultEditor::onCanvasParentChange(Canvas* oldParent, Canvas* newParent)
+        {
+            if (oldParent)
+				oldParent->removeObject(m_runtimeInfo);
+            if (newParent)
+                newParent->addObject(m_runtimeInfo);
         }
         VisibleCamera *DefaultEditor::getCamera() const
         {

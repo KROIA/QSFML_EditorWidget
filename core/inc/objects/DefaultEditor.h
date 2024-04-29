@@ -36,7 +36,10 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObj
     protected:
 
     private:
+        
         void setup(const sf::Vector2f& size);
+        void onCanvasParentChange(Canvas* oldParent, Canvas* newParent) override;
+
         VisibleCamera *m_cam;
         BackgroundGrid *m_grid;
         RuntimeInfo* m_runtimeInfo;

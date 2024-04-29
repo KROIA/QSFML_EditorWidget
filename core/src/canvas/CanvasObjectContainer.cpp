@@ -29,23 +29,7 @@ CanvasObjectContainer::CanvasObjectContainer(Canvas *parent, CanvasSettings &set
 }
 CanvasObjectContainer::~CanvasObjectContainer()
 {
-    m_parent->setRootCanvesObject(0);
-    for(auto &group : m_threadGroups)
-	{
-        group->clearObjects();
-        delete group;
-	}
-    delete m_allObjects;
-    delete m_threadWorker;
-
-    std::vector<Objects::CanvasObject*> objs = m_allObjects->getObjects();
-    m_allObjects->clearObjects();
-    m_renderLayerGroup.clearObjects();
-    for(auto &obj : objs)
-	{
-        obj->setCanvasParent(nullptr);
-		delete obj;
-	}
+    cleanup();
 }
 
 
@@ -133,45 +117,107 @@ void CanvasObjectContainer::deleteObject_internal()
 void CanvasObjectContainer::removeObject(CanvasObject *obj)
 {
     QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
-    m_allObjects->removeObject(obj);
-    if(m_threadWorker)
-    {
-        for(size_t i=0; i<m_threadGroups.size(); ++i)
-        {
-            m_threadGroups[i]->removeObject(obj);
-        }
-    }
-    m_renderLayerGroup.removeObject(obj, obj->getRenderLayer());
-    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_objectsToRemove.push_back(obj);
 }
 void CanvasObjectContainer::removeObject(const std::vector<CanvasObject*> &objs)
 {
     QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
-    for(size_t i=0; i<objs.size(); ++i)
-    {
-        removeObject(objs[i]);
-    }
+    m_objectsToRemove.insert(m_objectsToRemove.end(), objs.begin(), objs.end());
 }
 void CanvasObjectContainer::deleteObject(Objects::CanvasObject *obj)
 {
     QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
-    removeObject(obj);
-    delete obj;
+    m_objectsToDelete.push_back(obj);
 }
 void CanvasObjectContainer::deleteObject(const std::vector<Objects::CanvasObject*> &objs)
 {
     QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
-    removeObject(objs);
-    for(size_t i=0; i<objs.size(); ++i)
-    {
-        delete objs[i];
-    }
+    m_objectsToDelete.insert(m_objectsToRemove.end(), objs.begin(), objs.end());
 }
 void CanvasObjectContainer::clearObjects()
 {
     m_allObjects->clearObjects();
     m_renderLayerGroup.clearObjects();
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
+}
+void CanvasObjectContainer::cleanup()
+{
+    if (!m_allObjects)
+        return; // Already cleaned up
+    QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+    
+    for (auto& group : m_threadGroups)
+    {
+        group->clearObjects();
+        delete group;
+    }
+    m_allObjects->cleanup();
+    delete m_allObjects;
+    delete m_threadWorker;
+
+    std::vector<Objects::CanvasObject*> objs = m_allObjects->getObjects();
+    m_allObjects->clearObjects();
+    m_renderLayerGroup.clearObjects();
+    for (auto& obj : objs)
+    {
+        obj->setCanvasParent(nullptr);
+        delete obj;
+    }
+    m_allObjects = nullptr;
+    m_threadWorker = nullptr;
+    m_threadGroups.clear();
+    m_parent->setRootCanvesObject(0);
+}
+
+void CanvasObjectContainer::applyObjectChanges()
+{
+    QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+    std::vector<CanvasObject*> objectsToAdd = m_objectsToAdd;
+    std::vector<CanvasObject*> objectsToRemove = m_objectsToRemove;
+    std::vector<CanvasObject*> objectsToDelete = m_objectsToDelete;
+    m_objectsToAdd.clear();
+    m_objectsToRemove.clear();
+    m_objectsToDelete.clear();
+    objectsToRemove.insert(objectsToRemove.end(), objectsToDelete.begin(), objectsToDelete.end());
+
+
+    for (auto& obj : objectsToRemove)
+    {
+        m_allObjects->removeObject(obj);
+        if (m_threadWorker)
+        {
+            for (size_t i = 0; i < m_threadGroups.size(); ++i)
+            {
+                m_threadGroups[i]->removeObject(obj);
+            }
+        }
+        m_renderLayerGroup.removeObject(obj, obj->getRenderLayer());
+    }
+    
+
+    for (auto& obj : objectsToDelete)
+    {
+		delete obj;
+	}
+   
+    m_allObjects->reserveObjectsCount(m_allObjects->getObjectsCount() + objectsToAdd.size());
+    for (auto& obj : objectsToAdd)
+    {
+        if (obj->getCanvasParent() != m_parent && obj->getCanvasParent())
+            obj->getCanvasParent()->removeObject(obj);
+        m_allObjects->addObject(obj);
+        if (m_threadWorker)
+        {
+            m_threadGroups[m_currentThreadGroupInsertIndex]->addObject(obj);
+            m_currentThreadGroupInsertIndex = (m_currentThreadGroupInsertIndex + 1) % m_threadGroupCount;
+        }
+        m_renderLayerGroup.addObject(obj, obj->getRenderLayer());
+
+        obj->setCanvasParent(m_parent);
+    }
+    if (m_parent)
+        m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
+    
 }
 
 void CanvasObjectContainer::reserveObjectsCount(size_t size)
@@ -294,6 +340,7 @@ void CanvasObjectContainer::updateNewElements()
 {
     QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
     deleteObject_internal();
+    applyObjectChanges();
     const std::vector<Objects::CanvasObject*> &toAdd = m_allObjects->getObjectsToAdd();
 
     addObject_internal();

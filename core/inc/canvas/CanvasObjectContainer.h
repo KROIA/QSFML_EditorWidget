@@ -26,6 +26,9 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         void deleteObject(Objects::CanvasObject *obj);
         void deleteObject(const std::vector<Objects::CanvasObject*> &objs);
         void clearObjects();
+        void cleanup();
+
+        void applyObjectChanges();
 
         void reserveObjectsCount(size_t size);
         size_t getObjectsCount() const;
@@ -95,6 +98,11 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
 
         void addObject_internal();
         void deleteObject_internal();
+
+        std::vector<Objects::CanvasObject*> m_objectsToAdd;
+        std::vector<Objects::CanvasObject*> m_objectsToDelete;
+        std::vector<Objects::CanvasObject*> m_objectsToRemove;
+
 
         // All objects will be contained in this list
         CanvasObjectGroup *m_allObjects;
