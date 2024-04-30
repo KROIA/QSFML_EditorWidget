@@ -34,6 +34,7 @@
 #include "objects/DefaultEditor.h"
 #include "objects/BackgroundGrid.h"
 #include "objects/CameraController.h"
+#include "objects/VisibleCamera.h"
 #include "objects/LineChart.h"
 #include "objects/RuntimeInfo.h"
 
