@@ -201,11 +201,67 @@ SandBox::SandBox(QWidget *parent)
         m_canvas_2->addObject(defaultEditor);
 
 
+        CanvasObject* obj = new CanvasObject("MyObject");
+        Components::Collider* collider = new Components::Collider();
+        collider->setVertecies(
+            {
+				sf::Vector2f(0,0),
+				sf::Vector2f(100,0),
+				sf::Vector2f(100,50),
+				sf::Vector2f(120,70),
+				sf::Vector2f(100,60),
+				sf::Vector2f(0,100)
+			});
+        obj->addComponent(collider);
+        obj->addComponent(collider->createPainter());
+
+        Components::MouseFollower* mouseFollower = new Components::MouseFollower();
+        obj->addComponent(mouseFollower);
+        Components::Text* text = new Components::Text();
+        text->setText("Hello World");
+        text->setCharacterSize(50);
+        connect(mouseFollower, &Components::MouseFollower::mousePosChanged, [obj, text](const sf::Vector2f& worldPos, const sf::Vector2i& pixelPos)
+            {
+				//qDebug() << "MousePosChanged: " << worldPos.x << " " << worldPos.y;
+				obj->setPosition(worldPos);
+                text->setEnabled(!text->isEnabled());
+
+			});
+       
+        obj->addComponent(text);
+
+        CanvasObject* child = new CanvasObject("Child");
+        child->setPosition(sf::Vector2f(100, 100));
+        Components::Shape* shape = new Components::Shape();
+        shape->setPoints(
+            {
+				sf::Vector2f(0,0),
+				sf::Vector2f(160,0),
+				sf::Vector2f(100,100),
+				sf::Vector2f(0,100)
+			});
+        shape->setFillColor(sf::Color::Green);
+        shape->setFill(true);
+        child->addComponent(shape);
+        obj->addChild(child);
+
+
+
+
+        
+
+        m_canvas_1->addObject(obj);
+        
+
+
 
         addLineChart(m_canvas_2);
         addMouseCollider(m_canvas_2);
         addShape(m_canvas_2);
         addPerlinNoise(m_canvas_2);
+        m_canvas_1->applyObjectChanges();
+
+        std::cout << obj->toString() << "\n";
     }
 
     QSFML::Utilities::Ray func1(sf::Vector2f(0, 0), sf::Vector2f(0, 1));

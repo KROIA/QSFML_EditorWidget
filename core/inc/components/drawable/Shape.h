@@ -59,6 +59,7 @@ namespace QSFML
 				QSFML_UNUSED(states);
 				std::vector<sf::Vector2f> transformedPoints = getTransformedPoints();
 				std::vector<sf::Vertex> transformedVertecies;
+				transformedVertecies.reserve(transformedPoints.size());
 				for (const auto& point : transformedPoints)
 				{
 					transformedVertecies.push_back(sf::Vertex(point, m_fillColor));
