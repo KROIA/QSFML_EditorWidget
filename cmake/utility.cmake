@@ -20,49 +20,41 @@ function(get_filename_from_path FILE_PATH FILE_NAME_VAR)
 endfunction()
 
 
-# Function name: DEPLOY_QT
+# Function name: windeployqt
 # Params: targetName        Name of the target created using add_executable(...)
 #         outputPath        Path where the deployment will be done
 #     
- function(DEPLOY_QT targetName outputPath)
+function(windeployqt targetName outputPath)
     
- # check if QT_PATH is empty
+    # check if QT_PATH is empty
     if (NOT QT_PATH)
 		message("QT_PATH is not set. include QtLocator.cmake first, to find a qt installation or assign a 
                  QT pat to it. example: set(QT_PATH \"C:/Qt/5.14.2\")")
         return()
     endif()
 
-    set(DEPLOY_COMMAND  "${QT_PATH}/bin/windeployqt.exe"
-                --no-compiler-runtime
-                --no-translations
-                --no-system-d3d-compiler
-                --no-opengl-sw
-                --pdb)
+    set(targetExePath "${INSTALL_BIN_PATH}/${targetName}.exe") 
+    set(DEPLOY_COMMAND  "${QT_PATH}/bin/windeployqt.exe 
+		--no-compiler-runtime 
+		--no-translations 
+		--no-system-d3d-compiler 
+		--no-opengl-sw 
+		--pdb 
+		--dir \"${INSTALL_BIN_PATH}\" \"${targetExePath}\"")
 
+	set(CMD "${DEPLOY_COMMAND}")
+	string(REPLACE "\\" "/" CMD "${CMD}")
 
-   set(targetExePath "$<TARGET_FILE_DIR:${targetName}>/$<TARGET_FILE_NAME:${targetName}>")
-
-   string(MD5 TARGETPATH_HASH ${outputPath})
-   set(UNIQUE_TARGET_NAME "deploy_${TARGETPATH_HASH}_${targetName}")
-   message("DeploymentTargetName: ${UNIQUE_TARGET_NAME}")
-
-   if(TARGET ${UNIQUE_TARGET_NAME})
-	   message("Target ${UNIQUE_TARGET_NAME} already exists")
-	   return()
-   endif()
-   add_custom_target(${UNIQUE_TARGET_NAME} ALL
-       DEPENDS "${targetExePath}"
-   )
-    # Deploy easy_profiler gui to bin folder
-     add_custom_command(TARGET ${UNIQUE_TARGET_NAME}
-         COMMAND ${DEPLOY_COMMAND} 
-             --dir "${outputPath}"
-            "${targetExePath}"
- 	    COMMENT "Running windeployqt..." "${QT_PATH}/bin/windeployqt.exe" "${outputPath}"
-        DEPENDS UNIQUE_TARGET_NAME
-     )
- endfunction()
+	
+	install(
+    CODE
+    "execute_process(
+        COMMAND
+        ${CMD}
+    )"
+)
+	
+endfunction()
 
 
 function(copyLibraryHeaders headerRootFolder destinationPath destinationFolderName)

@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20)
 
 
 ## INFO
-## Template version: 1.1.0
+## Template version: 1.1.1
 ##
 ## This is a template for a CMake project.
 ## It is designed to be used with the Visual Studio
@@ -42,7 +42,7 @@ set(LIB_PROFILE_DEFINE QSFML_PROFILING)  # <LIB_PROFILE_DEFINE>
 # Enable/disable QT modules
 set(QT_ENABLE ON)	                            # <AUTO_REPLACED> 
 # Enable/disable QT deployment
-set(QT_DEPLOY ON)	                            # <AUTO_REPLACED> 
+set_if_not_defined(QT_DEPLOY ON)	            # <AUTO_REPLACED> 
 
 # Needed QT modules                             # <AUTO_REPLACED> 
 set(QT_MODULES
@@ -67,9 +67,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)             # <AUTO_REPLACED>
 # -------------------- Build settings --------------------------------------------
 # --------------------------------------------------------------------------------
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})   # Default install path
-set(RELATIVE_BUILD_FOLDER build)                # Relative path to the build folder
-set(RELATIVE_INSTALL_FOLDER lib)                # Relative path to the install folder
+set_if_not_defined(INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/installation)   # Default install path
+set_if_not_defined(RELATIVE_BUILD_FOLDER build)                       # Relative path to the build folder
+set_if_not_defined(RELATIVE_INSTALL_LIB_FOLDER lib)                   # Relative path to the install folder
+set_if_not_defined(RELATIVE_INSTALL_BIN_FOLDER bin)                   # Relative path to the install binary folder
+set_if_not_defined(RELATIVE_INSTALL_INCLUDE_FOLDER include)           # Relative path to the install include folder
 
 
 set_if_not_defined(COMPILE_EXAMPLES ON)						# <AUTO_REPLACED> 
@@ -105,14 +107,15 @@ set_if_not_defined(QT_COMPILER "autoFind")
 project(${LIBRARY_NAME})
  
 # Set output paths
+set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 
-set(INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_FOLDER}")
-set(INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/dependencies/cache")
-# create bin folder
+set(INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_LIB_FOLDER}")
+set(INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_BIN_FOLDER}")
+set(INSTALL_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_INCLUDE_FOLDER}")
+set(FETCHCONTENT_BASE_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dependencies/cache")
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 

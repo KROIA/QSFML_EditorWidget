@@ -37,7 +37,7 @@ namespace QSFML
 
 			void setPoint(std::size_t index, const sf::Vector2f& point);
 			const sf::Vector2f& getPoint(std::size_t index) const;
-			const sf::Vector2f& getTransformedPoint(std::size_t index) const;
+			sf::Vector2f getTransformedPoint(std::size_t index) const;
 
 			void addPoint(const sf::Vector2f& point);
 			void addPoints(const std::vector<sf::Vector2f>& points);

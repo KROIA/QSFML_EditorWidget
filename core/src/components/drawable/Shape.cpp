@@ -93,7 +93,7 @@ namespace QSFML
 		{
 			return m_points[index];
 		}
-		const sf::Vector2f& Shape::getTransformedPoint(std::size_t index) const
+		sf::Vector2f Shape::getTransformedPoint(std::size_t index) const
 		{
 			sf::Transform transform;
 			transform.translate(getGlobalPosition());

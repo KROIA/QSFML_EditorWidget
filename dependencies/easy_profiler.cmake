@@ -37,7 +37,7 @@ function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
 
     # Deploy the Profiler GUI
     if(QT_ENABLE AND QT_DEPLOY)
-        DEPLOY_QT(profiler_gui ${INSTALL_BIN_PATH})
+        windeployqt(profiler_gui ${INSTALL_BIN_PATH})
     endif()
 
 

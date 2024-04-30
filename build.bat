@@ -1,8 +1,11 @@
 @echo off
 set buildFolder=build
+set generator="Visual Studio 17 2022"
+set platform=x64
 
 REM Speichere den aktuellen Pfad ab
 set projectRootPath=%CD%
+
 
 REM Enable farbige Konsolenausgaben
 SETLOCAL EnableExtensions DisableDelayedExpansion
@@ -19,9 +22,10 @@ set END_COLOR=!ESC![0m
 mkdir %buildFolder%
 cd %buildFolder%
 
+
 REM Funktionsaufruf build(Debug, projectRootPath)
-CALL :build Debug, "%projectRootPath%"
-CALL :build Release, "%projectRootPath%"
+CALL :build Debug, "%projectRootPath%/installation"
+CALL :build Release, "%projectRootPath%/installation"
 
 pause
 EXIT
@@ -37,9 +41,9 @@ REM Erstelle Buildpfad
 mkdir %buildType%
 REM Bewege in den Buildpfad
 cd %buildType%
-REM cmake Befehl fürs konfigurieren
-cmake -DRELATIVE_BUILD_FOLDER="%buildFolder%" -DCMAKE_BUILD_TYPE=%buildType% -DCMAKE_INSTALL_PREFIX="%installPrefix%" "%projectRootPath%"
-REM cmake Befehl fürs kompilieren
+REM cmake Befehl fï¿½rs konfigurieren
+cmake -G %generator% -A %platform% -DQT_DEPLOY=ON -DRELATIVE_BUILD_FOLDER="%buildFolder%" -DCMAKE_BUILD_TYPE=%buildType% -DCMAKE_INSTALL_PREFIX="%installPrefix%" -DCMAKE_CXX_FLAGS="/EHsc /MP" -DCMAKE_C_FLAGS="/EHsc /MP" "%projectRootPath%"
+REM cmake Befehl fï¿½rs kompilieren
 cmake --build . --config %buildType% --target install
 
 if %errorlevel% neq 0 (

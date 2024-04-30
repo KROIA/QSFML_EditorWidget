@@ -66,10 +66,7 @@ SET(QT_WIDGET_PACKAGE_NAME Qt${QT_MAJOR_VERSION}Widgets)
 
 
 
-
-
-# msvc only; mingw will need different logic
-IF(MSVC AND QT_MISSING)
+IF(QT_MISSING)
     MESSAGE("Searching for QT installs...")
 
     if(NOT DEFINED QT_INSTALL_BASE OR "${QT_INSTALL_BASE}" STREQUAL "")
