@@ -7,7 +7,7 @@ REM Speichere den aktuellen Pfad ab
 set projectRootPath=%CD%
 
 
-REM Enable farbige Konsolenausgaben
+REM Enable colored output
 SETLOCAL EnableExtensions DisableDelayedExpansion
 for /F %%a in ('echo prompt $E ^| cmd') do (
   set "ESC=%%a"
@@ -27,8 +27,7 @@ REM Funktionsaufruf build(Debug, projectRootPath)
 CALL :build Debug, "%projectRootPath%/installation"
 CALL :build Release, "%projectRootPath%/installation"
 
-pause
-EXIT
+EXIT /b 0
 
 REM Funktionsdefinition
 :build
@@ -48,7 +47,8 @@ cmake --build . --config %buildType% --target install
 
 if %errorlevel% neq 0 (
     CALL::ECHO_COLOR "Build failed!", %RED%
-    pause
+    REM pause
+    EXIT /B 1
 ) else (
     CALL::ECHO_COLOR "Build successful!", %GREEN%
 )

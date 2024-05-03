@@ -1,12 +1,10 @@
 ## description: SFML: Simple and fast multimedia library
-include(FetchContent)
 
 function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
     set(LIB_NAME SFML)
     set(GIT_REPO https://github.com/SFML/SFML.git)
     set(GIT_TAG 2.5.1)
-
 
     FetchContent_Declare(
         ${LIB_NAME}

@@ -1,6 +1,4 @@
 ## description: simple library create unit tests
-include(FetchContent)
-
 
 function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
@@ -20,7 +18,7 @@ function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     FetchContent_MakeAvailable(${LIB_NAME})
 
     # Add this library to the specific profiles of this project
-    list(APPEND DEPS_FOR_SHARED_LIB ${LIB_NAME}_static)
+    list(APPEND DEPS_FOR_SHARED_LIB ${LIB_NAME}_shared)
     list(APPEND DEPS_FOR_STATIC_LIB ${LIB_NAME}_static)
     list(APPEND DEPS_FOR_STATIC_PROFILE_LIB ${LIB_NAME}_static_profile) # only use for static profiling profile
 

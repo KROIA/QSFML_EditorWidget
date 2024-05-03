@@ -33,14 +33,14 @@ function(windeployqt targetName outputPath)
         return()
     endif()
 
-    set(targetExePath "${INSTALL_BIN_PATH}/${targetName}.exe") 
+    set(targetExePath "${outputPath}/${targetName}.exe") 
     set(DEPLOY_COMMAND  "${QT_PATH}/bin/windeployqt.exe 
 		--no-compiler-runtime 
 		--no-translations 
 		--no-system-d3d-compiler 
 		--no-opengl-sw 
 		--pdb 
-		--dir \"${INSTALL_BIN_PATH}\" \"${targetExePath}\"")
+		--dir \"${outputPath}\" \"${targetExePath}\"")
 
 	set(CMD "${DEPLOY_COMMAND}")
 	string(REPLACE "\\" "/" CMD "${CMD}")

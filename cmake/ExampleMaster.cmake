@@ -116,7 +116,7 @@ install(TARGETS ${PROJECT_NAME} DESTINATION "${INSTALL_BIN_PATH}")
 
 if(QT_ENABLE AND QT_DEPLOY)
    windeployqt(${PROJECT_NAME} "${INSTALL_BIN_PATH}")
-   windeployqt(${PROJECT_NAME} "$<TARGET_FILE_DIR:${PROJECT_NAME}>") # Also deploy on the compile output path
+   windeployqt(${PROJECT_NAME} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}") # Also deploy on the compile output path
 endif()
 
 endfunction()
