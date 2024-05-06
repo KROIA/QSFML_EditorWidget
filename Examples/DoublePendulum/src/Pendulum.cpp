@@ -8,7 +8,10 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
 {
     m_pointPainter = new QSFML::Components::PointPainter();
     m_pointPainter->setRadius(m_pendulumRadius);
+	m_pathPainter[0] = new QSFML::Components::PathPainter();
+	m_pathPainter[1] = new QSFML::Components::PathPainter();
 
+	
     
 
     for (size_t i = 0; i < m_count; ++i)
@@ -39,6 +42,8 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
     m_text->setOrigin(QSFML::Utilities::Origin::Center);
 	
 	addComponent(m_text);
+    addComponent(m_pathPainter[0]);
+    addComponent(m_pathPainter[1]);
     enableText(false);
     
     //m_chart = new QSFML::Objects::LineChart();
@@ -95,10 +100,27 @@ void Pendulum::setColor(const sf::Color& color)
         m_pendulumData[i].line->setColor(color);
     }
     m_pointPainter->setColor(color);
+	m_pathPainter[0]->setColor(color);
+	m_pathPainter[1]->setColor(color);
 }
+
+void Pendulum::setMaxPathLength(size_t length)
+{
+    m_maxPathLength = length;
+    if (m_pathPainter[0]->getPointCount() > length)
+		m_pathPainter[0]->popPointAtStart(m_pathPainter[0]->getPointCount() - length);
+    if (m_pathPainter[1]->getPointCount() > length)
+        m_pathPainter[1]->popPointAtStart(m_pathPainter[1]->getPointCount() - length);
+}
+
 void Pendulum::enableText(bool enabled)
 {
     m_text->setEnabled(enabled);
+}
+void Pendulum::enablePath(bool enabled)
+{
+	m_pathPainter[0]->setEnabled(enabled);
+	m_pathPainter[1]->setEnabled(enabled);
 }
 void Pendulum::enableEnergyCorrection(bool enabled)
 {
@@ -107,6 +129,7 @@ void Pendulum::enableEnergyCorrection(bool enabled)
 void Pendulum::update() 
 {
     double dt = getFixedDeltaT();
+    //double dt = getDeltaT();
     std::vector<sf::Vector2f> points{
        // m_origin
     };
@@ -155,6 +178,10 @@ void Pendulum::update()
 
             text += "E_Pot" + std::to_string(i) + ": " + std::to_string(ePot) + "\n";
             text += "E_Kin" + std::to_string(i) + ": " + std::to_string(eKin) + "\n";
+
+			if (m_pathPainter[i]->getPointCount() > m_maxPathLength)
+				m_pathPainter[i]->popPointAtStart(m_pathPainter[i]->getPointCount() - m_maxPathLength);
+			m_pathPainter[i]->appenPoint(sf::Vector2f(m_pendulumData[i].endPos.x, m_pendulumData[i].endPos.y));
             
         }
    // }

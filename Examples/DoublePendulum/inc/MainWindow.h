@@ -27,6 +27,8 @@ private slots:
     void on_L2_verticalSlider_valueChanged(int value);
     void on_damping_verticalSlider_valueChanged(int value);
     void on_enableLines_checkBox_stateChanged(int arg1);
+	void on_enablePath_checkBox_stateChanged(int arg1);
+	void on_enableEnergyLabel_checkBox_stateChanged(int arg1);
 
 private:
     void setupCanvas();

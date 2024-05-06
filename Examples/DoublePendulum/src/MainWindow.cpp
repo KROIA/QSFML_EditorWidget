@@ -52,6 +52,7 @@ void MainWindow::on_speed_slider_valueChanged(int value)
     auto settings = m_canvas->getSettings();
     if (settings.timing.physicsFixedDeltaT > 0)
         settings.timing.physicsFixedDeltaT = float(value) / 100000.f;
+	settings.timing.physicsDeltaTScale = (float)value / 1000.f;
     m_canvas->setSettings(settings);
 }
 void MainWindow::on_L1_verticalSlider_valueChanged(int value)
@@ -94,7 +95,26 @@ void MainWindow::on_enableLines_checkBox_stateChanged(int arg1)
 			m_pendulums[i]->setLinesEnabled(arg1);
 		}
 	}
-
+}
+void MainWindow::on_enablePath_checkBox_stateChanged(int arg1)
+{
+	if (m_canvas)
+	{
+		for (int i = 0; i < m_pendulums.size(); ++i)
+		{
+			m_pendulums[i]->enablePath(arg1);
+		}
+	}
+}
+void MainWindow::on_enableEnergyLabel_checkBox_stateChanged(int arg1)
+{
+	if (m_canvas)
+	{
+		for (int i = 0; i < m_pendulums.size(); ++i)
+		{
+			m_pendulums[i]->enableText(arg1);
+		}
+	}
 }
 void MainWindow::setupCanvas()
 {
@@ -146,8 +166,8 @@ void MainWindow::createPendulums()
     int count = ui->pendulumCount_spinBox->value();
     for (int i = 0; i < count; ++i)
     {
-        Pendulum* pendulum = nullptr;
-        if (i % 2 == 0)
+        Pendulum* pendulum = new Pendulum();
+        /*if (i % 2 == 0)
         {
             pendulum = new Pendulum();
             pendulum->setColor(sf::Color(255,0,0));
@@ -156,20 +176,20 @@ void MainWindow::createPendulums()
         {
             pendulum = new WikiPendulum();
             pendulum->setColor(sf::Color(0,255,0));
-		}
+		}*/
 
         m_pendulums.push_back(pendulum);
         pendulum->setPosition(sf::Vector2f(500, 500));
         pendulum->setStart(angle1, angle2);
         
-        /*
+        
         int r = (1 + sin(angle1)) * 127.5;
         int g = (1 + sin(angle1 + M_PI * 2 / 3.f)) * 127.5;
         int b = (1 + sin(angle1 + M_PI * 4 / 3.f)) * 127.5;
         pendulum->setColor(sf::Color(r, g, b));
-        */
+        
 
-        if (i % 2 != 0)
+       // if (i % 2 != 0)
         {
             angle1 += M_PI * 2 / (double)count;
             angle2 += M_PI * 2 / (double)count;
@@ -184,5 +204,9 @@ void MainWindow::createPendulums()
         pendulum->setDamping(damping, damping);
 
     }
+
+    on_enableLines_checkBox_stateChanged(ui->enableLines_checkBox->isChecked());
+    on_enablePath_checkBox_stateChanged(ui->enablePath_checkBox->isChecked());
+    on_enableEnergyLabel_checkBox_stateChanged(ui->enableEnergyLabel_checkBox->isChecked());
 }
 

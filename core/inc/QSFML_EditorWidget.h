@@ -19,6 +19,7 @@
 #include "components/Physics/Collider.h"
 #include "components/drawable/Text.h"
 #include "components/drawable/LinePainter.h"
+#include "components/drawable/PathPainter.h"
 #include "components/drawable/PointPainter.h"
 #include "components/drawable/VectorPainter.h"
 #include "components/drawable/PixelPainter.h"
