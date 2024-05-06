@@ -59,7 +59,7 @@ private:
 	QSFML::Components::MousePressEvent *m_mousePressEvent;
 	QSFML::Components::Text *m_text = nullptr;
 	QSFML::Objects::LineChart *m_chart = nullptr;
-	QSFML::Components::PathPainter* m_pathPainter[2];
+	QSFML::Components::PathPainter* m_pathPainter;
 	std::vector<float> m_chartData;
     //QSFML::Components::LinePainter *m_linePainters[2];
 

@@ -8,8 +8,8 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
 {
     m_pointPainter = new QSFML::Components::PointPainter();
     m_pointPainter->setRadius(m_pendulumRadius);
-	m_pathPainter[0] = new QSFML::Components::PathPainter();
-	m_pathPainter[1] = new QSFML::Components::PathPainter();
+	m_pathPainter = new QSFML::Components::PathPainter();
+	
 
 	
     
@@ -42,8 +42,7 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
     m_text->setOrigin(QSFML::Utilities::Origin::Center);
 	
 	addComponent(m_text);
-    addComponent(m_pathPainter[0]);
-    addComponent(m_pathPainter[1]);
+    addComponent(m_pathPainter);
     enableText(false);
     
     //m_chart = new QSFML::Objects::LineChart();
@@ -100,17 +99,14 @@ void Pendulum::setColor(const sf::Color& color)
         m_pendulumData[i].line->setColor(color);
     }
     m_pointPainter->setColor(color);
-	m_pathPainter[0]->setColor(color);
-	m_pathPainter[1]->setColor(color);
+	m_pathPainter->setColor(color);
 }
 
 void Pendulum::setMaxPathLength(size_t length)
 {
     m_maxPathLength = length;
-    if (m_pathPainter[0]->getPointCount() > length)
-		m_pathPainter[0]->popPointAtStart(m_pathPainter[0]->getPointCount() - length);
-    if (m_pathPainter[1]->getPointCount() > length)
-        m_pathPainter[1]->popPointAtStart(m_pathPainter[1]->getPointCount() - length);
+    if (m_pathPainter->getPointCount() > length)
+		m_pathPainter->popPointAtStart(m_pathPainter->getPointCount() - length);
 }
 
 void Pendulum::enableText(bool enabled)
@@ -119,8 +115,7 @@ void Pendulum::enableText(bool enabled)
 }
 void Pendulum::enablePath(bool enabled)
 {
-	m_pathPainter[0]->setEnabled(enabled);
-	m_pathPainter[1]->setEnabled(enabled);
+	m_pathPainter->setEnabled(enabled);
 }
 void Pendulum::enableEnergyCorrection(bool enabled)
 {
@@ -179,11 +174,13 @@ void Pendulum::update()
             text += "E_Pot" + std::to_string(i) + ": " + std::to_string(ePot) + "\n";
             text += "E_Kin" + std::to_string(i) + ": " + std::to_string(eKin) + "\n";
 
-			if (m_pathPainter[i]->getPointCount() > m_maxPathLength)
-				m_pathPainter[i]->popPointAtStart(m_pathPainter[i]->getPointCount() - m_maxPathLength);
-			m_pathPainter[i]->appenPoint(sf::Vector2f(m_pendulumData[i].endPos.x, m_pendulumData[i].endPos.y));
-            
+			
         }
+
+        if (m_pathPainter->getPointCount() > m_maxPathLength)
+            m_pathPainter->popPointAtStart(m_pathPainter->getPointCount() - m_maxPathLength);
+        m_pathPainter->appenPoint(sf::Vector2f(m_pendulumData[1].endPos.x, m_pendulumData[1].endPos.y));
+
    // }
 
     text += "SUM E: " + std::to_string(sumEnergy) + "\n";
