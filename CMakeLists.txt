@@ -60,7 +60,8 @@ set(CMAKE_CXX_STANDARD 14)                      # <AUTO_REPLACED>
 set(CMAKE_CXX_STANDARD_REQUIRED ON)             # <AUTO_REPLACED> 
 
 ## USER_SECTION_START 2
-
+set_if_not_defined(CMAKE_CXX_COMPILER "g++")
+set_if_not_defined(CMAKE_C_COMPILER "gcc")
 ## USER_SECTION_END
 
 # --------------------------------------------------------------------------------

@@ -7,6 +7,9 @@
 #include "QSFML_EditorWidget_base.h"
 #include <sstream>
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 /// USER_SECTION_START 2
 
 /// USER_SECTION_END
@@ -46,17 +49,17 @@ namespace QSFML
 		// Compiler information
 #ifdef _MSC_VER
 		static constexpr const char* compiler			= "MSVC";
-		static constexpr const long compilerVersion		= _MSC_VER;
+		static constexpr const char* compilerVersion	= TOSTRING(_MSC_VER);
 #elif defined(__GNUC__)
 		static constexpr const char* compiler			= "GCC";
-		static constexpr const long compilerVersion		= __VERSION__;
+		static constexpr const char* compilerVersion	= __VERSION__;
 #elif defined(__clang__)
 
 		static constexpr const char* compiler			= "Clang";
-		static constexpr const long compilerVersion		= __clang_version__;
+		static constexpr const char* compilerVersion	= __clang_version__;
 #else
 		static constexpr const char* compiler			= "Unknown";
-		static constexpr const long compilerVersion		= "Unknown";
+		static constexpr const char* compilerVersion	= "Unknown";
 #endif
 
 		// Build type
@@ -90,6 +93,7 @@ namespace QSFML
 
 		static void printInfo();
 		static void printInfo(std::ostream& stream);
+		static std::string getInfoStr();
 
 		// This function is only available when QT_ENABLE was set to ON in the CMakeLists.txt and
 		// QT_MODULES contains the value "Widgets"
