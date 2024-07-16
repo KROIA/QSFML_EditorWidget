@@ -157,7 +157,7 @@ void Pendulum::update()
             if (i == m_dragingIndex)
             {
                 //m_pendulumData[i].endPos = getMouseWorldPosition();
-                sf::Vector2f dir = getMouseWorldPosition() - sf::Vector2f(startPos.x, startPos.y);
+                sf::Vector2f dir = getMouseWorldPosition() - (sf::Vector2f(startPos.x, startPos.y) + getPosition());
                 m_pendulumData[i].angle = QSFML::VectorMath::getAngle(dir) - (float)M_PI_2;
                 m_pendulumData[i].angleVelocity = 0;
                 m_pendulumData[i].angleAcceleration = 0;
@@ -338,8 +338,9 @@ double Pendulum::getEnergy(const PendulumData& p, double dt)
 void Pendulum::onMouseFalling()
 {
     QSFML::VectorMath::Vector2d mousePos = QSFML::VectorMath::Vector2d(getMouseWorldPosition().x, getMouseWorldPosition().y);
-    double distance0 = QSFML::VectorMath::getLength(mousePos - m_pendulumData[0].endPos);
-    double distance1 = QSFML::VectorMath::getLength(mousePos - m_pendulumData[1].endPos);
+    QSFML::VectorMath::Vector2d objPos(getPosition());
+    double distance0 = QSFML::VectorMath::getLength(mousePos - (m_pendulumData[0].endPos+objPos));
+    double distance1 = QSFML::VectorMath::getLength(mousePos - (m_pendulumData[1].endPos+objPos));
 
     if (distance0 < m_pendulumRadius*2)
     {
