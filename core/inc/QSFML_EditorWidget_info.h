@@ -4,7 +4,9 @@
 
 /// USER_SECTION_END
 
-#include "QSFML_EditorWidget_base.h"
+#include "QSFML_EditorWidget_global.h"
+#include "QSFML_EditorWidget_debug.h"
+
 #include <sstream>
 
 #define STRINGIFY(x) #x

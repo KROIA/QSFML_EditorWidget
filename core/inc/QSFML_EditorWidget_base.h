@@ -7,6 +7,7 @@
 
 #include "QSFML_EditorWidget_global.h"
 #include "QSFML_EditorWidget_debug.h"
+#include "QSFML_EditorWidget_info.h"
 
 /// USER_SECTION_START 2
 #include "QSFML_EditorWidget_ForwardDeclaration.h"
