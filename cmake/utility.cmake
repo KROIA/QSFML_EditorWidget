@@ -29,7 +29,7 @@ function(windeployqt targetName outputPath)
     # check if QT_PATH is empty
     if (NOT QT_PATH)
 		message("QT_PATH is not set. include QtLocator.cmake first, to find a qt installation or assign a 
-                 QT pat to it. example: set(QT_PATH \"C:/Qt/5.14.2\")")
+                 QT path to it. example: set(QT_PATH \"C:/Qt/5.14.2\")")
         return()
     endif()
 

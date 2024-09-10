@@ -33,7 +33,40 @@ function(get_version_number out path)
     set(${out} ${version} PARENT_SCOPE)
 endfunction()
 
+
 set_if_not_defined(QT_MISSING True)
+
+IF(QT_QMAKE_EXECUTABLE AND QT_VERSION STREQUAL "autoFind") # C:/Qt/6.5.2/msvc2019_64/bin/qmake.exe
+    # Find the position of "qmake.exe" in the string
+    string(FIND ${QT_QMAKE_EXECUTABLE} "qmake.exe" QMAKE_POS)
+
+    if(QMAKE_POS EQUAL -1)
+        message("The string 'qmake.exe' is not present in QT_QMAKE_EXECUTABLE")
+    else()
+        # Find the position of the first "/"
+        string(FIND ${QT_QMAKE_EXECUTABLE} "/" FIRST_SLASH_POS REVERSE)
+
+        # Extract the substring up to the position of the first "/"
+        string(SUBSTRING ${QT_QMAKE_EXECUTABLE} 0 ${FIRST_SLASH_POS} FIRST_PATH)
+        string(FIND ${FIRST_PATH} "/" FIRST_SLASH_POS REVERSE)
+        string(SUBSTRING ${FIRST_PATH} 0 ${FIRST_SLASH_POS} FIRST_PATH)
+        SET(QT_PATH ${FIRST_PATH})
+        string(FIND ${QT_PATH} "/" FIRST_SLASH_POS2 REVERSE)
+        MATH(EXPR FIRST_SLASH_POS2 "${FIRST_SLASH_POS2}+1")
+        string(SUBSTRING ${FIRST_PATH} ${FIRST_SLASH_POS2} ${FIRST_SLASH_POS}  FIRST_PATH)
+        SET(QT_COMPILER ${FIRST_PATH})
+
+
+
+        get_version_number(QT_VERSION ${QT_PATH})
+        # Extract the major version
+        string(REGEX MATCH "([0-9]+)" QT_MAJOR_VERSION ${QT_VERSION})
+
+        SET(QT_MISSING False)
+    endif()
+
+ENDIF()
+
 
 if(NOT QT_VERSION STREQUAL "autoFind" AND DEFINED QT_VERSION)
     if(NOT EXISTS ${QT_INSTALL_BASE}/${QT_VERSION})
@@ -53,14 +86,13 @@ if(NOT QT_VERSION STREQUAL "autoFind" AND DEFINED QT_VERSION)
     else()
         SET(QT_PATH "${QT_INSTALL_BASE}/${QT_VERSION}/${QT_COMPILER}")
     endif()
-
-    
 endif()
 
 if(NOT DEFINED QT_MAJOR_VERSION)
     SET(QT_MAJOR_VERSION 5) # Default Qt5 version
 endif()
 
+message("QT_MAJOR_VERSION = ${QT_MAJOR_VERSION}")
 SET(QT_PACKAGE_NAME Qt${QT_MAJOR_VERSION})
 SET(QT_WIDGET_PACKAGE_NAME Qt${QT_MAJOR_VERSION}Widgets)
 
@@ -77,8 +109,6 @@ IF(QT_MISSING)
         LIST(GET QT_BIN 0 QT_INSTALL_BASE)
     endif()
 
-    # if(NOT DEFINED QT_VERSION OR QT_VERSION STREQUAL "autoFind") 
-
     # get root path so we can search for 5.3, 5.4, 5.5, etc
     FILE(GLOB QT_VERSIONS "${QT_INSTALL_BASE}/${QT_MAJOR_VERSION}.*")
     
@@ -86,7 +116,6 @@ IF(QT_MISSING)
 	set(version_numbers )
     foreach(path ${QT_VERSIONS})
         get_version_number(version ${path})
-        #message("Extracted version: "${version})
         list(APPEND version_numbers ${version})
     endforeach()
 
@@ -137,18 +166,16 @@ IF(QT_MISSING)
     endif()
 ENDIF()
 
+
+
+
 # use Qt_DIR approach so you can find Qt after cmake has been invoked
 IF(NOT QT_MISSING)
     if (EXISTS ${QT_PATH})
-        message("Using compiler: ${QT_PATH}")
-	    
         
         SET(Qt${QT_MAJOR_VERSION}_DIR "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}")
         SET(Qt${QT_MAJOR_VERSION}Widgets_DIR  "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Widgets")
         SET(Qt${QT_MAJOR_VERSION}Test_DIR "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Test")
-        SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${QT_PATH}/lib/cmake")
-        # SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Config.cmake")
-        #SET(CMAKE_PREFIX_PATH "${QT_PATH}")
         
         MESSAGE("Qt${QT_MAJOR_VERSION}Config.cmake path:  ${Qt${QT_MAJOR_VERSION}_DIR}")
     else()
@@ -157,6 +184,11 @@ IF(NOT QT_MISSING)
     endif()
 ENDIF()
 
+
+message("QT_PATH: ${QT_PATH}")
+message("QT_COMPILER: ${QT_COMPILER}")
+message("QT_VERSION: ${QT_VERSION}")
+message("QT_MAJOR_VERSION: ${QT_MAJOR_VERSION}")
 
 function(qt_wrap_internal_cpp outFiles)
     cmake_parse_arguments(inFiles "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})

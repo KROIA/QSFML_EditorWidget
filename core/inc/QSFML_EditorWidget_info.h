@@ -32,10 +32,31 @@ namespace QSFML
 		LibraryInfo() = delete;
 		LibraryInfo(const LibraryInfo&) = delete;
 	public:
+
+		struct Version
+		{
+			int major;
+			int minor;
+			int patch;
+
+			// compare two versions
+			bool operator<(const Version& other) const;
+
+			bool operator==(const Version& other) const;
+			bool operator!=(const Version& other) const;
+			bool operator>(const Version& other) const;
+			bool operator<=(const Version& other) const;
+			bool operator>=(const Version& other) const;
+			std::string toString() const;
+		};
+
+
 		// Current version of the library
 		static constexpr int versionMajor				= 1;
 		static constexpr int versionMinor				= 0;
 		static constexpr int versionPatch				= 0;
+
+		static constexpr Version version{ versionMajor, versionMinor, versionPatch };
 
 		// Library name
 		static constexpr const char* name				= "QSFML_EditorWidget";
@@ -75,21 +96,6 @@ namespace QSFML
 		static constexpr const char* buildTypeStr		= "Debug";
 		static constexpr const BuildType buildType		= BuildType::debug;
 #endif
-
-		static const std::string& versionStr()
-		{
-			static const std::string str = {
-				'0' + versionMajor / 10,
-				'0' + versionMajor % 10,
-				'.',
-				'0' + versionMinor / 10,
-				'0' + versionMinor % 10,
-				'.',
-				'0' + versionPatch / 10,
-				'0' + versionPatch % 10
-			};
-			return str;
-		}
 
 		static void printInfo();
 		static void printInfo(std::ostream& stream);

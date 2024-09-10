@@ -25,6 +25,61 @@ namespace QSFML
 
 /// USER_SECTION_END
 
+	// compare two versions
+	bool LibraryInfo::Version::operator<(const Version& other) const
+	{
+		if (major < other.major)
+			return true;
+		if (major > other.major)
+			return false;
+		if (minor < other.minor)
+			return true;
+		if (minor > other.minor)
+			return false;
+		if (patch < other.patch)
+			return true;
+		return false;
+	}
+
+	bool LibraryInfo::Version::operator==(const Version& other) const
+	{
+		return major == other.major && minor == other.minor && patch == other.patch;
+	}
+	bool LibraryInfo::Version::operator!=(const Version& other) const
+	{
+		return !(*this == other);
+	}
+	bool LibraryInfo::Version::operator>(const Version& other) const
+	{
+		return !(*this < other) && !(*this == other);
+	}
+	bool LibraryInfo::Version::operator<=(const Version& other) const
+	{
+		return *this < other || *this == other;
+	}
+	bool LibraryInfo::Version::operator>=(const Version& other) const
+	{
+		return *this > other || *this == other;
+	}
+	std::string LibraryInfo::Version::toString() const
+	{
+		// fornmat: XX.YY.ZZZZ
+		// Add leading digits if needed
+		std::string majorStr = std::to_string(major);
+		std::string minorStr = std::to_string(minor);
+		std::string patchStr = std::to_string(patch);
+		if (majorStr.size() < 2)
+			majorStr = "0" + majorStr;
+		if (minorStr.size() < 2)
+			minorStr = "0" + minorStr;
+		if (patchStr.size() < 4)
+		{
+			while (patchStr.size() < 4)
+				patchStr = "0" + patchStr;
+		}
+		return majorStr + "." + minorStr + "." + patchStr;
+	}
+
 	void LibraryInfo::printInfo()
 	{
 		printInfo(std::cout);
@@ -37,7 +92,7 @@ namespace QSFML
 			<< "Email: " << email << "\n"
 			<< "Website: " << website << "\n"
 			<< "License: " << license << "\n"
-			<< "Version: " << versionStr() << "\n"
+			<< "Version: " << version.toString() << "\n"
 			<< "Compilation Date: " << compilationDate << "\n"
 			<< "Compilation Time: " << compilationTime << "\n";
 
@@ -75,7 +130,7 @@ namespace QSFML
 			{"Email:", email},
 			{"Website:", website},
 			{"License:", license},
-			{"Version:", versionStr()},
+			{"Version:", version.toString()},
 			{"Compilation Date:", compilationDate},
 			{"Compilation Time:", compilationTime},
 			{"Build Type:", buildTypeStr},
