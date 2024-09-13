@@ -162,6 +162,7 @@ IF(QT_MISSING)
 
     if (EXISTS ${NewestCompilerPath})
         set(QT_PATH ${NewestCompilerPath})
+        list(APPEND CMAKE_PREFIX_PATH ${NewestCompilerPath})
         SET(QT_MISSING False)
     endif()
 ENDIF()
@@ -174,7 +175,8 @@ IF(NOT QT_MISSING)
     if (EXISTS ${QT_PATH})
         
         SET(Qt${QT_MAJOR_VERSION}_DIR "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}")
-        SET(Qt${QT_MAJOR_VERSION}Widgets_DIR  "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Widgets")
+        #SET(Qt${QT_MAJOR_VERSION}Widgets_DIR  "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Widgets")
+        SET(Qt${QT_MAJOR_VERSION}Widgets_DIR  "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Widgets/Qt${QT_MAJOR_VERSION}WidgetsConfig.cmake")
         SET(Qt${QT_MAJOR_VERSION}Test_DIR "${QT_PATH}/lib/cmake/Qt${QT_MAJOR_VERSION}Test")
         
         MESSAGE("Qt${QT_MAJOR_VERSION}Config.cmake path:  ${Qt${QT_MAJOR_VERSION}_DIR}")
@@ -183,6 +185,7 @@ IF(NOT QT_MISSING)
                             "Searching for compiler: ${QT_PATH}")
     endif()
 ENDIF()
+
 
 
 message("QT_PATH: ${QT_PATH}")

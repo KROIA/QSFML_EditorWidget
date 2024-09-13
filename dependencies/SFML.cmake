@@ -1,4 +1,5 @@
 ## description: SFML: Simple and fast multimedia library
+include(FetchContent)
 
 function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
