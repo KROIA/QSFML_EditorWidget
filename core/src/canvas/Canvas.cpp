@@ -66,8 +66,10 @@ namespace QSFML {
     Canvas::~Canvas()
     {
         stop();
-        if (parentWidget())
-            parentWidget()->layout()->removeWidget(this);
+
+		// Crashes sometimes when the window is closed
+        //if (parentWidget())
+        //    parentWidget()->layout()->removeWidget(this);
         m_window->close();
         delete m_window;
         m_window = nullptr;
