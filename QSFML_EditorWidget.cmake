@@ -1,9 +1,10 @@
 ## description: SFML Editor widget for QT applications
 include(FetchContent)
 
-function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
+function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
     set(LIB_NAME QSFML_EditorWidget)
+    set(LIB_MACRO_NAME QSFML_EDITOR_WIDGET)
     set(GIT_REPO https://github.com/KROIA/QSFML_EditorWidget.git)
     set(GIT_TAG main)
 
@@ -19,13 +20,14 @@ function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     FetchContent_MakeAvailable(${LIB_NAME})
 
     # Add this library to the specific profiles of this project
-    list(APPEND DEPS_FOR_SHARED_LIB ${LIB_NAME}_static)
+    list(APPEND DEPS_FOR_SHARED_LIB ${LIB_NAME}_shared)
     list(APPEND DEPS_FOR_STATIC_LIB ${LIB_NAME}_static)
     list(APPEND DEPS_FOR_STATIC_PROFILE_LIB ${LIB_NAME}_static_profile) # only use for static profiling profile
 
+    set(${LIBRARY_MACRO_NAME} "${${LIBRARY_MACRO_NAME}};${LIB_MACRO_NAME}" PARENT_SCOPE)
     set(${SHARED_LIB} "${${SHARED_LIB}};${DEPS_FOR_SHARED_LIB}" PARENT_SCOPE)
     set(${STATIC_LIB} "${${STATIC_LIB}};${DEPS_FOR_STATIC_LIB}" PARENT_SCOPE)
     set(${STATIC_PROFILE_LIB} "${${STATIC_PROFILE_LIB}};${DEPS_FOR_STATIC_PROFILE_LIB}" PARENT_SCOPE)
 endfunction()
 
-dep(DEPENDENCIES_FOR_SHARED_LIB DEPENDENCIES_FOR_STATIC_LIB DEPENDENCIES_FOR_STATIC_PROFILE_LIB)
+dep(DEPENDENCY_NAME_MACRO DEPENDENCIES_FOR_SHARED_LIB DEPENDENCIES_FOR_STATIC_LIB DEPENDENCIES_FOR_STATIC_PROFILE_LIB)
