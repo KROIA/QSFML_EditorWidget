@@ -1,9 +1,10 @@
 ## description: simple library create unit tests
 include(FetchContent)
 
-function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
+function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
-    set(LIB_NAME UnitTest)								
+    set(LIB_NAME UnitTest)		
+    set(LIB_MACRO_NAME UNIT_TEST)
     set(GIT_REPO https://github.com/KROIA/UnitTest.git)	
     set(GIT_TAG main)									
 
@@ -23,9 +24,10 @@ function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     list(APPEND DEPS_FOR_STATIC_LIB ${LIB_NAME}_static)
     list(APPEND DEPS_FOR_STATIC_PROFILE_LIB ${LIB_NAME}_static_profile) # only use for static profiling profile
 
+    set(${LIBRARY_MACRO_NAME} "${${LIBRARY_MACRO_NAME}};${LIB_MACRO_NAME}" PARENT_SCOPE)
     set(${SHARED_LIB} "${${SHARED_LIB}};${DEPS_FOR_SHARED_LIB}" PARENT_SCOPE)
     set(${STATIC_LIB} "${${STATIC_LIB}};${DEPS_FOR_STATIC_LIB}" PARENT_SCOPE)
     set(${STATIC_PROFILE_LIB} "${${STATIC_PROFILE_LIB}};${DEPS_FOR_STATIC_PROFILE_LIB}" PARENT_SCOPE)
 endfunction()
 
-dep(DEPENDENCIES_FOR_SHARED_LIB DEPENDENCIES_FOR_STATIC_LIB DEPENDENCIES_FOR_STATIC_PROFILE_LIB)
+dep(DEPENDENCY_NAME_MACRO DEPENDENCIES_FOR_SHARED_LIB DEPENDENCIES_FOR_STATIC_LIB DEPENDENCIES_FOR_STATIC_PROFILE_LIB)

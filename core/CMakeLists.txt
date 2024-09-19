@@ -21,11 +21,16 @@ endif()
 # QT settings
 if(QT_ENABLE)
     message("Using QT modules: ${QT_MODULES}")
-    find_package(${QT_PACKAGE_NAME} REQUIRED COMPONENTS ${QT_MODULES})
+    list(LENGTH QT_MODULES list_length)
+    if(NOT list_length EQUAL 0)
+        find_package(${QT_PACKAGE_NAME} REQUIRED COMPONENTS ${QT_MODULES})
 
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-    #set(CMAKE_AUTOUIC ON)
+        set(CMAKE_AUTOMOC ON)
+        set(CMAKE_AUTORCC ON)
+        #set(CMAKE_AUTOUIC ON)
+    else()
+        message("ERROR: QT_MODULES is empty. Please specify the required modules or set the variable \"QT_ENABLE\" to OFF")
+    endif()
 endif()
 # end QT settings
 
@@ -80,8 +85,19 @@ FOREACH(file ${SOURCES})
    message("  File: " ${file})
 ENDFOREACH()
 
+
 # Set defines for inside the code of the library
 list(APPEND DEFINES_FOR_ALL_PROFILES ${LIB_DEFINE})
+
+# Add the names of the dependencies as a define
+foreach(DEPENDENCY ${DEPENDENCY_NAME_MACRO})
+	list(APPEND DEFINES_FOR_ALL_PROFILES ${DEPENDENCY})
+endforeach()
+
+foreach(DEF ${USER_SPECIFIC_DEFINES})
+	list(APPEND DEFINES_FOR_ALL_PROFILES ${DEF})
+endforeach()
+
 if(QT_ENABLE)
     list(APPEND DEFINES_FOR_ALL_PROFILES QT_ENABLED)
     # Check if QT_MODULES contains Widgets
@@ -91,6 +107,8 @@ if(QT_ENABLE)
         list(APPEND DEFINES_FOR_ALL_PROFILES QT_WIDGETS_ENABLED)
     endif()
 endif()
+
+message("Defines for all profiles: ${DEFINES_FOR_ALL_PROFILES}")
 list(APPEND DEFINES_FOR_SHARED_LIB ${DEFINES_FOR_ALL_PROFILES} BUILD_SHARED)
 list(APPEND DEFINES_FOR_STATIC_LIB ${DEFINES_FOR_ALL_PROFILES} BUILD_STATIC)
 if(EASY_PROFILER_IS_AVAILABLE)

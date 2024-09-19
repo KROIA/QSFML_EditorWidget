@@ -40,7 +40,8 @@ function(windeployqt targetName outputPath)
 		--no-system-d3d-compiler 
 		--no-opengl-sw 
 		--pdb 
-		--dir \"${outputPath}\" \"${targetExePath}\"")
+		--dir \"${outputPath}\" \"${targetExePath}\"
+        --qmldir \"${CMAKE_SOURCE_DIR}\"")
 
 	set(CMD "${DEPLOY_COMMAND}")
 	string(REPLACE "\\" "/" CMD "${CMD}")
@@ -83,4 +84,3 @@ function(set_if_not_defined varName value)
         set(${varName} ${value} PARENT_SCOPE)
     endif()
 endfunction()
-

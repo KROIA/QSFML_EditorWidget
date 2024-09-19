@@ -48,11 +48,17 @@ project(${PROJECT_NAME})
 # QT settings
 if(QT_ENABLE)
     message("Using QT modules: ${QT_MODULES} for Example: ${PROJECT_NAME}")
-    find_package(${QT_PACKAGE_NAME} REQUIRED COMPONENTS ${QT_MODULES})
 
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-    #set(CMAKE_AUTOUIC ON)
+    list(LENGTH QT_MODULES list_length)
+    if(NOT list_length EQUAL 0)
+        find_package(${QT_PACKAGE_NAME} REQUIRED COMPONENTS ${QT_MODULES})
+
+        set(CMAKE_AUTOMOC ON)
+        set(CMAKE_AUTORCC ON)
+        #set(CMAKE_AUTOUIC ON)
+    else()
+        message("ERROR: QT_MODULES is empty. Please specify the required modules or set the variable \"QT_ENABLE\" to OFF")
+    endif()
 endif()
 # end QT settings
 
@@ -110,6 +116,15 @@ else()
 endif()
 
 list(APPEND DEFINES BUILD_STATIC)
+# Add the names of the dependencies as a define
+foreach(DEPENDENCY ${DEPENDENCY_NAME_MACRO})
+	list(APPEND DEFINES ${DEPENDENCY})
+endforeach()
+
+foreach(DEF ${USER_SPECIFIC_DEFINES})
+	list(APPEND DEFINES ${DEF})
+endforeach()
+
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${DEFINES})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION "${INSTALL_BIN_PATH}")

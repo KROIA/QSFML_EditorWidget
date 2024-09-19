@@ -1,6 +1,11 @@
 #pragma once
 #include "QSFML_EditorWidget_global.h"
 
+// The Logger library is automaticly included if the logger dependency .cmake file is available
+#if defined(LOGGER) and not defined(LOGGER_LIB)
+	#include "Logger.h"
+#endif
+
 /// USER_SECTION_START 1
 
 /// USER_SECTION_END
@@ -77,14 +82,85 @@
 
 namespace QSFML
 {
+/// USER_SECTION_START 4
+
+/// USER_SECTION_END
 	class QSFML_EDITOR_WIDGET_EXPORT Profiler
 	{
 	public:
+		/// USER_SECTION_START 5
+
+		/// USER_SECTION_END
+
 		// Implementation defined in LibraryName_info.cpp to save files.
 		static void start();
 		static void stop();
 		static void stop(const char* profilerOutputFile);
+
+		/// USER_SECTION_START 6
+
+		/// USER_SECTION_END
 	};
+
+/// USER_SECTION_START 7
+
+/// USER_SECTION_END
+
+
+#if defined(LOGGER) and not defined(LOGGER_LIB)
+	class QSFML_EDITOR_WIDGET_EXPORT Logger 
+	{
+		/// USER_SECTION_START 8
+
+		/// USER_SECTION_END
+		Logger();
+		static Logger& instance();
+		public:
+		/// USER_SECTION_START 9
+
+		/// USER_SECTION_END
+
+		static void setEnabled(bool enable);
+		static bool isEnabled();
+		static void setName(const std::string& name);
+		static std::string getName();
+		static void setColor(const Log::Color& col);
+		static Log::Color getColor();
+		static Log::DateTime getCreationDateTime();
+		static Log::LoggerID getID();
+		static void setParentID(Log::LoggerID parentID);
+		static Log::LoggerID getParentID();
+
+
+
+		static void log(const Log::Message& msg);
+
+		static void log(const std::string& msg);
+		static void log(const std::string& msg, Log::Level level);
+		static void log(const std::string& msg, Log::Level level, const Log::Color& col);
+
+		static void logTrace(const std::string& msg);
+		static void logDebug(const std::string& msg);
+		static void logInfo(const std::string& msg);
+		static void logWarning(const std::string& msg);
+		static void logError(const std::string& msg);
+		static void logCustom(const std::string& msg);
+
+		/// USER_SECTION_START 10
+
+		/// USER_SECTION_END
+
+		private:
+		Log::LogObject m_logObject;
+
+		/// USER_SECTION_START 11
+
+		/// USER_SECTION_END
+	};
+/// USER_SECTION_START 12
+
+/// USER_SECTION_END
+#endif
 }
 
 

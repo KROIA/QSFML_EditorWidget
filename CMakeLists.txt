@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20)
 
 
 ## INFO
-## Template version: 1.2.1
+## Template version: 1.3.0
 ##
 ## This is a template for a CMake project.
 ## It is designed to be used with the Visual Studio
@@ -77,6 +77,22 @@ set_if_not_defined(RELATIVE_INSTALL_INCLUDE_FOLDER include)           # Relative
 
 set_if_not_defined(COMPILE_EXAMPLES ON)						# <AUTO_REPLACED> 
 set_if_not_defined(COMPILE_UNITTESTS ON)					# <AUTO_REPLACED> 
+
+
+# User specific defines which are added as defines to the compiler
+# Note: The defines are only available inside the library.
+#       Do not use them in headers which are visible by the user of the library.
+# Example:
+# list(APPEND USER_SPECIFIC_DEFINES 
+#    "TEST_DEFINE"
+# )
+# 
+list(APPEND USER_SPECIFIC_DEFINES 
+## USER_SECTION_START 9
+    
+## USER_SECTION_END
+)
+
 
 ## USER_SECTION_START 3
 
