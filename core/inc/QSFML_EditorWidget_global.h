@@ -1,7 +1,5 @@
 #pragma once
 
-#define LIBRARY_NAME
-
 /// USER_SECTION_START 1
 
 /// USER_SECTION_END
