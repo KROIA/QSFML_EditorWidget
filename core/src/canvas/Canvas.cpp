@@ -207,6 +207,11 @@ namespace QSFML {
     {
         return m_oldCanvasSize;
     }
+    sf::Vector2f Canvas::getViewCenterPosition() const
+    {
+        return m_view.getCenter();
+	}
+
 
     sf::Vector2i Canvas::getMousePosition() const
     {

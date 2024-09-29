@@ -53,6 +53,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         Utilities::AABB getCameraViewRect() const;
         sf::Vector2u getCanvasSize() const;
         sf::Vector2u getOldCanvasSize() const;
+        sf::Vector2f getViewCenterPosition() const;
 
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;
