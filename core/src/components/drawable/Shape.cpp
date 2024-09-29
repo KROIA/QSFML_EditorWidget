@@ -13,7 +13,18 @@ namespace QSFML
 			//, m_outlineThickness(1)
 		{
 		}
+		Shape::Shape(const Shape& other)
+		{
+			m_fillColor = other.m_fillColor;
+			m_outlineColor = other.m_outlineColor;
+			m_fill = other.m_fill;
+			m_outline = other.m_outline;
+			//m_outlineThickness = other.m_outlineThickness;
+			m_points = other.m_points;
+			//m_transformedPoints = other.m_transformedPoints;
+			//m_transformedVertecies = other.m_transformedVertecies;
 
+		}
 
 		Shape::~Shape()
 		{

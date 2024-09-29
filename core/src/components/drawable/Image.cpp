@@ -32,7 +32,7 @@ namespace QSFML
 			, m_texture(nullptr)
 			, m_selfOwnedTexture(nullptr)
 		{
-			loadFromImage(imagePath);
+			loadFromFile(imagePath);
             if (!m_sprite)
                 m_sprite = new sf::Sprite();
 		}
@@ -75,7 +75,7 @@ namespace QSFML
 			return m_texture;
 		}
 
-		bool Image::loadFromImage(const std::string& imagePath)
+		bool Image::loadFromFile(const std::string& imagePath)
 		{
 			sf::Texture* t = new sf::Texture();
 			if (t->loadFromFile(imagePath))

@@ -35,7 +35,7 @@ namespace QSFML
 			{
 				return m_position == other.m_position && m_rotation == other.m_rotation;
 			}
-		bool operator!=(const Transformable &other) const
+			bool operator!=(const Transformable &other) const
 			{
 				return !(*this == other);
 			}

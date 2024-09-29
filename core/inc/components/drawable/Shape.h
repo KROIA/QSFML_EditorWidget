@@ -14,6 +14,7 @@ namespace QSFML
 		{
 		public:
 			Shape(const std::string& name = "Shape");
+			Shape(const Shape& other);
 			~Shape();
 
 			//void setTransform(const sf::Transform& transform);

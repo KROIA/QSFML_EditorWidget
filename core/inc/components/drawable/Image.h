@@ -20,7 +20,7 @@ namespace QSFML
             void setTexture(const sf::Texture* t);
             const sf::Texture* getTexture() const;
 
-            bool loadFromImage(const std::string& imagePath);
+            bool loadFromFile(const std::string& imagePath);
 
             void drawComponent(sf::RenderTarget& target,
                 sf::RenderStates states) const override;
