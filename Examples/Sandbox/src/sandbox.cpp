@@ -30,7 +30,7 @@ void addMouseCollider(Scene* Scene)
 void addShape(Scene* Scene)
 {
 
-    QSFML::Objects::GameObject* obj = new QSFML::Objects::GameObject();
+    QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject();
     QSFML::Components::Shape* shape = new QSFML::Components::Shape();
     QSFML::Utilities::Ray* testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
     QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
@@ -65,7 +65,7 @@ void addShape(Scene* Scene)
             size_t d2;
             testRay->raycast(*shape, d1, d2);
 
-            GameObject* mouseFollowerObj = obj->findFirstObjectGlobal("MOUSE_COLLIDER");
+            GameObjectPtr mouseFollowerObj = obj->findFirstObjectGlobal("MOUSE_COLLIDER");
             if (mouseFollowerObj)
             {
                 sf::Vector2f pos = mouseFollowerObj->getPosition();
@@ -91,7 +91,7 @@ void addShape(Scene* Scene)
 }
 void addPerlinNoise(Scene* Scene)
 {
-    GameObject* obj = new GameObject();
+    GameObjectPtr obj = new GameObject();
 
     sf::Vector2u size(100, 100);
     QSFML::Utilities::PerlinNoise* perlinNoise = new QSFML::Utilities::PerlinNoise(0);
@@ -167,7 +167,7 @@ SandBox::SandBox(QWidget *parent)
         m_Scene_1->addObject(sbObj);
 
         m_pointPainter = new QSFML::Components::PointPainter();
-        QSFML::Objects::GameObject* GameObject = new QSFML::Objects::GameObject();
+        QSFML::Objects::GameObjectPtr GameObject = new QSFML::Objects::GameObject();
         GameObject->addComponent(m_pointPainter);
         m_Scene_1->addObject(GameObject);
 
@@ -201,7 +201,7 @@ SandBox::SandBox(QWidget *parent)
         m_Scene_2->addObject(defaultEditor);
 
 
-        GameObject* obj = new GameObject("MyObject");
+        GameObjectPtr obj = new GameObject("MyObject");
         Components::Collider* collider = new Components::Collider();
         collider->setVertecies(
             {
@@ -230,7 +230,7 @@ SandBox::SandBox(QWidget *parent)
        
         obj->addComponent(text);
 
-        GameObject* child = new GameObject("Child");
+        GameObjectPtr child = new GameObject("Child");
         child->setPosition(sf::Vector2f(100, 100));
         Components::Shape* shape = new Components::Shape();
         shape->setPoints(

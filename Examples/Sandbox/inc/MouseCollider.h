@@ -7,7 +7,7 @@ class MouseCollider : public QObject, public QSFML::Objects::GameObject
 	Q_OBJECT
 public:
 	MouseCollider(const std::string& name = "MouseCollider",
-					GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	MouseCollider(const MouseCollider& other);
     ~MouseCollider();
 

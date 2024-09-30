@@ -52,7 +52,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
 
 
 
-        void setParent(Objects::GameObject *parent) override;
+        void setParent(Objects::GameObjectPtr parent) override;
 
         /**
          * \brief draw

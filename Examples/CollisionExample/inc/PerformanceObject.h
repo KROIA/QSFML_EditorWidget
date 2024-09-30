@@ -6,10 +6,10 @@ class PerformanceObject : public QSFML::Objects::GameObject
 {
 public:
 	PerformanceObject(const std::string& name = "PerformanceObject",
-		GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	PerformanceObject(const std::vector<sf::Vector2f>& vertecies,
 		const std::string& name = "PerformanceObject",
-		GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	~PerformanceObject();
 
 	CLONE_FUNC_DEC(PerformanceObject);

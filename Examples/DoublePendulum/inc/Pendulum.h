@@ -8,7 +8,7 @@ class Pendulum : public QObject, public QSFML::Objects::GameObject
 	
 public:
     Pendulum(const std::string& name = "Pendulum",
-             GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 
 	void setStart(double angle1, double angle2);
 	void setLength(double length1, double length2);

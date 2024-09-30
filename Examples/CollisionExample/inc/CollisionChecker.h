@@ -18,7 +18,7 @@ public:
 	};
 
 	CollisionChecker(const std::string& name = "CollisionChecker",
-					GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	CollisionChecker(const CollisionChecker &other);
     ~CollisionChecker();
 
@@ -46,12 +46,12 @@ private:
 	//CollisionObject* m_collisionObject;
 	QSFML::Components::MouseFollower* m_mouseFollower;
 	sf::Vector2f m_mousePos;
-	QSFML::Objects::GameObject* m_colliderContainer;
-	std::vector<QSFML::Objects::GameObject*> m_objs;
-	std::vector<QSFML::Objects::GameObject*> m_collisionObjs;
+	QSFML::Objects::GameObjectPtr m_colliderContainer;
+	std::vector<QSFML::Objects::GameObjectPtr> m_objs;
+	std::vector<QSFML::Objects::GameObjectPtr> m_collisionObjs;
 
-	QSFML::Objects::GameObject* m_performanceContainer;
-	std::vector<QSFML::Objects::GameObject*> m_performanceObjs;
+	QSFML::Objects::GameObjectPtr m_performanceContainer;
+	std::vector<QSFML::Objects::GameObjectPtr> m_performanceObjs;
 	QSFML::Utilities::ObjectQuadTree m_tree;
 	
 /*

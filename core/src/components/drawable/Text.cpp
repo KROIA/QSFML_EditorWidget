@@ -89,7 +89,7 @@ namespace QSFML
             return *m_text.getFont();
         }
 
-        void Text::setParent(Objects::GameObject *parent)
+        void Text::setParent(Objects::GameObjectPtr parent)
         {
             Component::setParent(parent);
             /*if (!m_font)

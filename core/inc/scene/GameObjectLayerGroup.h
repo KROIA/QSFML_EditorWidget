@@ -21,17 +21,17 @@ namespace QSFML
         size_t size() const;
         GameObjectGroup& operator[](size_t index);
 
-        void addObject(Objects::GameObject* obj, size_t layer);
-        void addObject(const std::vector<Objects::GameObject*>& objs, size_t layer);
+        void addObject(Objects::GameObjectPtr obj, size_t layer);
+        void addObject(const std::vector<Objects::GameObjectPtr>& objs, size_t layer);
 
-        void removeObject(Objects::GameObject* obj);
-        void removeObject(const std::vector<Objects::GameObject*>& objs);
-        void removeObject(Objects::GameObject* obj, size_t layer);
-        void removeObject(const std::vector<Objects::GameObject*>& objs, size_t layer);
+        void removeObject(Objects::GameObjectPtr obj);
+        void removeObject(const std::vector<Objects::GameObjectPtr>& objs);
+        void removeObject(Objects::GameObjectPtr obj, size_t layer);
+        void removeObject(const std::vector<Objects::GameObjectPtr>& objs, size_t layer);
 
 
-        void deleteObject(Objects::GameObject* obj);
-        void deleteObject(const std::vector<Objects::GameObject*>& objs);
+        void deleteObject(Objects::GameObjectPtr obj);
+        void deleteObject(const std::vector<Objects::GameObjectPtr>& objs);
 
         void clearObjects(size_t layer);
         void clearObjects();
@@ -43,39 +43,39 @@ namespace QSFML
         size_t getObjectsCount() const;
         template<typename T>
         size_t getObjectsCount(size_t layer) const;
-        const std::vector<Objects::GameObject*> getObjects() const;
-        const std::vector<Objects::GameObject*>& getObjects(size_t layer) const;
-        const std::vector<Objects::GameObject*> getObjectsToAdd() const;
-        const std::vector<Objects::GameObject*>& getObjectsToAdd(size_t layer) const;
-        const std::vector<Objects::GameObject*> getObjectsToDelete() const;
-        const std::vector<Objects::GameObject*>& getObjectsToDelete(size_t layer) const;
+        const std::vector<Objects::GameObjectPtr> getObjects() const;
+        const std::vector<Objects::GameObjectPtr>& getObjects(size_t layer) const;
+        const std::vector<Objects::GameObjectPtr> getObjectsToAdd() const;
+        const std::vector<Objects::GameObjectPtr>& getObjectsToAdd(size_t layer) const;
+        const std::vector<Objects::GameObjectPtr> getObjectsToDelete() const;
+        const std::vector<Objects::GameObjectPtr>& getObjectsToDelete(size_t layer) const;
         template<typename T>
         std::vector<T*> getObjects() const;
         template<typename T>
         std::vector<T*> getObjects(size_t layer) const;
         template<typename T>
-        T* getFirstObject() const;
+        std::shared_ptr<T> getFirstObject() const;
         template<typename T>
-        T* getFirstObject(size_t layer) const;
+        std::shared_ptr<T> getFirstObject(size_t layer) const;
 
-        bool objectExists(Objects::GameObject* obj);
-        bool objectExists(Objects::GameObject* obj, size_t layer);
-        size_t getObjectIndex(Objects::GameObject* obj, size_t layer);
+        bool objectExists(Objects::GameObjectPtr obj);
+        bool objectExists(Objects::GameObjectPtr obj, size_t layer);
+        size_t getObjectIndex(Objects::GameObjectPtr obj, size_t layer);
 
 
-        void deleteLater(Objects::GameObject* obj);
-
-        template<typename T>
-        static bool objectExists(T* obj, const std::vector<T*>& list);
+        void deleteLater(Objects::GameObjectPtr obj);
 
         template<typename T>
-        static size_t getObjectIndex(T* obj, const std::vector<T*>& list);
+        static bool objectExists(std::shared_ptr<T> obj, const std::vector<std::shared_ptr<T>>& list);
 
         template<typename T>
-        static void addObject(Objects::GameObject* obj, std::vector<T*>& list);
+        static size_t getObjectIndex(std::shared_ptr<T> obj, const std::vector<std::shared_ptr<T>>& list);
 
         template<typename T>
-        static void removeObject(Objects::GameObject* obj, std::vector<T*>& list);
+        static void addObject(Objects::GameObjectPtr obj, std::vector<std::shared_ptr<T>>& list);
+
+        template<typename T>
+        static void removeObject(Objects::GameObjectPtr obj, std::vector<std::shared_ptr<T>>& list);
 
         const static size_t npos = -1;
 
@@ -97,7 +97,7 @@ namespace QSFML
         size_t m_layerSize;
         std::vector<GameObjectGroup*> m_container;
 
-       // std::vector<Objects::GameObject*> m_toDelete;
+       // std::vector<Objects::GameObjectPtr> m_toDelete;
     };
 
     template<typename T>
@@ -137,7 +137,7 @@ namespace QSFML
         return m_container[layer].getObjects<T>();
     }
     template<typename T>
-    T* GameObjectLayerGroup::getFirstObject() const
+    std::shared_ptr<T> GameObjectLayerGroup::getFirstObject() const
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {
@@ -148,14 +148,14 @@ namespace QSFML
         return nullptr;
     }
     template<typename T>
-    T* GameObjectLayerGroup::getFirstObject(size_t layer) const
+    std::shared_ptr<T> GameObjectLayerGroup::getFirstObject(size_t layer) const
     {
         if (layer > m_layerSize)
             return nullptr;
         return m_container[layer].getFirstObject<T>();
     }
     template<typename T>
-    bool GameObjectLayerGroup::objectExists(T* obj, const std::vector<T*>& list)
+    bool GameObjectLayerGroup::objectExists(std::shared_ptr<T> obj, const std::vector<std::shared_ptr<T>>& list)
     {
         QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
         size_t num = list.size();
@@ -168,7 +168,7 @@ namespace QSFML
     }
 
     template<typename T>
-    size_t GameObjectLayerGroup::getObjectIndex(T* obj, const std::vector<T*>& list)
+    size_t GameObjectLayerGroup::getObjectIndex(std::shared_ptr<T> obj, const std::vector<std::shared_ptr<T>>& list)
     {
         QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_2);
         size_t num = list.size();
@@ -180,7 +180,7 @@ namespace QSFML
         return npos;
     }
     template<typename T>
-    void GameObjectLayerGroup::addObject(QSFML::Objects::GameObject* obj, std::vector<T*>& list)
+    void GameObjectLayerGroup::addObject(QSFML::Objects::GameObjectPtr obj, std::vector<std::shared_ptr<T>>& list)
     {
         QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_3);
         T* transformed = dynamic_cast<T*>(obj);
@@ -191,7 +191,7 @@ namespace QSFML
     }
 
     template<typename T>
-    void GameObjectLayerGroup::removeObject(QSFML::Objects::GameObject* obj, std::vector<T*>& list)
+    void GameObjectLayerGroup::removeObject(QSFML::Objects::GameObjectPtr obj, std::vector<std::shared_ptr<T>>& list)
     {
         QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_4);
         T* transformed = dynamic_cast<T*>(obj);

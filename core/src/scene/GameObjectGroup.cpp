@@ -167,7 +167,7 @@ namespace QSFML
         addObject_internal();
         for (size_t i = 0; i < m_container.size(); ++i)
         {
-            if (m_container[i]->m_objectsChanged)
+            if (m_container[i]->objectsChanged())
                 m_container[i]->updateNewElements();
         }
     }

@@ -5,7 +5,7 @@ CLONE_FUNC_IMPL(FluidGrid)
 FluidGrid::FluidGrid(sf::Vector2u tiles,
 	sf::Vector2f tileSize, 
 	const std::string& name,
-	GameObject* parent)
+	QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name, parent)
 	, m_gridSize(tiles)
 	, m_cellSize(tileSize)

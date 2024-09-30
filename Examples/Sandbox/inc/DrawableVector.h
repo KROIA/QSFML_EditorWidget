@@ -7,7 +7,7 @@ class VectorDisplayer: public QSFML::Objects::GameObject
         class MouseFollower;
     public:
         VectorDisplayer(const std::string &name = "VectorDisplayer",
-                        GameObject *parent = nullptr)
+            QSFML::Objects::GameObjectPtr parent = nullptr)
             : GameObject(name, parent)
         {
             m_vec1 = new QSFML::Components::VectorPainter("vec1");

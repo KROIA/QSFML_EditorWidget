@@ -1,7 +1,7 @@
 #include "PerformanceObject.h"
 
 CLONE_FUNC_IMPL(PerformanceObject);
-PerformanceObject::PerformanceObject(const std::string& name, GameObject* parent)
+PerformanceObject::PerformanceObject(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
 	, m_dynamic(true)
 {
@@ -29,7 +29,7 @@ PerformanceObject::PerformanceObject(const std::string& name, GameObject* parent
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
 }
-PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies, const std::string& name, GameObject* parent)
+PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies, const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
 	, m_dynamic(true)
 {

@@ -9,7 +9,7 @@ namespace QSFML
     {
         COMPONENT_IMPL(CameraController)
             CameraController::CameraController(const std::string& name,
-                GameObject* parent)
+                GameObjectPtr parent)
             : GameObject(name, parent)
         {
             // getSceneParent() = nullptr;
@@ -18,7 +18,7 @@ namespace QSFML
             setMaxZoom(3);
             setMaxMovingBounds(sf::FloatRect(-200, -200, 900, 900));
 
-            m_eventHandleComponent = std::make_shared<SfEventComponent>();
+            m_eventHandleComponent = new SfEventComponent();
             m_eventHandleComponent->setController(this);
             m_dragButton = sf::Mouse::Button::Left;
             addComponent(m_eventHandleComponent);
@@ -31,7 +31,7 @@ namespace QSFML
             m_maxZoom = other.m_maxZoom;
             m_maxMovingBounds = other.m_maxMovingBounds;
             m_dragButton = other.m_dragButton;
-            m_eventHandleComponent = std::make_shared<SfEventComponent>(*other.m_eventHandleComponent);
+            m_eventHandleComponent = new SfEventComponent(*other.m_eventHandleComponent);
             m_eventHandleComponent->setController(this);
 
         }

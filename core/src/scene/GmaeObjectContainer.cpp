@@ -21,7 +21,7 @@ GameObjectContainer::GameObjectContainer(Scene *parent, SceneSettings &settings)
 {
     m_parent = parent;
     m_allObjects = new GameObjectGroup(m_parent);
-    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_parent->setRootGameObject(m_allObjects->getObjectsCount());
 
     m_currentThreadGroupInsertIndex = 0;
     m_threadWorker = nullptr;
@@ -89,13 +89,13 @@ void GameObjectContainer::addObject_internal()
 		}
     }
     m_renderLayerGroup.addObject_internal();
-    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());    
+    m_parent->setRootGameObject(m_allObjects->getObjectsCount());    
 }
 void GameObjectContainer::deleteObject_internal()
 {
     m_allObjects->deleteObject_internal();
     m_renderLayerGroup.deleteObject_internal();
-    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_parent->setRootGameObject(m_allObjects->getObjectsCount());
 }
 
 void GameObjectContainer::removeObject(GameObjectPtr obj)
@@ -122,7 +122,7 @@ void GameObjectContainer::clearObjects()
 {
     m_allObjects->clearObjects();
     m_renderLayerGroup.clearObjects();
-    m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
+    m_parent->setRootGameObject(m_allObjects->getObjectsCount());
 }
 void GameObjectContainer::cleanup()
 {
@@ -150,7 +150,7 @@ void GameObjectContainer::cleanup()
     m_allObjects = nullptr;
     m_threadWorker = nullptr;
     m_threadGroups.clear();
-    m_parent->setRootCanvesObject(0);
+    m_parent->setRootGameObject(0);
 }
 
 void GameObjectContainer::applyObjectChanges()
@@ -200,7 +200,7 @@ void GameObjectContainer::applyObjectChanges()
         obj->setSceneParent(m_parent);
     }
     if (m_parent)
-        m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
+        m_parent->setRootGameObject(m_allObjects->getObjectsCount());
     
     updateNewElements();
 }

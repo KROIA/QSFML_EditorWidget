@@ -5,11 +5,16 @@
 #include "Scene/SceneSettings.h"
 
 #include "utilities/CollisionInfo.h"
-#include "utilities/Updatable.h"
+
 #include "utilities/AABB.h"
 #include "utilities/Transformable.h"
-#include "components/base/Drawable.h"
 #include "components/Transform.h"
+#include "components/base/Drawable.h"
+#include "components/physics/Collider.h"
+#include "components/base/SfEventHandle.h"
+
+#include "utilities/Updatable.h"
+
 
 #include "events/DestroyEvent.h"
 
@@ -43,7 +48,7 @@ namespace Objects
  * {
  *     public:
  *     MyObject(const std::string &name = "MyObject",
- *              GameObject *parent = nullptr)
+ *              GameObjectPtr parent = nullptr)
  *         : GameObject(name)
  *     {
  *
@@ -57,7 +62,7 @@ namespace Objects
  * {
  *     public:
  *     MyObject(const std::string &name = "MyObject",
- *              GameObject *parent = nullptr)
+ *              GameObjectPtr parent = nullptr)
  *         : GameObject(name)
  *     {
  *          // Instantiate the components
@@ -99,7 +104,7 @@ namespace Objects
  *      class MouseFollower;
  *     public:
  *     MyObject(const std::string &name = "MyObject",
- *              GameObject *parent = nullptr)
+ *              GameObjectPtr parent = nullptr)
  *         : GameObject(name)
  *     {
  *          // Instantiate the components
@@ -184,7 +189,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         friend GameObjectContainer;
     public:
         GameObject(const std::string &name = "GameObject",
-                     GameObject *parent = nullptr);
+                     GameObject* parent = nullptr);
         GameObject(const GameObject &other);
         virtual ~GameObject();
 
@@ -195,20 +200,20 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         /// This removes the object from the old parent
         /// </summary>
         /// <param name="parent">new parent</param>
-        void setParent(GameObject *parent);
+        void setParent(GameObjectPtr parent);
 
         /// <summary>
         /// Gets the parent of the object
         /// </summary>
         /// <returns>Parent object</returns>
-        GameObject *getParent() const;
+        GameObjectPtr getParent() const;
 
         /// <summary>
         /// Gets the root parent of the object
         /// The root is the topmost parent in the hirarchy
         /// </summary>
         /// <returns>Root object</returns>
-        GameObject *getRootParent() const;
+        GameObjectPtr getRootParent() const;
 
         /// <summary>
         /// Enables/Disables the object
@@ -287,7 +292,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         void setUpdateControlls(const SceneSettings::UpdateControlls& controlls);
 
         const Utilities::AABB &getBoundingBox() const;
-        void updateBoundingBox();
+        void updateBoundingBox() const;
 
         std::string toString() const;
 
@@ -301,16 +306,56 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         void clearChilds();
         template<typename T>
         void removeChilds();
+        template<typename T>
+        void GameObject::removeChilds()
+        {
+            m_toRemoveChildObjects.reserve(m_toRemoveChildObjects.size() + m_childObjectManagerData.objs.size());
+            for (auto& obj : m_childObjectManagerData.objs)
+            {
+                if (dynamic_cast<T>(obj))
+                {
+                    m_toRemoveChildObjects.push_back(obj);
+                }
+            }
+        }
+
+
+
+        
 
         bool hasChild(GameObjectPtr child) const;
         size_t getChildIndex(GameObjectPtr child) const;
         const std::vector<GameObjectPtr>& getChilds() const { return m_childObjectManagerData.objs; }
 
         template<typename T>
-        std::vector<std::shared_ptr<T>> getChilds() const;
+        std::vector<T*> getChilds() const
+        {
+            std::vector<T*> childs;
+            for (auto& obj : m_childObjectManagerData.objs)
+            {
+                if (T* child = dynamic_cast<T*>(obj))
+                {
+                    childs.push_back(child);
+                }
+            }
+            return childs;
+        }
 
         template<typename T>
-        std::vector<std::shared_ptr<T>> getChildsRecusrive() const;
+        std::vector<T*> getChildsRecusrive() const
+        {
+            std::vector<T*> childs;
+            for (auto& obj : m_childObjectManagerData.objs)
+            {
+                if (T* child = dynamic_cast<T*>(obj))
+                {
+                    childs.push_back(child);
+                }
+                std::vector<T*> childChilds = obj->getChildsRecusrive<T>();
+                childs.insert(childs.end(), childChilds.begin(), childChilds.end());
+            }
+            return childs;
+        }
 
         size_t getChildCount() const;
 
@@ -334,24 +379,129 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
         void removeComponent(Components::ComponentPtr component);
         void removeComponents(const std::vector<Components::ComponentPtr>& components);
-        template <typename T> void removeComponents();
+        template <typename T>
+        void removeComponents()
+        {
+            m_toRemoveComponents.reserve(m_toRemoveComponents.size() + m_componentsManagerData.all.size());
+            for (auto& comp : m_componentsManagerData.all)
+            {
+                if (dynamic_cast<T>(comp))
+                {
+                    removeComponent(comp);
+                }
+            }
+        }
+        template <>
+        void removeComponents<Components::Collider>()
+        {
+            m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.colliders.size());
+            for (size_t i = 0; i < m_componentsManagerData.colliders.size(); ++i)
+            {
+                Components::ComponentPtr component = static_cast<Components::Component*>(m_componentsManagerData.colliders[i]);
+                removeComponent(component);
+            }
+        }
+        template <>
+        void removeComponents<Utilities::Updatable>()
+        {
+            m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.updatables.size());
+            for (auto& comp : m_componentsManagerData.updatables)
+            {
+                removeComponent(dynamic_cast<Components::Component*>(comp));
+            }
+        }
+        template <>
+        void removeComponents<Components::SfEventHandle>()
+        {
+            m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.eventHandler.size());
+            for (size_t i = 0; i < m_componentsManagerData.eventHandler.size(); ++i)
+            {
+                removeComponent(dynamic_cast<Components::Component*>(m_componentsManagerData.eventHandler[i]));
+            }
+        }
+        template <>
+        void removeComponents<Components::Transform>()
+        {
+            removeComponent(static_cast<Components::Component*>(m_componentsManagerData.transform));
+        }
+
         void clearComponents();
+        void deleteComponentLater(Components::ComponentPtr component);
 
         Components::ComponentPtr getComponent(const std::string& name) const;
         const std::vector<Components::ComponentPtr>& getComponents() const;
-        template <typename T> std::vector<std::shared_ptr<T>> getComponents() const;
+        template <typename T>
+        std::vector<T*> getComponents() const
+        {
+            std::vector<T*> components;
+            components.reserve(m_componentsManagerData.all.size());
+            for (auto& comp : m_componentsManagerData.all)
+            {
+                if (T* t = dynamic_cast<T*>(comp))
+                {
+                    components.push_back(t);
+                }
+            }
+            return components;
+        }
+        template <>
+        std::vector<Components::Collider*> getComponents<Components::Collider>() const
+        {
+            return m_componentsManagerData.colliders;
+        }
+        template <>
+        std::vector<Utilities::Updatable*> getComponents<Utilities::Updatable>() const
+        {
+            return m_componentsManagerData.updatables;
+        }
+        template <>
+        std::vector<Components::SfEventHandle*> getComponents<Components::SfEventHandle>() const
+        {
+            return m_componentsManagerData.eventHandler;
+        }
+        template <>
+        std::vector<Components::Transform*> getComponents<Components::Transform>() const
+        {
+            return { m_componentsManagerData.transform };
+        }
 
         bool hasComponent(const std::string& name) const;
         bool hasComponent(Components::ComponentPtr component) const;
 
 
 
-        size_t getComponentCount() const { return m_components.size(); }
+        size_t getComponentCount() const { return m_componentsManagerData.all.size(); }
         size_t getComponentCountRecursive() const;
         template<typename T>
-        size_t getComponentCount() const;
+        size_t getComponentCount() const
+        {
+            size_t count = 0;
+            for (auto& comp : m_componentsManagerData.all)
+            {
+                if (T* t = dynamic_cast<T*>(comp))
+                {
+                    ++count;
+                }
+            }
+            return count;
+        }
         template<typename T>
-        size_t getComponentCountRecusrive() const;
+        size_t getComponentCountRecusrive() const
+        {
+            size_t count = 0;
+            for (auto& comp : m_componentsManagerData.all)
+            {
+                if (T* t = dynamic_cast<T*>(comp))
+                {
+                    ++count;
+                }
+            }
+            for (auto& obj : m_childObjectManagerData.objs)
+            {
+                count += obj->getComponentCountRecusrive<T>();
+            }
+            return count;
+        }
 
         Components::ComponentPtr findFirstComponent(const std::string& name);
         std::vector<Components::ComponentPtr> findAllComponents(const std::string& name);
@@ -367,6 +517,14 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         bool hasColliders() const { return !m_componentsManagerData.colliders.empty(); }
         bool hasUpdatables() const { return !m_componentsManagerData.updatables.empty(); }
         bool hasTransform() const { return m_componentsManagerData.transform != nullptr; }
+
+        bool checkCollision(const GameObjectPtr other) const;
+        bool checkCollision(const GameObjectPtr other,
+            std::vector<Utilities::Collisioninfo>& collisions,
+            bool onlyFirstCollision) const;
+        void checkCollision(const Utilities::ObjectQuadTree& tree,
+            std::vector<Utilities::Collisioninfo>& collisions,
+            bool onlyFirstCollision);
         // ---------
 
         // Scene operations
@@ -448,7 +606,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::GameObject* findFirstObjectGlobal(const std::string& name);
+        Objects::GameObjectPtr findFirstObjectGlobal(const std::string& name);
 
         /// <summary>
         /// Searches all objects with the given name in the Scene
@@ -456,7 +614,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObject*> findAllObjectsGlobal(const std::string& name);
+        std::vector<Objects::GameObjectPtr> findAllObjectsGlobal(const std::string& name);
 
         /// <summary>
         /// Searches the object with the given name in the Scene
@@ -464,7 +622,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::GameObject* findFirstObjectGlobalRecursive(const std::string& name);
+        Objects::GameObjectPtr findFirstObjectGlobalRecursive(const std::string& name);
 
         /// <summary>
         /// Searches all objects with the given name in the Scene
@@ -472,7 +630,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObject*> findAllObjectsGlobalRecusive(const std::string& name);
+        std::vector<Objects::GameObjectPtr> findAllObjectsGlobalRecusive(const std::string& name);
         // ---------
 
         
@@ -490,35 +648,36 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
 
         virtual void onSceneParentChange(Scene *oldParent, Scene *newParent);
-        virtual void onParentChange(GameObject *oldParent, GameObject *newParent);
+        virtual void onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
 
         virtual void internalOnSceneParentChange(Scene *oldParent, Scene *newParent);
-        virtual void internalOnParentChange(GameObject *oldParent, GameObject *newParent);
+        virtual void internalOnParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
 
         
 
-        void deleteThis();
+        void deleteLater();
 
     private:
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
-        bool findAllChilds_internal(const std::string& name, std::vector<GameObject*>& foundList);
-        bool findAllChildsRecursive_internal(const std::string& name, std::vector<GameObject*>& foundList);
+        bool findAllChilds_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
+        bool findAllChildsRecursive_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
         bool findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList);
 
         template<typename T>
         void getChildsRecusrive_internal(std::vector<T*> &listOut) const;
 
 
-        void removeChild_internal();
-        void removeComponent_internal();
-        void deleteChild_internal();
-        void addChild_internal();
-        inline void addChild_internal(GameObject *obj);
-        inline void setParent_internal(GameObject *parent,
-                                       GameObject *rootParent,
-                                       Scene *SceneParent);
-        void addComponent_internal();
+        //void removeChild_internal();
+        //void removeComponent_internal();
+        //void deleteChild_internal();
+        //void addChild_internal();
+        //inline void addChild_internal(GameObjectPtr obj);
+        void setParent_internal(GameObjectPtr parent,
+                                GameObjectPtr rootParent,
+                                Scene *SceneParent);
+        //void addComponent_internal();
         void onObjectsChanged();
+        bool objectsChanged() const { return m_childObjectManagerData.objectsChanged; }
 
         
 
@@ -530,41 +689,41 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
         // Hirarchy
         Scene *m_SceneParent;
-        GameObject *m_parent;
-        GameObject *m_rootParent;
+        GameObject* m_parent;
+        GameObject* m_rootParent;
 
        
 
         
-        std::vector<GameObject*> m_childs;
-        std::vector<Components::Component*> m_components;
+        //std::vector<GameObjectPtr> m_childs;
+        //std::vector<Components::Component*> m_componentsManagerData.all;
        
 
-        std::vector<Utilities::Updatable*> m_updatableComponents;
-        std::vector<Components::Collider*> m_colliders;
+        //std::vector<Utilities::Updatable*> m_updatableComponents;
+        //std::vector<Components::Collider*> m_colliders;
         //std::vector<Utilities::Transformable*> m_transformables;
-        Utilities::AABB m_boundingBox;
-        
+        mutable Utilities::AABB m_boundingBox; // <! Todo: Update the bounding box if the object changes
+        mutable sf::Vector2f m_oldPosition;
 
         // Will send a signal to the parent to notify, the new status
         void needsEventUpdateChanged(bool needsEventUpdate);
         void needsEventUpdate(bool needsEventUpdate);
-        bool m_thisNeedsEventUpdate;
-        std::vector<Components::SfEventHandle*> m_eventComponents;
+        //bool m_thisNeedsEventUpdate;
+        //std::vector<Components::SfEventHandle*> m_eventComponents;
 
         // Will send a signal to the parent to notify, the new status
         void needsDrawUpdateChanged(bool needsDrawUpdate);
         void needsDrawUpdate(bool needsDrawUpdate);
-        bool m_thisNeedsDrawUpdate;
-        std::vector<Components::Drawable*> m_drawableComponents;
+        //bool m_thisNeedsDrawUpdate;
+        //std::vector<Components::Drawable*> m_drawableComponents;
 
-        bool m_objectsChanged;
-        std::vector<GameObject*> m_toAddChilds;
-        std::vector<GameObject*> m_toDeleteChilds;
-        std::vector<GameObject*> m_toRemoveChilds;
         
-        std::vector<Components::Component*> m_toAddComponents;
-        std::vector<Components::Component*> m_toRemoveComponents;
+        //std::vector<GameObjectPtr> m_toAddChilds;
+        //std::vector<GameObjectPtr> m_toDeleteChilds;
+        //std::vector<GameObjectPtr> m_toRemoveChilds;
+        
+        //std::vector<Components::Component*> m_toAddComponents;
+        //std::vector<Components::Component*> m_toRemoveComponents;
 
         SceneSettings::UpdateControlls m_updateControlls;
 
@@ -593,18 +752,25 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
             std::vector<GameObjectPtr> toAdd;
             std::vector<GameObjectPtr> toRemove;
+
+            bool objectsChanged;
         };
         struct ComponentManagerData
         {
             std::vector<Components::ComponentPtr> all;
 
-            std::vector<std::shared_ptr<Utilities::Updatable>> updatables;
-            std::vector<std::shared_ptr<Components::Collider>> colliders;
-            std::vector<std::shared_ptr<Components::SfEventHandle>> eventHandler;
-            std::shared_ptr<Components::Transform> transform;
+            std::vector<Utilities::Updatable*> updatables;
+            std::vector<Components::Collider*> colliders;
+            std::vector<Components::SfEventHandle*> eventHandler;
+            std::vector<Components::Drawable*> drawable;
+            Components::Transform* transform;
 
             std::vector<Components::ComponentPtr> toAdd;
             std::vector<Components::ComponentPtr> toRemove;
+            std::vector<Components::ComponentPtr> toDelete;
+
+            bool thisNeedsDrawUpdate;
+            bool thisNeedsEventUpdate;
         };
 
 		ChildObjectManagerData m_childObjectManagerData;
@@ -613,152 +779,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         // Static
         static size_t s_objNameCounter;
 };
-template<typename T>
-void GameObject::removeChilds()
-{
-    m_toRemoveChildObjects.reserve(m_toRemoveChildObjects.size() + m_childObjects.size());
-    for (auto& obj : m_childObjects)
-    {
-        if (std::dynamic_pointer_cast<T>(obj))
-        {
-            m_toRemoveChildObjects.push_back(obj);
-        }
-    }
-}
 
-template<typename T>
-std::vector<std::shared_ptr<T>> GameObject::getChilds() const
-{
-    std::vector<std::shared_ptr<T>> childs;
-    for (auto& obj : m_childObjects)
-    {
-        if (std::shared_ptr<T> child = std::dynamic_pointer_cast<T>(obj))
-        {
-            childs.push_back(child);
-        }
-    }
-    return childs;
-}
-
-template<typename T>
-std::vector<std::shared_ptr<T>> GameObject::getChildsRecusrive() const
-{
-    std::vector<std::shared_ptr<T>> childs;
-    for (auto& obj : m_childObjects)
-    {
-        if (std::shared_ptr<T> child = std::dynamic_pointer_cast<T>(obj))
-        {
-            childs.push_back(child);
-        }
-        if (std::shared_ptr<GameObject> childManager = std::dynamic_pointer_cast<GameObject>(obj->getComponent<GameObject>()))
-        {
-            std::vector<std::shared_ptr<T>> childChilds = childManager->getChildsRecusrive<T>();
-            childs.insert(childs.end(), childChilds.begin(), childChilds.end());
-        }
-    }
-
-    // <! ToDo recursive
-    return childs;
-}
-
-
-template <typename T>
-void GameObject::removeComponents()
-{
-    m_toRemoveComponents.reserve(m_toRemoveComponents.size() + m_components.size());
-    for (auto& comp : m_components)
-    {
-        if (std::dynamic_pointer_cast<T>(comp))
-        {
-            removeComponent(comp);
-        }
-    }
-}
-template <>
-void GameObject::removeComponents<Components::Collider>()
-{
-    m_toRemoveComponents.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.colliders.size());
-    for (auto& comp : m_componentsManagerData.colliders)
-    {
-        Components::ComponentPtr component = std::static_pointer_cast<Components::Component>(comp);
-        removeComponent(component);
-    }
-}
-template <>
-void GameObject::removeComponents<Utilities::Updatable>()
-{
-    m_toRemoveComponents.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.updatables.size());
-    for (auto& comp : m_componentsManagerData.updatables)
-    {
-        removeComponent(std::dynamic_pointer_cast<Components::Component>(comp));
-    }
-}
-template <>
-void GameObject::removeComponents<Components::SfEventHandle>()
-{
-    m_toRemoveComponents.reserve(m_toRemoveComponents.size() + m_componentsManagerData.eventHandler.size());
-    for (auto& comp : m_componentsManagerData.eventHandler)
-    {
-        removeComponent(std::static_pointer_cast<Components::Component>(comp));
-    }
-}
-template <>
-void GameObject::removeComponents<Components::Transform>()
-{
-    removeComponent(std::static_pointer_cast<Components::Component>(m_componentsManagerData.transform));
-}
-
-
-template <typename T>
-std::vector<std::shared_ptr<T>> GameObject::getComponents() const
-{
-    std::vector<std::shared_ptr<T>> components;
-    components.reserve(m_components.size());
-    for (auto& comp : m_components)
-    {
-        if (std::shared_ptr<T> t = std::dynamic_pointer_cast<T>(comp))
-        {
-            components.push_back(t);
-        }
-    }
-    return components;
-}
-template <>
-std::vector<std::shared_ptr<Components::Collider>> GameObject::getComponents() const
-{
-    return m_componentsManagerData.colliders;
-}
-template <>
-std::vector<std::shared_ptr<Utilities::Updatable>> GameObject::getComponents() const
-{
-    return m_componentsManagerData.updatables;
-}
-template <>
-std::vector<std::shared_ptr<Components::SfEventHandle>> GameObject::getComponents() const
-{
-    return m_componentsManagerData.eventHandler;
-}
-template <>
-std::vector<std::shared_ptr<Components::Transform>> GameObject::getComponents() const
-{
-    return { m_componentsManagerData.transform };
-}
-
-template<typename T>
-size_t GameObject::getComponentCountRecusrive() const
-{
-    size_t count = 0;
-    for (auto& comp : m_components)
-    {
-        if (std::shared_ptr<T> t = std::dynamic_pointer_cast<T>(comp))
-        {
-            ++count;
-        }
-    }
-    // <! ToDo recursive
-
-    return count;
-}
 
 
 

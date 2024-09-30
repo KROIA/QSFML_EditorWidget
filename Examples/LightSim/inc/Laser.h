@@ -11,7 +11,7 @@ class Laser: public QSFML::Objects::GameObject
 	friend LaserPainter;
 public:
 	Laser(const std::string& name = "Laser",
-		GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	Laser(const Laser& other);
 	~Laser();
 

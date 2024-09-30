@@ -7,7 +7,7 @@ namespace Objects
 {
 OBJECT_IMPL(LineChart)
 LineChart::LineChart(const std::string &name,
-                     GameObject *parent)
+                     GameObjectPtr parent)
     : GameObject(name, parent)
 {
     setSize({10,10});
@@ -15,7 +15,7 @@ LineChart::LineChart(const std::string &name,
     m_color = sf::Color::Green;
     m_autoScale = true;
 
-    m_painter = std::make_shared<LineChartPainter>();
+    m_painter = new LineChartPainter();
     m_painter->m_chart = this;
 
     addComponent(m_painter);
@@ -30,7 +30,7 @@ LineChart::LineChart(const LineChart &other)
     m_yScale = other.m_yScale;
     m_autoScale = other.m_autoScale;
 
-    m_painter = std::make_shared<LineChartPainter>();
+    m_painter = new  LineChartPainter();
     m_painter->m_chart = this;
     addComponent(m_painter);
 }

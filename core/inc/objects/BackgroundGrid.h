@@ -14,7 +14,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
         class DrawableComp;
     public:
         BackgroundGrid(const std::string &name = "",
-                       GameObject *parent = nullptr);
+                       GameObjectPtr parent = nullptr);
         BackgroundGrid(const BackgroundGrid &other);
         ~BackgroundGrid();
         COMPONENT_DECL(BackgroundGrid);
@@ -35,7 +35,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
         unsigned int m_gridSpacing;
         std::vector<sf::Color> m_alternatingColors;
 
-        std::shared_ptr<DrawableComp> m_draw;
+        DrawableComp* m_draw;
 
         friend DrawableComp;
 

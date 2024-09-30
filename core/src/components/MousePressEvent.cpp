@@ -41,7 +41,7 @@ const sf::Vector2i &MousePressEvent::getLastPressedPixelPos() const
 bool MousePressEvent::getCurrentValue()
 {
     bool isPressed = sf::Mouse::isButtonPressed(m_button);
-    Objects::GameObject *parent = getParent();
+    Objects::GameObjectPtr parent = getParent();
     if(isPressed && parent)
     {
         m_currentPressedPixelPosition = parent->getMousePosition();

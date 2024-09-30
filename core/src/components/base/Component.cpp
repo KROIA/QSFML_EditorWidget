@@ -26,23 +26,23 @@ Component::~Component()
 {
     if (m_parent)
     {
-        GameObject* parent = m_parent;
+        GameObjectPtr parent = m_parent;
         m_parent = nullptr;
         parent->removeComponent(this);
     }
 }
 
-/*
-void Component::deleteThis()
+
+void Component::deleteLater()
 {
     if (m_parent)
     {
-        GameObject* parent = m_parent;
-        m_parent = nullptr;
-        parent->deleteComponent(this);
+        //GameObjectPtr parent = m_parent;
+        //m_parent = nullptr;
+        m_parent->deleteComponentLater(this);
     }
 }
-*/
+
 
 
 sf::Vector2i Component::getMousePosition() const

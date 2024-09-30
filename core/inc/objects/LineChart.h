@@ -16,7 +16,7 @@ namespace Objects
             friend LineChartPainter;
         public:
             LineChart(const std::string &name = "LineChart",
-                         GameObject *parent = nullptr);
+                         GameObjectPtr parent = nullptr);
             LineChart(const LineChart &other);
             ~LineChart();
             OBJECT_DECL(LineChart)
@@ -54,7 +54,7 @@ namespace Objects
             float m_yScale;
             bool m_autoScale;
 
-            std::shared_ptr<LineChartPainter> m_painter;
+            LineChartPainter* m_painter;
 
             class LineChartPainter: public Components::Drawable
             {

@@ -117,17 +117,17 @@ const sf::Vector2f& Collider::getPos() const
     return m_pos;
 }
 
-bool Collider::checkCollision(const std::vector<Objects::GameObject*>& objs,
+bool Collider::checkCollision(const std::vector<Objects::GameObjectPtr>& objs,
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
-    //Objects::GameObject* thisRootParent = getParent()->getRootParent();
+    //Objects::GameObjectPtr thisRootParent = getParent()->getRootParent();
     bool hasCollision = false;
     for (auto obj : objs)
     {
         if(obj->isEnabled())
-            hasCollision |= checkCollision(obj->getCollider(), collisions, onlyFirstCollisionPerObject);
+            hasCollision |= checkCollision(obj->getComponents<Components::Collider>(), collisions, onlyFirstCollisionPerObject);
     }
     return hasCollision;
 }

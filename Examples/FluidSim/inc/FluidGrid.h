@@ -9,7 +9,7 @@ public:
 	FluidGrid(sf::Vector2u tiles,
 			  sf::Vector2f tileSize,
 			  const std::string& name = "FluidGrid",
-			  GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	~FluidGrid();
 
 	CLONE_FUNC_DEC(FluidGrid);

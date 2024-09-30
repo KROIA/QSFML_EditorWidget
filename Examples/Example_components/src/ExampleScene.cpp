@@ -7,14 +7,14 @@
 using namespace QSFML;
 using namespace QSFML::Objects;
 
-void imageComponent(GameObject* obj);
-void linePainterComponent(GameObject* obj);
-void pathPainterComponent(GameObject* obj);
-void pixelPainterComponent(GameObject* obj);
-void pointPainterComponent(GameObject* obj);
-void rectPainterComponent(GameObject* obj);
-void shapeComponent(GameObject* obj);
-void textComponent(GameObject* obj);
+void imageComponent(GameObjectPtr obj);
+void linePainterComponent(GameObjectPtr obj);
+void pathPainterComponent(GameObjectPtr obj);
+void pixelPainterComponent(GameObjectPtr obj);
+void pointPainterComponent(GameObjectPtr obj);
+void rectPainterComponent(GameObjectPtr obj);
+void shapeComponent(GameObjectPtr obj);
+void textComponent(GameObjectPtr obj);
 
 
 ExampleScene::ExampleScene(QWidget *parent)
@@ -25,7 +25,7 @@ ExampleScene::ExampleScene(QWidget *parent)
     m_Scene = nullptr;
     setupScene();
     
-	GameObject* obj = new GameObject();
+	GameObjectPtr obj = new GameObject();
 
     // Drawable components
     //imageComponent(obj);
@@ -74,14 +74,14 @@ void ExampleScene::closeEvent(QCloseEvent* event)
     event->accept();
 }
 
-void imageComponent(GameObject* obj)
+void imageComponent(GameObjectPtr obj)
 {
 	QSFML::Components::Image* image = new QSFML::Components::Image();
     image->loadFromFile("../Examples/Example_components/resources/player.png");
     image->setScale(2,2);
     obj->addComponent(image);
 }
-void linePainterComponent(GameObject* obj)
+void linePainterComponent(GameObjectPtr obj)
 {
     QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
 	linePainter->addLine(sf::Vector2f(0, 0), sf::Vector2f(100, 100));
@@ -91,7 +91,7 @@ void linePainterComponent(GameObject* obj)
 	linePainter->setColor(sf::Color::Red);
 	obj->addComponent(linePainter);
 }
-void pathPainterComponent(GameObject* obj)
+void pathPainterComponent(GameObjectPtr obj)
 {
     QSFML::Components::PathPainter* pathPainter = new QSFML::Components::PathPainter();
 
@@ -116,7 +116,7 @@ void pathPainterComponent(GameObject* obj)
 
         });
 }
-void pixelPainterComponent(GameObject* obj)
+void pixelPainterComponent(GameObjectPtr obj)
 {
     QSFML::Components::PixelPainter* pixelPainter = new QSFML::Components::PixelPainter();
     pixelPainter->setPixelCount(sf::Vector2u(10, 10));
@@ -131,7 +131,7 @@ void pixelPainterComponent(GameObject* obj)
 		});
 
 }
-void pointPainterComponent(GameObject* obj)
+void pointPainterComponent(GameObjectPtr obj)
 {
     QSFML::Components::PointPainter* pointPainter = new QSFML::Components::PointPainter();
     pointPainter->setRadius(5);
@@ -143,7 +143,7 @@ void pointPainterComponent(GameObject* obj)
         });
 
 }
-void rectPainterComponent(GameObject* obj)
+void rectPainterComponent(GameObjectPtr obj)
 {
 	QSFML::Components::RectPainter* rectPainter = new QSFML::Components::RectPainter();
 	rectPainter->setRect(QSFML::Utilities::AABB(0, 0, 100, 100));
@@ -173,7 +173,7 @@ void rectPainterComponent(GameObject* obj)
 						   });
 
 }
-void shapeComponent(GameObject* obj)
+void shapeComponent(GameObjectPtr obj)
 {
     QSFML::Components::Shape* shape = new QSFML::Components::Shape();
     shape->setFillColor(sf::Color::Green);
@@ -220,7 +220,7 @@ void shapeComponent(GameObject* obj)
 
 }
 
-void textComponent(GameObject* obj)
+void textComponent(GameObjectPtr obj)
 {
     QSFML::Components::Text* text = new QSFML::Components::Text();
     text->setText("Hello");

@@ -7,10 +7,10 @@ namespace QSFML
     namespace Objects
     {
         OBJECT_IMPL(BackgroundGrid)
-        BackgroundGrid::BackgroundGrid(const std::string& name, GameObject* parent)
+        BackgroundGrid::BackgroundGrid(const std::string& name, GameObjectPtr parent)
             : GameObject(name, parent)
         {
-            m_draw = std::make_shared<DrawableComp>();
+            m_draw = new DrawableComp();
             m_draw->m_grid = this;
             setSize(sf::IntRect(0, 0, 500, 500));
             setGridSpacing(10);
@@ -24,7 +24,7 @@ namespace QSFML
             m_gridSpacing = other.m_gridSpacing;
             m_alternatingColors = other.m_alternatingColors;
 
-            m_draw = std::make_shared<DrawableComp>(*other.m_draw);
+            m_draw = new DrawableComp(*other.m_draw);
             m_draw->m_grid = this;
 
         }

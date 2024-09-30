@@ -16,7 +16,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
         class SfEventComponent;
     public:
         CameraController(const std::string &name = "",
-                         GameObject *parent = nullptr);
+                         GameObjectPtr parent = nullptr);
         CameraController(const CameraController &other);
         ~CameraController();
         COMPONENT_DECL(CameraController);
@@ -55,7 +55,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
 
     private:
         //void internalOnSceneParentChange(Scene *oldParent, Scene *newParent) override;
-        //void internalOnParentChange(GameObject *oldParent, GameObject *newParent) override;
+        //void internalOnParentChange(GameObjectPtr oldParent, GameObjectPtr newParent) override;
         void positionCheck(sf::View &view);
 
         float m_currentZoom;
@@ -63,7 +63,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
         float m_maxZoom;
         sf::FloatRect m_maxMovingBounds;
 
-        std::shared_ptr<SfEventComponent> m_eventHandleComponent;
+        SfEventComponent* m_eventHandleComponent;
         sf::Mouse::Button m_dragButton;
 
     // Defining component

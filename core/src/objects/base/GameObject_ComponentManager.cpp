@@ -1,4 +1,7 @@
 #include "objects/base/GameObject.h"
+#include "Scene/Scene.h"
+#include "utilities/ObjectQuadTree.h"
+
 
 namespace QSFML
 {
@@ -21,10 +24,17 @@ namespace QSFML
 		{
 			m_componentsManagerData.toRemove.insert(m_componentsManagerData.toRemove.end(), components.begin(), components.end());
 		}
+
+		
 		void GameObject::clearComponents()
 		{
 			m_componentsManagerData.toAdd.clear();
 			m_componentsManagerData.toRemove = m_componentsManagerData.all;
+		}
+
+		void GameObject::deleteComponentLater(Components::ComponentPtr component)
+		{
+			m_componentsManagerData.toDelete.push_back(component);
 		}
 
 		Components::ComponentPtr GameObject::getComponent(const std::string& name) const
@@ -40,6 +50,9 @@ namespace QSFML
 		{
 			return m_componentsManagerData.all;
 		}
+
+		
+
 
 		bool GameObject::hasComponent(const std::string& name) const
 		{
@@ -112,29 +125,73 @@ namespace QSFML
 			return comps;
 		}
 
+		const Utilities::AABB& GameObject::getBoundingBox() const
+		{
+			sf::Vector2f globalPos = getGlobalPosition();
+			if(m_oldPosition != globalPos)
+			{
+				m_oldPosition = globalPos;
+				for (auto& collider : m_componentsManagerData.colliders)
+					collider->setPos(globalPos);
+				updateBoundingBox();
+			}
+			return m_boundingBox;
+		}
+		void GameObject::updateBoundingBox() const
+		{
+			std::vector<Utilities::AABB> boxes;
+			boxes.reserve(m_componentsManagerData.colliders.size());
+			for (size_t i = 0; i < m_componentsManagerData.colliders.size(); ++i)
+			{
+				boxes.push_back(m_componentsManagerData.colliders[i]->getBoundingBox());
+			}
+			m_boundingBox = Utilities::AABB::getFrame(boxes);
+		}
+
 
 		void GameObject::updateChanges_componentsManager()
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
 			std::vector<Components::ComponentPtr> newComps = m_componentsManagerData.toAdd;
 			std::vector<Components::ComponentPtr> toRemoveComps = m_componentsManagerData.toRemove;
 			m_componentsManagerData.toAdd.clear();
 			m_componentsManagerData.toRemove.clear();
 
 			// Remove components
+			size_t removedCount = 0;
+			size_t addedCount = 0;
 			for (auto& comp : toRemoveComps)
 			{
 				auto it = std::find(m_componentsManagerData.all.begin(), m_componentsManagerData.all.end(), comp);
 				if (it != m_componentsManagerData.all.end())
 				{
+					++removedCount;
+					if(comp->getParent())
+					{
+						comp->setParent(nullptr);
+						comp->setSceneParent(nullptr);
+					}
 					m_componentsManagerData.all.erase(it);
 					if (m_componentsManagerData.transform == comp)
 						m_componentsManagerData.transform = nullptr;
-				    if (std::find(m_componentsManagerData.updatables.begin(), m_componentsManagerData.updatables.end(), comp) != m_componentsManagerData.updatables.end())
-						m_componentsManagerData.updatables.erase(std::find(m_componentsManagerData.updatables.begin(), m_componentsManagerData.updatables.end(), comp));
-					if (std::find(m_componentsManagerData.colliders.begin(), m_componentsManagerData.colliders.end(), comp) != m_componentsManagerData.colliders.end())
-						m_componentsManagerData.colliders.erase(std::find(m_componentsManagerData.colliders.begin(), m_componentsManagerData.colliders.end(), comp));
-					if (std::find(m_componentsManagerData.eventHandler.begin(), m_componentsManagerData.eventHandler.end(), comp) != m_componentsManagerData.eventHandler.end())
-						m_componentsManagerData.eventHandler.erase(std::find(m_componentsManagerData.eventHandler.begin(), m_componentsManagerData.eventHandler.end(), comp));
+
+					if (Utilities::Updatable* updatable = dynamic_cast<Utilities::Updatable*>(comp))
+					{
+
+					}
+					auto itUpdatable = std::find(m_componentsManagerData.updatables.begin(), m_componentsManagerData.updatables.end(), dynamic_cast<Utilities::Updatable*>(comp));
+					auto itColliders = std::find(m_componentsManagerData.colliders.begin(), m_componentsManagerData.colliders.end(), dynamic_cast<Components::Collider*>(comp));
+					auto itEventHandler = std::find(m_componentsManagerData.eventHandler.begin(), m_componentsManagerData.eventHandler.end(), dynamic_cast<Components::SfEventHandle*>(comp));
+					auto itDrawables = std::find(m_componentsManagerData.drawable.begin(), m_componentsManagerData.drawable.end(), dynamic_cast<Components::Drawable*>(comp));
+
+				    if (itUpdatable != m_componentsManagerData.updatables.end())
+						m_componentsManagerData.updatables.erase(itUpdatable);
+					if (itColliders != m_componentsManagerData.colliders.end())
+						m_componentsManagerData.colliders.erase(itColliders);
+					if (itEventHandler != m_componentsManagerData.eventHandler.end())
+						m_componentsManagerData.eventHandler.erase(itEventHandler);
+					if (itDrawables != m_componentsManagerData.drawable.end())
+						m_componentsManagerData.drawable.erase(itDrawables);
 				}
 			}
 
@@ -142,26 +199,165 @@ namespace QSFML
 			m_componentsManagerData.all.reserve(m_componentsManagerData.all.size() + newComps.size());
 			for (auto& comp : newComps)
 			{
-				if (hasComponent(comp))
+				if (hasComponent(comp) || !comp)
 					continue;
+				++addedCount;
 				m_componentsManagerData.all.push_back(comp);
+				comp->setParent(this);
+				comp->setSceneParent(m_SceneParent);
 
 				// Check the type and sort it to the lists
-				if (std::shared_ptr<Components::Transform> transform = std::dynamic_pointer_cast<Components::Transform>(comp))
+				if (Components::Transform* transform = dynamic_cast<Components::Transform*>(comp))
 				{
 					m_componentsManagerData.transform = transform;
 				}
-				if (std::shared_ptr<Utilities::Updatable> updatable = std::dynamic_pointer_cast<Utilities::Updatable>(comp))
+				if (Utilities::Updatable* updatable = dynamic_cast<Utilities::Updatable*>(comp))
 				{
 					m_componentsManagerData.updatables.push_back(updatable);
 				}
-				if (std::shared_ptr<Components::Collider> collider = std::dynamic_pointer_cast<Components::Collider>(comp))
+				if (Components::Collider* collider = dynamic_cast<Components::Collider*>(comp))
 				{
 					m_componentsManagerData.colliders.push_back(collider);
 				}
-				if (std::shared_ptr<Components::SfEventHandle> eventHandler = std::dynamic_pointer_cast<Components::SfEventHandle>(comp))
+				if (Components::SfEventHandle* eventHandler = dynamic_cast<Components::SfEventHandle*>(comp))
 				{
 					m_componentsManagerData.eventHandler.push_back(eventHandler);
+					if (!m_componentsManagerData.thisNeedsEventUpdate)
+						needsEventUpdate(true);
+				}
+				if (Components::Drawable* drawable = dynamic_cast<Components::Drawable*>(comp))
+				{
+					m_componentsManagerData.drawable.push_back(drawable);
+					if(!m_componentsManagerData.thisNeedsDrawUpdate)
+						needsDrawUpdate(true);
+				}
+			}
+
+			if (m_SceneParent)
+			{
+				m_SceneParent->removeComponent(removedCount);
+				m_SceneParent->addComponent(addedCount);
+			}
+		}
+
+
+		void GameObject::needsEventUpdateChanged(bool needsEventUpdate)
+		{
+			if (!m_componentsManagerData.thisNeedsEventUpdate && needsEventUpdate)
+			{
+				this->needsEventUpdate(needsEventUpdate);
+				return;
+			}
+			if (m_componentsManagerData.thisNeedsEventUpdate && !needsEventUpdate)
+			{
+				if (m_componentsManagerData.eventHandler.size() == 0)
+				{
+					bool needsUpdate = false;
+					for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
+					{
+						if (m_childObjectManagerData.objs[i]->m_componentsManagerData.thisNeedsEventUpdate)
+						{
+							needsUpdate = true;
+							break;
+						}
+					}
+					if (!needsUpdate)
+					{
+						this->needsEventUpdate(needsEventUpdate);
+						return;
+					}
+				}
+			}
+		}
+		void GameObject::needsEventUpdate(bool needsEventUpdate)
+		{
+			if (m_componentsManagerData.thisNeedsEventUpdate == needsEventUpdate)
+				return;
+			m_componentsManagerData.thisNeedsEventUpdate = needsEventUpdate;
+			if (m_parent)
+				m_parent->needsEventUpdateChanged(m_componentsManagerData.thisNeedsEventUpdate);
+		}
+		void GameObject::needsDrawUpdateChanged(bool needsDrawUpdate)
+		{
+			if (!m_componentsManagerData.thisNeedsDrawUpdate && needsDrawUpdate)
+			{
+				this->needsDrawUpdate(needsDrawUpdate);
+				return;
+			}
+			if (m_componentsManagerData.thisNeedsDrawUpdate && !needsDrawUpdate)
+			{
+				if (m_componentsManagerData.drawable.size() == 0)
+				{
+					bool needsUpdate = false;
+					for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
+					{
+						if (m_childObjectManagerData.objs[i]->m_componentsManagerData.thisNeedsDrawUpdate)
+						{
+							needsUpdate = true;
+							break;
+						}
+					}
+					if (!needsUpdate)
+					{
+						this->needsDrawUpdate(needsDrawUpdate);
+						return;
+					}
+				}
+			}
+		}
+		void GameObject::needsDrawUpdate(bool needsDrawUpdate)
+		{
+			if (m_componentsManagerData.thisNeedsDrawUpdate == needsDrawUpdate)
+				return;
+			m_componentsManagerData.thisNeedsDrawUpdate = needsDrawUpdate;
+			if (m_parent)
+				m_parent->needsDrawUpdateChanged(m_componentsManagerData.thisNeedsDrawUpdate);
+		}
+
+
+		bool GameObject::checkCollision(const GameObjectPtr other) const
+		{
+			std::vector<Utilities::Collisioninfo> collisions;
+			return checkCollision(other, collisions, true);
+		}
+		bool GameObject::checkCollision(const GameObjectPtr other,
+			std::vector<Utilities::Collisioninfo>& collisions,
+			bool onlyFirstCollision) const
+		{
+			// Check if bounding box intersects
+			const Utilities::AABB& otherBox = other->getBoundingBox();
+			if (!m_boundingBox.intersects(otherBox))
+				return false;
+
+			// Check for collisions
+			const std::vector<Components::Collider*>& otherColliders = other->getComponents<Components::Collider>();
+			bool hasCollision = false;
+			for (auto thisCollider : getComponents<Components::Collider>())
+			{
+				hasCollision |= thisCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
+			}
+			return hasCollision;
+		}
+		void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree,
+			std::vector<Utilities::Collisioninfo>& collisions,
+			bool onlyFirstCollision)
+		{
+			std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
+			for (auto& objStruct : objs)
+			{
+				GameObjectPtr obj = objStruct.obj;
+				std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
+				tree.search(obj->getBoundingBox(), possibleColliders);
+				for (auto it : possibleColliders)
+				{
+					if (obj == it)
+						continue;
+
+					const std::vector<Components::Collider*>& otherColliders = it->getComponents<Components::Collider>();
+					for (auto objCollider : obj->getComponents<Components::Collider>())
+					{
+						objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
+					}
 				}
 			}
 		}

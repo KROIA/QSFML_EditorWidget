@@ -34,7 +34,7 @@ namespace Factories
 	}
 
 
-	QSFML::Objects::GameObject* randomShapeObject(
+	QSFML::Objects::GameObjectPtr randomShapeObject(
 		const sf::Vector2f& position,
 		float radius,
 		const sf::Color& color,
@@ -49,7 +49,7 @@ namespace Factories
 		painter->setColor(color);
 
 		// Create object
-		QSFML::Objects::GameObject* obj = new QSFML::Objects::GameObject("RandomShape");
+		QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject("RandomShape");
 
 		// Add components
 		obj->addComponent(collider);

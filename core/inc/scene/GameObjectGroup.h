@@ -149,7 +149,7 @@ template<typename T>
 void GameObjectGroup::addObject(QSFML::Objects::GameObjectPtr obj,std::vector<std::shared_ptr<T>> &list)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_3);
-    std::shared_ptr<T> transformed = std::dynamic_pointer_cast<T>(obj);
+    std::shared_ptr<T> transformed = dynamic_cast<T>(obj);
     if(transformed)
     {
         list.push_back(transformed);
@@ -160,7 +160,7 @@ template<typename T>
 void GameObjectGroup::removeObject(QSFML::Objects::GameObjectPtr obj,std::vector<std::shared_ptr<T>> &list)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_4);
-    std::shared_ptr<T> transformed = std::dynamic_pointer_cast<T>(obj);
+    std::shared_ptr<T> transformed = dynamic_cast<T>(obj);
     if(transformed)
     {
         size_t index = getObjectIndex<T>(transformed,list);

@@ -26,45 +26,45 @@ namespace QSFML
         return *m_container[index];
     }
 
-    void GameObjectLayerGroup::addObject(Objects::GameObject* obj, size_t layer)
+    void GameObjectLayerGroup::addObject(Objects::GameObjectPtr obj, size_t layer)
     {
         if (layer > m_layerSize) return;
         m_container[layer]->addObject(obj);
     }
-    void GameObjectLayerGroup::addObject(const std::vector<Objects::GameObject*>& objs, size_t layer)
+    void GameObjectLayerGroup::addObject(const std::vector<Objects::GameObjectPtr>& objs, size_t layer)
     {
         if (layer > m_layerSize) return;
         m_container[layer]->addObject(objs);
     }
 
-    void GameObjectLayerGroup::removeObject(Objects::GameObject* obj)
+    void GameObjectLayerGroup::removeObject(Objects::GameObjectPtr obj)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
             m_container[i]->removeObject(obj);
     }
-    void GameObjectLayerGroup::removeObject(const std::vector<Objects::GameObject*>& objs)
+    void GameObjectLayerGroup::removeObject(const std::vector<Objects::GameObjectPtr>& objs)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
             m_container[i]->removeObject(objs);
     }
-    void GameObjectLayerGroup::removeObject(Objects::GameObject* obj, size_t layer)
+    void GameObjectLayerGroup::removeObject(Objects::GameObjectPtr obj, size_t layer)
     {
         if (layer > m_layerSize) return;
         m_container[layer]->removeObject(obj);
     }
-    void GameObjectLayerGroup::removeObject(const std::vector<Objects::GameObject*>& objs, size_t layer)
+    void GameObjectLayerGroup::removeObject(const std::vector<Objects::GameObjectPtr>& objs, size_t layer)
     {
         if (layer > m_layerSize) return;
         m_container[layer]->removeObject(objs);
     }
 
 
-    void GameObjectLayerGroup::deleteObject(Objects::GameObject* obj)
+    void GameObjectLayerGroup::deleteObject(Objects::GameObjectPtr obj)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
             m_container[i]->deleteObject(obj);
     }
-    void GameObjectLayerGroup::deleteObject(const std::vector<Objects::GameObject*>& objs)
+    void GameObjectLayerGroup::deleteObject(const std::vector<Objects::GameObjectPtr>& objs)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
             m_container[i]->deleteObject(objs);
@@ -101,65 +101,65 @@ namespace QSFML
     }
 
 
-    const std::vector<Objects::GameObject*> GameObjectLayerGroup::getObjects() const
+    const std::vector<Objects::GameObjectPtr> GameObjectLayerGroup::getObjects() const
     {
-        std::vector<Objects::GameObject*> objs;
+        std::vector<Objects::GameObjectPtr> objs;
         for (size_t i = 0; i < m_container.size(); ++i)
         {
-            const std::vector<Objects::GameObject*>& o = m_container[i]->getObjects();
+            const std::vector<Objects::GameObjectPtr>& o = m_container[i]->getObjects();
             objs.insert(objs.end(), o.begin(), o.end());
         }
         return objs;
     }
-    const std::vector<Objects::GameObject*>&  GameObjectLayerGroup::getObjects(size_t layer) const
+    const std::vector<Objects::GameObjectPtr>&  GameObjectLayerGroup::getObjects(size_t layer) const
     {
         if (layer > m_layerSize)
         {
-            static std::vector<Objects::GameObject*> dummy;
+            static std::vector<Objects::GameObjectPtr> dummy;
             return dummy;
         }
         return m_container[layer]->getObjects();
     }
-    const std::vector<Objects::GameObject*> GameObjectLayerGroup::getObjectsToAdd() const
+    const std::vector<Objects::GameObjectPtr> GameObjectLayerGroup::getObjectsToAdd() const
     {
-        std::vector<Objects::GameObject*> objs;
+        std::vector<Objects::GameObjectPtr> objs;
         for (size_t i = 0; i < m_container.size(); ++i)
         {
-            const std::vector<Objects::GameObject*>& o = m_container[i]->getObjectsToAdd();
+            const std::vector<Objects::GameObjectPtr>& o = m_container[i]->getObjectsToAdd();
             objs.insert(objs.end(), o.begin(), o.end());
         }
         return objs;
     }
-    const std::vector<Objects::GameObject*>&  GameObjectLayerGroup::getObjectsToAdd(size_t layer) const
+    const std::vector<Objects::GameObjectPtr>&  GameObjectLayerGroup::getObjectsToAdd(size_t layer) const
     {
         if (layer > m_layerSize)
         {
-            static std::vector<Objects::GameObject*> dummy;
+            static std::vector<Objects::GameObjectPtr> dummy;
             return dummy;
         }
         return m_container[layer]->getObjectsToAdd();
     }
-    const std::vector<Objects::GameObject*> GameObjectLayerGroup::getObjectsToDelete() const
+    const std::vector<Objects::GameObjectPtr> GameObjectLayerGroup::getObjectsToDelete() const
     {
-        std::vector<Objects::GameObject*> objs;
+        std::vector<Objects::GameObjectPtr> objs;
         for (size_t i = 0; i < m_container.size(); ++i)
         {
-            const std::vector<Objects::GameObject*>& o = m_container[i]->getObjectsToDelete();
+            const std::vector<Objects::GameObjectPtr>& o = m_container[i]->getObjectsToDelete();
             objs.insert(objs.end(), o.begin(), o.end());
         }
         return objs;
     }
-    const std::vector<Objects::GameObject*>&  GameObjectLayerGroup::getObjectsToDelete(size_t layer) const
+    const std::vector<Objects::GameObjectPtr>&  GameObjectLayerGroup::getObjectsToDelete(size_t layer) const
     {
         if (layer > m_layerSize)
         {
-            static std::vector<Objects::GameObject*> dummy;
+            static std::vector<Objects::GameObjectPtr> dummy;
             return dummy;
         }
         return m_container[layer]->getObjectsToDelete();
     }
 
-    bool GameObjectLayerGroup::objectExists(Objects::GameObject* obj)
+    bool GameObjectLayerGroup::objectExists(Objects::GameObjectPtr obj)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {
@@ -168,19 +168,19 @@ namespace QSFML
         }
         return false;
     }
-    bool GameObjectLayerGroup::objectExists(Objects::GameObject* obj, size_t layer)
+    bool GameObjectLayerGroup::objectExists(Objects::GameObjectPtr obj, size_t layer)
     {
         if (layer > m_layerSize) return false;
         return m_container[layer]->objectExists(obj);
     }
-    size_t GameObjectLayerGroup::getObjectIndex(Objects::GameObject* obj, size_t layer)
+    size_t GameObjectLayerGroup::getObjectIndex(Objects::GameObjectPtr obj, size_t layer)
     {
         if (layer > m_layerSize) return 0;
         return m_container[layer]->getObjectIndex(obj);
     }
 
 
-    void GameObjectLayerGroup::deleteLater(Objects::GameObject* obj)
+    void GameObjectLayerGroup::deleteLater(Objects::GameObjectPtr obj)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
             m_container[i]->deleteLater(obj);

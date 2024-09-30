@@ -14,7 +14,7 @@ static double dfyy(sf::Vector2f p);
 static sf::Vector2f grad(sf::Vector2f p);
 
 Gradient::Gradient(const std::string& name,
-	GameObject* parent)
+	QSFML::Objects::GameObjectPtr parent)
 	: QObject()
 	, GameObject(name, parent)
 {

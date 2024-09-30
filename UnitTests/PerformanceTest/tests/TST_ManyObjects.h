@@ -85,7 +85,7 @@ private:
 	QTimer m_update;
 
 	QSFML::Scene *m_currentScene;
-	//QSFML::Objects::GameObject* m_pointPainterObj = nullptr;
+	//QSFML::Objects::GameObjectPtr m_pointPainterObj = nullptr;
 	QSFML::Components::PointPainter* m_pointPainter = nullptr;
 	TestResults *m_currentResults;
 	std::vector<QSFML::Utilities::Stats> m_stats;
@@ -211,7 +211,7 @@ private:
 		sf::Color color2 = sf::Color::Green;
 
 		Scene.addObject(new QSFML::Objects::DefaultEditor());
-		QSFML::Objects::GameObject * pointPainterObj = new QSFML::Objects::GameObject();
+		QSFML::Objects::GameObjectPtr  pointPainterObj = new QSFML::Objects::GameObject();
 		m_pointPainter = new QSFML::Components::PointPainter();
 		m_pointPainter->setColor(sf::Color::Yellow);
 		pointPainterObj->addComponent(m_pointPainter);

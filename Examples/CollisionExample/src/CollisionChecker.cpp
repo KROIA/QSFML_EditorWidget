@@ -4,7 +4,7 @@
 #define USE_QUADTREE
 
 CLONE_FUNC_IMPL(CollisionChecker);
-CollisionChecker::CollisionChecker(const std::string& name, GameObject* parent)
+CollisionChecker::CollisionChecker(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: QObject()
 	, GameObject(name)
 	, m_mode(Mode::intersecting)
@@ -190,7 +190,7 @@ void CollisionChecker::update_contains()
 	m_pointPainter->clear();
 	for (size_t i = 0; i < m_collisionObjs.size(); ++i)
 	{
-		std::vector<QSFML::Components::Collider*> colliders = m_collisionObjs[i]->getCollider();
+		std::vector<QSFML::Components::Collider*> colliders = m_collisionObjs[i]->getComponents<QSFML::Components::Collider>();
 		for (size_t j = 0; j < colliders.size(); ++j)
 		{
 			if (colliders[j]->contains(m_mousePos))
@@ -218,7 +218,7 @@ void CollisionChecker::update_performanceTest()
 	
 	/*for (size_t i = 0; i < m_performanceObjs.size(); ++i)
 	{
-		std::list< QSFML::Objects::GameObject*> possibleColliders;
+		std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
 		m_tree.search(m_performanceObjs[i]->getBoundingBox(), possibleColliders);
 		for (auto it : possibleColliders)
 		{
@@ -314,7 +314,7 @@ CollisionChecker::Painter::~Painter()
 void CollisionChecker::Painter::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates states) const
 {
-	std::list< QSFML::Objects::GameObject*> possibleColliders;
+	std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
 	m_ckecker->m_tree.search(getCameraViewRect(), possibleColliders);
 
 	sf::RenderWindow& window = getSceneParent()->

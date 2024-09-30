@@ -2,7 +2,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Pendulum::Pendulum(const std::string& name, GameObject* parent)
+Pendulum::Pendulum(const std::string& name, QSFML::Objects::GameObjectPtr parent)
     : QObject()
     , GameObject(name, parent)
 {

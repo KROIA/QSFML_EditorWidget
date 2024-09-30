@@ -3,7 +3,7 @@
 
 CLONE_FUNC_IMPL(Laser);
 
-Laser::Laser(const std::string& name, GameObject* parent)
+Laser::Laser(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
 	, m_opticalElements(OpticalElement::getOpticalElements())
 {

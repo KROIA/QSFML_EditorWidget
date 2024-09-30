@@ -2,7 +2,7 @@
 
 CLONE_FUNC_IMPL(MouseCollider)
 
-MouseCollider::MouseCollider(const std::string& name, GameObject* parent)
+MouseCollider::MouseCollider(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
 {
 	m_collider = new QSFML::Components::Collider();

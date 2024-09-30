@@ -145,15 +145,15 @@ namespace QSFML
 
 		protected:	
 
-			void setRootCanvesObject(unsigned int count = 1)
+			void setRootGameObject(unsigned int count = 1)
 			{
 				m_currentStats.m_rootObjectsCount = count;
 			}
-			void addRootCanvesObject(unsigned int count = 1)
+			void addRootGameObject(unsigned int count = 1)
 			{
 				m_currentStats.m_rootObjectsCount += count;
 			}
-			void addCanvesObject(unsigned int count = 1)
+			void addGameObject(unsigned int count = 1)
 			{
 				m_currentStats.m_objectsCount += count;
 			}

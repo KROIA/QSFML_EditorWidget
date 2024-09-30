@@ -6,10 +6,10 @@ class CollisionObject : public QSFML::Objects::GameObject
 {
 public:
 	CollisionObject(const std::string& name = "MyObject",
-					GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	CollisionObject(const std::vector<sf::Vector2f>& vertecies,
 					const std::string& name = "MyObject",
-					GameObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
     ~CollisionObject();
 
 	virtual CLONE_FUNC_DEC(CollisionObject);

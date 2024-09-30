@@ -51,7 +51,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          *        This will be called by the GameObject::addChild(...),
          *        So you don't have to call this manually.
          */
-        virtual void setParent(Objects::GameObject* parent)
+        virtual void setParent(Objects::GameObjectPtr parent)
         {
 			m_parent = parent;
 		}
@@ -65,7 +65,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          * \brief getParent
          * \return returns the parent GameObject, this component belongs to
          */
-        Objects::GameObject* getParent() const
+        Objects::GameObjectPtr getParent() const
         {
 			return m_parent;
         }
@@ -109,9 +109,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 
         
 
-
+        void deleteLater();
     protected:
-        //void deleteThis();
+        
 
         // Scene operations
         sf::Vector2i getMousePosition() const;
@@ -138,7 +138,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         Scene* getSceneParent() const;
         // ---------
 
-        Objects::GameObject* m_parent;
+        Objects::GameObjectPtr m_parent;
         Scene* m_SceneParent;
 
     private:

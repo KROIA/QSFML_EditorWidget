@@ -7,7 +7,7 @@
 #include "components/physics/Collider.h"
 
 #include "utilities/Stats.h"
-#include "utilities/ObjectQuadTree.h"
+
 
 #include <QDebug>
 #include <typeinfo>
@@ -21,7 +21,7 @@ using namespace QSFML::Components;
 OBJECT_IMPL(GameObject)
 
 size_t GameObject::s_objNameCounter = 0;
-GameObject::GameObject(const std::string &name, GameObject *parent)
+GameObject::GameObject(const std::string &name, GameObject* parent)
     : Transformable()
     , Updatable()
     , DestroyEvent()
@@ -41,8 +41,8 @@ GameObject::GameObject(const std::string &name, GameObject *parent)
     m_rootParent = this;
     if(m_parent)
         m_rootParent = m_parent->m_rootParent;
-    m_objectsChanged = false;
-    m_thisNeedsDrawUpdate = false;
+    //m_objectsChanged = false;
+    m_componentsManagerData.thisNeedsDrawUpdate = false;
     m_enabled = true;
     //m_position = sf::Vector2f(0, 0);
     m_renderLayer = RenderLayer::layer_0;
@@ -59,48 +59,47 @@ GameObject::GameObject(const GameObject &other)
     m_SceneParent = nullptr;
     m_parent = nullptr;
     m_rootParent = this;
-    m_objectsChanged = false;
-    m_thisNeedsDrawUpdate = false;
+    //m_objectsChanged = false;
+    m_componentsManagerData.thisNeedsDrawUpdate = false;
     m_updateControlls = other.m_updateControlls;
     m_renderLayer = other.m_renderLayer;
 
-    m_childs.reserve(other.m_childs.size());
-    for(size_t i=0; i<other.m_childs.size(); ++i)
+    //m_childs.reserve(other.m_childs.size());
+    for(size_t i=0; i<other.m_childObjectManagerData.objs.size(); ++i)
     {
-        GameObject *obj = other.m_childs[i]->clone();
+        GameObjectPtr obj = other.m_childObjectManagerData.objs[i]->clone();
         addChild(obj);
     }
-    m_components.reserve(other.m_components.size());
-    for(size_t i=0; i<other.m_components.size(); ++i)
+    for(size_t i=0; i<other.m_componentsManagerData.all.size(); ++i)
     {
-        Component *obj = other.m_components[i]->clone();
+        Component *obj = other.m_componentsManagerData.all[i]->clone();
         addComponent(obj);
     }
     updateNewElements();
 }
 GameObject::~GameObject()
 {
-    for(size_t i=0; i<m_childs.size(); ++i)
-        delete m_childs[i];
-    m_childs.clear();
-
-    
-    for(auto &comp : m_components)
-        delete comp;
-    m_components.clear();
-    m_toAddComponents.clear();
-    m_updatableComponents.clear();
-    m_drawableComponents.clear();
-	//m_transformables.clear();
-    m_toRemoveComponents.clear();
-    m_toDeleteChilds.clear();
-    m_toRemoveChilds.clear();
     if (m_SceneParent)
     {
         m_SceneParent->removeGameObject();
-        m_SceneParent->removeComponent(m_components.size());
-        m_SceneParent->removeObject(this);   
+        m_SceneParent->removeComponent(m_componentsManagerData.all.size());
+        m_SceneParent->removeObject(this);
     }
+
+    for(size_t i=0; i< m_childObjectManagerData.objs.size(); ++i)
+        delete m_childObjectManagerData.objs[i];
+    m_childObjectManagerData.objs.clear();
+
+    
+    for(auto &comp : m_componentsManagerData.all)
+        delete comp;
+    m_componentsManagerData.all.clear();
+    m_componentsManagerData.toAdd.clear();
+    m_componentsManagerData.updatables.clear();
+    m_componentsManagerData.drawable.clear();
+	//m_transformables.clear();
+    m_childObjectManagerData.toRemove.clear();
+    m_childObjectManagerData.toAdd.clear();
 }
 
 
@@ -108,7 +107,7 @@ void GameObject::inSceneAdded()
 {
 
 }
-void GameObject::setParent(GameObject *parent)
+void GameObject::setParent(GameObjectPtr parent)
 {
     if(parent == m_parent)
         return;
@@ -118,7 +117,7 @@ void GameObject::setParent(GameObject *parent)
     }
     if(parent && parent != this)
     {
-        parent->addChild_internal(this);
+        parent->addChild(this);
         return;
     }
 }
@@ -130,11 +129,11 @@ bool GameObject::isEnabled() const
 {
     return m_enabled;
 }
-GameObject *GameObject::getParent() const
+GameObjectPtr GameObject::getParent() const
 {
     return m_parent;
 }
-GameObject *GameObject::getRootParent() const
+GameObjectPtr GameObject::getRootParent() const
 {
     return m_rootParent;
 }
@@ -207,7 +206,7 @@ sf::Vector2f GameObject::getPosition() const
 sf::Vector2f GameObject::getGlobalPosition() const
 {
     sf::Vector2f pos = getPosition();
-    GameObject *parent = m_parent;
+    GameObjectPtr parent = m_parent;
     while (parent)
     {
         pos += parent->getPosition();
@@ -218,7 +217,7 @@ sf::Vector2f GameObject::getGlobalPosition() const
 float GameObject::getGlobalRotation() const
 {
 	float rot = getRotation();
-	GameObject *parent = m_parent;
+	GameObjectPtr parent = m_parent;
 	while (parent)
 	{
 		rot += parent->getRotation();
@@ -242,8 +241,9 @@ RenderLayer GameObject::getRenderLayer() const
     return m_renderLayer;
 }
 
+/*
 // Childs operations
-void GameObject::addChild(GameObject *child)
+void GameObject::addChild(GameObjectPtr child)
 {
     if(!child)return;
 
@@ -251,18 +251,18 @@ void GameObject::addChild(GameObject *child)
     onObjectsChanged();
 
 }
-void GameObject::addChilds(const std::vector<GameObject*>& childs)
+void GameObject::addChilds(const std::vector<GameObjectPtr>& childs)
 {
     for (size_t i = 0; i < childs.size(); ++i)
     {
-        GameObject* child = childs[i];
+        GameObjectPtr child = childs[i];
         if(child)
             m_toAddChilds.push_back(child);
     }
     onObjectsChanged();
 }
 
-void GameObject::removeChild(GameObject *child)
+void GameObject::removeChild(GameObjectPtr child)
 {
     if(!child)return;
     size_t index = getChildIndex(child);
@@ -273,11 +273,11 @@ void GameObject::removeChild(GameObject *child)
     onObjectsChanged();
     m_toRemoveChilds.push_back(child);
 }
-void GameObject::removeChilds(const std::vector<GameObject*>& childs)
+void GameObject::removeChilds(const std::vector<GameObjectPtr>& childs)
 {
     for (size_t j = 0; j < childs.size(); ++j)
     {
-        GameObject* child = childs[j];
+        GameObjectPtr child = childs[j];
         if (!child)
             continue;
         size_t index = getChildIndex(child);
@@ -308,7 +308,7 @@ void GameObject::removeChild_internal()
     m_toRemoveChilds.clear();
 }
 
-void GameObject::deleteChild(GameObject *child)
+void GameObject::deleteChild(GameObjectPtr child)
 {
     if(!child)return;
 
@@ -324,11 +324,11 @@ void GameObject::deleteChild(GameObject *child)
     onObjectsChanged();
     m_toDeleteChilds.push_back(child);
 }
-void GameObject::deleteChilds(const std::vector<GameObject*>& childs)
+void GameObject::deleteChilds(const std::vector<GameObjectPtr>& childs)
 {
     for (size_t j = 0; j < childs.size(); ++j)
     {
-        GameObject* child = childs[j];
+        GameObjectPtr child = childs[j];
         if (!child)
             continue;
 
@@ -364,30 +364,31 @@ void GameObject::deleteChild_internal()
     }
     m_toDeleteChilds.clear();
 }
-bool GameObject::childExists(GameObject *child) const
+bool GameObject::childExists(GameObjectPtr child) const
 {
     for(size_t i=0; i<m_childs.size(); ++i)
         if(m_childs[i] == child)
             return true;
     return false;
 }
-size_t GameObject::getChildIndex(GameObject *child) const
+size_t GameObject::getChildIndex(GameObjectPtr child) const
 {
     for(size_t i=0; i<m_childs.size(); ++i)
         if(m_childs[i] == child)
             return i;
     return npos;
 }
-const std::vector<GameObject*> &GameObject::getChilds() const
+const std::vector<GameObjectPtr> &GameObject::getChilds() const
 {
     return m_childs;
 }
 size_t GameObject::getChildCount() const
 {
     return m_childs.size();
-}
+}*/
 
-GameObject* GameObject::findFirstChild(const std::string& name)
+/*
+GameObjectPtr GameObject::findFirstChild(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     size_t nameSize = name.size();
@@ -404,16 +405,16 @@ GameObject* GameObject::findFirstChild(const std::string& name)
     }
     return nullptr;
 }
-std::vector<GameObject*> GameObject::findAllChilds(const std::string& name)
+std::vector<GameObjectPtr> GameObject::findAllChilds(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    std::vector<GameObject*> results;
+    std::vector<GameObjectPtr> results;
     results.reserve(m_childs.size());
     findAllChilds_internal(name, results);
     return results;
 }
 
-GameObject* GameObject::findFirstChildRecursive(const std::string& name)
+GameObjectPtr GameObject::findFirstChildRecursive(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     size_t nameSize = name.size();
@@ -426,16 +427,16 @@ GameObject* GameObject::findFirstChildRecursive(const std::string& name)
         {
             return m_childs[i];
         }
-        GameObject *obj = m_childs[i]->findFirstChildRecursive(name);
+        GameObjectPtr obj = m_childs[i]->findFirstChildRecursive(name);
         if(obj)
             return obj;
     }
     return nullptr;
 }
-std::vector<GameObject*> GameObject::findAllChildsRecursive(const std::string& name)
+std::vector<GameObjectPtr> GameObject::findAllChildsRecursive(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    std::vector<GameObject*> results;
+    std::vector<GameObjectPtr> results;
     results.reserve(m_childs.size()*2);
     findAllChildsRecursive_internal(name, results);
     return results;
@@ -489,7 +490,8 @@ void GameObject::removeComponents(const std::vector<Components::Component*>& com
         m_toRemoveComponents.push_back(comp);
     }
     onObjectsChanged();
-}
+}*/
+/*
 void GameObject::removeComponent_internal()
 {
     size_t removedCount = 0;
@@ -546,23 +548,14 @@ void GameObject::removeComponent_internal()
                 }
         }
 
-        /*// Check for transformables
-		Utilities::Transformable* transformable = dynamic_cast<Utilities::Transformable*>(toRemove);
-        if (transformable)
-        {
-            for (size_t j = 0; j < m_transformables.size(); ++j)
-                if (m_transformables[j] == transformable)
-                {
-                    m_transformables.erase(m_transformables.begin() + j);
-                    break;
-                }
-        }*/
+        
     }
     m_toRemoveComponents.clear();
     if(m_SceneParent)
         m_SceneParent->removeComponent(removedCount);
 
-}
+}*/
+/*
 void GameObject::deleteComponent(Component *comp)
 {
     if(!comp)return;
@@ -631,6 +624,8 @@ void GameObject::deleteComponent(Component *comp)
 
     delete comp;
 }
+*/
+/*
 void GameObject::deleteComponents(const std::vector<Components::Component*>& components)
 {
     for (size_t j = 0; j < components.size(); ++j)
@@ -649,13 +644,13 @@ void GameObject::addChild_internal()
     }
     m_toAddChilds.clear();
 }
-void GameObject::addChild_internal(GameObject *obj)
+void GameObject::addChild_internal(GameObjectPtr obj)
 {
     m_childs.push_back(obj);
     obj->setParent_internal(this, m_rootParent, m_SceneParent);
-}
-void GameObject::setParent_internal(GameObject *parent,
-                                      GameObject *rootParent,
+}*/
+void GameObject::setParent_internal(GameObjectPtr parent,
+                                      GameObjectPtr rootParent,
                                       Scene *SceneParent)
 {
     if(m_parent != nullptr && m_parent == this)
@@ -664,21 +659,22 @@ void GameObject::setParent_internal(GameObject *parent,
     {
         size_t index = m_parent->getChildIndex(this);
         if(index == npos) return;
-        m_parent->m_childs.erase(m_parent->m_childs.begin() + index);
+        m_parent->m_childObjectManagerData.objs.erase(m_parent->m_childObjectManagerData.objs.begin() + index);
     }
-    GameObject *oldParent = m_parent;
+    GameObjectPtr oldParent = m_parent;
     m_parent = parent;
     m_rootParent = rootParent;
     setSceneParent(SceneParent);
-    for (size_t i = 0; i < m_components.size(); ++i)
+    for (size_t i = 0; i < m_componentsManagerData.all.size(); ++i)
     {
-        Component* comp = m_components[i];
+        Component* comp = m_componentsManagerData.all[i];
         comp->setParent(this);
     }
 
     internalOnParentChange(oldParent, m_parent);
     onParentChange(oldParent, m_parent);
 }
+/*
 void GameObject::addComponent_internal()
 {
     size_t colliderCount = m_colliders.size();
@@ -734,15 +730,9 @@ void GameObject::addComponent_internal()
     m_toAddComponents.clear();
     if (m_colliders.size() != colliderCount)
         updateBoundingBox();
-}
-void GameObject::onObjectsChanged()
-{
-    m_objectsChanged = true;
-    if(m_parent)
-    {
-        m_parent->onObjectsChanged();
-    }
-}
+}*/
+
+/*/
 void GameObject::deleteComponents()
 {
     for(size_t i=0; i<m_toAddComponents.size(); ++i)
@@ -767,6 +757,9 @@ void GameObject::deleteComponents()
     m_toAddComponents.clear();
     m_components.clear();
 }
+*/
+
+/*
 bool GameObject::componentExists(Component *comp) const
 {
     for(size_t i=0; i<m_components.size(); ++i)
@@ -869,13 +862,16 @@ bool GameObject::findAllComponentsRecursive_internal(const std::string& name, st
 const std::vector<Components::Collider*> &GameObject::getCollider() const
 {
     return m_colliders;
-}
-bool GameObject::checkCollision(const GameObject* other) const
+}*/
+
+
+/*
+bool GameObject::checkCollision(const GameObjectPtr other) const
 {
     std::vector<Utilities::Collisioninfo> collisions;
     return checkCollision(other, collisions);
 }
-bool GameObject::checkCollision(const GameObject* other, 
+bool GameObject::checkCollision(const GameObjectPtr other, 
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollision) const
 {
@@ -900,8 +896,8 @@ void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree,
     std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
     for (auto &objStruct : objs)
     {
-        GameObject* obj = objStruct.obj;
-        std::list< QSFML::Objects::GameObject*> possibleColliders;
+        GameObjectPtr obj = objStruct.obj;
+        std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
         tree.search(obj->getBoundingBox(), possibleColliders);
         for (auto it : possibleColliders)
         {
@@ -915,8 +911,10 @@ void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree,
             }            
         }
     }
-}
-/*void GameObject::solveCollision(GameObject* other)
+}*/
+
+
+/*void GameObject::solveCollision(GameObjectPtr other)
 {
     for (size_t i = 0; i < m_colliders.size(); ++i)
     {
@@ -925,10 +923,7 @@ void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree,
 }*/
 
 
-size_t GameObject::getComponentCount() const
-{
-    return m_components.size();
-}
+
 
 sf::Vector2i GameObject::getMousePosition() const
 {
@@ -1023,20 +1018,7 @@ void GameObject::setUpdateControlls(const SceneSettings::UpdateControlls &contro
     m_updateControlls = controlls;
 }
 
-const Utilities::AABB &GameObject::getBoundingBox() const
-{
-    return m_boundingBox;
-}
-void GameObject::updateBoundingBox()
-{
-    std::vector<Utilities::AABB> boxes;
-    boxes.reserve(m_colliders.size());
-    for (size_t i = 0; i < m_colliders.size(); ++i)
-    {
-        boxes.push_back(m_colliders[i]->getBoundingBox());
-    }
-    m_boundingBox = Utilities::AABB::getFrame(boxes);
-}
+
 
 
 std::string GameObject::toString() const
@@ -1056,27 +1038,27 @@ Scene* GameObject::getSceneParent() const
     return m_SceneParent;
 }
 
-Objects::GameObject* GameObject::findFirstObjectGlobal(const std::string& name)
+Objects::GameObjectPtr GameObject::findFirstObjectGlobal(const std::string& name)
 {
     if (!m_SceneParent) return nullptr;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     return m_SceneParent->findFirstObject(name);
 }
-std::vector<Objects::GameObject*> GameObject::findAllObjectsGlobal(const std::string& name)
+std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobal(const std::string& name)
 {
-    if (!m_SceneParent) return std::vector<GameObject*>();
+    if (!m_SceneParent) return std::vector<GameObjectPtr>();
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     return m_SceneParent->findAllObjects(name);
 }
-Objects::GameObject* GameObject::findFirstObjectGlobalRecursive(const std::string& name)
+Objects::GameObjectPtr GameObject::findFirstObjectGlobalRecursive(const std::string& name)
 {
     if (!m_SceneParent) return nullptr;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     return m_SceneParent->findFirstObjectRecursive(name);
 }
-std::vector<Objects::GameObject*> GameObject::findAllObjectsGlobalRecusive(const std::string& name)
+std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobalRecusive(const std::string& name)
 {
-    if (!m_SceneParent) return std::vector<GameObject*>();
+    if (!m_SceneParent) return std::vector<GameObjectPtr>();
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 	return m_SceneParent->findAllObjectsRecursive(name);
 }
@@ -1090,7 +1072,7 @@ std::vector<std::string> GameObject::toStringInternal(const std::string &preStr)
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     using std::string;
     std::vector<string> lines;
-    const GameObject *t = this;
+    const GameObject* t = this;
 
     auto en = [](bool enabled) {
         return enabled?"[Enabled]":"[Disabled]";
@@ -1100,67 +1082,31 @@ std::vector<std::string> GameObject::toStringInternal(const std::string &preStr)
     std::string name = type.name();
     lines.push_back(preStr+" | "+string(typeid(*t).name())+": \""+m_name + "\" "+en(t->isEnabled()));
     lines.push_back(preStr+" |  Components:");
-    for(size_t i=0; i<m_components.size(); ++i)
+    for(size_t i=0; i< m_componentsManagerData.all.size(); ++i)
     {
-        const auto &comp = m_components[i];
+        const auto &comp = m_componentsManagerData.all[i];
         lines.push_back(preStr+  " |  ["+std::to_string(i)+"] " + 
             string(typeid(*comp).name()) + ": \"" + comp->getName() + "\" " + en(comp->isEnabled()));
     }
     lines.push_back(preStr+" |  Childs:");
-    for(size_t i=0; i<m_childs.size(); ++i)
+    for(size_t i=0; i< m_childObjectManagerData.objs.size(); ++i)
     {
 
-        std::vector<std::string> subList = m_childs[i]->toStringInternal(preStr+ " |  ");
+        std::vector<std::string> subList = m_childObjectManagerData.objs[i]->toStringInternal(preStr+ " |  ");
         lines.insert(lines.end(), subList.begin(), subList.end());
     }
     lines.push_back(preStr+" ----");
     return lines;
 }
-bool GameObject::findAllChilds_internal(const std::string& name, std::vector<GameObject*>& foundList)
-{
-    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
-    size_t nameSize = name.size();
-    bool found = false;
-    for (size_t i = 0; i < m_childs.size(); ++i)
-    {
-        const std::string &objName = m_childs[i]->getName();
-        if(nameSize != objName.size())
-			continue;
-        if (objName == name)
-        {
-			foundList.push_back(m_childs[i]);
-            found = true;
-		}
-		//found |= m_childs[i]->findAllChilds_internal(name, foundList);
-	}
-    return found;
-}
-bool GameObject::findAllChildsRecursive_internal(const std::string& name, std::vector<GameObject*>& foundList)
-{
-    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
-    size_t nameSize = name.size();
-    bool found = false;
-    for (size_t i = 0; i < m_childs.size(); ++i)
-    {
-        const std::string& objName = m_childs[i]->getName();
-        if (nameSize != objName.size())
-            continue;
-        if (objName == name)
-        {
-            foundList.push_back(m_childs[i]);
-            found = true;
-        }
-        found |= m_childs[i]->findAllChilds_internal(name, foundList);
-    }
-    return found;
-}
+
+
 
 void GameObject::onSceneParentChange(Scene *oldParent, Scene *newParent) 
 {
     QSFML_UNUSED(oldParent);
     QSFML_UNUSED(newParent);
 }
-void GameObject::onParentChange(GameObject *oldParent, GameObject *newParent)
+void GameObject::onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent)
 {
     QSFML_UNUSED(oldParent);
     QSFML_UNUSED(newParent);
@@ -1170,14 +1116,14 @@ void GameObject::internalOnSceneParentChange(Scene *oldParent, Scene *newParent)
     QSFML_UNUSED(oldParent);
     QSFML_UNUSED(newParent);
 }
-void GameObject::internalOnParentChange(GameObject *oldParent, GameObject *newParent)
+void GameObject::internalOnParentChange(GameObjectPtr oldParent, GameObjectPtr newParent)
 {
     QSFML_UNUSED(oldParent);
     QSFML_UNUSED(newParent);
 }
 
 
-void GameObject::deleteThis()
+void GameObject::deleteLater()
 {
     if(m_parent)
     {
@@ -1201,79 +1147,10 @@ void GameObject::deleteThis()
 
 
 
-void GameObject::needsEventUpdateChanged(bool needsEventUpdate)
-{
-    if(!m_thisNeedsEventUpdate && needsEventUpdate)
-    {
-        this->needsEventUpdate(needsEventUpdate);
-        return;
-    }
-    if(m_thisNeedsEventUpdate && !needsEventUpdate)
-    {
-        if(m_eventComponents.size() == 0)
-        {
-            bool needsUpdate = false;
-            for(size_t i=0; i<m_childs.size(); ++i)
-            {
-                if(m_childs[i]->m_thisNeedsEventUpdate)
-                {
-                    needsUpdate = true;
-                    break;
-                }
-            }
-            if(!needsUpdate)
-            {
-                this->needsEventUpdate(needsEventUpdate);
-                return;
-            }
-        }
-    }
-}
-void GameObject::needsEventUpdate(bool needsEventUpdate)
-{
-    if(m_thisNeedsEventUpdate == needsEventUpdate)
-        return;
-    m_thisNeedsEventUpdate = needsEventUpdate;
-    if(m_parent)
-        m_parent->needsEventUpdateChanged(m_thisNeedsEventUpdate);
-}
 
-void GameObject::needsDrawUpdateChanged(bool needsDrawUpdate)
-{
-    if(!m_thisNeedsDrawUpdate && needsDrawUpdate)
-    {
-        this->needsDrawUpdate(needsDrawUpdate);
-        return;
-    }
-    if(m_thisNeedsDrawUpdate && !needsDrawUpdate)
-    {
-        if(m_drawableComponents.size() == 0)
-        {
-            bool needsUpdate = false;
-            for(size_t i=0; i<m_childs.size(); ++i)
-            {
-                if(m_childs[i]->m_thisNeedsDrawUpdate)
-                {
-                    needsUpdate = true;
-                    break;
-                }
-            }
-            if(!needsUpdate)
-            {
-                this->needsDrawUpdate(needsDrawUpdate);
-                return;
-            }
-        }
-    }
-}
-void GameObject::needsDrawUpdate(bool needsDrawUpdate)
-{
-    if(m_thisNeedsDrawUpdate == needsDrawUpdate)
-        return;
-    m_thisNeedsDrawUpdate = needsDrawUpdate;
-    if(m_parent)
-        m_parent->needsDrawUpdateChanged(m_thisNeedsDrawUpdate);
-}
+
+
+
 
 void GameObject::setSceneParent(Scene *parent)
 {
@@ -1284,29 +1161,29 @@ void GameObject::setSceneParent(Scene *parent)
     if (oldParent != nullptr)
     {
         oldParent->removeGameObject();
-        oldParent->removeComponent(m_components.size());
+        oldParent->removeComponent(m_componentsManagerData.all.size());
     }
     if (m_SceneParent != nullptr)
     {
-        m_SceneParent->addCanvesObject();
-        m_SceneParent->addComponent(m_components.size());
+        m_SceneParent->addGameObject();
+        m_SceneParent->addComponent(m_componentsManagerData.all.size());
 
         // Set the birth time and tick
         m_birthTick = m_SceneParent->getTick();
         m_birthTime = m_SceneParent->getElapsedTime();
     }
 
-    for (size_t i = 0; i < m_components.size(); ++i)
+    for (size_t i = 0; i < m_componentsManagerData.all.size(); ++i)
     {
-        Component* comp = m_components[i];
+        Component* comp = m_componentsManagerData.all[i];
         comp->setSceneParent(m_SceneParent);
     }
 
     //for(size_t i=0; i<m_components.size(); ++i)
     //    m_components[i]->setParent(this);
 
-    for(size_t i=0; i<m_childs.size(); ++i)
-        m_childs[i]->setSceneParent(parent);
+    for(size_t i=0; i< m_childObjectManagerData.objs.size(); ++i)
+        m_childObjectManagerData.objs[i]->setSceneParent(parent);
 
     internalOnSceneParentChange(oldParent, m_SceneParent);
     onSceneParentChange(oldParent, m_SceneParent);
@@ -1315,22 +1192,25 @@ void GameObject::setSceneParent(Scene *parent)
 void GameObject::updateNewElements()
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    removeChild_internal();
-    deleteChild_internal();
-    removeComponent_internal();
-    addChild_internal();
-    addComponent_internal();
+    //removeChild_internal();
+    //deleteChild_internal();
+    //removeComponent_internal();
+    //addChild_internal();
+    //addComponent_internal();
 
-    for (size_t i = 0; i < m_childs.size(); ++i)
-        m_childs[i]->updateNewElements();
-    m_objectsChanged = false;
+    //for (size_t i = 0; i < m_childs.size(); ++i)
+    //    m_childs[i]->updateNewElements();
+    //m_objectsChanged = false;
+    m_childObjectManagerData.objectsChanged = false;
+    updateChanges_componentsManager();
+    updateChanges_childObjectManager();
 }
 void GameObject::sfEvent(const std::vector<sf::Event>& events)
 {
-    if (!m_enabled || !m_updateControlls.enableEventLoop || !m_thisNeedsEventUpdate) return;
+    if (!m_enabled || !m_updateControlls.enableEventLoop || !m_componentsManagerData.thisNeedsEventUpdate) return;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_BLOCK("Components event", QSFML_COLOR_STAGE_2);
-    for (auto component : m_eventComponents)
+    for (auto component : m_componentsManagerData.eventHandler)
     {
         if (!component->isEnabled())
             continue;
@@ -1342,7 +1222,7 @@ void GameObject::sfEvent(const std::vector<sf::Event>& events)
     QSFMLP_OBJECT_END_BLOCK;
 
     QSFMLP_OBJECT_BLOCK("Childs event", QSFML_COLOR_STAGE_3);
-    for (auto obj : m_childs)
+    for (auto obj : m_childObjectManagerData.objs)
     {
         if (obj->m_enabled)
             obj->sfEvent(events);
@@ -1358,9 +1238,9 @@ void GameObject::update_internal()
     QSFMLP_OBJECT_END_BLOCK;
 
     QSFMLP_OBJECT_BLOCK("Components update", QSFML_COLOR_STAGE_2);
-    for (size_t i = 0; i < m_updatableComponents.size(); ++i)
+    for (size_t i = 0; i < m_componentsManagerData.updatables.size(); ++i)
     {
-        Utilities::Updatable* comp = m_updatableComponents[i];
+        Utilities::Updatable* comp = m_componentsManagerData.updatables[i];
         Components::Component* comp1 = dynamic_cast<Components::Component*>(comp);
         if (!comp1->isEnabled())
             continue;
@@ -1369,38 +1249,25 @@ void GameObject::update_internal()
     QSFMLP_OBJECT_END_BLOCK;
 
     QSFMLP_OBJECT_BLOCK("Childs update", QSFML_COLOR_STAGE_4);
-    for (size_t i = 0; i < m_childs.size(); ++i)
+    for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
     {
-        GameObject* obj = m_childs[i];
+        GameObjectPtr obj = m_childObjectManagerData.objs[i];
         if (obj->m_enabled)
             obj->update_internal();
     }
     QSFMLP_OBJECT_END_BLOCK;
 }
-void GameObject::inSceneAdded_internal()
-{
-    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    QSFMLP_OBJECT_BLOCK("Object inSceneAdded", QSFML_COLOR_STAGE_2);
-    inSceneAdded();
-    QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_OBJECT_BLOCK("Childs inSceneAdded", QSFML_COLOR_STAGE_4);
-    for (size_t i = 0; i < m_childs.size(); ++i)
-    {
-        m_childs[i]->inSceneAdded_internal();
-    }
-    QSFMLP_OBJECT_END_BLOCK;
-}
 void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
 {
-    if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate)
+    if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_componentsManagerData.thisNeedsDrawUpdate)
         return;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     states.transform.translate(getPosition());
-    if (m_drawableComponents.size())
+    if (m_componentsManagerData.drawable.size())
     {
         QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
-        for (auto& comp : m_drawableComponents)
+        for (auto& comp : m_componentsManagerData.drawable)
         {
             if (!comp->isEnabled())
                 continue;
@@ -1409,10 +1276,10 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
         QSFMLP_OBJECT_END_BLOCK;
     }
 
-    if (m_childs.size())
+    if (m_childObjectManagerData.objs.size())
     {
         QSFMLP_OBJECT_BLOCK("Childs draw", QSFML_COLOR_STAGE_3);
-        for (auto& child : m_childs)
+        for (auto& child : m_childObjectManagerData.objs)
         {
             if (child->m_enabled)
                 child->draw(window, states);
