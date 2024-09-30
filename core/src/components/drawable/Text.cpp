@@ -13,7 +13,6 @@ namespace QSFML
             : Drawable(name)
             , m_origin(Utilities::Origin::Type::TopLeft)
         {
-            m_text.setScale(0.1f,0.1f);
             setFont(Canvas::getDefaultTextFont());
             setText(name);
         }
@@ -31,7 +30,8 @@ namespace QSFML
         void Text::setText(const std::string &text)
         {
             m_text.setString(text);
-            updateCenter(getPosition());
+            m_needsGeometryUpdate = true;
+            //updateCenter(getPosition());
         }
         std::string Text::getText() const
         {
@@ -41,7 +41,8 @@ namespace QSFML
         void Text::setCharacterSize(unsigned int size)
         {
             m_text.setCharacterSize(size);
-            updateCenter(getPosition());
+            m_needsGeometryUpdate = true;
+            //updateCenter(getPosition());
         }
         unsigned int Text::getCharacterSize() const
         {
@@ -51,7 +52,8 @@ namespace QSFML
         void Text::setScale(float scale)
         {
             m_text.setScale(sf::Vector2f(scale, scale));
-            updateCenter(getPosition());
+            m_needsGeometryUpdate = true;
+           // updateCenter(getPosition());
         }
         float Text::getScale() const
         {
@@ -67,7 +69,8 @@ namespace QSFML
                 m_selfOwnedFont = nullptr;
             }
             m_text.setFont(font);
-            updateCenter(getPosition());
+            m_needsGeometryUpdate = true;
+           // updateCenter(getPosition());
         }
         bool Text::setFont(const std::string& path)
         {
@@ -98,17 +101,26 @@ namespace QSFML
 
         void Text::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
         {
+            updateGeometry();
             target.draw(m_text, states);
         }
 
-        void Text::updateCenter(const sf::Vector2f &pos)
+        void Text::updateCenter(const sf::Vector2f &pos) const
         {
             QSFML_UNUSED(pos);
+            
             sf::FloatRect bounds = m_text.getLocalBounds();
             Utilities::AABB box(bounds.left, bounds.top, bounds.width, bounds.height);
     
             sf::Vector2f originPos = m_origin.getOrigin(box);
             m_text.setOrigin(originPos);
+        }
+        void Text::updateGeometry() const
+        {
+            updateCenter(getPosition());
+            float angle = getRotation() * 180.f / M_PI;
+            m_text.setRotation(angle);
+            m_needsGeometryUpdate = false;
         }
 
     }

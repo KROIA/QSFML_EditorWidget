@@ -34,6 +34,7 @@ namespace QSFML
 			//void setOutlineThickness(float thickness);
 			//float getOutlineThickness() const;
 
+			void setPointCount(std::size_t count);
 			std::size_t getPointCount() const;
 
 			void setPoint(std::size_t index, const sf::Vector2f& point);
@@ -59,12 +60,17 @@ namespace QSFML
 			{
 				QSFML_UNUSED(states);
 				std::vector<sf::Vector2f> transformedPoints = getTransformedPoints();
+				if (transformedPoints.size() == 0)
+				{
+					return;
+				}
 				std::vector<sf::Vertex> transformedVertecies;
-				transformedVertecies.reserve(transformedPoints.size());
+				transformedVertecies.reserve(transformedPoints.size()+1);
 				for (const auto& point : transformedPoints)
 				{
 					transformedVertecies.push_back(sf::Vertex(point, m_fillColor));
 				}
+				transformedVertecies.push_back(sf::Vertex(transformedPoints[0], m_fillColor));
 				if (m_fill)
 				{
 					target.draw(&transformedVertecies[0], transformedVertecies.size(), sf::TriangleFan);

@@ -69,6 +69,10 @@ namespace QSFML
 			return m_outlineThickness;
 		}*/
 
+		void Shape::setPointCount(std::size_t count)
+		{
+			m_points.resize(count);
+		}
 		std::size_t Shape::getPointCount() const
 		{
 			return m_points.size();

@@ -43,6 +43,12 @@ namespace VectorMath
     QSFML_EDITOR_WIDGET_EXPORT extern double getNormalzedAngle(double angle);
     QSFML_EDITOR_WIDGET_EXPORT extern bool isAngleInRange(float angle, float minAngle, float maxAngle);
     QSFML_EDITOR_WIDGET_EXPORT extern bool isAngleInRange(double angle, double minAngle, double maxAngle);
+
+
+	QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+	QSFML_EDITOR_WIDGET_EXPORT extern Vector2d lerp(const Vector2d& start, const Vector2d& end, double t);
+
+
 }
 
 }

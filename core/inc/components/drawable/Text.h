@@ -64,9 +64,11 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
         void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     protected:
-        void updateCenter(const sf::Vector2f &pos);
+        void updateCenter(const sf::Vector2f &pos) const;
+        void updateGeometry() const;
 
-        sf::Text m_text;
+        mutable bool m_needsGeometryUpdate = false;
+        mutable sf::Text m_text;
         //sf::Vector2f m_pos;
         Utilities::Origin m_origin;
         const sf::Font* m_selfOwnedFont = nullptr;

@@ -29,14 +29,32 @@ namespace QSFML
             return m_box;
         }
 
-        void RectPainter::setColor(const sf::Color& color)
+        void RectPainter::setOutlineThickness(float t)
+        {
+            m_rectShape.setOutlineThickness(t);
+        }
+        float RectPainter::getOutlineThickness() const
+        {
+            return m_rectShape.getOutlineThickness();
+        }
+
+        void RectPainter::setOutlineColor(const sf::Color& color)
         {
             m_rectShape.setOutlineColor(color);
         }
-        const sf::Color& RectPainter::getColor() const
+        const sf::Color& RectPainter::getOutlineColor() const
         {
             return m_rectShape.getOutlineColor();
         }
+
+		void RectPainter::setFillColor(const sf::Color& color)
+		{
+			m_rectShape.setFillColor(color);
+		}
+		const sf::Color& RectPainter::getFillColor() const
+		{
+			return m_rectShape.getFillColor();
+		}
 
         void RectPainter::drawComponent(sf::RenderTarget& target,
                                sf::RenderStates states) const

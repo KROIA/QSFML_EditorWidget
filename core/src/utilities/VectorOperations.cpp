@@ -304,5 +304,14 @@ namespace VectorMath
         // Case where the angle does not wrap around
         return (angle >= minAngle && angle <= maxAngle);
     }
+
+	sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t)
+	{
+		return start + (end - start) * t;
+	}
+	Vector2d lerp(const Vector2d& start, const Vector2d& end, double t)
+	{
+		return start + (end - start) * t;
+	}
 }
 }
