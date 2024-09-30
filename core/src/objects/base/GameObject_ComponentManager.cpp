@@ -16,6 +16,15 @@ namespace QSFML
 			m_componentsManagerData.toAdd.insert(m_componentsManagerData.toAdd.end(), components.begin(), components.end());
 		}
 
+		void GameObject::createTransform()
+		{
+			if (!m_componentsManagerData.transform)
+			{
+				Components::Transform* transform = new Components::Transform();
+				addComponent(transform);
+			}
+		}
+
 		void GameObject::removeComponent(Components::ComponentPtr component)
 		{
 			m_componentsManagerData.toRemove.push_back(component);

@@ -357,13 +357,13 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
             return childs;
         }
 
-        size_t getChildCount() const;
-
-        template<typename T>
-        size_t getChildCount() const;
-
-        template<typename T>
-        size_t getChildCountRecusrive() const;
+        //size_t getChildCount() const;
+        //
+        //template<typename T>
+        //size_t getChildCount() const;
+        //
+        //template<typename T>
+        //size_t getChildCountRecusrive() const;
 
         GameObjectPtr findFirstChild(const std::string& name);
         std::vector<GameObjectPtr> findAllChilds(const std::string& name);
@@ -376,6 +376,8 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         // Component operations
         void addComponent(Components::ComponentPtr component);
         void addComponents(const std::vector<Components::ComponentPtr>& components);
+
+        void createTransform();
 
         void removeComponent(Components::ComponentPtr component);
         void removeComponents(const std::vector<Components::ComponentPtr>& components);
@@ -661,10 +663,10 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
         bool findAllChilds_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
         bool findAllChildsRecursive_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
-        bool findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList);
+        //bool findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList);
 
-        template<typename T>
-        void getChildsRecusrive_internal(std::vector<T*> &listOut) const;
+        //template<typename T>
+        //void getChildsRecusrive_internal(std::vector<T*> &listOut) const;
 
 
         //void removeChild_internal();
