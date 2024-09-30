@@ -58,7 +58,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 
         virtual void setSceneParent(Scene* parent)
         {
-            m_SceneParent = parent;
+            m_sceneParent = parent;
         }
 
         /**
@@ -107,6 +107,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
             return m_enabled; 
         }
 
+
+        
+
         
 
         void deleteLater();
@@ -136,10 +139,22 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          * \return returns the Scene, this component belongs to
          */
         Scene* getSceneParent() const;
+
+        /// Logging
+        void log(const Log::Message& msg) const;
+
+        void log(const std::string& msg) const;
+        void log(const std::string& msg, Log::Level level) const;
+        void log(const std::string& msg, Log::Level level, const Log::Color& col) const;
+
+        void logDebug(const std::string& msg) const;
+        void logInfo(const std::string& msg) const;
+        void logWarning(const std::string& msg) const;
+        void logError(const std::string& msg) const;
         // ---------
 
         Objects::GameObjectPtr m_parent;
-        Scene* m_SceneParent;
+        Scene* m_sceneParent;
 
     private:
 

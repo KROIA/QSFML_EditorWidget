@@ -36,7 +36,7 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     m_updateControlls.enableEventLoop = true;
     m_updateControlls.enablePaintLoop = true;
    
-    m_SceneParent = nullptr;
+    m_sceneParent = nullptr;
     m_parent = parent;
     m_rootParent = this;
     if(m_parent)
@@ -56,7 +56,7 @@ GameObject::GameObject(const GameObject &other)
     m_enabled = other.m_enabled;
     m_name = other.m_name;
     //m_position = other.m_position;
-    m_SceneParent = nullptr;
+    m_sceneParent = nullptr;
     m_parent = nullptr;
     m_rootParent = this;
     //m_objectsChanged = false;
@@ -79,11 +79,11 @@ GameObject::GameObject(const GameObject &other)
 }
 GameObject::~GameObject()
 {
-    if (m_SceneParent)
+    if (m_sceneParent)
     {
-        m_SceneParent->removeGameObject();
-        m_SceneParent->removeComponent(m_componentsManagerData.all.size());
-        m_SceneParent->removeObject(this);
+        m_sceneParent->removeGameObject();
+        m_sceneParent->removeComponent(m_componentsManagerData.all.size());
+        m_sceneParent->removeObject(this);
     }
 
     for(size_t i=0; i< m_childObjectManagerData.objs.size(); ++i)
@@ -100,6 +100,7 @@ GameObject::~GameObject()
 	//m_transformables.clear();
     m_childObjectManagerData.toRemove.clear();
     m_childObjectManagerData.toAdd.clear();
+    delete m_selfOwnedLogObject;
 }
 
 
@@ -149,8 +150,8 @@ const std::string &GameObject::getName() const
 
 double GameObject::getAge() const
 {
-    if (!m_SceneParent) return 0;
-    return m_SceneParent->getElapsedTime() - m_birthTime;
+    if (!m_sceneParent) return 0;
+    return m_sceneParent->getElapsedTime() - m_birthTime;
 }
 double GameObject::getBirthTime() const
 {
@@ -158,8 +159,8 @@ double GameObject::getBirthTime() const
 }
 size_t GameObject::getAgeTicks() const
 {
-    if (!m_SceneParent) return 0;
-    return m_SceneParent->getTick() - m_birthTick;
+    if (!m_sceneParent) return 0;
+    return m_sceneParent->getTick() - m_birthTick;
 }
 size_t GameObject::getBirthTick() const
 {
@@ -167,8 +168,8 @@ size_t GameObject::getBirthTick() const
 }
 double GameObject::getAgeFixed() const
 {
-    if (!m_SceneParent) return 0;
-    return m_SceneParent->getFixedDeltaT() * (m_SceneParent->getTick() - m_birthTick);
+    if (!m_sceneParent) return 0;
+    return m_sceneParent->getFixedDeltaT() * (m_sceneParent->getTick() - m_birthTick);
 }
 
 
@@ -232,8 +233,8 @@ void GameObject::setRenderLayer(RenderLayer layer)
         return;
     RenderLayer oldLayer = m_renderLayer;
     m_renderLayer = layer;
-    if(m_SceneParent)
-        m_SceneParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
+    if(m_sceneParent)
+        m_sceneParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
 }
 
 RenderLayer GameObject::getRenderLayer() const
@@ -551,8 +552,8 @@ void GameObject::removeComponent_internal()
         
     }
     m_toRemoveComponents.clear();
-    if(m_SceneParent)
-        m_SceneParent->removeComponent(removedCount);
+    if(m_sceneParent)
+        m_sceneParent->removeComponent(removedCount);
 
 }*/
 /*
@@ -573,8 +574,8 @@ void GameObject::deleteComponent(Component *comp)
     size_t index = getComponentIndex(comp);
     if(index == npos) return;
     m_components.erase(m_components.begin() + index);
-    if (m_SceneParent)
-        m_SceneParent->removeComponent();
+    if (m_sceneParent)
+        m_sceneParent->removeComponent();
 
     // Check for sfEventHandles
     SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(comp);
@@ -647,7 +648,7 @@ void GameObject::addChild_internal()
 void GameObject::addChild_internal(GameObjectPtr obj)
 {
     m_childs.push_back(obj);
-    obj->setParent_internal(this, m_rootParent, m_SceneParent);
+    obj->setParent_internal(this, m_rootParent, m_sceneParent);
 }*/
 void GameObject::setParent_internal(GameObjectPtr parent,
                                       GameObjectPtr rootParent,
@@ -685,9 +686,9 @@ void GameObject::addComponent_internal()
             continue;
 
         toAdd->setParent(this);
-        toAdd->setSceneParent(m_SceneParent);
-        if (m_SceneParent)
-            m_SceneParent->addComponent();
+        toAdd->setSceneParent(m_sceneParent);
+        if (m_sceneParent)
+            m_sceneParent->addComponent();
         m_components.push_back(toAdd);
 
         // Check for sfEventHandles
@@ -742,8 +743,8 @@ void GameObject::deleteComponents()
         comp->setSceneParent(nullptr);
         delete comp;
     }
-    if (m_SceneParent)
-        m_SceneParent->removeComponent(m_components.size());
+    if (m_sceneParent)
+        m_sceneParent->removeComponent(m_components.size());
     for(size_t i=0; i<m_components.size(); ++i)
     {
         Component* comp = m_components[i];
@@ -927,13 +928,13 @@ void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree,
 
 sf::Vector2i GameObject::getMousePosition() const
 {
-    if (!m_SceneParent) return sf::Vector2i(0, 0);
-    return m_SceneParent->getMousePosition();
+    if (!m_sceneParent) return sf::Vector2i(0, 0);
+    return m_sceneParent->getMousePosition();
 }
 sf::Vector2f GameObject::getMouseWorldPosition() const
 {
-    if (!m_SceneParent) return sf::Vector2f(0, 0);
-    return m_SceneParent->getMouseWorldPosition();
+    if (!m_sceneParent) return sf::Vector2f(0, 0);
+    return m_sceneParent->getMouseWorldPosition();
 }
 sf::Vector2f GameObject::getMouseObjectPosition() const
 {
@@ -942,40 +943,40 @@ sf::Vector2f GameObject::getMouseObjectPosition() const
 
 sf::Vector2f GameObject::getInWorldSpace(const sf::Vector2i& pixelSpace) const
 {
-    if (!m_SceneParent) return sf::Vector2f(0, 0);
-    return m_SceneParent->getInWorldSpace(pixelSpace);
+    if (!m_sceneParent) return sf::Vector2f(0, 0);
+    return m_sceneParent->getInWorldSpace(pixelSpace);
 }
 sf::Vector2i GameObject::getInScreenSpace(const sf::Vector2f& worldSpace) const
 {
-    if (!m_SceneParent) return sf::Vector2i(0, 0);
-    return m_SceneParent->getInScreenSpace(worldSpace);
+    if (!m_sceneParent) return sf::Vector2i(0, 0);
+    return m_sceneParent->getInScreenSpace(worldSpace);
 }
 const sf::View GameObject::getCameraView() const
 {
     static const sf::View dummy;
-    if(!m_SceneParent) return dummy;
-    return m_SceneParent->getCameraView();
+    if(!m_sceneParent) return dummy;
+    return m_sceneParent->getCameraView();
 }
 const sf::View &GameObject::getDefaultCameraView() const
 {
     static const sf::View dummy;
-    if(!m_SceneParent) return dummy;
-    return m_SceneParent->getDefaultCameraView();
+    if(!m_sceneParent) return dummy;
+    return m_sceneParent->getDefaultCameraView();
 }
 Utilities::AABB GameObject::getCameraViewRect() const
 {
-    if (!m_SceneParent) return Utilities::AABB();
-    return m_SceneParent->getCameraViewRect();
+    if (!m_sceneParent) return Utilities::AABB();
+    return m_sceneParent->getCameraViewRect();
 }
 sf::Vector2u GameObject::getSceneSize() const
 {
-    if(!m_SceneParent) return sf::Vector2u(0,0);
-    return m_SceneParent->getSceneSize();
+    if(!m_sceneParent) return sf::Vector2u(0,0);
+    return m_sceneParent->getSceneSize();
 }
 sf::Vector2u GameObject::getOldSceneSize() const
 {
-    if(!m_SceneParent) return sf::Vector2u(0,0);
-    return m_SceneParent->getOldSceneSize();
+    if(!m_sceneParent) return sf::Vector2u(0,0);
+    return m_sceneParent->getOldSceneSize();
 }
 
 const sf::Font &GameObject::getDefaultTextFont() const
@@ -984,28 +985,28 @@ const sf::Font &GameObject::getDefaultTextFont() const
 }
 size_t GameObject::getTick() const
 {
-    if(!m_SceneParent) return 0;
-    return m_SceneParent->getTick();
+    if(!m_sceneParent) return 0;
+    return m_sceneParent->getTick();
 }
 double GameObject::getDeltaT() const
 {
-    if(!m_SceneParent) return 0;
-    return m_SceneParent->getDeltaT();
+    if(!m_sceneParent) return 0;
+    return m_sceneParent->getDeltaT();
 }
 double GameObject::getFixedDeltaT() const
 {
-    if (!m_SceneParent) return 0;
-    return m_SceneParent->getFixedDeltaT();
+    if (!m_sceneParent) return 0;
+    return m_sceneParent->getFixedDeltaT();
 }
 double GameObject::getElapsedTime() const
 {
-    if(!m_SceneParent) return 0;
-    return m_SceneParent->getElapsedTime();
+    if(!m_sceneParent) return 0;
+    return m_sceneParent->getElapsedTime();
 }
 double GameObject::getFixedElapsedTime() const
 {
-    if (!m_SceneParent) return 0;
-	return m_SceneParent->getFixedElapsedTime();
+    if (!m_sceneParent) return 0;
+	return m_sceneParent->getFixedElapsedTime();
 }
 
 
@@ -1035,33 +1036,105 @@ std::string GameObject::toString() const
 }
 Scene* GameObject::getSceneParent() const
 {
-    return m_SceneParent;
+    return m_sceneParent;
 }
 
 Objects::GameObjectPtr GameObject::findFirstObjectGlobal(const std::string& name)
 {
-    if (!m_SceneParent) return nullptr;
+    if (!m_sceneParent) return nullptr;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_SceneParent->findFirstObject(name);
+    return m_sceneParent->findFirstObject(name);
 }
 std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobal(const std::string& name)
 {
-    if (!m_SceneParent) return std::vector<GameObjectPtr>();
+    if (!m_sceneParent) return std::vector<GameObjectPtr>();
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_SceneParent->findAllObjects(name);
+    return m_sceneParent->findAllObjects(name);
 }
 Objects::GameObjectPtr GameObject::findFirstObjectGlobalRecursive(const std::string& name)
 {
-    if (!m_SceneParent) return nullptr;
+    if (!m_sceneParent) return nullptr;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_SceneParent->findFirstObjectRecursive(name);
+    return m_sceneParent->findFirstObjectRecursive(name);
 }
 std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobalRecusive(const std::string& name)
 {
-    if (!m_SceneParent) return std::vector<GameObjectPtr>();
+    if (!m_sceneParent) return std::vector<GameObjectPtr>();
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-	return m_SceneParent->findAllObjectsRecursive(name);
+	return m_sceneParent->findAllObjectsRecursive(name);
 }
+
+
+void GameObject::createLogger()
+{
+    if (!m_selfOwnedLogObject)
+    {
+        m_selfOwnedLogObject = new Log::LogObject(getName());
+    }
+    // Search nearest parent with self owned logger to set it as parent
+    GameObjectPtr parent = m_parent;
+    bool parentSet = false;
+    while (parent)
+	{
+		if (parent->m_selfOwnedLogObject)
+		{
+            m_selfOwnedLogObject->setParentID(parent->m_selfOwnedLogObject->getID());
+            parentSet = true;
+			break;
+		}
+		parent = parent->m_parent;
+	}
+    if (!parentSet && m_sceneParent)
+    {
+        m_selfOwnedLogObject->setParentID(m_sceneParent->getObjectLogger().getID());
+    }
+    m_logObject = m_selfOwnedLogObject;
+}
+
+void GameObject::log(const Log::Message& msg) const
+{
+    if (m_logObject)
+        m_logObject->log(msg);
+}
+
+void GameObject::log(const std::string& msg) const
+{
+    if (m_logObject)
+        m_logObject->log(msg);
+}
+void GameObject::log(const std::string& msg, Log::Level level) const
+{
+    if (m_logObject)
+        m_logObject->log(msg, level);
+}
+void GameObject::log(const std::string& msg, Log::Level level, const Log::Color& col) const
+{
+    if (m_logObject)
+        m_logObject->log(msg, level, col);
+}
+
+void GameObject::logDebug(const std::string& msg) const
+{
+    if (m_logObject)
+        m_logObject->logDebug(msg);
+}
+void GameObject::logInfo(const std::string& msg) const
+{
+    if (m_logObject)
+        m_logObject->logInfo(msg);
+}
+void GameObject::logWarning(const std::string& msg) const
+{
+    if (m_logObject)
+        m_logObject->logWarning(msg);
+}
+void GameObject::logError(const std::string& msg) const
+{
+    if (m_logObject)
+        m_logObject->logError(msg);
+}
+
+
 
 void GameObject::update()
 {
@@ -1130,8 +1203,8 @@ void GameObject::deleteLater()
        // m_parent->deleteChild(this);
         m_parent->removeChild(this);
     }
-    else if(m_SceneParent)
-        m_SceneParent->GameObjectContainer::deleteLater(this);
+    else if(m_sceneParent)
+        m_sceneParent->GameObjectContainer::deleteLater(this);
 
 }
 
@@ -1154,29 +1227,41 @@ void GameObject::deleteLater()
 
 void GameObject::setSceneParent(Scene *parent)
 {
-    if(m_SceneParent == parent)
+    if(m_sceneParent == parent)
         return;
-    Scene *oldParent = m_SceneParent;
-    m_SceneParent = parent;
+    Scene *oldParent = m_sceneParent;
+    m_sceneParent = parent;
     if (oldParent != nullptr)
     {
         oldParent->removeGameObject();
         oldParent->removeComponent(m_componentsManagerData.all.size());
     }
-    if (m_SceneParent != nullptr)
+    if (!m_selfOwnedLogObject)
     {
-        m_SceneParent->addGameObject();
-        m_SceneParent->addComponent(m_componentsManagerData.all.size());
+        m_logObject = nullptr;
+    }
+    if (m_sceneParent != nullptr)
+    {
+        m_sceneParent->addGameObject();
+        m_sceneParent->addComponent(m_componentsManagerData.all.size());
 
         // Set the birth time and tick
-        m_birthTick = m_SceneParent->getTick();
-        m_birthTime = m_SceneParent->getElapsedTime();
+        m_birthTick = m_sceneParent->getTick();
+        m_birthTime = m_sceneParent->getElapsedTime();
+        if(m_selfOwnedLogObject)
+		{
+			m_selfOwnedLogObject->setParentID(m_sceneParent->getObjectLogger().getID());
+		}
+        else
+        {
+            m_logObject = &m_sceneParent->getObjectLogger();
+        }
     }
 
     for (size_t i = 0; i < m_componentsManagerData.all.size(); ++i)
     {
         Component* comp = m_componentsManagerData.all[i];
-        comp->setSceneParent(m_SceneParent);
+        comp->setSceneParent(m_sceneParent);
     }
 
     //for(size_t i=0; i<m_components.size(); ++i)
@@ -1185,8 +1270,8 @@ void GameObject::setSceneParent(Scene *parent)
     for(size_t i=0; i< m_childObjectManagerData.objs.size(); ++i)
         m_childObjectManagerData.objs[i]->setSceneParent(parent);
 
-    internalOnSceneParentChange(oldParent, m_SceneParent);
-    onSceneParentChange(oldParent, m_SceneParent);
+    internalOnSceneParentChange(oldParent, m_sceneParent);
+    onSceneParentChange(oldParent, m_sceneParent);
 }
 
 void GameObject::updateNewElements()

@@ -73,6 +73,8 @@ CollisionChecker::CollisionChecker(const std::string& name, QSFML::Objects::Game
 	m_tree.enableCollisionThreads(true);
 	setMode(Mode::performanceTest);
 
+	//createLogger();
+
 }
 CollisionChecker::CollisionChecker(const CollisionChecker& other)
 	: QObject()
@@ -210,6 +212,7 @@ void CollisionChecker::update_performanceTest()
 	for (auto el : m_performanceObjs)
 		el->setEnabled(true);
 	m_tree.insert(m_performanceObjs);
+	//logInfo("Insertion took: " + std::to_string(std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t1).count()));
 	/*std::list<QSFML::Utilities::ObjectQuadTree::TreeItem> objs = m_tree.getAllItems();
 	for (auto &it : objs)
 	{

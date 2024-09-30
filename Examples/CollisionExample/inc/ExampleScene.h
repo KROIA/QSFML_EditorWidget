@@ -28,6 +28,7 @@ private slots:
         Ui::ExampleScene *ui;
 
         QSFML::Scene *m_Scene;
+        Log::UI::QConsoleView m_console;
         
 
         CollisionChecker* m_collisionChecker;

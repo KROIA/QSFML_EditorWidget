@@ -633,6 +633,22 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
         std::vector<Objects::GameObjectPtr> findAllObjectsGlobalRecusive(const std::string& name);
+
+        /// Logging
+        void createLogger(); // Creates a new logger for this object
+                             // You don't need to call this function unless you want to create a new logger
+
+        void log(const Log::Message& msg) const;
+
+        void log(const std::string& msg) const;
+        void log(const std::string& msg, Log::Level level) const;
+        void log(const std::string& msg, Log::Level level, const Log::Color& col) const;
+
+        void logDebug(const std::string& msg) const;
+        void logInfo(const std::string& msg) const;
+        void logWarning(const std::string& msg) const;
+        void logError(const std::string& msg) const;
+
         // ---------
 
         
@@ -690,10 +706,11 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         size_t m_birthTick; // Tick of the Scene, where the object was added to a Scene
 
         // Hirarchy
-        Scene *m_SceneParent;
+        Scene *m_sceneParent;
         GameObject* m_parent;
         GameObject* m_rootParent;
-
+        Log::LogObject* m_logObject = nullptr;
+        Log::LogObject* m_selfOwnedLogObject = nullptr;
        
 
         

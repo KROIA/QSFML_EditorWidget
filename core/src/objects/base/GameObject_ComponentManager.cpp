@@ -213,7 +213,7 @@ namespace QSFML
 				++addedCount;
 				m_componentsManagerData.all.push_back(comp);
 				comp->setParent(this);
-				comp->setSceneParent(m_SceneParent);
+				comp->setSceneParent(m_sceneParent);
 
 				// Check the type and sort it to the lists
 				if (Components::Transform* transform = dynamic_cast<Components::Transform*>(comp))
@@ -242,10 +242,10 @@ namespace QSFML
 				}
 			}
 
-			if (m_SceneParent)
+			if (m_sceneParent)
 			{
-				m_SceneParent->removeComponent(removedCount);
-				m_SceneParent->addComponent(addedCount);
+				m_sceneParent->removeComponent(removedCount);
+				m_sceneParent->addComponent(addedCount);
 			}
 		}
 

@@ -311,7 +311,7 @@ void GameObjectContainer::renderLayerSwitch(Objects::GameObjectPtr obj, RenderLa
 {
     if(!obj)
         return;
-    if (obj->m_SceneParent != m_parent)
+    if (obj->m_sceneParent != m_parent)
         return; // not owner of this object
     if(from < RenderLayer::count)
         m_renderLayerGroup.removeObject(obj, from);
@@ -322,7 +322,7 @@ void GameObjectContainer::setRenderLayer(Objects::GameObjectPtr obj, RenderLayer
 {
     if (!obj)
         return;
-    if (obj->m_SceneParent != m_parent)
+    if (obj->m_sceneParent != m_parent)
         return; // not owner of this object
     m_renderLayerGroup.removeObject(obj);
     m_renderLayerGroup.addObject(obj, to);

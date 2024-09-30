@@ -148,8 +148,8 @@ bool Collider::checkCollision(const std::vector<Components::Collider*>& other,
 bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 { 
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
-    if(m_SceneParent)
-        m_SceneParent->addBoundingBoxCollisionCheck();
+    if(m_sceneParent)
+        m_sceneParent->addBoundingBoxCollisionCheck();
     QSFMLP_PHYSICS_BLOCK("AABB check", QSFML_COLOR_STAGE_4);
     if (!m_boundingBox.intersects(other->m_boundingBox))
     {
@@ -235,10 +235,10 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
                 if (onlyFirstCollision)
                 {
 
-                    if (m_SceneParent)
+                    if (m_sceneParent)
                     {
-                        m_SceneParent->addCollisionCheck(i * o);
-                        m_SceneParent->addCollision();
+                        m_sceneParent->addCollisionCheck(i * o);
+                        m_sceneParent->addCollision();
                     }
                     return true;
                 }
@@ -248,10 +248,10 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
             
         }
     }
-    if (m_SceneParent)
+    if (m_sceneParent)
     {
-        m_SceneParent->addCollisionCheck(m_absoluteVertices.size() * other->m_absoluteVertices.size());
-        m_SceneParent->addCollision(collisions.size() - currentCollisionCount);
+        m_sceneParent->addCollisionCheck(m_absoluteVertices.size() * other->m_absoluteVertices.size());
+        m_sceneParent->addCollision(collisions.size() - currentCollisionCount);
     }
 
     return collision;
@@ -302,17 +302,17 @@ bool Collider::contains(const sf::Vector2f& point)
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
     
-    if(m_SceneParent)
-        m_SceneParent->addBoundingBoxCollisionCheck();
+    if(m_sceneParent)
+        m_sceneParent->addBoundingBoxCollisionCheck();
     if (!m_boundingBox.contains(point))
         return false;
 
     bool result = contains(m_absoluteVertices, point);
-    if (m_SceneParent)
+    if (m_sceneParent)
     {
         if (result)
-            m_SceneParent->addCollision();
-        m_SceneParent->addCollisionCheck(m_relativeVertices.size());
+            m_sceneParent->addCollision();
+        m_sceneParent->addCollisionCheck(m_relativeVertices.size());
     }
     return result;
 }

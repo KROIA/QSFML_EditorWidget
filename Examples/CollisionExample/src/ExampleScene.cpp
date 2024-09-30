@@ -13,7 +13,8 @@ ExampleScene::ExampleScene(QWidget *parent)
     , ui(new Ui::ExampleScene)
 {
     ui->setupUi(this);
-
+    ui->consoleFrame->layout()->addWidget(&m_console);
+    m_console.show();
     
     SceneSettings settings;
     //settings.layout.autoAjustSize = false;
@@ -86,5 +87,6 @@ void ExampleScene::onTimerFinished()
 void ExampleScene::closeEvent(QCloseEvent* event)
 {
     //Scene::stopEventLoop();
+    m_console.close();
     event->accept();
 }

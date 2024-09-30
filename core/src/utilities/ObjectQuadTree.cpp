@@ -9,7 +9,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		ObjectQuadTree::ObjectQuadTree(StatsManager *statsManager, const Utilities::AABB& area, size_t maxDepth)
+		ObjectQuadTree::ObjectQuadTree(Utilities::StatsManager *statsManager, const Utilities::AABB& area, size_t maxDepth)
 			: m_tree(statsManager, area, 0, maxDepth)
 			, m_threadWorker(nullptr)
 			, m_statsManager(statsManager)
@@ -25,7 +25,7 @@ namespace QSFML
 				m_painters[i]->deleteLater();
 			}
 		}
-		void ObjectQuadTree::setStatsManager(StatsManager* manager)
+		void ObjectQuadTree::setStatsManager(Utilities::StatsManager* manager)
 		{
 			m_statsManager = manager;
 			m_tree.setStatsManager(manager);
@@ -215,7 +215,7 @@ namespace QSFML
 		// TREE
 		//
 
-		ObjectQuadTree::Tree::Tree(StatsManager* statsManager, const Utilities::AABB& area, size_t depth, size_t maxDepth)
+		ObjectQuadTree::Tree::Tree(Utilities::StatsManager* statsManager, const Utilities::AABB& area, size_t depth, size_t maxDepth)
 			: m_area(area)
 			, m_depth(depth)
 			, m_maxDepth(maxDepth)
@@ -238,7 +238,7 @@ namespace QSFML
 			if (m_childTrees)
 				delete[] m_childTrees;
 		}
-		void ObjectQuadTree::Tree::setStatsManager(StatsManager* manager)
+		void ObjectQuadTree::Tree::setStatsManager(Utilities::StatsManager* manager)
 		{
 			m_statsManager = manager;
 			if (m_childTrees)

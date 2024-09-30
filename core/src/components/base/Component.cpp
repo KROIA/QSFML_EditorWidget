@@ -1,5 +1,6 @@
 #include "components/base/Component.h"
 #include "objects/base/GameObject.h"
+#include "Scene/Scene.h"
 
 using namespace QSFML::Components;
 using namespace QSFML::Objects;
@@ -10,7 +11,7 @@ Component::Component(const std::string &name)
     : m_enabled(true)
     , m_name(name)
     , m_parent(nullptr)
-    , m_SceneParent(nullptr)
+    , m_sceneParent(nullptr)
 {
 
 }
@@ -18,7 +19,7 @@ Component::Component(const Component &other)
     : m_enabled(other.m_enabled)
     , m_name(other.m_name)
     , m_parent(nullptr)
-    , m_SceneParent(nullptr)
+    , m_sceneParent(nullptr)
 {
 
 }
@@ -112,5 +113,49 @@ double Component::getDeltaT() const
 
 QSFML::Scene* Component::getSceneParent() const
 {
-    return m_SceneParent;
+    return m_sceneParent;
 }
+
+void Component::log(const Log::Message & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().log(msg); 
+}
+
+void Component::log(const std::string & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().log(msg);
+}
+void Component::log(const std::string & msg, Log::Level level) const
+{
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().log(msg, level); 
+}
+void Component::log(const std::string & msg, Log::Level level, const Log::Color & col) const
+{
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().log(msg, level, col); 
+}
+
+void Component::logDebug(const std::string & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().logDebug(msg); 
+}
+void Component::logInfo(const std::string & msg) const
+{
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().logInfo(msg); 
+}
+void Component::logWarning(const std::string & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().logWarning(msg); 
+}
+void Component::logError(const std::string & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().logError(msg); 
+}
+

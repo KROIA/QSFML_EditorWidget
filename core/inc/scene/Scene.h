@@ -6,6 +6,7 @@
 
 #include "utilities/Timer.h"
 #include "utilities/Stats.h"
+#include "SceneLogger.h"
 
 #include <SFML/Graphics.hpp>
 #include <QWidget>
@@ -79,6 +80,11 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         double getFPS() const;
         double getTPS() const;
 
+        Log::LogObject& getSceneLogger() { return m_logger.getSceneLogger(); }
+        Log::LogObject& getObjectLogger() { return m_logger.getObjectLogger(); }
+        Log::LogObject& getComponentLogger() { return m_logger.getComponentLogger(); }
+        Log::LogObject& getPhysicsLogger() { return m_logger.getPhysicsLogger(); }
+
     protected:
         QPaintEngine* paintEngine() const override;
         void showEvent(QShowEvent*) override;
@@ -118,8 +124,10 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         sf::View m_view;
         sf::Vector2f m_dpiScale;
 
-        static std::string m_profilerOutputFile;
+        Internal::SceneLogger m_logger;
 
+
+        static std::string m_profilerOutputFile;
         static std::vector<Scene*> s_instances;
 
     };

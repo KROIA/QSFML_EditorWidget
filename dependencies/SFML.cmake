@@ -6,7 +6,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     set(LIB_NAME SFML)
     set(LIB_MACRO_NAME SFML)
     set(GIT_REPO https://github.com/SFML/SFML.git)
-    set(GIT_TAG 2.5.1)
+    set(GIT_TAG 2.6.1)
 
     FetchContent_Declare(
         ${LIB_NAME}

@@ -169,17 +169,17 @@ namespace QSFML
 						goto overjump;
 				}
 				m_childObjectManagerData.objs.push_back(obj);
-				obj->setParent_internal(this, m_rootParent, m_SceneParent);
+				obj->setParent_internal(this, m_rootParent, m_sceneParent);
 				obj->updateNewElements();
 				++addCount;
 				overjump:;
 			}			
 			m_childObjectManagerData.objectsChanged = false;
 
-			if (m_SceneParent)
+			if (m_sceneParent)
 			{
-				m_SceneParent->removeGameObject(removeCount);
-				m_SceneParent->addGameObject(addCount);
+				m_sceneParent->removeGameObject(removeCount);
+				m_sceneParent->addGameObject(addCount);
 			}
 		}
 

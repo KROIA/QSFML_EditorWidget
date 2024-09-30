@@ -10,7 +10,7 @@ namespace QSFML
     struct SceneSettings;
     class SceneThreadWorker;
 
-    
+
     
     namespace Objects
     {
@@ -59,9 +59,17 @@ namespace QSFML
         class Timer;
         struct Collisioninfo;
 
+        
+        class Transformable;
+
+        
         class Stats;
         class StatsManager;
-        class Transformable;
+    }
+
+    namespace Internal
+    {
+        class SceneLogger;
     }
     
 

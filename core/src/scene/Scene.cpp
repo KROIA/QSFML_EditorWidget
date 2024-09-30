@@ -27,7 +27,7 @@ namespace QSFML {
 
     Scene::Scene(QWidget* parent, const SceneSettings &settings) 
         : QWidget(parent)
-        , Utilities::StatsManager()
+        , StatsManager::StatsManager()
         , GameObjectContainer(this, m_settings)
     {
         s_instances.push_back(this);
