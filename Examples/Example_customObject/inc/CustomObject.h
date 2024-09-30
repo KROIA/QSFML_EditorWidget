@@ -2,7 +2,7 @@
 #include "QSFML_EditorWidget.h"
 #include <QObject>
 
-class CustomObject : public QObject, public QSFML::Objects::CanvasObject
+class CustomObject : public QObject, public QSFML::Objects::GameObject
 {
 	Q_OBJECT
 	OBJECT_DECL(CustomObject);

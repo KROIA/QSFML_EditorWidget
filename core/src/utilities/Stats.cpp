@@ -1,5 +1,5 @@
 #include "utilities/Stats.h"
-#include "canvas/Canvas.h"
+#include "Scene/Scene.h"
 
 #include <QDebug>
 

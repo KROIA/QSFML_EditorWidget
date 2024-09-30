@@ -129,7 +129,7 @@ namespace QSFML
 		};
 		class QSFML_EDITOR_WIDGET_EXPORT StatsManager//: public Singleton<StatsManager>
 		{
-			friend Objects::CanvasObject;
+			friend Objects::GameObject;
 			friend Components::Component;
 			friend Components::Collider;
 			friend Utilities::ObjectQuadTree;
@@ -158,11 +158,11 @@ namespace QSFML
 				m_currentStats.m_objectsCount += count;
 			}
 
-			void removeRootCanvasObject(unsigned int count = 1)
+			void removeRootGameObject(unsigned int count = 1)
 			{
 				m_currentStats.m_rootObjectsCount -= count;
 			}
-			void removeCanvasObject(unsigned int count= 1)
+			void removeGameObject(unsigned int count= 1)
 			{
 				m_currentStats.m_objectsCount -= count;
 			}

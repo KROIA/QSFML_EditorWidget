@@ -2,8 +2,8 @@
 
 CLONE_FUNC_IMPL(MouseCollider)
 
-MouseCollider::MouseCollider(const std::string& name, CanvasObject* parent)
-	: CanvasObject(name)
+MouseCollider::MouseCollider(const std::string& name, GameObject* parent)
+	: GameObject(name)
 {
 	m_collider = new QSFML::Components::Collider();
 	m_collider->setVertecies({
@@ -24,7 +24,7 @@ MouseCollider::MouseCollider(const std::string& name, CanvasObject* parent)
 
 }
 MouseCollider::MouseCollider(const MouseCollider& other)
-	: CanvasObject(other)
+	: GameObject(other)
 {
 
 }

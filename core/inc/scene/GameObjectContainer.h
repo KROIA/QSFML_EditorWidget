@@ -2,29 +2,29 @@
 
 #include "QSFML_EditorWidget_base.h"
 #include "RenderLayer.h"
-#include "canvas/CanvasSettings.h"
-#include "canvas/CanvasObjectLayerGroup.h"
+#include "scene/SceneSettings.h"
+#include "scene/GameObjectLayerGroup.h"
 
 #include "SFML/Graphics.hpp"
 #include <vector>
 
 namespace QSFML
 {
-class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
+class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
 {
     public:
-        CanvasObjectContainer(Canvas *parent, CanvasSettings &settings);
-        ~CanvasObjectContainer();
+        GameObjectContainer(Scene *parent, SceneSettings &settings);
+        ~GameObjectContainer();
 
        
 
-        void addObject(Objects::CanvasObject *obj);
-        void addObject(const std::vector<Objects::CanvasObject*> &objs);
+        void addObject(Objects::GameObject *obj);
+        void addObject(const std::vector<Objects::GameObject*> &objs);
 
-        void removeObject(Objects::CanvasObject *obj);
-        void removeObject(const std::vector<Objects::CanvasObject*> &objs);
-        void deleteObject(Objects::CanvasObject *obj);
-        void deleteObject(const std::vector<Objects::CanvasObject*> &objs);
+        void removeObject(Objects::GameObject *obj);
+        void removeObject(const std::vector<Objects::GameObject*> &objs);
+        void deleteObject(Objects::GameObject *obj);
+        void deleteObject(const std::vector<Objects::GameObject*> &objs);
         void clearObjects();
         void cleanup();
 
@@ -34,14 +34,14 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         size_t getObjectsCount() const;
         template<typename T>
         size_t getObjectsCount() const;
-        const std::vector<Objects::CanvasObject*> &getObjects() const;
+        const std::vector<Objects::GameObject*> &getObjects() const;
         template<typename T>
         std::vector<T*> getObjects() const;
         template<typename T>
         T* getFirstObject() const;
 
-        bool objectExists(Objects::CanvasObject *obj);
-        size_t getObjectIndex(Objects::CanvasObject *obj);
+        bool objectExists(Objects::GameObject *obj);
+        size_t getObjectIndex(Objects::GameObject *obj);
 
         /// <summary>
         /// Searches the object with the given name in the object list.
@@ -49,7 +49,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::CanvasObject* findFirstObject(const std::string &name);
+        Objects::GameObject* findFirstObject(const std::string &name);
 
         /// <summary>
         /// Searches all objects with the given name in the object list.
@@ -57,7 +57,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::CanvasObject*> findAllObjects(const std::string &name);
+        std::vector<Objects::GameObject*> findAllObjects(const std::string &name);
 
         /// <summary>
         /// Searches the object with the given name in the object list.
@@ -65,7 +65,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::CanvasObject* findFirstObjectRecursive(const std::string& name);
+        Objects::GameObject* findFirstObjectRecursive(const std::string& name);
 
         /// <summary>
         /// Searches all objects with the given name in the object list.
@@ -73,12 +73,12 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::CanvasObject*> findAllObjectsRecursive(const std::string& name);
+        std::vector<Objects::GameObject*> findAllObjectsRecursive(const std::string& name);
 
-        void deleteLater(Objects::CanvasObject *obj);
+        void deleteLater(Objects::GameObject *obj);
 
-        void renderLayerSwitch(Objects::CanvasObject *obj, RenderLayer from, RenderLayer to);
-        void setRenderLayer(Objects::CanvasObject* obj, RenderLayer to);
+        void renderLayerSwitch(Objects::GameObject *obj, RenderLayer from, RenderLayer to);
+        void setRenderLayer(Objects::GameObject* obj, RenderLayer to);
 
         std::string getObjectsTreeString() const;
 
@@ -100,38 +100,38 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectContainer
         void addObject_internal();
         void deleteObject_internal();
 
-        std::vector<Objects::CanvasObject*> m_objectsToAdd;
-        std::vector<Objects::CanvasObject*> m_objectsToDelete;
-        std::vector<Objects::CanvasObject*> m_objectsToRemove;
+        std::vector<Objects::GameObject*> m_objectsToAdd;
+        std::vector<Objects::GameObject*> m_objectsToDelete;
+        std::vector<Objects::GameObject*> m_objectsToRemove;
 
 
         // All objects will be contained in this list
-        CanvasObjectGroup *m_allObjects;
+        GameObjectGroup *m_allObjects;
         size_t m_currentThreadGroupInsertIndex;
         size_t m_threadGroupCount;
-        std::vector<CanvasObjectGroup*> m_threadGroups;
-        //std::vector<CanvasObjectGroup*> m_renderLayerGroups;
-        CanvasObjectLayerGroup m_renderLayerGroup;
+        std::vector<GameObjectGroup*> m_threadGroups;
+        //std::vector<GameObjectGroup*> m_renderLayerGroups;
+        GameObjectLayerGroup m_renderLayerGroup;
 
-        Canvas *m_parent;
+        Scene *m_parent;
 
-        CanvasThreadWorker *m_threadWorker;
+        SceneThreadWorker *m_threadWorker;
 
-        CanvasSettings& m_settings;
+        SceneSettings& m_settings;
         
 };
 template<typename T>
-size_t CanvasObjectContainer::getObjectsCount() const
+size_t GameObjectContainer::getObjectsCount() const
 {
     return m_allObjects->getObjectsCount<T>();
 }
 template<typename T>
-std::vector<T*> CanvasObjectContainer::getObjects() const
+std::vector<T*> GameObjectContainer::getObjects() const
 {
     return m_allObjects->getObjects<T>();
 }
 template<typename T>
-T* CanvasObjectContainer::getFirstObject() const
+T* GameObjectContainer::getFirstObject() const
 {
     return m_allObjects->getFirstObject<T>();
 }

@@ -4,7 +4,7 @@ OBJECT_IMPL(CustomObject);
 
 CustomObject::CustomObject()
 	: QObject()
-	, CanvasObject("CustomObjectName")
+	, GameObject("CustomObjectName")
 {
 	// Create a square shape
 	m_shape = new QSFML::Components::Shape();
@@ -29,7 +29,7 @@ CustomObject::CustomObject()
 }
 CustomObject::CustomObject(const CustomObject& other)
 	: QObject()
-	, CanvasObject("CustomObjectName")
+	, GameObject("CustomObjectName")
 {
 	// Create a square shape
 	m_shape = new QSFML::Components::Shape(*other.m_shape);

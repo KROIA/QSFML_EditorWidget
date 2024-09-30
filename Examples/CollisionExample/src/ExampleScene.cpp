@@ -1,5 +1,5 @@
-#include "ExampleCanvas.h"
-#include "ui_exampleCanvas.h"
+#include "ExampleScene.h"
+#include "ui_exampleScene.h"
 #include <iostream>
 #include <QTimer>
 #include <QCloseEvent>
@@ -8,14 +8,14 @@
 using namespace QSFML;
 using namespace QSFML::Objects;
 
-ExampleCanvas::ExampleCanvas(QWidget *parent)
+ExampleScene::ExampleScene(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::ExampleCanvas)
+    , ui(new Ui::ExampleScene)
 {
     ui->setupUi(this);
 
     
-    CanvasSettings settings;
+    SceneSettings settings;
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300,100);
     settings.contextSettings.antialiasingLevel = 8;
@@ -24,67 +24,67 @@ ExampleCanvas::ExampleCanvas(QWidget *parent)
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_canvas = new Canvas(ui->canvasWidget,settings);
+    m_Scene = new Scene(ui->SceneWidget,settings);
 
     DefaultEditor *defaultEditor = new DefaultEditor();
     // Create a Key button to toggle the RuntimeInfo Text on and off
     //QSFML::Components::KeyPressEvent* runtimeInfoKeyToggler = new QSFML::Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
     //connect(runtimeInfoKeyToggler, &Components::KeyPressEvent::fallingEdge, defaultEditor, &DefaultEditor::onToggleRuntimeInfo);
     //defaultEditor->addComponent(runtimeInfoKeyToggler);
-    m_canvas->addObject(defaultEditor);
+    m_Scene->addObject(defaultEditor);
 
     
     
 
 
     m_collisionChecker = new CollisionChecker();
-    m_canvas->addObject(m_collisionChecker);
+    m_Scene->addObject(m_collisionChecker);
 
 
-    m_canvas->applyObjectChanges();
+    m_Scene->applyObjectChanges();
 
     qDebug() << defaultEditor->toString().c_str();
     qDebug() << m_collisionChecker->toString().c_str();
     
 
     QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &ExampleCanvas::onTimerFinished);
+    connect(timer, &QTimer::timeout, this, &ExampleScene::onTimerFinished);
     timer->start(1000);
     
 }
 
-ExampleCanvas::~ExampleCanvas()
+ExampleScene::~ExampleScene()
 {
     delete ui;
-    delete m_canvas;
+    delete m_Scene;
 }
 
-void ExampleCanvas::on_intersecting_radioButton_clicked()
+void ExampleScene::on_intersecting_radioButton_clicked()
 {
     m_collisionChecker->setMode(CollisionChecker::Mode::intersecting);
 }
-void ExampleCanvas::on_containing_radioButton_clicked()
+void ExampleScene::on_containing_radioButton_clicked()
 {
     m_collisionChecker->setMode(CollisionChecker::Mode::contains);
 }
-void ExampleCanvas::on_performanceTest_radioButton_clicked()
+void ExampleScene::on_performanceTest_radioButton_clicked()
 {
     m_collisionChecker->setMode(CollisionChecker::Mode::performanceTest);
 }
-void ExampleCanvas::onTimerFinished()
+void ExampleScene::onTimerFinished()
 {
     return;
     system("cls");
-    QSFML::Utilities::Stats stats = m_canvas->getLastStats();
-    //qDebug() << "  Tick:                  " << m_canvas->getTick();
-    //qDebug() << "  FPS:                   " << m_canvas->getFPS();
-    //qDebug() << "  Frametime:             " << m_canvas->getFrametime()*1000.f << " ms";
+    QSFML::Utilities::Stats stats = m_Scene->getLastStats();
+    //qDebug() << "  Tick:                  " << m_Scene->getTick();
+    //qDebug() << "  FPS:                   " << m_Scene->getFPS();
+    //qDebug() << "  Frametime:             " << m_Scene->getFrametime()*1000.f << " ms";
     
 
     //stats.print();
 }
-void ExampleCanvas::closeEvent(QCloseEvent* event)
+void ExampleScene::closeEvent(QCloseEvent* event)
 {
-    //Canvas::stopEventLoop();
+    //Scene::stopEventLoop();
     event->accept();
 }

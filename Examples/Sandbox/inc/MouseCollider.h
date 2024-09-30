@@ -2,12 +2,12 @@
 #include "QSFML_EditorWidget.h"
 #include <QObject>
 
-class MouseCollider : public QObject, public QSFML::Objects::CanvasObject
+class MouseCollider : public QObject, public QSFML::Objects::GameObject
 {
 	Q_OBJECT
 public:
 	MouseCollider(const std::string& name = "MouseCollider",
-					CanvasObject* parent = nullptr);
+					GameObject* parent = nullptr);
 	MouseCollider(const MouseCollider& other);
     ~MouseCollider();
 

@@ -1,8 +1,8 @@
 #include "PerformanceObject.h"
 
 CLONE_FUNC_IMPL(PerformanceObject);
-PerformanceObject::PerformanceObject(const std::string& name, CanvasObject* parent)
-	: CanvasObject(name)
+PerformanceObject::PerformanceObject(const std::string& name, GameObject* parent)
+	: GameObject(name)
 	, m_dynamic(true)
 {
 	m_collider = new QSFML::Components::Collider();
@@ -29,8 +29,8 @@ PerformanceObject::PerformanceObject(const std::string& name, CanvasObject* pare
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
 }
-PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies, const std::string& name, CanvasObject* parent)
-	: CanvasObject(name)
+PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies, const std::string& name, GameObject* parent)
+	: GameObject(name)
 	, m_dynamic(true)
 {
 	m_collider = new QSFML::Components::Collider();

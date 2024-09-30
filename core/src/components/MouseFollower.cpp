@@ -1,5 +1,5 @@
 #include "components/MouseFollower.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 
 namespace QSFML
 {

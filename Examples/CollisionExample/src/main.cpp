@@ -1,4 +1,4 @@
-#include "ExampleCanvas.h"
+#include "ExampleScene.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
     QApplication a(argc, argv);
-    ExampleCanvas w;
+    ExampleScene w;
     w.show();
     return a.exec();
 }

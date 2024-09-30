@@ -18,10 +18,10 @@ namespace Components
     CLONE_FUNC_IMPL(className)
 
 /**
- * \brief Component class for CanvasObjects
- * \details Each CanvasObject can contain multiple Components.
+ * \brief Component class for GameObjects
+ * \details Each GameObject can contain multiple Components.
  *          A Component is a module which can do some work on an
- *          CanvasObject.
+ *          GameObject.
  *          Examples for modules are:
  *           - Drawing domething
  *           - Handle sf::Events
@@ -48,25 +48,25 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         /**
          * \brief setParent
          * \param parent
-         *        Assigns this Component to an CanvasObject.
-         *        This will be called by the CanvasObject::addChild(...),
+         *        Assigns this Component to an GameObject.
+         *        This will be called by the GameObject::addChild(...),
          *        So you don't have to call this manually.
          */
-        virtual void setParent(Objects::CanvasObject* parent)
+        virtual void setParent(Objects::GameObject* parent)
         {
 			m_parent = parent;
 		}
 
-        virtual void setCanvasParent(Canvas* parent)
+        virtual void setSceneParent(Scene* parent)
         {
-            m_canvasParent = parent;
+            m_SceneParent = parent;
         }
 
         /**
          * \brief getParent
-         * \return returns the parent CanvasObject, this component belongs to
+         * \return returns the parent GameObject, this component belongs to
          */
-        Objects::CanvasObject* getParent() const
+        Objects::GameObject* getParent() const
         {
 			return m_parent;
         }
@@ -114,7 +114,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
     protected:
         void deleteThis();
 
-        // Canvas operations
+        // Scene operations
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;
         sf::Vector2f getInWorldSpace(const sf::Vector2i& pixelSpace) const;
@@ -124,8 +124,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         const sf::View getCameraView() const;
         const sf::View& getDefaultCameraView() const;
         Utilities::AABB getCameraViewRect() const;
-        sf::Vector2u getCanvasSize() const;
-        sf::Vector2u getOldCanvasSize() const;
+        sf::Vector2u getSceneSize() const;
+        sf::Vector2u getOldSceneSize() const;
 
         const sf::Font& getTextFont() const;
 
@@ -133,14 +133,14 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         double getDeltaT() const; // Returns delta Time since last update in seconds
 
         /**
-         * \brief getCanvasParent
-         * \return returns the Canvas, this component belongs to
+         * \brief getSceneParent
+         * \return returns the Scene, this component belongs to
          */
-        Canvas* getCanvasParent() const;
+        Scene* getSceneParent() const;
         // ---------
 
-        Objects::CanvasObject* m_parent;
-        Canvas* m_canvasParent;
+        Objects::GameObject* m_parent;
+        Scene* m_SceneParent;
 
     private:
 

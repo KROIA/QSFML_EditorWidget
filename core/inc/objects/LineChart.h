@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/base/Drawable.h"
 #include "QSFML_EditorWidget_base.h"
 
@@ -10,13 +10,13 @@ namespace QSFML
 {
 namespace Objects
 {
-    class QSFML_EDITOR_WIDGET_EXPORT LineChart: public CanvasObject
+    class QSFML_EDITOR_WIDGET_EXPORT LineChart: public GameObject
     {
             class LineChartPainter;
             friend LineChartPainter;
         public:
             LineChart(const std::string &name = "LineChart",
-                         CanvasObject *parent = nullptr);
+                         GameObject *parent = nullptr);
             LineChart(const LineChart &other);
             ~LineChart();
             OBJECT_DECL(LineChart)

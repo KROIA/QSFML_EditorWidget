@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ExampleCanvas</class>
- <widget class="QMainWindow" name="ExampleCanvas">
+ <class>LightSimScene</class>
+ <widget class="QMainWindow" name="LightSimScene">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,12 +11,12 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ExampleCanvas</string>
+   <string>LightSimScene</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QFrame" name="canvasWidget">
+     <widget class="QFrame" name="SceneWidget">
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>

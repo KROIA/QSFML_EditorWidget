@@ -13,7 +13,7 @@ namespace Factories
 		const sf::Color& color,
 		size_t vertecies);
 
-	QSFML::Objects::CanvasObject* randomShapeObject(
+	QSFML::Objects::GameObject* randomShapeObject(
 		const sf::Vector2f& position,
 		float radius,
 		const sf::Color& color,

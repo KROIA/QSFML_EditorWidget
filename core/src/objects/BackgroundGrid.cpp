@@ -7,8 +7,8 @@ namespace QSFML
     namespace Objects
     {
         OBJECT_IMPL(BackgroundGrid)
-        BackgroundGrid::BackgroundGrid(const std::string& name, CanvasObject* parent)
-            : CanvasObject(name, parent)
+        BackgroundGrid::BackgroundGrid(const std::string& name, GameObject* parent)
+            : GameObject(name, parent)
         {
             m_draw = new DrawableComp();
             m_draw->m_grid = this;
@@ -18,7 +18,7 @@ namespace QSFML
             addComponent(m_draw);
         }
         BackgroundGrid::BackgroundGrid(const BackgroundGrid& other)
-            : CanvasObject(other)
+            : GameObject(other)
         {
             m_gridArea = other.m_gridArea;
             m_gridSpacing = other.m_gridSpacing;

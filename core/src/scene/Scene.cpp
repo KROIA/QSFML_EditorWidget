@@ -1,4 +1,4 @@
-#include "canvas/Canvas.h"
+#include "Scene/Scene.h"
 #include "utilities/Stats.h"
 #include "utilities/AABB.h"
 #include "utilities/RandomEngine.h"
@@ -22,13 +22,13 @@ namespace QSFML {
         "~/Library/Fonts/Arial.ttf"
     };
 
-    std::vector<Canvas*> Canvas::s_instances;
-    std::string Canvas::m_profilerOutputFile = "profiler_output.prof";
+    std::vector<Scene*> Scene::s_instances;
+    std::string Scene::m_profilerOutputFile = "profiler_output.prof";
 
-    Canvas::Canvas(QWidget* parent, const CanvasSettings &settings) 
+    Scene::Scene(QWidget* parent, const SceneSettings &settings) 
         : QWidget(parent)
         , Utilities::StatsManager()
-        , CanvasObjectContainer(this, m_settings)
+        , GameObjectContainer(this, m_settings)
     {
         s_instances.push_back(this);
         if (s_instances.size() == 1)
@@ -58,12 +58,12 @@ namespace QSFML {
         // Set strong focus to enable keyboard events to be received
         setFocusPolicy(Qt::StrongFocus);
 
-        //m_updateTimer.onFinished(std::bind(&Canvas::update, this));
-        connect(&m_frameTimer, &QTimer::timeout, this, &Canvas::update);
+        //m_updateTimer.onFinished(std::bind(&Scene::update, this));
+        connect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
         setSettings(settings);
 
     }
-    Canvas::~Canvas()
+    Scene::~Scene()
     {
         stop();
 
@@ -86,11 +86,11 @@ namespace QSFML {
                 s_instances.erase(s_instances.begin() + i);
             }
         }
-        CanvasObjectContainer::cleanup();
+        GameObjectContainer::cleanup();
     }
 
 
-    void Canvas::setSettings(const CanvasSettings& settings)
+    void Scene::setSettings(const SceneSettings& settings)
     {
         setLayout(settings.layout);
         setTiming(settings.timing);
@@ -103,11 +103,11 @@ namespace QSFML {
             qDebug() << "Can't load Font: " << settings.fontPath.c_str();
         }*/
     }
-    const CanvasSettings& Canvas::getSettings() const
+    const SceneSettings& Scene::getSettings() const
     {
         return m_settings;
     }
-    void Canvas::setLayout(const CanvasSettings::Layout& layout)
+    void Scene::setLayout(const SceneSettings::Layout& layout)
     {
         m_settings.layout = layout;
         if (parentWidget())
@@ -120,13 +120,13 @@ namespace QSFML {
             QWidget::setFixedSize(m_settings.layout.fixedSize.x, m_settings.layout.fixedSize.y);
         }
     }
-    const CanvasSettings::Layout &Canvas::getLayout() const
+    const SceneSettings::Layout &Scene::getLayout() const
 	{
 		return m_settings.layout;
 	}
     
 
-    void Canvas::setTiming(const CanvasSettings::Timing& timing)
+    void Scene::setTiming(const SceneSettings::Timing& timing)
     {
         m_settings.timing = timing;
 
@@ -135,19 +135,19 @@ namespace QSFML {
         StatsManager::setFixedDeltaT(m_settings.timing.physicsFixedDeltaT);
         //m_updateTimer.setInterval(m_settings.timing.frameTime);
     }
-    const CanvasSettings::Timing& Canvas::getTiming() const
+    const SceneSettings::Timing& Scene::getTiming() const
     {
         return m_settings.timing;
     }
-    void Canvas::setContextSettings(const sf::ContextSettings& contextSettings)
+    void Scene::setContextSettings(const sf::ContextSettings& contextSettings)
     {
         m_settings.contextSettings = contextSettings;
     }
-    const sf::ContextSettings& Canvas::getContextSettings() const
+    const sf::ContextSettings& Scene::getContextSettings() const
     {
         return m_settings.contextSettings;
     }
-    void Canvas::setUpdateControlls(const CanvasSettings::UpdateControlls& controlls)
+    void Scene::setUpdateControlls(const SceneSettings::UpdateControlls& controlls)
     {
         m_settings.updateControlls = controlls;
         if (m_settings.updateControlls.enableMultithreading)
@@ -155,65 +155,65 @@ namespace QSFML {
         else
             deinitializeThreads();
     }
-    const CanvasSettings::UpdateControlls& Canvas::getUpdateControlls() const
+    const SceneSettings::UpdateControlls& Scene::getUpdateControlls() const
     {
         return m_settings.updateControlls;
     }
-    void Canvas::setColorSettings(const CanvasSettings::Colors& colors)
+    void Scene::setColorSettings(const SceneSettings::Colors& colors)
     {
         m_settings.colors = colors;
     }
-    const CanvasSettings::Colors& Canvas::getColorSettings() const
+    const SceneSettings::Colors& Scene::getColorSettings() const
     {
         return m_settings.colors;
     }
 
-    void Canvas::start()
+    void Scene::start()
     {
         m_frameTimer.start();
     }
-    void Canvas::stop()
+    void Scene::stop()
     {
         m_frameTimer.stop();
     }
 
-    void Canvas::setCameraView(const sf::View& view)
+    void Scene::setCameraView(const sf::View& view)
     {
         if (!m_window) return;
         m_view = view;
         m_window->setView(m_view);
     }
-    const sf::View& Canvas::getCameraView() const
+    const sf::View& Scene::getCameraView() const
     {
         static sf::View dummy;
         if (!m_window) return dummy;
         return m_view;
     }
-    const sf::View& Canvas::getDefaultCameraView() const
+    const sf::View& Scene::getDefaultCameraView() const
     {
         static sf::View dummy;
         if (!m_window) return dummy;
         return m_window->getDefaultView();
     }
-    Utilities::AABB Canvas::getCameraViewRect() const
+    Utilities::AABB Scene::getCameraViewRect() const
     {
         return Utilities::AABB(m_view.getCenter() - m_view.getSize() * 0.5f, m_view.getSize());
     }
-    sf::Vector2u Canvas::getCanvasSize() const
+    sf::Vector2u Scene::getSceneSize() const
     {
         return m_window->getSize();
     }
-    sf::Vector2u Canvas::getOldCanvasSize() const
+    sf::Vector2u Scene::getOldSceneSize() const
     {
-        return m_oldCanvasSize;
+        return m_oldSceneSize;
     }
-    sf::Vector2f Canvas::getViewCenterPosition() const
+    sf::Vector2f Scene::getViewCenterPosition() const
     {
         return m_view.getCenter();
 	}
 
 
-    sf::Vector2i Canvas::getMousePosition() const
+    sf::Vector2i Scene::getMousePosition() const
     {
         if (m_window)
         {
@@ -227,21 +227,21 @@ namespace QSFML {
         mousePos.y /= m_dpiScale.y;
         return mousePos;
     }
-    sf::Vector2f Canvas::getMouseWorldPosition() const
+    sf::Vector2f Scene::getMouseWorldPosition() const
     {
         if (!m_window)
             return sf::Vector2f(0, 0);
         sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
         return m_window->mapPixelToCoords(mousePos);
     }
-    sf::Vector2f Canvas::getInWorldSpace(sf::Vector2i pixelSpace)
+    sf::Vector2f Scene::getInWorldSpace(sf::Vector2i pixelSpace)
     {
         if (!m_window) return sf::Vector2f(0, 0);
         pixelSpace.x *= m_dpiScale.x;
         pixelSpace.y *= m_dpiScale.y;
         return m_window->mapPixelToCoords(pixelSpace);
     }
-    sf::Vector2i Canvas::getInScreenSpace(const sf::Vector2f& worldSpace)
+    sf::Vector2i Scene::getInScreenSpace(const sf::Vector2f& worldSpace)
     {
         sf::Vector2i pos(0, 0);
         if (!m_window) return pos;
@@ -253,21 +253,21 @@ namespace QSFML {
     }
 
 
-    void Canvas::OnInit()
+    void Scene::OnInit()
     {
 
     }
 
-    void Canvas::OnUpdate()
+    void Scene::OnUpdate()
     {
 
     }
 
-    QPaintEngine* Canvas::paintEngine() const
+    QPaintEngine* Scene::paintEngine() const
     {
         return nullptr;
     }
-    void Canvas::showEvent(QShowEvent*)
+    void Scene::showEvent(QShowEvent*)
     {
         if (!m_window)
         {
@@ -293,30 +293,30 @@ namespace QSFML {
             m_syncedUpdateT_t1 = std::chrono::high_resolution_clock::now();
             m_update_t1 = m_syncedUpdateT_t1;
             m_paint_t1 = m_syncedUpdateT_t1;
-            m_oldCanvasSize = getCanvasSize();
+            m_oldSceneSize = getSceneSize();
 
             // Calculate the dpi scale
             QRect geometry = QWidget::geometry();
-            m_dpiScale.x = (float)m_oldCanvasSize.x / geometry.width();
-            m_dpiScale.y = (float)m_oldCanvasSize.y / geometry.height();
+            m_dpiScale.x = (float)m_oldSceneSize.x / geometry.width();
+            m_dpiScale.y = (float)m_oldSceneSize.y / geometry.height();
         }
     }
-    void Canvas::closeEvent(QCloseEvent*)
+    void Scene::closeEvent(QCloseEvent*)
     {
         stop();
     }
-    void Canvas::paintEvent(QPaintEvent*)
+    void Scene::paintEvent(QPaintEvent*)
     {
 
     }
 
-    void Canvas::resizeEvent(QResizeEvent* event)
+    void Scene::resizeEvent(QResizeEvent* event)
     {
         if (!m_window) return;
         if (m_settings.layout.autoAjustSize)
         {
             QSize size = event->size();
-            m_oldCanvasSize = getCanvasSize();
+            m_oldSceneSize = getSceneSize();
         }
         else
         {
@@ -325,11 +325,11 @@ namespace QSFML {
         }
     }
 
-    void Canvas::update()
+    void Scene::update()
     {
         if (!m_window)
             return;
-        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
 
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsedSeconds = std::chrono::duration<double>(t2 - m_syncedUpdateT_t1).count();
@@ -355,16 +355,16 @@ namespace QSFML {
             paint();
         }
     }
-    void Canvas::applyObjectChanges()
+    void Scene::applyObjectChanges()
     {
-        QSFMLP_CANVAS_BLOCK("Delete unused objects and add new objects", QSFML_COLOR_STAGE_2);
-        CanvasObjectContainer::applyObjectChanges();
+        QSFMLP_SCENE_BLOCK("Delete unused objects and add new objects", QSFML_COLOR_STAGE_2);
+        GameObjectContainer::applyObjectChanges();
         StatsManager::copyObjectCounts();
-        QSFMLP_CANVAS_END_BLOCK;
+        QSFMLP_SCENE_END_BLOCK;
     }
-    void Canvas::checkEvents()
+    void Scene::checkEvents()
     {
-        QSFMLP_CANVAS_BLOCK("Process sf::Events", QSFML_COLOR_STAGE_3);
+        QSFMLP_SCENE_BLOCK("Process sf::Events", QSFML_COLOR_STAGE_3);
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         StatsManager::resetFrame_eventloop();
         std::vector<sf::Event> events;
@@ -379,11 +379,11 @@ namespace QSFML {
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsed = std::chrono::duration<double>(t2 - t1).count();
         StatsManager::setEventTime(elapsed);
-        QSFMLP_CANVAS_END_BLOCK;
+        QSFMLP_SCENE_END_BLOCK;
     }
-    void Canvas::updateObjects()
+    void Scene::updateObjects()
     {
-        QSFMLP_CANVAS_BLOCK("Process update", QSFML_COLOR_STAGE_4);
+        QSFMLP_SCENE_BLOCK("Process update", QSFML_COLOR_STAGE_4);
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         StatsManager::resetFrame_updateLoop();
         double elapsedSeconds = std::chrono::duration<double>(t1 - m_update_t1).count();
@@ -397,16 +397,16 @@ namespace QSFML {
         // Let the derived class do its specific stuff
         OnUpdate();
 
-        CanvasObjectContainer::update();
+        GameObjectContainer::update();
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsed = std::chrono::duration<double>(t2 - t1).count();
         StatsManager::setUpdateTime(elapsed);
         StatsManager::addTick();
-        QSFMLP_CANVAS_END_BLOCK;
+        QSFMLP_SCENE_END_BLOCK;
     }
-    void Canvas::paint()
+    void Scene::paint()
     {
-        QSFMLP_CANVAS_BLOCK("Clear Display", QSFML_COLOR_STAGE_5);
+        QSFMLP_SCENE_BLOCK("Clear Display", QSFML_COLOR_STAGE_5);
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         StatsManager::resetFrame_paintLoop();
         double elapsedSeconds = std::chrono::duration<double>(t1 - m_paint_t1).count();
@@ -417,26 +417,26 @@ namespace QSFML {
 
         m_paint_t1 = t1;
         m_window->clear(m_settings.colors.defaultBackground);
-        QSFMLP_CANVAS_END_BLOCK;
+        QSFMLP_SCENE_END_BLOCK;
 
-        QSFMLP_CANVAS_BLOCK("Process draw", QSFML_COLOR_STAGE_6);
-        CanvasObjectContainer::draw(*m_window);
-        QSFMLP_CANVAS_END_BLOCK;
+        QSFMLP_SCENE_BLOCK("Process draw", QSFML_COLOR_STAGE_6);
+        GameObjectContainer::draw(*m_window);
+        QSFMLP_SCENE_END_BLOCK;
 
-        QSFMLP_CANVAS_BLOCK("Process Display", QSFML_COLOR_STAGE_7);
+        QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_7);
         // Display on screen
         m_window->display();
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsed = std::chrono::duration<double>(t2 - t1).count();
         StatsManager::setDrawTime(elapsed);
-        QSFMLP_CANVAS_END_BLOCK;
+        QSFMLP_SCENE_END_BLOCK;
     }
 
-    void Canvas::sfEvent(const std::vector<sf::Event>& events)
+    void Scene::sfEvent(const std::vector<sf::Event>& events)
     {
         QSFML_UNUSED(events);
     }
-    const sf::Font& Canvas::getDefaultTextFont()
+    const sf::Font& Scene::getDefaultTextFont()
     {
         static sf::Font textfont;
         static bool isLoaded = false;
@@ -457,56 +457,56 @@ namespace QSFML {
         }
         return textfont;
     }
-    void Canvas::internal_event(const std::vector<sf::Event>& events)
+    void Scene::internal_event(const std::vector<sf::Event>& events)
     {
-        CanvasObjectContainer::sfEvent(events);
+        GameObjectContainer::sfEvent(events);
     }
-    void Canvas::setProfilerOutputFileName(const std::string& fileName)
+    void Scene::setProfilerOutputFileName(const std::string& fileName)
     {
         m_profilerOutputFile = fileName;
     }
-    const std::string& Canvas::getProfilerOutputFileName()
+    const std::string& Scene::getProfilerOutputFileName()
     {
         return m_profilerOutputFile;
     }
-    void Canvas::saveProfilerFile()
+    void Scene::saveProfilerFile()
     {
 #ifdef QSFML_PROFILING
         profiler::dumpBlocksToFile(m_profilerOutputFile.c_str());
 #endif
     }
-    void Canvas::saveProfilerFile(const std::string& fileName)
+    void Scene::saveProfilerFile(const std::string& fileName)
     {
         setProfilerOutputFileName(fileName);
         saveProfilerFile();
     }
 
 
-    size_t Canvas::getTick() const
+    size_t Scene::getTick() const
     {
         return m_currentStats.getTick();
     }
-    double Canvas::getDeltaT() const
+    double Scene::getDeltaT() const
     {
         return m_currentStats.getDeltaT();
     }
-    double Canvas::getElapsedTime() const
+    double Scene::getElapsedTime() const
     {
         return m_currentStats.getElapsedTime();
     }
-    double Canvas::getFixedElapsedTime() const
+    double Scene::getFixedElapsedTime() const
     {
         return m_currentStats.getFiexedElapsedTime();
     }
-    double Canvas::getFixedDeltaT() const
+    double Scene::getFixedDeltaT() const
     {
         return m_settings.timing.physicsFixedDeltaT;
     }
-    double Canvas::getFPS() const
+    double Scene::getFPS() const
     {
         return m_currentStats.getFPS();
     }
-    double Canvas::getTPS() const
+    double Scene::getTPS() const
     {
         return m_currentStats.getTPS();
     }

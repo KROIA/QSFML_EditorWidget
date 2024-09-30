@@ -7,8 +7,8 @@ namespace Objects
 {
 OBJECT_IMPL(LineChart)
 LineChart::LineChart(const std::string &name,
-                     CanvasObject *parent)
-    : CanvasObject(name, parent)
+                     GameObject *parent)
+    : GameObject(name, parent)
 {
     setSize({10,10});
     m_yScale = 1;
@@ -21,7 +21,7 @@ LineChart::LineChart(const std::string &name,
     addComponent(m_painter);
 }
 LineChart::LineChart(const LineChart &other)
-    : CanvasObject(other)
+    : GameObject(other)
 {
     m_size = other.m_size;
     m_origin = other.m_origin;

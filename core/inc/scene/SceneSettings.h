@@ -8,21 +8,21 @@
 
 namespace QSFML
 {
-struct QSFML_EDITOR_WIDGET_EXPORT CanvasSettings
+struct QSFML_EDITOR_WIDGET_EXPORT SceneSettings
 {
     /**
-     * \brief The layout of the Canvas, how it will behave on the screen
+     * \brief The layout of the Scene, how it will behave on the screen
      */
     struct QSFML_EDITOR_WIDGET_EXPORT Layout
     {
-        bool autoAjustSize;         /*!< If set to true, the canvas will automatically
+        bool autoAjustSize;         /*!< If set to true, the Scene will automatically
                                          resizes based on its parent widget. */
-        sf::Vector2u fixedSize;     //!< If autoAjustSize is false, this size will be applyed to the canvas widget
+        sf::Vector2u fixedSize;     //!< If autoAjustSize is false, this size will be applyed to the Scene widget
 
         /**
-         * \brief The margin of the canvas
+         * \brief The margin of the Scene
          * \details This will define how many pixels in each direction the
-         *          canvas will be spaced inside of the parent widget.
+         *          Scene will be spaced inside of the parent widget.
          */
         struct QSFML_EDITOR_WIDGET_EXPORT Margin
         {
@@ -51,7 +51,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT CanvasSettings
     Layout layout;
 
     /**
-     * \brief The Colors of different parts on the canvas
+     * \brief The Colors of different parts on the Scene
      */
     struct QSFML_EDITOR_WIDGET_EXPORT Colors
     {
@@ -119,7 +119,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT CanvasSettings
     };
     UpdateControlls updateControlls;
 
-    CanvasSettings()
+    SceneSettings()
     {
        // fontPath = "C:\\Windows\\Fonts\\Arial.ttf";
     }

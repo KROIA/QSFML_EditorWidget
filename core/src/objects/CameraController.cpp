@@ -1,5 +1,5 @@
 #include "objects/CameraController.h"
-#include "canvas/Canvas.h"
+#include "Scene/Scene.h"
 #include <QDebug>
 
 using namespace QSFML::Objects;
@@ -9,10 +9,10 @@ namespace QSFML
     {
         COMPONENT_IMPL(CameraController)
             CameraController::CameraController(const std::string& name,
-                CanvasObject* parent)
-            : CanvasObject(name, parent)
+                GameObject* parent)
+            : GameObject(name, parent)
         {
-            // getCanvasParent() = nullptr;
+            // getSceneParent() = nullptr;
             m_currentZoom = 1;
             setMinZoom(0.1);
             setMaxZoom(3);
@@ -24,7 +24,7 @@ namespace QSFML
             addComponent(m_eventHandleComponent);
         }
         CameraController::CameraController(const CameraController& other)
-            : CanvasObject(other)
+            : GameObject(other)
         {
             m_currentZoom = other.m_currentZoom;
             m_minZoom = other.m_minZoom;
@@ -92,91 +92,91 @@ namespace QSFML
         }
         void CameraController::movePosition(const sf::Vector2f& delta)
         {
-            if (!getCanvasParent()) return;
-            sf::View view = getCanvasParent()->getCameraView();
+            if (!getSceneParent()) return;
+            sf::View view = getSceneParent()->getCameraView();
             view.move(delta);
             positionCheck(view);
-            getCanvasParent()->setCameraView(view);
+            getSceneParent()->setCameraView(view);
         }
         void CameraController::setPosition(const sf::Vector2f& pos)
         {
-            if (!getCanvasParent()) return;
-            sf::View view = getCanvasParent()->getCameraView();
+            if (!getSceneParent()) return;
+            sf::View view = getSceneParent()->getCameraView();
             view.setCenter(pos);
             positionCheck(view);
-            getCanvasParent()->setCameraView(view);
+            getSceneParent()->setCameraView(view);
         }
         void CameraController::rotate(float angle)
         {
-            if (!getCanvasParent()) return;
-            sf::View view = getCanvasParent()->getCameraView();
+            if (!getSceneParent()) return;
+            sf::View view = getSceneParent()->getCameraView();
             view.rotate(angle);
-            getCanvasParent()->setCameraView(view);
+            getSceneParent()->setCameraView(view);
         }
         void CameraController::setRotation(float angle)
         {
-            if (!getCanvasParent()) return;
-            sf::View view = getCanvasParent()->getCameraView();
+            if (!getSceneParent()) return;
+            sf::View view = getSceneParent()->getCameraView();
             view.setRotation(angle);
-            getCanvasParent()->setCameraView(view);
+            getSceneParent()->setCameraView(view);
         }
         void CameraController::zoom(float amount)
         {
-            if (!getCanvasParent()) return;
+            if (!getSceneParent()) return;
             float newZoom = m_currentZoom * amount;
             if (newZoom < m_minZoom || newZoom > m_maxZoom)
                 return;
             m_currentZoom = newZoom;
 
-            sf::View view = getCanvasParent()->getCameraView();
+            sf::View view = getSceneParent()->getCameraView();
             view.zoom(amount);
             positionCheck(view);
-            getCanvasParent()->setCameraView(view);
+            getSceneParent()->setCameraView(view);
         }
         void CameraController::zoom(float amount, const sf::Vector2i& pixel)
         {
-            if (!getCanvasParent()) return;
+            if (!getSceneParent()) return;
             float newZoom = m_currentZoom * amount;
             if (newZoom < m_minZoom || newZoom > m_maxZoom)
                 return;
-            sf::View view = getCanvasParent()->getCameraView();
+            sf::View view = getSceneParent()->getCameraView();
             m_currentZoom = newZoom;
 
             const sf::Vector2f beforeCoord = getInWorldSpace(pixel);
 
             view.zoom(amount);
             positionCheck(view);
-            getCanvasParent()->setCameraView(view);
+            getSceneParent()->setCameraView(view);
             const sf::Vector2f afterCoord{ getInWorldSpace(pixel) };
             const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
             view.move(offsetCoords);
             positionCheck(view);
-            getCanvasParent()->setCameraView(view);
+            getSceneParent()->setCameraView(view);
         }
         void CameraController::setZoom(float amount)
         {
-            if (!getCanvasParent()) return;
-            sf::View view = getCanvasParent()->getCameraView();
-            sf::View defaultView = getCanvasParent()->getDefaultCameraView();
+            if (!getSceneParent()) return;
+            sf::View view = getSceneParent()->getCameraView();
+            sf::View defaultView = getSceneParent()->getDefaultCameraView();
 
             defaultView.setCenter(view.getCenter());
-            getCanvasParent()->setCameraView(defaultView);
+            getSceneParent()->setCameraView(defaultView);
             zoom(amount);
         }
         void CameraController::setZoom(float amount, const sf::Vector2i& pixel)
         {
-            if (!getCanvasParent()) return;
-            sf::View view = getCanvasParent()->getCameraView();
-            sf::View defaultView = getCanvasParent()->getDefaultCameraView();
+            if (!getSceneParent()) return;
+            sf::View view = getSceneParent()->getCameraView();
+            sf::View defaultView = getSceneParent()->getDefaultCameraView();
 
             defaultView.setCenter(view.getCenter());
-            getCanvasParent()->setCameraView(defaultView);
+            getSceneParent()->setCameraView(defaultView);
             zoom(amount, pixel);
         }
         void CameraController::setCameraView(const sf::View& view)
         {
-            if (!getCanvasParent()) return;
-            getCanvasParent()->setCameraView(view);
+            if (!getSceneParent()) return;
+            getSceneParent()->setCameraView(view);
         }
         void CameraController::update()
         {
@@ -237,8 +237,8 @@ namespace QSFML
             {
                 sf::View view = m_controller->getCameraView();
 
-                sf::Vector2u oldWindowSize = m_controller->getOldCanvasSize();
-                sf::Vector2u newWindowSize = m_controller->getCanvasSize();
+                sf::Vector2u oldWindowSize = m_controller->getOldSceneSize();
+                sf::Vector2u newWindowSize = m_controller->getSceneSize();
                 sf::FloatRect viewRect = sf::FloatRect(view.getCenter() - view.getSize() / 2.f, view.getSize());
 
                 viewRect.width = viewRect.width / oldWindowSize.x * newWindowSize.x;
@@ -258,7 +258,7 @@ namespace QSFML
         {
             sf::FloatRect viewRect = sf::FloatRect(view.getCenter() - view.getSize() / 2.f, view.getSize());
             sf::Vector2f cameraPos = view.getCenter();
-            sf::Vector2u windowSize = getCanvasSize();
+            sf::Vector2u windowSize = getSceneSize();
             float aspectRatio = (float)windowSize.x / (float)windowSize.y;
 
             if (viewRect.width / viewRect.height > aspectRatio)

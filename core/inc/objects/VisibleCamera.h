@@ -13,7 +13,7 @@ class QSFML_EDITOR_WIDGET_EXPORT VisibleCamera : public CameraController
         class DrawableComp;
     public:
         VisibleCamera(const std::string& name = "",
-            CanvasObject* parent = nullptr);
+            GameObject* parent = nullptr);
         VisibleCamera(const VisibleCamera& other);
         ~VisibleCamera(){}
         OBJECT_DECL(VisibleCamera)

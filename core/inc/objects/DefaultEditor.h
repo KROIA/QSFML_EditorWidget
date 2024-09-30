@@ -1,6 +1,6 @@
 #pragma once
 
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "objects/CameraController.h"
 #include "objects/BackgroundGrid.h"
 #include "objects/RuntimeInfo.h"
@@ -12,7 +12,7 @@ namespace QSFML
 {
 namespace Objects
 {
-class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObject
 {
     Q_OBJECT
     public:
@@ -38,7 +38,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObj
     private:
         
         void setup(const sf::Vector2f& size);
-        void onCanvasParentChange(Canvas* oldParent, Canvas* newParent) override;
+        void onSceneParentChange(Scene* oldParent, Scene* newParent) override;
 
         CameraController* m_cam;
         BackgroundGrid *m_grid;

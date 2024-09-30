@@ -1,7 +1,7 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/drawable/Text.h"
 #include "utilities/Stats.h"
 
@@ -9,7 +9,7 @@ namespace QSFML
 {
 	namespace Objects
 	{
-        class QSFML_EDITOR_WIDGET_EXPORT RuntimeInfo : public CanvasObject
+        class QSFML_EDITOR_WIDGET_EXPORT RuntimeInfo : public GameObject
         {
         public:
             RuntimeInfo(const std::string& name = "RuntimeInfo");

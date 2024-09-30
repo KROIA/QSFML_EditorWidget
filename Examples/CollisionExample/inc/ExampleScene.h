@@ -6,16 +6,16 @@
 #include "CollisionChecker.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class ExampleCanvas; }
+namespace Ui { class ExampleScene; }
 QT_END_NAMESPACE
 
-class ExampleCanvas : public QMainWindow
+class ExampleScene : public QMainWindow
 {
         Q_OBJECT
 
     public:
-        ExampleCanvas(QWidget *parent = nullptr);
-        ~ExampleCanvas();
+        ExampleScene(QWidget *parent = nullptr);
+        ~ExampleScene();
 
 private slots:
     void on_intersecting_radioButton_clicked();
@@ -25,9 +25,9 @@ private slots:
     
     private:
         void closeEvent(QCloseEvent* event) override;
-        Ui::ExampleCanvas *ui;
+        Ui::ExampleScene *ui;
 
-        QSFML::Canvas *m_canvas;
+        QSFML::Scene *m_Scene;
         
 
         CollisionChecker* m_collisionChecker;

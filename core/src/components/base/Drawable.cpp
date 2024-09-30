@@ -1,6 +1,6 @@
 #include "components/base/Drawable.h"
-#include "objects/base/CanvasObject.h"
-#include "canvas/Canvas.h"
+#include "objects/base/GameObject.h"
+#include "Scene/Scene.h"
 
 namespace QSFML
 {

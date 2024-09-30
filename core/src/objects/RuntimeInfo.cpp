@@ -1,13 +1,13 @@
 #include "objects/RuntimeInfo.h"
 #include "utilities/Stats.h"
-#include "canvas/Canvas.h"
+#include "Scene/Scene.h"
 
 namespace QSFML
 {
 	namespace Objects
 	{
 		RuntimeInfo::RuntimeInfo(const std::string& name)
-			: CanvasObject(name)
+			: GameObject(name)
 		{
 			m_text = new Components::Text("InfoText");
 			m_text->setFont("C:\\Windows\\Fonts\\courbd.ttf");
@@ -16,7 +16,7 @@ namespace QSFML
 			addComponent(m_text);
 		}
 		RuntimeInfo::RuntimeInfo(const RuntimeInfo& other)
-			: CanvasObject(other)
+			: GameObject(other)
 		{
 			m_text = new Components::Text("InfoText");
 			m_text->setFont("C:\\Windows\\Fonts\\courbd.ttf");
@@ -42,8 +42,8 @@ namespace QSFML
 
 		void RuntimeInfo::update()
 		{
-			QSFML::Canvas* canvas = getCanvasParent();
-			QSFML::Utilities::Stats stats = canvas->getLastStats();
+			QSFML::Scene* Scene = getSceneParent();
+			QSFML::Utilities::Stats stats = Scene->getLastStats();
 			if (m_smoothStats)
 				stats = stats.getSmothed(m_oldStats, 0.9);
 
@@ -54,7 +54,7 @@ namespace QSFML
 
 	
 			m_text->setText(statsStr);
-			Utilities::AABB viewBox = canvas->getCameraViewRect();
+			Utilities::AABB viewBox = Scene->getCameraViewRect();
 			const sf::Vector2f &pos = viewBox.TL();
 			float width = viewBox.getSize().x;
 			m_text->setScale(width / 2000);

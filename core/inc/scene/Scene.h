@@ -1,8 +1,8 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
-#include "canvas/CanvasSettings.h"
-#include "canvas/CanvasObjectContainer.h"
+#include "scene/SceneSettings.h"
+#include "scene/GameObjectContainer.h"
 
 #include "utilities/Timer.h"
 #include "utilities/Stats.h"
@@ -15,34 +15,34 @@
 namespace QSFML
 {
 
-class QSFML_EDITOR_WIDGET_EXPORT Canvas :
+class QSFML_EDITOR_WIDGET_EXPORT Scene :
         public QWidget,
         public Utilities::StatsManager,
-        public CanvasObjectContainer
+        public GameObjectContainer
     {
         Q_OBJECT
-        friend CanvasObjectContainer;
+        friend GameObjectContainer;
     public:
 
 
-        Canvas(QWidget* parent, const CanvasSettings &settings = CanvasSettings());
+        Scene(QWidget* parent, const SceneSettings &settings = SceneSettings());
 
-        virtual ~Canvas();
+        virtual ~Scene();
 
         void applyObjectChanges(); // Will be called automaticly if not manual
 
-        void setSettings(const CanvasSettings &settings);
-        const CanvasSettings &getSettings() const;
-        void setLayout(const CanvasSettings::Layout &layout);
-        const CanvasSettings::Layout &getLayout() const;
-        void setTiming(const CanvasSettings::Timing &timing);
-        const CanvasSettings::Timing &getTiming() const;
+        void setSettings(const SceneSettings &settings);
+        const SceneSettings &getSettings() const;
+        void setLayout(const SceneSettings::Layout &layout);
+        const SceneSettings::Layout &getLayout() const;
+        void setTiming(const SceneSettings::Timing &timing);
+        const SceneSettings::Timing &getTiming() const;
         void setContextSettings(const sf::ContextSettings &contextSettings);
         const sf::ContextSettings &getContextSettings() const;
-        void setUpdateControlls(const CanvasSettings::UpdateControlls &controlls);
-        const CanvasSettings::UpdateControlls &getUpdateControlls() const;
-        void setColorSettings(const CanvasSettings::Colors& colors);
-        const CanvasSettings::Colors& getColorSettings() const;
+        void setUpdateControlls(const SceneSettings::UpdateControlls &controlls);
+        const SceneSettings::UpdateControlls &getUpdateControlls() const;
+        void setColorSettings(const SceneSettings::Colors& colors);
+        const SceneSettings::Colors& getColorSettings() const;
 
         void start();
         void stop();
@@ -51,8 +51,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         const sf::View &getCameraView() const;
         const sf::View &getDefaultCameraView() const;
         Utilities::AABB getCameraViewRect() const;
-        sf::Vector2u getCanvasSize() const;
-        sf::Vector2u getOldCanvasSize() const;
+        sf::Vector2u getSceneSize() const;
+        sf::Vector2u getOldSceneSize() const;
         sf::Vector2f getViewCenterPosition() const;
 
         sf::Vector2i getMousePosition() const;
@@ -112,15 +112,15 @@ class QSFML_EDITOR_WIDGET_EXPORT Canvas :
         TimePoint m_paint_t1;
 
 
-        CanvasSettings m_settings;
+        SceneSettings m_settings;
         sf::RenderWindow *m_window;
-        sf::Vector2u m_oldCanvasSize;
+        sf::Vector2u m_oldSceneSize;
         sf::View m_view;
         sf::Vector2f m_dpiScale;
 
         static std::string m_profilerOutputFile;
 
-        static std::vector<Canvas*> s_instances;
+        static std::vector<Scene*> s_instances;
 
     };
 }

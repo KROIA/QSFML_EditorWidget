@@ -1,5 +1,5 @@
 #include "components/MousePressEvent.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 namespace QSFML
 {
 namespace Components
@@ -41,7 +41,7 @@ const sf::Vector2i &MousePressEvent::getLastPressedPixelPos() const
 bool MousePressEvent::getCurrentValue()
 {
     bool isPressed = sf::Mouse::isButtonPressed(m_button);
-    Objects::CanvasObject *parent = getParent();
+    Objects::GameObject *parent = getParent();
     if(isPressed && parent)
     {
         m_currentPressedPixelPosition = parent->getMousePosition();

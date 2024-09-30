@@ -2,14 +2,14 @@
 #include "QSFML_EditorWidget.h"
 
 
-class PerformanceObject : public QSFML::Objects::CanvasObject
+class PerformanceObject : public QSFML::Objects::GameObject
 {
 public:
 	PerformanceObject(const std::string& name = "PerformanceObject",
-		CanvasObject* parent = nullptr);
+		GameObject* parent = nullptr);
 	PerformanceObject(const std::vector<sf::Vector2f>& vertecies,
 		const std::string& name = "PerformanceObject",
-		CanvasObject* parent = nullptr);
+		GameObject* parent = nullptr);
 	~PerformanceObject();
 
 	CLONE_FUNC_DEC(PerformanceObject);

@@ -1,6 +1,6 @@
 #include "objects/DefaultEditor.h"
 #include "Components/KeyPressEvent.h"
-#include "Canvas/Canvas.h"
+#include "Scene/Scene.h"
 
 namespace QSFML
 {
@@ -9,14 +9,14 @@ namespace QSFML
         OBJECT_IMPL(DefaultEditor)
         DefaultEditor::DefaultEditor(const std::string &name,
                                      const sf::Vector2f &size)
-            : CanvasObject(name)
+            : GameObject(name)
             , m_cam(new CameraController("Camera"))
             , m_grid(new BackgroundGrid("Grid"))
         {
             setup(size);
         }
         DefaultEditor::DefaultEditor(const DefaultEditor &other)
-            : CanvasObject(other)
+            : GameObject(other)
             , m_cam(new CameraController("Camera"))
             , m_grid(new BackgroundGrid("Grid"))
         {
@@ -51,7 +51,7 @@ namespace QSFML
 
 
         }
-        void DefaultEditor::onCanvasParentChange(Canvas* oldParent, Canvas* newParent)
+        void DefaultEditor::onSceneParentChange(Scene* oldParent, Scene* newParent)
         {
             if (oldParent)
 				oldParent->removeObject(m_runtimeInfo);

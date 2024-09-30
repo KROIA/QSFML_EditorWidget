@@ -13,8 +13,8 @@ FluidSim::FluidSim(QWidget *parent)
     , ui(new Ui::FluidSim)
 {
     ui->setupUi(this);
-    m_canvas = nullptr;
-    setupCanvas();
+    m_Scene = nullptr;
+    setupScene();
     
     
 
@@ -24,12 +24,12 @@ FluidSim::FluidSim(QWidget *parent)
 FluidSim::~FluidSim()
 {
     delete ui;
-    delete m_canvas;
+    delete m_Scene;
 }
 
-void FluidSim::setupCanvas()
+void FluidSim::setupScene()
 {
-    CanvasSettings settings;
+    SceneSettings settings;
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
@@ -38,10 +38,10 @@ void FluidSim::setupCanvas()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_canvas = new Canvas(ui->canvasWidget, settings);
+    m_Scene = new Scene(ui->SceneWidget, settings);
 
     //DefaultEditor* defaultEditor = new DefaultEditor();
-    //m_canvas->addObject(defaultEditor);
+    //m_Scene->addObject(defaultEditor);
     
     
    // qDebug() << defaultEditor->toString().c_str();
@@ -51,18 +51,18 @@ void FluidSim::setupCanvas()
 
     VisibleCamera* camera = new VisibleCamera();
     camera->setMaxMovingBounds(sf::FloatRect({0,0}, { tiles.x * tileSize.x, tiles.y * tileSize.y }));
-    m_canvas->addObject(camera);
+    m_Scene->addObject(camera);
 
     FluidGrid* fluidGrid = new FluidGrid(tiles, tileSize);
     fluidGrid->setRenderLayer(QSFML::RenderLayer::layer_1);
-    m_canvas->addObject(fluidGrid);
+    m_Scene->addObject(fluidGrid);
 
 
 }
 void FluidSim::closeEvent(QCloseEvent* event)
 {
-    if (m_canvas)
-        m_canvas->stop();
+    if (m_Scene)
+        m_Scene->stop();
     event->accept();
 }
 

@@ -2,13 +2,13 @@
 
 #include "QSFML_EditorWidget.h"
 
-class VectorDisplayer: public QSFML::Objects::CanvasObject
+class VectorDisplayer: public QSFML::Objects::GameObject
 {
         class MouseFollower;
     public:
         VectorDisplayer(const std::string &name = "VectorDisplayer",
-                        CanvasObject *parent = nullptr)
-            : CanvasObject(name, parent)
+                        GameObject *parent = nullptr)
+            : GameObject(name, parent)
         {
             m_vec1 = new QSFML::Components::VectorPainter("vec1");
             m_vec2 = new QSFML::Components::VectorPainter("vec2");

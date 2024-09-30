@@ -1,8 +1,8 @@
 #include "CollisionObject.h"
 
 CLONE_FUNC_IMPL(CollisionObject);
-CollisionObject::CollisionObject(const std::string& name, CanvasObject* parent)
-	: CanvasObject(name)
+CollisionObject::CollisionObject(const std::string& name, GameObject* parent)
+	: GameObject(name)
 {
 	m_collider = new QSFML::Components::Collider();
 	m_collider->setVertecies({
@@ -17,8 +17,8 @@ CollisionObject::CollisionObject(const std::string& name, CanvasObject* parent)
 }
 CollisionObject::CollisionObject(const std::vector<sf::Vector2f>& vertecies,
 								 const std::string& name, 
-	                             CanvasObject* parent)
-	: CanvasObject(name)
+	                             GameObject* parent)
+	: GameObject(name)
 {
 	m_collider = new QSFML::Components::Collider();
 	m_collider->setVertecies(vertecies);

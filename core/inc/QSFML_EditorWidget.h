@@ -10,7 +10,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "canvas/Canvas.h"
+#include "Scene/Scene.h"
 
 #include "components/base/Component.h"
 #include "components/base/Drawable.h"
@@ -32,7 +32,7 @@
 #include "components/MousePressEvent.h"
 
 
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "objects/DefaultEditor.h"
 #include "objects/BackgroundGrid.h"
 #include "objects/CameraController.h"

@@ -1,5 +1,5 @@
 #include "components/base/Component.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 
 using namespace QSFML::Components;
 using namespace QSFML::Objects;
@@ -10,7 +10,7 @@ Component::Component(const std::string &name)
     : m_enabled(true)
     , m_name(name)
     , m_parent(nullptr)
-    , m_canvasParent(nullptr)
+    , m_SceneParent(nullptr)
 {
 
 }
@@ -18,7 +18,7 @@ Component::Component(const Component &other)
     : m_enabled(other.m_enabled)
     , m_name(other.m_name)
     , m_parent(nullptr)
-    , m_canvasParent(nullptr)
+    , m_SceneParent(nullptr)
 {
 
 }
@@ -26,7 +26,7 @@ Component::~Component()
 {
     if (m_parent)
     {
-        CanvasObject* parent = m_parent;
+        GameObject* parent = m_parent;
         m_parent = nullptr;
         parent->removeComponent(this);
     }
@@ -44,7 +44,7 @@ void Component::deleteThis()
 {
     if (m_parent)
     {
-        CanvasObject* parent = m_parent;
+        GameObject* parent = m_parent;
         m_parent = nullptr;
         parent->deleteComponent(this);
     }
@@ -89,15 +89,15 @@ QSFML::Utilities::AABB Component::getCameraViewRect() const
     if (!m_parent) return Utilities::AABB();
     return m_parent->getCameraViewRect();
 }
-sf::Vector2u Component::getCanvasSize() const
+sf::Vector2u Component::getSceneSize() const
 {
     if (!m_parent) return sf::Vector2u(0, 0);
-    return m_parent->getCanvasSize();
+    return m_parent->getSceneSize();
 }
-sf::Vector2u Component::getOldCanvasSize() const
+sf::Vector2u Component::getOldSceneSize() const
 {
     if (!m_parent) return sf::Vector2u(0, 0);
-    return m_parent->getOldCanvasSize();
+    return m_parent->getOldSceneSize();
 }
 
 const sf::Font& Component::getTextFont() const
@@ -117,7 +117,7 @@ double Component::getDeltaT() const
     return m_parent->getDeltaT();
 }
 
-QSFML::Canvas* Component::getCanvasParent() const
+QSFML::Scene* Component::getSceneParent() const
 {
-    return m_canvasParent;
+    return m_SceneParent;
 }

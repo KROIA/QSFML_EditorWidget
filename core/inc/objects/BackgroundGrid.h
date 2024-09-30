@@ -1,7 +1,7 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/base/Drawable.h"
 
 
@@ -9,12 +9,12 @@ namespace QSFML
 {
 namespace Objects
 {
-class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
 {
         class DrawableComp;
     public:
         BackgroundGrid(const std::string &name = "",
-                       CanvasObject *parent = nullptr);
+                       GameObject *parent = nullptr);
         BackgroundGrid(const BackgroundGrid &other);
         ~BackgroundGrid();
         COMPONENT_DECL(BackgroundGrid);

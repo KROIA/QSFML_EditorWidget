@@ -61,7 +61,7 @@ class QSFML_EDITOR_WIDGET_EXPORT SfEventHandle :   public Component
         /**
          * \brief sfEvent
          * \details This function will be automaticlly called from the
-         *          Canvas n times per frame if the Component is enabled
+         *          Scene n times per frame if the Component is enabled
          * \param e, The sf::Event object
          */
         virtual void sfEvent(const sf::Event &e) = 0;

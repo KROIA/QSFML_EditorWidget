@@ -7,25 +7,25 @@
 namespace QSFML
 {
 
-class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectGroup
+class QSFML_EDITOR_WIDGET_EXPORT GameObjectGroup
 {
-        friend CanvasObjectContainer;
-        friend CanvasThreadWorker;
-        friend CanvasObjectLayerGroup;
+        friend GameObjectContainer;
+        friend SceneThreadWorker;
+        friend GameObjectLayerGroup;
     public:
-        CanvasObjectGroup(Canvas *parent);
-        CanvasObjectGroup(const CanvasObjectGroup &other) = delete;
-        ~CanvasObjectGroup();
+        GameObjectGroup(Scene *parent);
+        GameObjectGroup(const GameObjectGroup &other) = delete;
+        ~GameObjectGroup();
 
-        CanvasObjectGroup &operator=(const CanvasObjectGroup&other) = delete;
+        GameObjectGroup &operator=(const GameObjectGroup&other) = delete;
 
-        void addObject(Objects::CanvasObject *obj);
-        void addObject(const std::vector<Objects::CanvasObject*> &objs);
+        void addObject(Objects::GameObject *obj);
+        void addObject(const std::vector<Objects::GameObject*> &objs);
 
-        void removeObject(Objects::CanvasObject *obj);
-        void removeObject(const std::vector<Objects::CanvasObject*> &objs);
-        void deleteObject(Objects::CanvasObject *obj);
-        void deleteObject(const std::vector<Objects::CanvasObject*> &objs);
+        void removeObject(Objects::GameObject *obj);
+        void removeObject(const std::vector<Objects::GameObject*> &objs);
+        void deleteObject(Objects::GameObject *obj);
+        void deleteObject(const std::vector<Objects::GameObject*> &objs);
         void clearObjects();
         void cleanup(); // removes and deletes all objects
 
@@ -33,19 +33,19 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectGroup
         size_t getObjectsCount() const;
         template<typename T>
         size_t getObjectsCount() const;
-        const std::vector<Objects::CanvasObject*> &getObjects() const;
-        const std::vector<Objects::CanvasObject*> &getObjectsToAdd() const;
-        const std::vector<Objects::CanvasObject*> &getObjectsToDelete() const;
+        const std::vector<Objects::GameObject*> &getObjects() const;
+        const std::vector<Objects::GameObject*> &getObjectsToAdd() const;
+        const std::vector<Objects::GameObject*> &getObjectsToDelete() const;
         template<typename T>
         std::vector<T*> getObjects() const;
         template<typename T>
         T* getFirstObject() const;
 
-        bool objectExists(Objects::CanvasObject *obj);
-        size_t getObjectIndex(Objects::CanvasObject *obj);
+        bool objectExists(Objects::GameObject *obj);
+        size_t getObjectIndex(Objects::GameObject *obj);
 
 
-        void deleteLater(Objects::CanvasObject *obj);
+        void deleteLater(Objects::GameObject *obj);
 
         template<typename T>
         static bool objectExists(T *obj,const std::vector<T*> &list);
@@ -54,10 +54,10 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectGroup
         static size_t getObjectIndex(T *obj,const std::vector<T*> &list);
 
         template<typename T>
-        static void addObject(Objects::CanvasObject *obj,std::vector<T*> &list);
+        static void addObject(Objects::GameObject *obj,std::vector<T*> &list);
 
         template<typename T>
-        static void removeObject(Objects::CanvasObject *obj,std::vector<T*> &list);
+        static void removeObject(Objects::GameObject *obj,std::vector<T*> &list);
 
         const static size_t npos = -1;
 
@@ -74,18 +74,18 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObjectGroup
         void deleteObject_internal();
 
         // All objects will be contained in this list
-        std::vector<Objects::CanvasObject*> m_container;
-        std::vector<Objects::CanvasObject*> m_toAddContainer;
+        std::vector<Objects::GameObject*> m_container;
+        std::vector<Objects::GameObject*> m_toAddContainer;
 
-        std::vector<Objects::CanvasObject*> m_toDelete;
+        std::vector<Objects::GameObject*> m_toDelete;
 
 
 
-        Canvas *m_parent;
+        Scene *m_parent;
 };
 
 template<typename T>
-size_t CanvasObjectGroup::getObjectsCount() const
+size_t GameObjectGroup::getObjectsCount() const
 {
     size_t count = 0;
     for(size_t i=0; i<m_container.size(); ++i)
@@ -97,7 +97,7 @@ size_t CanvasObjectGroup::getObjectsCount() const
     return count;
 }
 template<typename T>
-std::vector<T*> CanvasObjectGroup::getObjects() const
+std::vector<T*> GameObjectGroup::getObjects() const
 {
     std::vector<T*> list;
     list.reserve(m_container.size());
@@ -110,7 +110,7 @@ std::vector<T*> CanvasObjectGroup::getObjects() const
     return list;
 }
 template<typename T>
-T* CanvasObjectGroup::getFirstObject() const
+T* GameObjectGroup::getFirstObject() const
 {
     for(size_t i=0; i<m_container.size(); ++i)
     {
@@ -121,9 +121,9 @@ T* CanvasObjectGroup::getFirstObject() const
     return nullptr;
 }
 template<typename T>
-bool CanvasObjectGroup::objectExists(T *obj,const std::vector<T*> &list)
+bool GameObjectGroup::objectExists(T *obj,const std::vector<T*> &list)
 {
-    QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     size_t num = list.size();
     if(!num) return false;
 
@@ -134,9 +134,9 @@ bool CanvasObjectGroup::objectExists(T *obj,const std::vector<T*> &list)
 }
 
 template<typename T>
-size_t CanvasObjectGroup::getObjectIndex(T *obj,const std::vector<T*> &list)
+size_t GameObjectGroup::getObjectIndex(T *obj,const std::vector<T*> &list)
 {
-    QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_2);
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_2);
     size_t num = list.size();
     if(!num) return npos;
 
@@ -146,9 +146,9 @@ size_t CanvasObjectGroup::getObjectIndex(T *obj,const std::vector<T*> &list)
     return npos;
 }
 template<typename T>
-void CanvasObjectGroup::addObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
+void GameObjectGroup::addObject(QSFML::Objects::GameObject *obj,std::vector<T*> &list)
 {
-    QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_3);
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_3);
     T* transformed = dynamic_cast<T*>(obj);
     if(transformed)
     {
@@ -157,9 +157,9 @@ void CanvasObjectGroup::addObject(QSFML::Objects::CanvasObject *obj,std::vector<
 }
 
 template<typename T>
-void CanvasObjectGroup::removeObject(QSFML::Objects::CanvasObject *obj,std::vector<T*> &list)
+void GameObjectGroup::removeObject(QSFML::Objects::GameObject *obj,std::vector<T*> &list)
 {
-    QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_4);
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_4);
     T* transformed = dynamic_cast<T*>(obj);
     if(transformed)
     {

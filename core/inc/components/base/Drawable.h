@@ -64,7 +64,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public Utilities::
         /// </summary>
         /// <description>
         /// This function will be automaticlly called from the
-        /// Canvas once per frame if the Component is enabled
+        /// Scene once per frame if the Component is enabled
         /// </description>
         /// <param name="target"></param>
         /// <param name="states"></param>

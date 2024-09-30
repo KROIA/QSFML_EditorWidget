@@ -1,7 +1,7 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/base/SfEventHandle.h"
 
 #include <SFML/Graphics.hpp>
@@ -11,12 +11,12 @@ namespace QSFML
 namespace Objects
 {
 
-class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
 {
         class SfEventComponent;
     public:
         CameraController(const std::string &name = "",
-                         CanvasObject *parent = nullptr);
+                         GameObject *parent = nullptr);
         CameraController(const CameraController &other);
         ~CameraController();
         COMPONENT_DECL(CameraController);
@@ -54,8 +54,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
 
 
     private:
-        //void internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent) override;
-        //void internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent) override;
+        //void internalOnSceneParentChange(Scene *oldParent, Scene *newParent) override;
+        //void internalOnParentChange(GameObject *oldParent, GameObject *newParent) override;
         void positionCheck(sf::View &view);
 
         float m_currentZoom;

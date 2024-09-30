@@ -1,5 +1,5 @@
-#include "objects/base/CanvasObject.h"
-#include "canvas/Canvas.h"
+#include "objects/base/GameObject.h"
+#include "Scene/Scene.h"
 
 #include "components/base/Component.h"
 #include "components/base/SfEventHandle.h"
@@ -18,10 +18,10 @@ using namespace QSFML;
 using namespace QSFML::Objects;
 using namespace QSFML::Components;
 
-OBJECT_IMPL(CanvasObject)
+OBJECT_IMPL(GameObject)
 
-size_t CanvasObject::s_objNameCounter = 0;
-CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
+size_t GameObject::s_objNameCounter = 0;
+GameObject::GameObject(const std::string &name, GameObject *parent)
     : Transformable()
     , Updatable()
     , DestroyEvent()
@@ -30,13 +30,13 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     if(m_name.size() == 0)
     {
         s_objNameCounter++;
-        m_name = "CanvasObject_"+std::to_string(s_objNameCounter);
+        m_name = "GameObject_"+std::to_string(s_objNameCounter);
     }
     m_updateControlls.enableUpdateLoop = true;
     m_updateControlls.enableEventLoop = true;
     m_updateControlls.enablePaintLoop = true;
    
-    m_canvasParent = nullptr;
+    m_SceneParent = nullptr;
     m_parent = parent;
     m_rootParent = this;
     if(m_parent)
@@ -48,7 +48,7 @@ CanvasObject::CanvasObject(const std::string &name, CanvasObject *parent)
     m_renderLayer = RenderLayer::layer_0;
     
 }
-CanvasObject::CanvasObject(const CanvasObject &other)
+GameObject::GameObject(const GameObject &other)
     : Transformable()
     , Updatable()
     , DestroyEvent()
@@ -56,7 +56,7 @@ CanvasObject::CanvasObject(const CanvasObject &other)
     m_enabled = other.m_enabled;
     m_name = other.m_name;
     //m_position = other.m_position;
-    m_canvasParent = nullptr;
+    m_SceneParent = nullptr;
     m_parent = nullptr;
     m_rootParent = this;
     m_objectsChanged = false;
@@ -67,7 +67,7 @@ CanvasObject::CanvasObject(const CanvasObject &other)
     m_childs.reserve(other.m_childs.size());
     for(size_t i=0; i<other.m_childs.size(); ++i)
     {
-        CanvasObject *obj = other.m_childs[i]->clone();
+        GameObject *obj = other.m_childs[i]->clone();
         addChild(obj);
     }
     m_components.reserve(other.m_components.size());
@@ -78,7 +78,7 @@ CanvasObject::CanvasObject(const CanvasObject &other)
     }
     updateNewElements();
 }
-CanvasObject::~CanvasObject()
+GameObject::~GameObject()
 {
     for(size_t i=0; i<m_childs.size(); ++i)
         delete m_childs[i];
@@ -95,20 +95,20 @@ CanvasObject::~CanvasObject()
     m_toRemoveComponents.clear();
     m_toDeleteChilds.clear();
     m_toRemoveChilds.clear();
-    if (m_canvasParent)
+    if (m_SceneParent)
     {
-        m_canvasParent->removeCanvasObject();
-        m_canvasParent->removeComponent(m_components.size());
-        m_canvasParent->removeObject(this);   
+        m_SceneParent->removeGameObject();
+        m_SceneParent->removeComponent(m_components.size());
+        m_SceneParent->removeObject(this);   
     }
 }
 
 
-void CanvasObject::inCanvasAdded()
+void GameObject::inSceneAdded()
 {
 
 }
-void CanvasObject::setParent(CanvasObject *parent)
+void GameObject::setParent(GameObject *parent)
 {
     if(parent == m_parent)
         return;
@@ -122,64 +122,64 @@ void CanvasObject::setParent(CanvasObject *parent)
         return;
     }
 }
-void CanvasObject::setEnabled(bool enable)
+void GameObject::setEnabled(bool enable)
 {
     m_enabled = enable;
 }
-bool CanvasObject::isEnabled() const
+bool GameObject::isEnabled() const
 {
     return m_enabled;
 }
-CanvasObject *CanvasObject::getParent() const
+GameObject *GameObject::getParent() const
 {
     return m_parent;
 }
-CanvasObject *CanvasObject::getRootParent() const
+GameObject *GameObject::getRootParent() const
 {
     return m_rootParent;
 }
 
-void CanvasObject::setName(const std::string &name)
+void GameObject::setName(const std::string &name)
 {
     m_name = name;
 }
-const std::string &CanvasObject::getName() const
+const std::string &GameObject::getName() const
 {
     return m_name;
 }
 
-double CanvasObject::getAge() const
+double GameObject::getAge() const
 {
-    if (!m_canvasParent) return 0;
-    return m_canvasParent->getElapsedTime() - m_birthTime;
+    if (!m_SceneParent) return 0;
+    return m_SceneParent->getElapsedTime() - m_birthTime;
 }
-double CanvasObject::getBirthTime() const
+double GameObject::getBirthTime() const
 {
     return m_birthTime;
 }
-size_t CanvasObject::getAgeTicks() const
+size_t GameObject::getAgeTicks() const
 {
-    if (!m_canvasParent) return 0;
-    return m_canvasParent->getTick() - m_birthTick;
+    if (!m_SceneParent) return 0;
+    return m_SceneParent->getTick() - m_birthTick;
 }
-size_t CanvasObject::getBirthTick() const
+size_t GameObject::getBirthTick() const
 {
     return m_birthTick;
 }
-double CanvasObject::getAgeFixed() const
+double GameObject::getAgeFixed() const
 {
-    if (!m_canvasParent) return 0;
-    return m_canvasParent->getFixedDeltaT() * (m_canvasParent->getTick() - m_birthTick);
+    if (!m_SceneParent) return 0;
+    return m_SceneParent->getFixedDeltaT() * (m_SceneParent->getTick() - m_birthTick);
 }
 
 
-/*void CanvasObject::setPositionRelative(const sf::Vector2f& pos)
+/*void GameObject::setPositionRelative(const sf::Vector2f& pos)
 {
     m_position = pos;
     for (size_t i = 0; i < m_colliders.size(); ++i)
         m_colliders[i]->setPos(m_position);
 }
-void CanvasObject::setPosition(const sf::Vector2f& pos)
+void GameObject::setPosition(const sf::Vector2f& pos)
 {
     if (m_parent)
     {
@@ -191,11 +191,11 @@ void CanvasObject::setPosition(const sf::Vector2f& pos)
     for (size_t i = 0; i < m_colliders.size(); ++i)
         m_colliders[i]->setPos(m_position);
 }
-const sf::Vector2f& CanvasObject::getPositionRelative() const
+const sf::Vector2f& GameObject::getPositionRelative() const
 {
     return m_position;
 }
-sf::Vector2f CanvasObject::getPosition() const
+sf::Vector2f GameObject::getPosition() const
 {
     if (m_parent)
     {
@@ -204,10 +204,10 @@ sf::Vector2f CanvasObject::getPosition() const
     }
     return m_position;
 }*/
-sf::Vector2f CanvasObject::getGlobalPosition() const
+sf::Vector2f GameObject::getGlobalPosition() const
 {
     sf::Vector2f pos = getPosition();
-    CanvasObject *parent = m_parent;
+    GameObject *parent = m_parent;
     while (parent)
     {
         pos += parent->getPosition();
@@ -215,10 +215,10 @@ sf::Vector2f CanvasObject::getGlobalPosition() const
     }
     return pos;
 }
-float CanvasObject::getGlobalRotation() const
+float GameObject::getGlobalRotation() const
 {
 	float rot = getRotation();
-	CanvasObject *parent = m_parent;
+	GameObject *parent = m_parent;
 	while (parent)
 	{
 		rot += parent->getRotation();
@@ -227,23 +227,23 @@ float CanvasObject::getGlobalRotation() const
 	return rot;
 }
 
-void CanvasObject::setRenderLayer(RenderLayer layer)
+void GameObject::setRenderLayer(RenderLayer layer)
 {
     if(m_renderLayer == layer)
         return;
     RenderLayer oldLayer = m_renderLayer;
     m_renderLayer = layer;
-    if(m_canvasParent)
-        m_canvasParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
+    if(m_SceneParent)
+        m_SceneParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
 }
 
-RenderLayer CanvasObject::getRenderLayer() const
+RenderLayer GameObject::getRenderLayer() const
 {
     return m_renderLayer;
 }
 
 // Childs operations
-void CanvasObject::addChild(CanvasObject *child)
+void GameObject::addChild(GameObject *child)
 {
     if(!child)return;
 
@@ -251,18 +251,18 @@ void CanvasObject::addChild(CanvasObject *child)
     onObjectsChanged();
 
 }
-void CanvasObject::addChilds(const std::vector<CanvasObject*>& childs)
+void GameObject::addChilds(const std::vector<GameObject*>& childs)
 {
     for (size_t i = 0; i < childs.size(); ++i)
     {
-        CanvasObject* child = childs[i];
+        GameObject* child = childs[i];
         if(child)
             m_toAddChilds.push_back(child);
     }
     onObjectsChanged();
 }
 
-void CanvasObject::removeChild(CanvasObject *child)
+void GameObject::removeChild(GameObject *child)
 {
     if(!child)return;
     size_t index = getChildIndex(child);
@@ -273,11 +273,11 @@ void CanvasObject::removeChild(CanvasObject *child)
     onObjectsChanged();
     m_toRemoveChilds.push_back(child);
 }
-void CanvasObject::removeChilds(const std::vector<CanvasObject*>& childs)
+void GameObject::removeChilds(const std::vector<GameObject*>& childs)
 {
     for (size_t j = 0; j < childs.size(); ++j)
     {
-        CanvasObject* child = childs[j];
+        GameObject* child = childs[j];
         if (!child)
             continue;
         size_t index = getChildIndex(child);
@@ -291,13 +291,13 @@ void CanvasObject::removeChilds(const std::vector<CanvasObject*>& childs)
     }
     onObjectsChanged();
 }
-void CanvasObject::removeChilds()
+void GameObject::removeChilds()
 {
     m_toRemoveChilds = m_childs;
     m_toAddChilds.clear();
     onObjectsChanged();
 }
-void CanvasObject::removeChild_internal()
+void GameObject::removeChild_internal()
 {
     for(size_t i=0; i<m_toRemoveChilds.size(); ++i)
     {
@@ -308,7 +308,7 @@ void CanvasObject::removeChild_internal()
     m_toRemoveChilds.clear();
 }
 
-void CanvasObject::deleteChild(CanvasObject *child)
+void GameObject::deleteChild(GameObject *child)
 {
     if(!child)return;
 
@@ -324,11 +324,11 @@ void CanvasObject::deleteChild(CanvasObject *child)
     onObjectsChanged();
     m_toDeleteChilds.push_back(child);
 }
-void CanvasObject::deleteChilds(const std::vector<CanvasObject*>& childs)
+void GameObject::deleteChilds(const std::vector<GameObject*>& childs)
 {
     for (size_t j = 0; j < childs.size(); ++j)
     {
-        CanvasObject* child = childs[j];
+        GameObject* child = childs[j];
         if (!child)
             continue;
 
@@ -345,49 +345,49 @@ void CanvasObject::deleteChilds(const std::vector<CanvasObject*>& childs)
     }
     onObjectsChanged();
 }
-void CanvasObject::deleteChilds()
+void GameObject::deleteChilds()
 {
     m_toDeleteChilds = m_childs;
     m_toRemoveChilds.clear();
     m_toAddChilds.clear();
     onObjectsChanged();
 }
-void CanvasObject::deleteChild_internal()
+void GameObject::deleteChild_internal()
 {
     for(size_t i=0; i<m_toDeleteChilds.size(); ++i)
     {
         size_t index = getChildIndex(m_toDeleteChilds[i]);
         if(index != npos)
             m_childs.erase(m_childs.begin() + index);
-        qDebug() << "CanvasObject::deleteChild_internal(): "<<m_toDeleteChilds[i]->getName().c_str() << " child of: "<<getName().c_str();
+        qDebug() << "GameObject::deleteChild_internal(): "<<m_toDeleteChilds[i]->getName().c_str() << " child of: "<<getName().c_str();
         delete m_toDeleteChilds[i];
     }
     m_toDeleteChilds.clear();
 }
-bool CanvasObject::childExists(CanvasObject *child) const
+bool GameObject::childExists(GameObject *child) const
 {
     for(size_t i=0; i<m_childs.size(); ++i)
         if(m_childs[i] == child)
             return true;
     return false;
 }
-size_t CanvasObject::getChildIndex(CanvasObject *child) const
+size_t GameObject::getChildIndex(GameObject *child) const
 {
     for(size_t i=0; i<m_childs.size(); ++i)
         if(m_childs[i] == child)
             return i;
     return npos;
 }
-const std::vector<CanvasObject*> &CanvasObject::getChilds() const
+const std::vector<GameObject*> &GameObject::getChilds() const
 {
     return m_childs;
 }
-size_t CanvasObject::getChildCount() const
+size_t GameObject::getChildCount() const
 {
     return m_childs.size();
 }
 
-CanvasObject* CanvasObject::findFirstChild(const std::string& name)
+GameObject* GameObject::findFirstChild(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     size_t nameSize = name.size();
@@ -404,16 +404,16 @@ CanvasObject* CanvasObject::findFirstChild(const std::string& name)
     }
     return nullptr;
 }
-std::vector<CanvasObject*> CanvasObject::findAllChilds(const std::string& name)
+std::vector<GameObject*> GameObject::findAllChilds(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    std::vector<CanvasObject*> results;
+    std::vector<GameObject*> results;
     results.reserve(m_childs.size());
     findAllChilds_internal(name, results);
     return results;
 }
 
-CanvasObject* CanvasObject::findFirstChildRecursive(const std::string& name)
+GameObject* GameObject::findFirstChildRecursive(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     size_t nameSize = name.size();
@@ -426,28 +426,28 @@ CanvasObject* CanvasObject::findFirstChildRecursive(const std::string& name)
         {
             return m_childs[i];
         }
-        CanvasObject *obj = m_childs[i]->findFirstChildRecursive(name);
+        GameObject *obj = m_childs[i]->findFirstChildRecursive(name);
         if(obj)
             return obj;
     }
     return nullptr;
 }
-std::vector<CanvasObject*> CanvasObject::findAllChildsRecursive(const std::string& name)
+std::vector<GameObject*> GameObject::findAllChildsRecursive(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    std::vector<CanvasObject*> results;
+    std::vector<GameObject*> results;
     results.reserve(m_childs.size()*2);
     findAllChildsRecursive_internal(name, results);
     return results;
 }
 
-void CanvasObject::addComponent(Component *comp)
+void GameObject::addComponent(Component *comp)
 {
     if(!comp)return;
     m_toAddComponents.push_back(comp);
     onObjectsChanged();
 }
-void CanvasObject::addComponents(const std::vector<Components::Component*>& components)
+void GameObject::addComponents(const std::vector<Components::Component*>& components)
 {
     for (size_t i = 0; i < components.size(); ++i)
     {
@@ -457,7 +457,7 @@ void CanvasObject::addComponents(const std::vector<Components::Component*>& comp
     }
     onObjectsChanged();
 }
-void CanvasObject::removeComponent(Component *comp)
+void GameObject::removeComponent(Component *comp)
 {
     if(!comp)return;
     for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
@@ -472,7 +472,7 @@ void CanvasObject::removeComponent(Component *comp)
     m_toRemoveComponents.push_back(comp);
     onObjectsChanged();
 }
-void CanvasObject::removeComponents(const std::vector<Components::Component*>& components)
+void GameObject::removeComponents(const std::vector<Components::Component*>& components)
 {
     for (size_t j = 0; j < components.size(); ++j)
     {
@@ -490,7 +490,7 @@ void CanvasObject::removeComponents(const std::vector<Components::Component*>& c
     }
     onObjectsChanged();
 }
-void CanvasObject::removeComponent_internal()
+void GameObject::removeComponent_internal()
 {
     size_t removedCount = 0;
     for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
@@ -559,11 +559,11 @@ void CanvasObject::removeComponent_internal()
         }*/
     }
     m_toRemoveComponents.clear();
-    if(m_canvasParent)
-        m_canvasParent->removeComponent(removedCount);
+    if(m_SceneParent)
+        m_SceneParent->removeComponent(removedCount);
 
 }
-void CanvasObject::deleteComponent(Component *comp)
+void GameObject::deleteComponent(Component *comp)
 {
     if(!comp)return;
 
@@ -575,13 +575,13 @@ void CanvasObject::deleteComponent(Component *comp)
             break;
         }
     comp->setParent(nullptr);
-    comp->setCanvasParent(nullptr);
+    comp->setSceneParent(nullptr);
 
     size_t index = getComponentIndex(comp);
     if(index == npos) return;
     m_components.erase(m_components.begin() + index);
-    if (m_canvasParent)
-        m_canvasParent->removeComponent();
+    if (m_SceneParent)
+        m_SceneParent->removeComponent();
 
     // Check for sfEventHandles
     SfEventHandle *evComp = dynamic_cast<SfEventHandle*>(comp);
@@ -631,7 +631,7 @@ void CanvasObject::deleteComponent(Component *comp)
 
     delete comp;
 }
-void CanvasObject::deleteComponents(const std::vector<Components::Component*>& components)
+void GameObject::deleteComponents(const std::vector<Components::Component*>& components)
 {
     for (size_t j = 0; j < components.size(); ++j)
     {
@@ -639,7 +639,7 @@ void CanvasObject::deleteComponents(const std::vector<Components::Component*>& c
         deleteComponent(comp);
     }
 }
-void CanvasObject::addChild_internal()
+void GameObject::addChild_internal()
 {
     for(size_t i=0; i<m_toAddChilds.size(); ++i)
     {
@@ -649,14 +649,14 @@ void CanvasObject::addChild_internal()
     }
     m_toAddChilds.clear();
 }
-void CanvasObject::addChild_internal(CanvasObject *obj)
+void GameObject::addChild_internal(GameObject *obj)
 {
     m_childs.push_back(obj);
-    obj->setParent_internal(this, m_rootParent, m_canvasParent);
+    obj->setParent_internal(this, m_rootParent, m_SceneParent);
 }
-void CanvasObject::setParent_internal(CanvasObject *parent,
-                                      CanvasObject *rootParent,
-                                      Canvas *canvasParent)
+void GameObject::setParent_internal(GameObject *parent,
+                                      GameObject *rootParent,
+                                      Scene *SceneParent)
 {
     if(m_parent != nullptr && m_parent == this)
         return;
@@ -666,10 +666,10 @@ void CanvasObject::setParent_internal(CanvasObject *parent,
         if(index == npos) return;
         m_parent->m_childs.erase(m_parent->m_childs.begin() + index);
     }
-    CanvasObject *oldParent = m_parent;
+    GameObject *oldParent = m_parent;
     m_parent = parent;
     m_rootParent = rootParent;
-    setCanvasParent(canvasParent);
+    setSceneParent(SceneParent);
     for (size_t i = 0; i < m_components.size(); ++i)
     {
         Component* comp = m_components[i];
@@ -679,7 +679,7 @@ void CanvasObject::setParent_internal(CanvasObject *parent,
     internalOnParentChange(oldParent, m_parent);
     onParentChange(oldParent, m_parent);
 }
-void CanvasObject::addComponent_internal()
+void GameObject::addComponent_internal()
 {
     size_t colliderCount = m_colliders.size();
     for(size_t i=0; i<m_toAddComponents.size(); ++i)
@@ -689,9 +689,9 @@ void CanvasObject::addComponent_internal()
             continue;
 
         toAdd->setParent(this);
-        toAdd->setCanvasParent(m_canvasParent);
-        if (m_canvasParent)
-            m_canvasParent->addComponent();
+        toAdd->setSceneParent(m_SceneParent);
+        if (m_SceneParent)
+            m_SceneParent->addComponent();
         m_components.push_back(toAdd);
 
         // Check for sfEventHandles
@@ -735,7 +735,7 @@ void CanvasObject::addComponent_internal()
     if (m_colliders.size() != colliderCount)
         updateBoundingBox();
 }
-void CanvasObject::onObjectsChanged()
+void GameObject::onObjectsChanged()
 {
     m_objectsChanged = true;
     if(m_parent)
@@ -743,22 +743,22 @@ void CanvasObject::onObjectsChanged()
         m_parent->onObjectsChanged();
     }
 }
-void CanvasObject::deleteComponents()
+void GameObject::deleteComponents()
 {
     for(size_t i=0; i<m_toAddComponents.size(); ++i)
     {
         Component* comp = m_toAddComponents[i];
         comp->setParent(nullptr);
-        comp->setCanvasParent(nullptr);
+        comp->setSceneParent(nullptr);
         delete comp;
     }
-    if (m_canvasParent)
-        m_canvasParent->removeComponent(m_components.size());
+    if (m_SceneParent)
+        m_SceneParent->removeComponent(m_components.size());
     for(size_t i=0; i<m_components.size(); ++i)
     {
         Component* comp = m_components[i];
         comp->setParent(nullptr);
-        comp->setCanvasParent(nullptr);
+        comp->setSceneParent(nullptr);
         delete comp;
     }
     m_updatableComponents.clear();
@@ -767,26 +767,26 @@ void CanvasObject::deleteComponents()
     m_toAddComponents.clear();
     m_components.clear();
 }
-bool CanvasObject::componentExists(Component *comp) const
+bool GameObject::componentExists(Component *comp) const
 {
     for(size_t i=0; i<m_components.size(); ++i)
         if(m_components[i] == comp)
             return true;
     return false;
 }
-size_t CanvasObject::getComponentIndex(Component *comp) const
+size_t GameObject::getComponentIndex(Component *comp) const
 {
     for(size_t i=0; i<m_components.size(); ++i)
         if(m_components[i] == comp)
             return i;
     return npos;
 }
-const std::vector<Component*> &CanvasObject::getComponents() const
+const std::vector<Component*> &GameObject::getComponents() const
 {
     return m_components;
 }
 
-Components::Component* CanvasObject::findFirstComponent(const std::string& name)
+Components::Component* GameObject::findFirstComponent(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     size_t nameSize = name.size();
@@ -800,7 +800,7 @@ Components::Component* CanvasObject::findFirstComponent(const std::string& name)
 	}
 	return nullptr;
 }
-std::vector<Components::Component*> CanvasObject::findAllComponents(const std::string& name)
+std::vector<Components::Component*> GameObject::findAllComponents(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 	std::vector<Components::Component*> results;
@@ -817,7 +817,7 @@ std::vector<Components::Component*> CanvasObject::findAllComponents(const std::s
 	return results;
 }
 
-Components::Component* CanvasObject::findFirstComponentRecursive(const std::string& name)
+Components::Component* GameObject::findFirstComponentRecursive(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     size_t nameSize = name.size();
@@ -837,7 +837,7 @@ Components::Component* CanvasObject::findFirstComponentRecursive(const std::stri
 	}
     return nullptr;
 }
-std::vector<Components::Component*> CanvasObject::findAllComponentsRecursive(const std::string& name)
+std::vector<Components::Component*> GameObject::findAllComponentsRecursive(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     std::vector<Components::Component*> results;
@@ -845,7 +845,7 @@ std::vector<Components::Component*> CanvasObject::findAllComponentsRecursive(con
     findAllComponentsRecursive_internal(name, results);
     return results;
 }
-bool CanvasObject::findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList)
+bool GameObject::findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     bool found = false;
@@ -866,16 +866,16 @@ bool CanvasObject::findAllComponentsRecursive_internal(const std::string& name, 
 }
 
 
-const std::vector<Components::Collider*> &CanvasObject::getCollider() const
+const std::vector<Components::Collider*> &GameObject::getCollider() const
 {
     return m_colliders;
 }
-bool CanvasObject::checkCollision(const CanvasObject* other) const
+bool GameObject::checkCollision(const GameObject* other) const
 {
     std::vector<Utilities::Collisioninfo> collisions;
     return checkCollision(other, collisions);
 }
-bool CanvasObject::checkCollision(const CanvasObject* other, 
+bool GameObject::checkCollision(const GameObject* other, 
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollision) const
 {
@@ -893,15 +893,15 @@ bool CanvasObject::checkCollision(const CanvasObject* other,
     }
     return hasCollision;
 }
-void CanvasObject::checkCollision(const Utilities::ObjectQuadTree& tree, 
+void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree, 
                                   std::vector<Utilities::Collisioninfo>& collisions,
                                   bool onlyFirstCollision)
 {
     std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
     for (auto &objStruct : objs)
     {
-        CanvasObject* obj = objStruct.obj;
-        std::list< QSFML::Objects::CanvasObject*> possibleColliders;
+        GameObject* obj = objStruct.obj;
+        std::list< QSFML::Objects::GameObject*> possibleColliders;
         tree.search(obj->getBoundingBox(), possibleColliders);
         for (auto it : possibleColliders)
         {
@@ -916,7 +916,7 @@ void CanvasObject::checkCollision(const Utilities::ObjectQuadTree& tree,
         }
     }
 }
-/*void CanvasObject::solveCollision(CanvasObject* other)
+/*void GameObject::solveCollision(GameObject* other)
 {
     for (size_t i = 0; i < m_colliders.size(); ++i)
     {
@@ -925,109 +925,109 @@ void CanvasObject::checkCollision(const Utilities::ObjectQuadTree& tree,
 }*/
 
 
-size_t CanvasObject::getComponentCount() const
+size_t GameObject::getComponentCount() const
 {
     return m_components.size();
 }
 
-sf::Vector2i CanvasObject::getMousePosition() const
+sf::Vector2i GameObject::getMousePosition() const
 {
-    if (!m_canvasParent) return sf::Vector2i(0, 0);
-    return m_canvasParent->getMousePosition();
+    if (!m_SceneParent) return sf::Vector2i(0, 0);
+    return m_SceneParent->getMousePosition();
 }
-sf::Vector2f CanvasObject::getMouseWorldPosition() const
+sf::Vector2f GameObject::getMouseWorldPosition() const
 {
-    if (!m_canvasParent) return sf::Vector2f(0, 0);
-    return m_canvasParent->getMouseWorldPosition();
+    if (!m_SceneParent) return sf::Vector2f(0, 0);
+    return m_SceneParent->getMouseWorldPosition();
 }
-sf::Vector2f CanvasObject::getMouseObjectPosition() const
+sf::Vector2f GameObject::getMouseObjectPosition() const
 {
     return getMouseWorldPosition() - getGlobalPosition();
 }
 
-sf::Vector2f CanvasObject::getInWorldSpace(const sf::Vector2i& pixelSpace) const
+sf::Vector2f GameObject::getInWorldSpace(const sf::Vector2i& pixelSpace) const
 {
-    if (!m_canvasParent) return sf::Vector2f(0, 0);
-    return m_canvasParent->getInWorldSpace(pixelSpace);
+    if (!m_SceneParent) return sf::Vector2f(0, 0);
+    return m_SceneParent->getInWorldSpace(pixelSpace);
 }
-sf::Vector2i CanvasObject::getInScreenSpace(const sf::Vector2f& worldSpace) const
+sf::Vector2i GameObject::getInScreenSpace(const sf::Vector2f& worldSpace) const
 {
-    if (!m_canvasParent) return sf::Vector2i(0, 0);
-    return m_canvasParent->getInScreenSpace(worldSpace);
+    if (!m_SceneParent) return sf::Vector2i(0, 0);
+    return m_SceneParent->getInScreenSpace(worldSpace);
 }
-const sf::View CanvasObject::getCameraView() const
-{
-    static const sf::View dummy;
-    if(!m_canvasParent) return dummy;
-    return m_canvasParent->getCameraView();
-}
-const sf::View &CanvasObject::getDefaultCameraView() const
+const sf::View GameObject::getCameraView() const
 {
     static const sf::View dummy;
-    if(!m_canvasParent) return dummy;
-    return m_canvasParent->getDefaultCameraView();
+    if(!m_SceneParent) return dummy;
+    return m_SceneParent->getCameraView();
 }
-Utilities::AABB CanvasObject::getCameraViewRect() const
+const sf::View &GameObject::getDefaultCameraView() const
 {
-    if (!m_canvasParent) return Utilities::AABB();
-    return m_canvasParent->getCameraViewRect();
+    static const sf::View dummy;
+    if(!m_SceneParent) return dummy;
+    return m_SceneParent->getDefaultCameraView();
 }
-sf::Vector2u CanvasObject::getCanvasSize() const
+Utilities::AABB GameObject::getCameraViewRect() const
 {
-    if(!m_canvasParent) return sf::Vector2u(0,0);
-    return m_canvasParent->getCanvasSize();
+    if (!m_SceneParent) return Utilities::AABB();
+    return m_SceneParent->getCameraViewRect();
 }
-sf::Vector2u CanvasObject::getOldCanvasSize() const
+sf::Vector2u GameObject::getSceneSize() const
 {
-    if(!m_canvasParent) return sf::Vector2u(0,0);
-    return m_canvasParent->getOldCanvasSize();
+    if(!m_SceneParent) return sf::Vector2u(0,0);
+    return m_SceneParent->getSceneSize();
+}
+sf::Vector2u GameObject::getOldSceneSize() const
+{
+    if(!m_SceneParent) return sf::Vector2u(0,0);
+    return m_SceneParent->getOldSceneSize();
 }
 
-const sf::Font &CanvasObject::getDefaultTextFont() const
+const sf::Font &GameObject::getDefaultTextFont() const
 {
-    return Canvas::getDefaultTextFont();
+    return Scene::getDefaultTextFont();
 }
-size_t CanvasObject::getTick() const
+size_t GameObject::getTick() const
 {
-    if(!m_canvasParent) return 0;
-    return m_canvasParent->getTick();
+    if(!m_SceneParent) return 0;
+    return m_SceneParent->getTick();
 }
-double CanvasObject::getDeltaT() const
+double GameObject::getDeltaT() const
 {
-    if(!m_canvasParent) return 0;
-    return m_canvasParent->getDeltaT();
+    if(!m_SceneParent) return 0;
+    return m_SceneParent->getDeltaT();
 }
-double CanvasObject::getFixedDeltaT() const
+double GameObject::getFixedDeltaT() const
 {
-    if (!m_canvasParent) return 0;
-    return m_canvasParent->getFixedDeltaT();
+    if (!m_SceneParent) return 0;
+    return m_SceneParent->getFixedDeltaT();
 }
-double CanvasObject::getElapsedTime() const
+double GameObject::getElapsedTime() const
 {
-    if(!m_canvasParent) return 0;
-    return m_canvasParent->getElapsedTime();
+    if(!m_SceneParent) return 0;
+    return m_SceneParent->getElapsedTime();
 }
-double CanvasObject::getFixedElapsedTime() const
+double GameObject::getFixedElapsedTime() const
 {
-    if (!m_canvasParent) return 0;
-	return m_canvasParent->getFixedElapsedTime();
+    if (!m_SceneParent) return 0;
+	return m_SceneParent->getFixedElapsedTime();
 }
 
 
-const CanvasSettings::UpdateControlls &CanvasObject::getUpdateControlls() const
+const SceneSettings::UpdateControlls &GameObject::getUpdateControlls() const
 {
     return m_updateControlls;
 }
-void CanvasObject::setUpdateControlls(const CanvasSettings::UpdateControlls &controlls)
+void GameObject::setUpdateControlls(const SceneSettings::UpdateControlls &controlls)
 {
     m_updateControlls = controlls;
 }
 
-const Utilities::AABB &CanvasObject::getBoundingBox() const
+const Utilities::AABB &GameObject::getBoundingBox() const
 {
     return m_boundingBox;
 }
-void CanvasObject::updateBoundingBox()
+void GameObject::updateBoundingBox()
 {
     std::vector<Utilities::AABB> boxes;
     boxes.reserve(m_colliders.size());
@@ -1039,7 +1039,7 @@ void CanvasObject::updateBoundingBox()
 }
 
 
-std::string CanvasObject::toString() const
+std::string GameObject::toString() const
 {
     using std::string;
     std::vector<string> lines = toStringInternal("");
@@ -1051,46 +1051,46 @@ std::string CanvasObject::toString() const
 
     return msg;
 }
-Canvas* CanvasObject::getCanvasParent() const
+Scene* GameObject::getSceneParent() const
 {
-    return m_canvasParent;
+    return m_SceneParent;
 }
 
-Objects::CanvasObject* CanvasObject::findFirstObjectGlobal(const std::string& name)
+Objects::GameObject* GameObject::findFirstObjectGlobal(const std::string& name)
 {
-    if (!m_canvasParent) return nullptr;
+    if (!m_SceneParent) return nullptr;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_canvasParent->findFirstObject(name);
+    return m_SceneParent->findFirstObject(name);
 }
-std::vector<Objects::CanvasObject*> CanvasObject::findAllObjectsGlobal(const std::string& name)
+std::vector<Objects::GameObject*> GameObject::findAllObjectsGlobal(const std::string& name)
 {
-    if (!m_canvasParent) return std::vector<CanvasObject*>();
+    if (!m_SceneParent) return std::vector<GameObject*>();
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_canvasParent->findAllObjects(name);
+    return m_SceneParent->findAllObjects(name);
 }
-Objects::CanvasObject* CanvasObject::findFirstObjectGlobalRecursive(const std::string& name)
+Objects::GameObject* GameObject::findFirstObjectGlobalRecursive(const std::string& name)
 {
-    if (!m_canvasParent) return nullptr;
+    if (!m_SceneParent) return nullptr;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_canvasParent->findFirstObjectRecursive(name);
+    return m_SceneParent->findFirstObjectRecursive(name);
 }
-std::vector<Objects::CanvasObject*> CanvasObject::findAllObjectsGlobalRecusive(const std::string& name)
+std::vector<Objects::GameObject*> GameObject::findAllObjectsGlobalRecusive(const std::string& name)
 {
-    if (!m_canvasParent) return std::vector<CanvasObject*>();
+    if (!m_SceneParent) return std::vector<GameObject*>();
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-	return m_canvasParent->findAllObjectsRecursive(name);
+	return m_SceneParent->findAllObjectsRecursive(name);
 }
 
-void CanvasObject::update()
+void GameObject::update()
 {
 
 }
-std::vector<std::string> CanvasObject::toStringInternal(const std::string &preStr) const
+std::vector<std::string> GameObject::toStringInternal(const std::string &preStr) const
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     using std::string;
     std::vector<string> lines;
-    const CanvasObject *t = this;
+    const GameObject *t = this;
 
     auto en = [](bool enabled) {
         return enabled?"[Enabled]":"[Disabled]";
@@ -1116,7 +1116,7 @@ std::vector<std::string> CanvasObject::toStringInternal(const std::string &preSt
     lines.push_back(preStr+" ----");
     return lines;
 }
-bool CanvasObject::findAllChilds_internal(const std::string& name, std::vector<CanvasObject*>& foundList)
+bool GameObject::findAllChilds_internal(const std::string& name, std::vector<GameObject*>& foundList)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
     size_t nameSize = name.size();
@@ -1135,7 +1135,7 @@ bool CanvasObject::findAllChilds_internal(const std::string& name, std::vector<C
 	}
     return found;
 }
-bool CanvasObject::findAllChildsRecursive_internal(const std::string& name, std::vector<CanvasObject*>& foundList)
+bool GameObject::findAllChildsRecursive_internal(const std::string& name, std::vector<GameObject*>& foundList)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
     size_t nameSize = name.size();
@@ -1155,41 +1155,41 @@ bool CanvasObject::findAllChildsRecursive_internal(const std::string& name, std:
     return found;
 }
 
-void CanvasObject::onCanvasParentChange(Canvas *oldParent, Canvas *newParent) 
+void GameObject::onSceneParentChange(Scene *oldParent, Scene *newParent) 
 {
     QSFML_UNUSED(oldParent);
     QSFML_UNUSED(newParent);
 }
-void CanvasObject::onParentChange(CanvasObject *oldParent, CanvasObject *newParent)
+void GameObject::onParentChange(GameObject *oldParent, GameObject *newParent)
 {
     QSFML_UNUSED(oldParent);
     QSFML_UNUSED(newParent);
 }
-void CanvasObject::internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent)
+void GameObject::internalOnSceneParentChange(Scene *oldParent, Scene *newParent)
 {
     QSFML_UNUSED(oldParent);
     QSFML_UNUSED(newParent);
 }
-void CanvasObject::internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent)
+void GameObject::internalOnParentChange(GameObject *oldParent, GameObject *newParent)
 {
     QSFML_UNUSED(oldParent);
     QSFML_UNUSED(newParent);
 }
 
 
-void CanvasObject::deleteThis()
+void GameObject::deleteThis()
 {
     if(m_parent)
     {
        // m_parent->deleteChild(this);
         m_parent->removeChild(this);
     }
-    else if(m_canvasParent)
-        m_canvasParent->CanvasObjectContainer::deleteLater(this);
+    else if(m_SceneParent)
+        m_SceneParent->GameObjectContainer::deleteLater(this);
 
 }
 
-//void CanvasObject::positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition)
+//void GameObject::positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition)
 //{
 //    QSFML_UNUSED(oldPosition);
 //    QSFML_UNUSED(newPosition);
@@ -1201,7 +1201,7 @@ void CanvasObject::deleteThis()
 
 
 
-void CanvasObject::needsEventUpdateChanged(bool needsEventUpdate)
+void GameObject::needsEventUpdateChanged(bool needsEventUpdate)
 {
     if(!m_thisNeedsEventUpdate && needsEventUpdate)
     {
@@ -1229,7 +1229,7 @@ void CanvasObject::needsEventUpdateChanged(bool needsEventUpdate)
         }
     }
 }
-void CanvasObject::needsEventUpdate(bool needsEventUpdate)
+void GameObject::needsEventUpdate(bool needsEventUpdate)
 {
     if(m_thisNeedsEventUpdate == needsEventUpdate)
         return;
@@ -1238,7 +1238,7 @@ void CanvasObject::needsEventUpdate(bool needsEventUpdate)
         m_parent->needsEventUpdateChanged(m_thisNeedsEventUpdate);
 }
 
-void CanvasObject::needsDrawUpdateChanged(bool needsDrawUpdate)
+void GameObject::needsDrawUpdateChanged(bool needsDrawUpdate)
 {
     if(!m_thisNeedsDrawUpdate && needsDrawUpdate)
     {
@@ -1266,7 +1266,7 @@ void CanvasObject::needsDrawUpdateChanged(bool needsDrawUpdate)
         }
     }
 }
-void CanvasObject::needsDrawUpdate(bool needsDrawUpdate)
+void GameObject::needsDrawUpdate(bool needsDrawUpdate)
 {
     if(m_thisNeedsDrawUpdate == needsDrawUpdate)
         return;
@@ -1275,44 +1275,44 @@ void CanvasObject::needsDrawUpdate(bool needsDrawUpdate)
         m_parent->needsDrawUpdateChanged(m_thisNeedsDrawUpdate);
 }
 
-void CanvasObject::setCanvasParent(Canvas *parent)
+void GameObject::setSceneParent(Scene *parent)
 {
-    if(m_canvasParent == parent)
+    if(m_SceneParent == parent)
         return;
-    Canvas *oldParent = m_canvasParent;
-    m_canvasParent = parent;
+    Scene *oldParent = m_SceneParent;
+    m_SceneParent = parent;
     if (oldParent != nullptr)
     {
-        oldParent->removeCanvasObject();
+        oldParent->removeGameObject();
         oldParent->removeComponent(m_components.size());
     }
-    if (m_canvasParent != nullptr)
+    if (m_SceneParent != nullptr)
     {
-        m_canvasParent->addCanvesObject();
-        m_canvasParent->addComponent(m_components.size());
+        m_SceneParent->addCanvesObject();
+        m_SceneParent->addComponent(m_components.size());
 
         // Set the birth time and tick
-        m_birthTick = m_canvasParent->getTick();
-        m_birthTime = m_canvasParent->getElapsedTime();
+        m_birthTick = m_SceneParent->getTick();
+        m_birthTime = m_SceneParent->getElapsedTime();
     }
 
     for (size_t i = 0; i < m_components.size(); ++i)
     {
         Component* comp = m_components[i];
-        comp->setCanvasParent(m_canvasParent);
+        comp->setSceneParent(m_SceneParent);
     }
 
     //for(size_t i=0; i<m_components.size(); ++i)
     //    m_components[i]->setParent(this);
 
     for(size_t i=0; i<m_childs.size(); ++i)
-        m_childs[i]->setCanvasParent(parent);
+        m_childs[i]->setSceneParent(parent);
 
-    internalOnCanvasParentChange(oldParent, m_canvasParent);
-    onCanvasParentChange(oldParent, m_canvasParent);
+    internalOnSceneParentChange(oldParent, m_SceneParent);
+    onSceneParentChange(oldParent, m_SceneParent);
 }
 
-void CanvasObject::updateNewElements()
+void GameObject::updateNewElements()
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     removeChild_internal();
@@ -1325,7 +1325,7 @@ void CanvasObject::updateNewElements()
         m_childs[i]->updateNewElements();
     m_objectsChanged = false;
 }
-void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
+void GameObject::sfEvent(const std::vector<sf::Event>& events)
 {
     if (!m_enabled || !m_updateControlls.enableEventLoop || !m_thisNeedsEventUpdate) return;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
@@ -1349,7 +1349,7 @@ void CanvasObject::sfEvent(const std::vector<sf::Event>& events)
     }
     QSFMLP_OBJECT_END_BLOCK;
 }
-void CanvasObject::update_internal()
+void GameObject::update_internal()
 {
     if (!m_enabled || !m_updateControlls.enableUpdateLoop) return;
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
@@ -1371,27 +1371,27 @@ void CanvasObject::update_internal()
     QSFMLP_OBJECT_BLOCK("Childs update", QSFML_COLOR_STAGE_4);
     for (size_t i = 0; i < m_childs.size(); ++i)
     {
-        CanvasObject* obj = m_childs[i];
+        GameObject* obj = m_childs[i];
         if (obj->m_enabled)
             obj->update_internal();
     }
     QSFMLP_OBJECT_END_BLOCK;
 }
-void CanvasObject::inCanvasAdded_internal()
+void GameObject::inSceneAdded_internal()
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    QSFMLP_OBJECT_BLOCK("Object inCanvasAdded", QSFML_COLOR_STAGE_2);
-    inCanvasAdded();
+    QSFMLP_OBJECT_BLOCK("Object inSceneAdded", QSFML_COLOR_STAGE_2);
+    inSceneAdded();
     QSFMLP_OBJECT_END_BLOCK;
 
-    QSFMLP_OBJECT_BLOCK("Childs inCanvasAdded", QSFML_COLOR_STAGE_4);
+    QSFMLP_OBJECT_BLOCK("Childs inSceneAdded", QSFML_COLOR_STAGE_4);
     for (size_t i = 0; i < m_childs.size(); ++i)
     {
-        m_childs[i]->inCanvasAdded_internal();
+        m_childs[i]->inSceneAdded_internal();
     }
     QSFMLP_OBJECT_END_BLOCK;
 }
-void CanvasObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
+void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
 {
     if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_thisNeedsDrawUpdate)
         return;

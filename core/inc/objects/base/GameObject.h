@@ -1,8 +1,8 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
-#include "canvas/RenderLayer.h"
-#include "canvas/CanvasSettings.h"
+#include "Scene/RenderLayer.h"
+#include "Scene/SceneSettings.h"
 
 #include "utilities/CollisionInfo.h"
 #include "utilities/Updatable.h"
@@ -30,19 +30,19 @@ namespace Objects
 #define OBJECT_TEMPLATE_IMPL(className) \
     CLONE_FUNC_TEMPLATE_IMPL(className)
 /**
- * \brief The CanvasObject class
+ * \brief The GameObject class
  *
  *
  *
  *
  * The simplest implementation for a costum Object looks like this:
  * \code
- * class MyObject : public QSFML::Objects::CanvasObject
+ * class MyObject : public QSFML::Objects::GameObject
  * {
  *     public:
  *     MyObject(const std::string &name = "MyObject",
- *              CanvasObject *parent = nullptr)
- *         : CanvasObject(name)
+ *              GameObject *parent = nullptr)
+ *         : GameObject(name)
  *     {
  *
  *     }
@@ -51,12 +51,12 @@ namespace Objects
  *
  * If you want to add some Components, it will look like this:
  * \code
- * class MyObject : public QSFML::Objects::CanvasObject
+ * class MyObject : public QSFML::Objects::GameObject
  * {
  *     public:
  *     MyObject(const std::string &name = "MyObject",
- *              CanvasObject *parent = nullptr)
- *         : CanvasObject(name)
+ *              GameObject *parent = nullptr)
+ *         : GameObject(name)
  *     {
  *          // Instantiate the components
  *          m_vec1 = new QSFML::Components::DrawableVector("vec1");
@@ -72,11 +72,11 @@ namespace Objects
  *          m_vec2->setDirection(sf::Vector2f(10,10));
  *          m_vec2->setColor(sf::Color::Red);
  *
- *          // Add the vectors as component to this CanvasObject
+ *          // Add the vectors as component to this GameObject
  *          addComponent(m_vec1);
  *          addComponent(m_vec2);
  *
- *          // The Canvas will handle the updating of the components
+ *          // The Scene will handle the updating of the components
  *          // As long as you don't change the positions of the vectors
  *          // the vectors will stay static
  *
@@ -91,14 +91,14 @@ namespace Objects
  *
  * You want to add some custom behavior for your components?
  * \code
- * class MyObject : public QSFML::Objects::CanvasObject
+ * class MyObject : public QSFML::Objects::GameObject
  * {
  *      // Declarate a new Component class so its already visible in the constructor
  *      class MouseFollower;
  *     public:
  *     MyObject(const std::string &name = "MyObject",
- *              CanvasObject *parent = nullptr)
- *         : CanvasObject(name)
+ *              GameObject *parent = nullptr)
+ *         : GameObject(name)
  *     {
  *          // Instantiate the components
  *          m_vec1 = new QSFML::Components::DrawableVector("vec1");
@@ -114,7 +114,7 @@ namespace Objects
  *          m_vec2->setDirection(sf::Vector2f(10,10));
  *          m_vec2->setColor(sf::Color::Red);
  *
- *          // Add the vectors as component to this CanvasObject
+ *          // Add the vectors as component to this GameObject
  *          addComponent(m_vec1);
  *          addComponent(m_vec2);
  *
@@ -172,41 +172,41 @@ namespace Objects
  * \endcode
  */
 
-class QSFML_EDITOR_WIDGET_EXPORT CanvasObject: 
+class QSFML_EDITOR_WIDGET_EXPORT GameObject: 
     public Utilities::Transformable, 
     public Utilities::Updatable, 
     public Events::DestroyEvent
 {
-        friend Canvas;
-        friend CanvasObjectGroup;
-        friend CanvasObjectContainer;
+        friend Scene;
+        friend GameObjectGroup;
+        friend GameObjectContainer;
     public:
-        CanvasObject(const std::string &name = "CanvasObject",
-                     CanvasObject *parent = nullptr);
-        CanvasObject(const CanvasObject &other);
-        virtual ~CanvasObject();
+        GameObject(const std::string &name = "GameObject",
+                     GameObject *parent = nullptr);
+        GameObject(const GameObject &other);
+        virtual ~GameObject();
 
-        virtual CLONE_FUNC_DEC(CanvasObject);
+        virtual CLONE_FUNC_DEC(GameObject);
 
         /// <summary>
         /// Sets the object as a child of the parent
         /// This removes the object from the old parent
         /// </summary>
         /// <param name="parent">new parent</param>
-        void setParent(CanvasObject *parent);
+        void setParent(GameObject *parent);
 
         /// <summary>
         /// Gets the parent of the object
         /// </summary>
         /// <returns>Parent object</returns>
-        CanvasObject *getParent() const;
+        GameObject *getParent() const;
 
         /// <summary>
         /// Gets the root parent of the object
         /// The root is the topmost parent in the hirarchy
         /// </summary>
         /// <returns>Root object</returns>
-        CanvasObject *getRootParent() const;
+        GameObject *getRootParent() const;
 
         /// <summary>
         /// Enables/Disables the object
@@ -242,7 +242,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         double getAge() const;
 
         /// <summary>
-        /// Gets the time in seconds where the object was added to a canvas
+        /// Gets the time in seconds where the object was added to a Scene
         /// Timedomain: Real simulation time
         /// </summary>
         /// <returns>Time of birth</returns>
@@ -255,7 +255,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         size_t getAgeTicks() const;
 
         /// <summary>
-        /// Gets the tick where the object was added to a canvas
+        /// Gets the tick where the object was added to a Scene
         /// </summary>
         /// <returns>Birth tick</returns>
         size_t getBirthTick() const;
@@ -281,8 +281,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         void setRenderLayer(RenderLayer layer);
         RenderLayer getRenderLayer() const;
 
-        const CanvasSettings::UpdateControlls& getUpdateControlls() const;
-        void setUpdateControlls(const CanvasSettings::UpdateControlls& controlls);
+        const SceneSettings::UpdateControlls& getUpdateControlls() const;
+        void setUpdateControlls(const SceneSettings::UpdateControlls& controlls);
 
         const Utilities::AABB &getBoundingBox() const;
         void updateBoundingBox();
@@ -291,24 +291,24 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
 
         
         // Childs operations
-        void addChild(CanvasObject *child);
-        void addChilds(const std::vector<CanvasObject*> &childs);
+        void addChild(GameObject *child);
+        void addChilds(const std::vector<GameObject*> &childs);
 
-        void removeChild(CanvasObject *child);
-        void removeChilds(const std::vector<CanvasObject*>& childs);
+        void removeChild(GameObject *child);
+        void removeChilds(const std::vector<GameObject*>& childs);
         void removeChilds();
         template<typename T>
         void removeChilds();
 
-        void deleteChild(CanvasObject *child);
-        void deleteChilds(const std::vector<CanvasObject*>& childs);
+        void deleteChild(GameObject *child);
+        void deleteChilds(const std::vector<GameObject*>& childs);
         void deleteChilds();
         template<typename T>
         void deleteChilds();
 
-        bool childExists(CanvasObject *child) const;
-        size_t getChildIndex(CanvasObject *child) const;
-        const std::vector<CanvasObject*> &getChilds() const;
+        bool childExists(GameObject *child) const;
+        size_t getChildIndex(GameObject *child) const;
+        const std::vector<GameObject*> &getChilds() const;
 
         template<typename T>
         std::vector<T*> getChilds() const;
@@ -324,11 +324,11 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         template<typename T>
         size_t getChildCountRecusrive() const;
 
-        CanvasObject* findFirstChild(const std::string &name);
-        std::vector<CanvasObject*> findAllChilds(const std::string &name);
+        GameObject* findFirstChild(const std::string &name);
+        std::vector<GameObject*> findAllChilds(const std::string &name);
 
-        CanvasObject* findFirstChildRecursive(const std::string &name);
-        std::vector<CanvasObject*> findAllChildsRecursive(const std::string &name);
+        GameObject* findFirstChildRecursive(const std::string &name);
+        std::vector<GameObject*> findAllChildsRecursive(const std::string &name);
         // ---------
 
         // Component operations
@@ -366,13 +366,13 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
 
 
         const std::vector<Components::Collider*> &getCollider() const;
-        bool checkCollision(const CanvasObject* other) const;
-        bool checkCollision(const CanvasObject* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+        bool checkCollision(const GameObject* other) const;
+        bool checkCollision(const GameObject* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
         static void checkCollision(const Utilities::ObjectQuadTree& tree, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true);
-        //void solveCollision(CanvasObject* other);
+        //void solveCollision(GameObject* other);
         // ---------
 
-        // Canvas operations
+        // Scene operations
 
         /// <summary>
         /// Gets the pixel coordinate of the mouse
@@ -400,13 +400,13 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         const sf::View getCameraView() const;
         const sf::View &getDefaultCameraView() const;
         Utilities::AABB getCameraViewRect() const;
-        sf::Vector2u getCanvasSize() const;
-        sf::Vector2u getOldCanvasSize() const;
+        sf::Vector2u getSceneSize() const;
+        sf::Vector2u getOldSceneSize() const;
 
         const sf::Font& getDefaultTextFont() const;
 
         /// <summary>
-        /// Gets the current canvas tick count
+        /// Gets the current Scene tick count
         /// </summary>
         /// <returns>current tick</returns>
         size_t getTick() const;
@@ -426,56 +426,56 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         double getFixedDeltaT() const;
 
         /// <summary>
-        /// Gets the time in seconds since the start of the canvas
+        /// Gets the time in seconds since the start of the Scene
         /// Timedomain: Real simulation time
         /// </summary>
         /// <returns>Time since start</returns>
         double getElapsedTime() const; 
 
         /// <summary>
-        /// Gets the time in seconds since the start of the canvas
+        /// Gets the time in seconds since the start of the Scene
         /// Timedomain: Fixed simulation time
         /// </summary>
         /// <returns>Time since start</returns>
         double getFixedElapsedTime() const; 
 
         /// <summary>
-        /// Gets the canvas this object is contained in
+        /// Gets the Scene this object is contained in
         /// </summary>
-        /// <returns>Parent canvas</returns>
-        Canvas* getCanvasParent() const;
+        /// <returns>Parent Scene</returns>
+        Scene* getSceneParent() const;
 
         /// <summary>
-        /// Searches the object with the given name in the canvas.
+        /// Searches the object with the given name in the Scene.
         /// Searches only the top layer objects.
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::CanvasObject* findFirstObjectGlobal(const std::string& name);
+        Objects::GameObject* findFirstObjectGlobal(const std::string& name);
 
         /// <summary>
-        /// Searches all objects with the given name in the canvas
+        /// Searches all objects with the given name in the Scene
         /// Searches only the top layer objects.
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::CanvasObject*> findAllObjectsGlobal(const std::string& name);
+        std::vector<Objects::GameObject*> findAllObjectsGlobal(const std::string& name);
 
         /// <summary>
-        /// Searches the object with the given name in the canvas
+        /// Searches the object with the given name in the Scene
         /// Searches all object tree hirarchies
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::CanvasObject* findFirstObjectGlobalRecursive(const std::string& name);
+        Objects::GameObject* findFirstObjectGlobalRecursive(const std::string& name);
 
         /// <summary>
-        /// Searches all objects with the given name in the canvas
+        /// Searches all objects with the given name in the Scene
         /// Searches all object tree hirarchies
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::CanvasObject*> findAllObjectsGlobalRecusive(const std::string& name);
+        std::vector<Objects::GameObject*> findAllObjectsGlobalRecusive(const std::string& name);
         // ---------
 
         
@@ -488,15 +488,15 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
          */
         void update() override;
 
-        virtual void inCanvasAdded();
+        virtual void inSceneAdded();
 
 
 
-        virtual void onCanvasParentChange(Canvas *oldParent, Canvas *newParent);
-        virtual void onParentChange(CanvasObject *oldParent, CanvasObject *newParent);
+        virtual void onSceneParentChange(Scene *oldParent, Scene *newParent);
+        virtual void onParentChange(GameObject *oldParent, GameObject *newParent);
 
-        virtual void internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent);
-        virtual void internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent);
+        virtual void internalOnSceneParentChange(Scene *oldParent, Scene *newParent);
+        virtual void internalOnParentChange(GameObject *oldParent, GameObject *newParent);
 
         
 
@@ -504,8 +504,8 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
 
     private:
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
-        bool findAllChilds_internal(const std::string& name, std::vector<CanvasObject*>& foundList);
-        bool findAllChildsRecursive_internal(const std::string& name, std::vector<CanvasObject*>& foundList);
+        bool findAllChilds_internal(const std::string& name, std::vector<GameObject*>& foundList);
+        bool findAllChildsRecursive_internal(const std::string& name, std::vector<GameObject*>& foundList);
         bool findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList);
 
         template<typename T>
@@ -516,10 +516,10 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         void removeComponent_internal();
         void deleteChild_internal();
         void addChild_internal();
-        inline void addChild_internal(CanvasObject *obj);
-        inline void setParent_internal(CanvasObject *parent,
-                                       CanvasObject *rootParent,
-                                       Canvas *canvasParent);
+        inline void addChild_internal(GameObject *obj);
+        inline void setParent_internal(GameObject *parent,
+                                       GameObject *rootParent,
+                                       Scene *SceneParent);
         void addComponent_internal();
         void onObjectsChanged();
 
@@ -528,18 +528,18 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         bool m_enabled;
         std::string m_name;
         //sf::Vector2f m_position;
-        double m_birthTime; // Time of the canvas, in seconds where the object was added to a canvas (Time domain: real simulation time)
-        size_t m_birthTick; // Tick of the canvas, where the object was added to a canvas
+        double m_birthTime; // Time of the Scene, in seconds where the object was added to a Scene (Time domain: real simulation time)
+        size_t m_birthTick; // Tick of the Scene, where the object was added to a Scene
 
         // Hirarchy
-        Canvas *m_canvasParent;
-        CanvasObject *m_parent;
-        CanvasObject *m_rootParent;
+        Scene *m_SceneParent;
+        GameObject *m_parent;
+        GameObject *m_rootParent;
 
        
 
         
-        std::vector<CanvasObject*> m_childs;
+        std::vector<GameObject*> m_childs;
         std::vector<Components::Component*> m_components;
        
 
@@ -562,24 +562,24 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         std::vector<Components::Drawable*> m_drawableComponents;
 
         bool m_objectsChanged;
-        std::vector<CanvasObject*> m_toAddChilds;
-        std::vector<CanvasObject*> m_toDeleteChilds;
-        std::vector<CanvasObject*> m_toRemoveChilds;
+        std::vector<GameObject*> m_toAddChilds;
+        std::vector<GameObject*> m_toDeleteChilds;
+        std::vector<GameObject*> m_toRemoveChilds;
         
         std::vector<Components::Component*> m_toAddComponents;
         std::vector<Components::Component*> m_toRemoveComponents;
 
-        CanvasSettings::UpdateControlls m_updateControlls;
+        SceneSettings::UpdateControlls m_updateControlls;
 
         RenderLayer m_renderLayer;
 
-        // Canvas Object Internal functions
-        void setCanvasParent(Canvas *parent);
+        // Scene Object Internal functions
+        void setSceneParent(Scene *parent);
         
         void updateNewElements();
         void sfEvent(const std::vector<sf::Event> &events);
         void update_internal();
-        void inCanvasAdded_internal();
+        void inSceneAdded_internal();
         //void draw(sf::RenderWindow &window) const;
         void draw(sf::RenderWindow& window, sf::RenderStates states) const;
 
@@ -587,17 +587,17 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
         static size_t s_objNameCounter;
 };
 template<typename T>
-void CanvasObject::removeChilds()
+void GameObject::removeChilds()
 {
     removeChilds(getChilds<T>());
 }
 template<typename T>
-void CanvasObject::deleteChilds()
+void GameObject::deleteChilds()
 {
     deleteChilds(getChilds<T>());
 }
 template<typename T>
-std::vector<T*> CanvasObject::getChilds() const
+std::vector<T*> GameObject::getChilds() const
 {
     std::vector<T*> list;
     list.reserve(m_childs.size());
@@ -611,7 +611,7 @@ std::vector<T*> CanvasObject::getChilds() const
 }
 
 template<typename T>
-std::vector<T*> CanvasObject::getChildsRecusrive() const
+std::vector<T*> GameObject::getChildsRecusrive() const
 {
     std::vector<T*> list;
     list.reserve(m_childs.size()*2);
@@ -619,9 +619,9 @@ std::vector<T*> CanvasObject::getChildsRecusrive() const
     return list;
 }
 template<typename T>
-void CanvasObject::getChildsRecusrive_internal(std::vector<T*>& listOut) const
+void GameObject::getChildsRecusrive_internal(std::vector<T*>& listOut) const
 {
-    for (CanvasObject* obj : m_childs)
+    for (GameObject* obj : m_childs)
     {
 		T* child = dynamic_cast<T*>(obj);
 		if(child)
@@ -632,7 +632,7 @@ void CanvasObject::getChildsRecusrive_internal(std::vector<T*>& listOut) const
 
 
 template<typename T>
-size_t CanvasObject::getChildCount() const
+size_t GameObject::getChildCount() const
 {
     size_t counter = 0;
     for(size_t i=0; i<m_childs.size(); ++i)
@@ -645,10 +645,10 @@ size_t CanvasObject::getChildCount() const
 }
 
 template<typename T>
-size_t CanvasObject::getChildCountRecusrive() const
+size_t GameObject::getChildCountRecusrive() const
 {
 	size_t counter = 0;
-    for (CanvasObject* obj : m_childs)
+    for (GameObject* obj : m_childs)
     {
 		T* child = dynamic_cast<T*>(obj);
 		if(child)
@@ -659,19 +659,19 @@ size_t CanvasObject::getChildCountRecusrive() const
 }
 
 template<typename T>
-void CanvasObject::removeComponents()
+void GameObject::removeComponents()
 {
     removeComponent(getComponents<T>());
 }
 
 template<typename T>
-void CanvasObject::deleteComponents()
+void GameObject::deleteComponents()
 {
     deleteComponents(getComponents<T>());
 }
 
 template<typename T>
-std::vector<T*> CanvasObject::getComponents() const
+std::vector<T*> GameObject::getComponents() const
 {
     std::vector<T*> list;
     list.reserve(m_components.size());
@@ -684,7 +684,7 @@ std::vector<T*> CanvasObject::getComponents() const
     return list;
 }
 template<typename T>
-size_t CanvasObject::getComponentCount() const
+size_t GameObject::getComponentCount() const
 {
     size_t count = 0;
     for(size_t i=0; i<m_components.size(); ++i)
@@ -697,10 +697,10 @@ size_t CanvasObject::getComponentCount() const
 }
 
 template<typename T>
-size_t CanvasObject::getComponentCountRecusrive() const
+size_t GameObject::getComponentCountRecusrive() const
 {
     size_t count = getComponentCount<T>();
-    for (const CanvasObject* &obj : m_childs)
+    for (const GameObject* &obj : m_childs)
     {
 		count += obj->getComponentCountRecusrive<T>();
 	}

@@ -2,13 +2,13 @@
 
 #include "QSFML_EditorWidget.h"
 
-class AABBDisplayer: public QSFML::Objects::CanvasObject
+class AABBDisplayer: public QSFML::Objects::GameObject
 {
         class MouseFollower;
     public:
         AABBDisplayer(const std::string &name = "AABBDisplayer",
-                        CanvasObject *parent = nullptr)
-            : CanvasObject(name, parent)
+                        GameObject *parent = nullptr)
+            : GameObject(name, parent)
         {
             m_box = new QSFML::Objects::DrawableBoxCollider("Box1",QSFML::Utilities::AABB(0,0,100,50));
             m_clickable  = new QSFML::Objects::DrawableBoxCollider("Box2",QSFML::Utilities::AABB(200,200,100,200));

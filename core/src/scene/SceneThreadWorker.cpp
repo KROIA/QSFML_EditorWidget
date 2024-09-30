@@ -1,18 +1,18 @@
-#include "canvas/CanvasThreadWorker.h"
-#include "canvas/CanvasObjectGroup.h"
+#include "Scene/SceneThreadWorker.h"
+#include "Scene/GameObjectGroup.h"
 
 #include <string>
 #include <thread>
 
 namespace QSFML
 {
-CanvasThreadWorker::CanvasThreadWorker(size_t threadCount,
-                                       std::vector<CanvasObjectGroup*> *group)
+SceneThreadWorker::SceneThreadWorker(size_t threadCount,
+                                       std::vector<GameObjectGroup*> *group)
 {
     m_groups = group;
     setupThreads(threadCount);
 }
-CanvasThreadWorker::~CanvasThreadWorker()
+SceneThreadWorker::~SceneThreadWorker()
 {
     m_threadExit = true;
     m_cv.notify_all();
@@ -27,9 +27,9 @@ CanvasThreadWorker::~CanvasThreadWorker()
     m_groups = nullptr;
 }
 
-void CanvasThreadWorker::process()
+void SceneThreadWorker::process()
 {
-    QSFMLP_CANVAS_BLOCK("Process threaded update", QSFML_COLOR_STAGE_1);
+    QSFMLP_SCENE_BLOCK("Process threaded update", QSFML_COLOR_STAGE_1);
     m_threadNextIndex = 0;
     size_t threadCount = m_threads.size();
     m_threadMaxIndex = m_groups->size();
@@ -54,11 +54,11 @@ void CanvasThreadWorker::process()
     }while(anyRunning);
     QSFML_PROFILING_END_BLOCK;
 }
-void CanvasThreadWorker::setupThreads(size_t count)
+void SceneThreadWorker::setupThreads(size_t count)
 {
     if(m_threads.size() > 0)
         return;
-    QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_cycleCount = 0;
     m_threadReleaseToWork = false;
     m_threadMaxIndex = m_groups->size();
@@ -82,12 +82,12 @@ void CanvasThreadWorker::setupThreads(size_t count)
     {
         ThreadsData data(dataPreset);
         data.running = &m_threadRunning[i];
-        std::thread *th = new std::thread(&CanvasThreadWorker::threadFunc,data);
+        std::thread *th = new std::thread(&SceneThreadWorker::threadFunc,data);
         m_threads.push_back(th);
     }
 }
 
-void CanvasThreadWorker::threadFunc(ThreadsData data)
+void SceneThreadWorker::threadFunc(ThreadsData data)
 {
     using namespace std::chrono_literals;
 
@@ -99,10 +99,10 @@ void CanvasThreadWorker::threadFunc(ThreadsData data)
         {
             std::this_thread::sleep_for(5us);
         }
-        QSFMLP_CANVAS_BLOCK("Threaded update", QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_BLOCK("Threaded update", QSFML_COLOR_STAGE_1);
         releaseThreadToWorkComp = !releaseThreadToWorkComp;
         bool workOnGroups = true;
-        CanvasObjectGroup *currentGroup = nullptr;
+        GameObjectGroup *currentGroup = nullptr;
         while(workOnGroups)
         {
             {

@@ -1,6 +1,6 @@
 #include "utilities/ObjectQuadTree.h"
 #include "utilities/Stats.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/physics/Collider.h"
 #include "utilities/Stats.h"
 
@@ -31,7 +31,7 @@ namespace QSFML
 			m_statsManager = manager;
 			m_tree.setStatsManager(manager);
 		}
-		bool ObjectQuadTree::insert(Objects::CanvasObject* obj)
+		bool ObjectQuadTree::insert(Objects::GameObject* obj)
 		{
 			if (m_allObjMap.find(obj) != m_allObjMap.end())
 				return false; // Object already in container
@@ -39,7 +39,7 @@ namespace QSFML
 			return insert_internal(item);
 		}
 
-		bool ObjectQuadTree::insert(const std::vector<Objects::CanvasObject*> &objs)
+		bool ObjectQuadTree::insert(const std::vector<Objects::GameObject*> &objs)
 		{
 			bool success = true;
 			for (auto obj : objs)
@@ -59,7 +59,7 @@ namespace QSFML
 			m_allObjs.push_back(item);
 			return true;
 		}
-		void ObjectQuadTree::search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const
+		void ObjectQuadTree::search(const Utilities::AABB& area, std::list< Objects::GameObject*>& container) const
 		{
 			m_tree.search(area, container);
 		}
@@ -67,7 +67,7 @@ namespace QSFML
 		{
 			return m_allObjs;
 		}
-		void ObjectQuadTree::remove(Objects::CanvasObject* obj)
+		void ObjectQuadTree::remove(Objects::GameObject* obj)
 		{
 			auto mapIt = m_allObjMap.find(obj);
 			if (mapIt == m_allObjMap.end())
@@ -312,7 +312,7 @@ namespace QSFML
 			item.containter = &m_objects;
 			item.iterator = m_objects.end();
 		}
-		void ObjectQuadTree::Tree::search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const
+		void ObjectQuadTree::Tree::search(const Utilities::AABB& area, std::list< Objects::GameObject*>& container) const
 		{
 			for (auto obj : m_objects)
 			{
@@ -458,7 +458,7 @@ namespace QSFML
 				}
 			}
 		}
-		void ObjectQuadTree::Tree::checkCollision(Objects::CanvasObject* other,
+		void ObjectQuadTree::Tree::checkCollision(Objects::GameObject* other,
 			std::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision)
 		{

@@ -2,19 +2,19 @@
 
 namespace QSFML
 {
-    class Canvas;
-    class CanvasObjectContainer;
-    class CanvasObjectGroup;
-    class CanvasObjectLayerGroup;
-    class CanvasThreadWorker;
-    struct CanvasSettings;
-    class CanvasThreadWorker;
+    class Scene;
+    class GameObjectContainer;
+    class GameObjectGroup;
+    class GameObjectLayerGroup;
+    class SceneThreadWorker;
+    struct SceneSettings;
+    class SceneThreadWorker;
 
     
     
     namespace Objects
     {
-        class CanvasObject;
+        class GameObject;
         class BackgroundGrid;
         class CameraController;
         class DefaultEditor;

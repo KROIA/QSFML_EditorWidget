@@ -7,7 +7,7 @@ using namespace QSFML::Components;
 
 OBJECT_IMPL(SandboxObject)
 SandboxObject::SandboxObject(const std::string &name)
-    : CanvasObject(name)
+    : GameObject(name)
 {
     m_vec = new VectorPainter();
     addComponent(m_vec);
@@ -21,7 +21,7 @@ SandboxObject::SandboxObject(const std::string &name)
 
 }
 SandboxObject::SandboxObject(const SandboxObject &other)
-    : CanvasObject(other)
+    : GameObject(other)
 {
 
 }

@@ -1,5 +1,5 @@
-#include "ExampleCanvas.h"
-#include "ui_exampleCanvas.h"
+#include "ExampleScene.h"
+#include "ui_exampleScene.h"
 #include <iostream>
 #include <QCloseEvent>
 #include <QDebug>
@@ -8,30 +8,30 @@
 using namespace QSFML;
 using namespace QSFML::Objects;
 
-ExampleCanvas::ExampleCanvas(QWidget *parent)
+ExampleScene::ExampleScene(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::ExampleCanvas)
+    , ui(new Ui::ExampleScene)
 {
     ui->setupUi(this);
-    m_canvas = nullptr;
-    setupCanvas();
+    m_Scene = nullptr;
+    setupScene();
 
-	// Create a custom object and add it to the canvas
+	// Create a custom object and add it to the Scene
 	CustomObject* customObject = new CustomObject();
-	m_canvas->addObject(customObject);
+	m_Scene->addObject(customObject);
 
     
 }
 
-ExampleCanvas::~ExampleCanvas()
+ExampleScene::~ExampleScene()
 {
     delete ui;
-    delete m_canvas;
+    delete m_Scene;
 }
 
-void ExampleCanvas::setupCanvas()
+void ExampleScene::setupScene()
 {
-    CanvasSettings settings;
+    SceneSettings settings;
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
@@ -40,15 +40,15 @@ void ExampleCanvas::setupCanvas()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_canvas = new Canvas(ui->canvasWidget, settings);
+    m_Scene = new Scene(ui->SceneWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor();
-    m_canvas->addObject(defaultEditor);
+    m_Scene->addObject(defaultEditor);
 }
-void ExampleCanvas::closeEvent(QCloseEvent* event)
+void ExampleScene::closeEvent(QCloseEvent* event)
 {
-    if (m_canvas)
-        m_canvas->stop();
+    if (m_Scene)
+        m_Scene->stop();
     event->accept();
 }
 

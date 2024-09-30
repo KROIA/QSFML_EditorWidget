@@ -40,23 +40,23 @@ private slots:
 	}
 	void onDrawTest_Update()
 	{
-		if(!m_currentCanvas)
+		if(!m_currentScene)
 			return;
 
 
-		m_stats.push_back(m_currentCanvas->getLastStats());
+		m_stats.push_back(m_currentScene->getLastStats());
 	}
 	void onCollisionTest_Update()
 	{
-		if (!m_currentCanvas)
+		if (!m_currentScene)
 			return;
 
-		m_stats.push_back(m_currentCanvas->getLastStats());
+		m_stats.push_back(m_currentScene->getLastStats());
 
 		TimePoint t1 = std::chrono::high_resolution_clock::now();
 		m_tree.clear();
 		m_tree.shrink();
-		m_tree.insert(m_currentCanvas->getObjects());
+		m_tree.insert(m_currentScene->getObjects());
 
 		std::vector<QSFML::Utilities::Collisioninfo> collisions;
 		std::vector<sf::Vector2f> collisionPoints;
@@ -84,8 +84,8 @@ private:
 	QTimer m_stopTimer;
 	QTimer m_update;
 
-	QSFML::Canvas *m_currentCanvas;
-	//QSFML::Objects::CanvasObject* m_pointPainterObj = nullptr;
+	QSFML::Scene *m_currentScene;
+	//QSFML::Objects::GameObject* m_pointPainterObj = nullptr;
 	QSFML::Components::PointPainter* m_pointPainter = nullptr;
 	TestResults *m_currentResults;
 	std::vector<QSFML::Utilities::Stats> m_stats;
@@ -151,16 +151,16 @@ private:
 		size_t verteciesCount = 5;
 
 		
-		QSFML::CanvasSettings settings;
+		QSFML::SceneSettings settings;
 		settings.timing.frameTime = 0;
-		QSFML::Canvas canvas(nullptr, settings);
-		canvas.show();
-		canvas.start();
-		QSFML::Canvas::setProfilerOutputFileName("drawTest.prof");
+		QSFML::Scene Scene(nullptr, settings);
+		Scene.show();
+		Scene.start();
+		QSFML::Scene::setProfilerOutputFileName("drawTest.prof");
 		m_stopTimer.start(1000);
 		m_update.start(10);
 		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
-		m_currentCanvas = &canvas;
+		m_currentScene = &Scene;
 		m_currentResults = &results;
 		m_stats.clear();
 		m_stats.reserve(m_stopTimer.interval()/ m_update.interval() + 50);
@@ -168,19 +168,19 @@ private:
 		sf::Color color1 = sf::Color::Red;
 		sf::Color color2 = sf::Color::Green;
 
-		canvas.addObject(new QSFML::Objects::DefaultEditor());
+		Scene.addObject(new QSFML::Objects::DefaultEditor());
 		
 		for (size_t i = 0; i < objectCount; ++i)
 		{
 			sf::Vector2f randPos = QSFML::Utilities::RandomEngine::getVector() * 1000.f;
 			sf::Color color = QSFML::Color::lerpLinear(color1, color2, (float)i / objectCount);
-			canvas.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
+			Scene.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
 		}
 
 
 
 		qApp->exec();
-		m_currentCanvas = nullptr;
+		m_currentScene = nullptr;
 		m_currentResults = nullptr;
 		processStats(results);
 	}
@@ -192,17 +192,17 @@ private:
 		size_t verteciesCount = 5;
 
 
-		QSFML::CanvasSettings settings;
+		QSFML::SceneSettings settings;
 		settings.timing.frameTime = 0;
-		QSFML::Canvas canvas(nullptr, settings);
-		canvas.show();
-		canvas.start();
-		QSFML::Canvas::setProfilerOutputFileName("collisionTest.prof");
-		m_tree.setStatsManager(&canvas);
+		QSFML::Scene Scene(nullptr, settings);
+		Scene.show();
+		Scene.start();
+		QSFML::Scene::setProfilerOutputFileName("collisionTest.prof");
+		m_tree.setStatsManager(&Scene);
 		m_stopTimer.start(1000);
 		m_update.start(10);
 		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onCollisionTest_Update);
-		m_currentCanvas = &canvas;
+		m_currentScene = &Scene;
 		m_currentResults = &results;
 		m_stats.clear();
 		m_stats.reserve(m_stopTimer.interval() / m_update.interval() + 50);
@@ -210,8 +210,8 @@ private:
 		sf::Color color1 = sf::Color::Red;
 		sf::Color color2 = sf::Color::Green;
 
-		canvas.addObject(new QSFML::Objects::DefaultEditor());
-		QSFML::Objects::CanvasObject * pointPainterObj = new QSFML::Objects::CanvasObject();
+		Scene.addObject(new QSFML::Objects::DefaultEditor());
+		QSFML::Objects::GameObject * pointPainterObj = new QSFML::Objects::GameObject();
 		m_pointPainter = new QSFML::Components::PointPainter();
 		m_pointPainter->setColor(sf::Color::Yellow);
 		pointPainterObj->addComponent(m_pointPainter);
@@ -219,20 +219,20 @@ private:
 		//treePainter->enableText(false);
 		pointPainterObj->addComponent(treePainter);
 
-		canvas.addObject(pointPainterObj);
+		Scene.addObject(pointPainterObj);
 
 
 		for (size_t i = 0; i < objectCount; ++i)
 		{
 			sf::Vector2f randPos = QSFML::Utilities::RandomEngine::getVector({ 0,0 }, { 800,600 });
 			sf::Color color = QSFML::Color::lerpLinear(color1, color2, (float)i / objectCount);
-			canvas.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
+			Scene.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
 		}
 		
 
 
 		qApp->exec();
-		m_currentCanvas = nullptr;
+		m_currentScene = nullptr;
 		m_currentResults = nullptr;
 		processStats(results);
 		m_tree.setStatsManager(nullptr);

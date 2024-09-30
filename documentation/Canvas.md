@@ -1,7 +1,7 @@
-# Canvas
+# Scene
 
 ## Hirarchy
-<img src="CanvasObjectHirarchy.png" alt="Object hirarchy" width="200"/><br>
+<img src="GameObjectHirarchy.png" alt="Object hirarchy" width="200"/><br>
 
 
 ## Update loop

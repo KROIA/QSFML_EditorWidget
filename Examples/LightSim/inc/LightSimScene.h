@@ -14,26 +14,26 @@
 
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class LightSimCanvas; }
+namespace Ui { class LightSimScene; }
 QT_END_NAMESPACE
 
-class LightSimCanvas : public QMainWindow
+class LightSimScene : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    LightSimCanvas(QWidget* parent = nullptr);
-    ~LightSimCanvas();
+    LightSimScene(QWidget* parent = nullptr);
+    ~LightSimScene();
 
     
 
 private:
-    void setupCanvas(); 
+    void setupScene(); 
     void closeEvent(QCloseEvent* event) override;
 
-    Ui::LightSimCanvas* ui;
+    Ui::LightSimScene* ui;
 
-    QSFML::Canvas* m_canvas;
+    QSFML::Scene* m_Scene;
 
     std::vector<Mirror*> m_mirrors;
     std::vector<Laser*> m_lasers;

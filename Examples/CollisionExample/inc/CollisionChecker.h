@@ -4,7 +4,7 @@
 #include "CollisionObject.h"
 #include "PerformanceObject.h"
 
-class CollisionChecker : public QObject, public QSFML::Objects::CanvasObject
+class CollisionChecker : public QObject, public QSFML::Objects::GameObject
 {
 	Q_OBJECT
 	//class Painter;
@@ -18,7 +18,7 @@ public:
 	};
 
 	CollisionChecker(const std::string& name = "CollisionChecker",
-					CanvasObject* parent = nullptr);
+					GameObject* parent = nullptr);
 	CollisionChecker(const CollisionChecker &other);
     ~CollisionChecker();
 
@@ -31,8 +31,8 @@ private slots:
 						   const sf::Vector2i& pixelPos);
 
 private:
-	void onCanvasParentChange(QSFML::Canvas* oldParent, QSFML::Canvas* newParent) override;
-	void inCanvasAdded() override;
+	void onSceneParentChange(QSFML::Scene* oldParent, QSFML::Scene* newParent) override;
+	void inSceneAdded() override;
 	void update() override;
 	void update_intersecting();
 	void update_contains();
@@ -46,12 +46,12 @@ private:
 	//CollisionObject* m_collisionObject;
 	QSFML::Components::MouseFollower* m_mouseFollower;
 	sf::Vector2f m_mousePos;
-	QSFML::Objects::CanvasObject* m_colliderContainer;
-	std::vector<QSFML::Objects::CanvasObject*> m_objs;
-	std::vector<QSFML::Objects::CanvasObject*> m_collisionObjs;
+	QSFML::Objects::GameObject* m_colliderContainer;
+	std::vector<QSFML::Objects::GameObject*> m_objs;
+	std::vector<QSFML::Objects::GameObject*> m_collisionObjs;
 
-	QSFML::Objects::CanvasObject* m_performanceContainer;
-	std::vector<QSFML::Objects::CanvasObject*> m_performanceObjs;
+	QSFML::Objects::GameObject* m_performanceContainer;
+	std::vector<QSFML::Objects::GameObject*> m_performanceObjs;
 	QSFML::Utilities::ObjectQuadTree m_tree;
 	
 /*

@@ -2,9 +2,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
+Pendulum::Pendulum(const std::string& name, GameObject* parent)
     : QObject()
-    , CanvasObject(name, parent)
+    , GameObject(name, parent)
 {
     m_pointPainter = new QSFML::Components::PointPainter();
     m_pointPainter->setRadius(m_pendulumRadius);

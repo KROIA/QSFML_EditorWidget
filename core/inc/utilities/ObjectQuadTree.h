@@ -2,7 +2,7 @@
 
 #include "QSFML_EditorWidget_base.h"
 
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/base/Drawable.h"
 
 #include "AABB.h"
@@ -24,7 +24,7 @@ namespace QSFML
 			{
 				friend ObjectQuadTree;
 				friend Tree;
-				TreeItem(Objects::CanvasObject* obj)
+				TreeItem(Objects::GameObject* obj)
 					: obj(obj)
 					, containter(nullptr)
 				{}
@@ -32,10 +32,10 @@ namespace QSFML
 					: obj(nullptr)
 					, containter(nullptr)
 				{}
-				Objects::CanvasObject* obj;
+				Objects::GameObject* obj;
 			private:
-				std::list<Objects::CanvasObject*>* containter;
-				std::list<Objects::CanvasObject*>::iterator iterator;
+				std::list<Objects::GameObject*>* containter;
+				std::list<Objects::GameObject*>::iterator iterator;
 			};
 			ObjectQuadTree(StatsManager* statsManager, const Utilities::AABB& area, size_t maxDepth = 10);
 			ObjectQuadTree(const ObjectQuadTree& other) = delete;
@@ -43,12 +43,12 @@ namespace QSFML
 
 			void setStatsManager(StatsManager* manager);
 
-			bool insert(Objects::CanvasObject* obj);
-			bool insert(const std::vector<Objects::CanvasObject*>& objs);
+			bool insert(Objects::GameObject* obj);
+			bool insert(const std::vector<Objects::GameObject*>& objs);
 
-			void search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const;
+			void search(const Utilities::AABB& area, std::list< Objects::GameObject*>& container) const;
 			const std::list<TreeItem>& getAllItems() const;
-			void remove(Objects::CanvasObject* obj);
+			void remove(Objects::GameObject* obj);
 			void remove(const TreeItem& item);
 			bool relocate(TreeItem& item);
 			void clear();
@@ -136,7 +136,7 @@ namespace QSFML
 				bool hasChilds();
 
 				void insert(TreeItem& item);
-				void search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const;
+				void search(const Utilities::AABB& area, std::list< Objects::GameObject*>& container) const;
 				void clear();
 				bool shrink(); // returns false if this can be deleted
 
@@ -162,7 +162,7 @@ namespace QSFML
 
 				
 			private:
-				void checkCollision(Objects::CanvasObject* other,
+				void checkCollision(Objects::GameObject* other,
 					std::vector<Utilities::Collisioninfo>& collisions,
 					bool onlyFirstCollision);
 				
@@ -180,7 +180,7 @@ namespace QSFML
 				Utilities::AABB m_childAreas[4];
 				bool m_enableChilds;
 
-				std::list<Objects::CanvasObject*> m_objects;
+				std::list<Objects::GameObject*> m_objects;
 
 				// special collision detection container for multithreading;
 				std::vector<Utilities::Collisioninfo>* m_collisions;
@@ -190,7 +190,7 @@ namespace QSFML
 
 			Tree m_tree;
 			std::list<TreeItem> m_allObjs;
-			std::unordered_map<Objects::CanvasObject*, size_t> m_allObjMap;
+			std::unordered_map<Objects::GameObject*, size_t> m_allObjMap;
 			std::vector<ObjectQuadTreePainter*> m_painters;
 			ThreadWorker* m_threadWorker;
 

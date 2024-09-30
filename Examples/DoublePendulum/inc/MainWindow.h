@@ -31,14 +31,14 @@ private slots:
 	void on_enableEnergyLabel_checkBox_stateChanged(int arg1);
 
 private:
-    void setupCanvas();
+    void setupScene();
     void closeEvent(QCloseEvent* event) override;
     void createPendulums();
 
 
     Ui::MainWindow* ui;
 
-    QSFML::Canvas* m_canvas;
+    QSFML::Scene* m_Scene;
     std::vector<Pendulum*> m_pendulums;
 
     //Pendulum* m_pendulum;

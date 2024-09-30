@@ -4,23 +4,23 @@
 #include "QSFML_EditorWidget.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui { class ExampleScene; }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class ExampleScene : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent = nullptr);
-    ~MainWindow();
+    ExampleScene(QWidget* parent = nullptr);
+    ~ExampleScene();
 
 private:
     void setupScene();
     void closeEvent(QCloseEvent* event) override;
 
 
-    Ui::MainWindow* ui;
+    Ui::ExampleScene* ui;
 
     QSFML::Scene* m_Scene;
 };

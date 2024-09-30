@@ -1,8 +1,8 @@
 #include "components/drawable/Text.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "utilities/AABB.h"
 #include "utilities/Origin.h"
-#include "Canvas/Canvas.h"
+#include "Scene/Scene.h"
 
 namespace QSFML
 {
@@ -13,7 +13,7 @@ namespace QSFML
             : Drawable(name)
             , m_origin(Utilities::Origin::Type::TopLeft)
         {
-            setFont(Canvas::getDefaultTextFont());
+            setFont(Scene::getDefaultTextFont());
             setText(name);
         }
         Text::Text(const Text &other)
@@ -89,7 +89,7 @@ namespace QSFML
             return *m_text.getFont();
         }
 
-        void Text::setParent(Objects::CanvasObject *parent)
+        void Text::setParent(Objects::GameObject *parent)
         {
             Component::setParent(parent);
             /*if (!m_font)

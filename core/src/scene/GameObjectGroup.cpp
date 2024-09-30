@@ -1,7 +1,7 @@
-#include "canvas/CanvasObjectGroup.h"
-#include "canvas/Canvas.h"
+#include "Scene/GameObjectGroup.h"
+#include "Scene/Scene.h"
 
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 
 
 using namespace QSFML::Objects;
@@ -10,33 +10,33 @@ using namespace QSFML::Components;
 namespace QSFML
 {
 
-    CanvasObjectGroup::CanvasObjectGroup(Canvas* parent)
+    GameObjectGroup::GameObjectGroup(Scene* parent)
     {
         m_parent = parent;
     }
-    CanvasObjectGroup::~CanvasObjectGroup()
+    GameObjectGroup::~GameObjectGroup()
     {
         cleanup();
     }
 
-    void CanvasObjectGroup::addObject(CanvasObject* obj)
+    void GameObjectGroup::addObject(GameObject* obj)
     {
-        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
 
-        if (obj->getCanvasParent() != m_parent && obj->getCanvasParent())
-            obj->getCanvasParent()->removeObject(obj);
+        if (obj->getSceneParent() != m_parent && obj->getSceneParent())
+            obj->getSceneParent()->removeObject(obj);
         m_toAddContainer.push_back(obj);
-        obj->setCanvasParent(m_parent);
+        obj->setSceneParent(m_parent);
     }
-    void CanvasObjectGroup::addObject(const std::vector<CanvasObject*>& objs)
+    void GameObjectGroup::addObject(const std::vector<GameObject*>& objs)
     {
-        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         for (size_t i = 0; i < objs.size(); ++i)
         {
             addObject(objs[i]);
         }
     }
-    void CanvasObjectGroup::addObject_internal()
+    void GameObjectGroup::addObject_internal()
     {
         m_container.reserve(m_container.size() + m_toAddContainer.size());
 
@@ -52,7 +52,7 @@ namespace QSFML
         }
         m_toAddContainer.clear();
     }
-    void CanvasObjectGroup::deleteObject_internal()
+    void GameObjectGroup::deleteObject_internal()
     {
         for (size_t i = 0; i < m_toDelete.size(); ++i)
         {
@@ -61,94 +61,94 @@ namespace QSFML
         m_toDelete.clear();
     }
 
-    void CanvasObjectGroup::removeObject(CanvasObject* obj)
+    void GameObjectGroup::removeObject(GameObject* obj)
     {
-        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         size_t index = getObjectIndex(obj);
         if (index == npos) return;
-        obj->setCanvasParent(nullptr);
+        obj->setSceneParent(nullptr);
         m_container.erase(m_container.begin() + index);
     }
-    void CanvasObjectGroup::removeObject(const std::vector<CanvasObject*>& objs)
+    void GameObjectGroup::removeObject(const std::vector<GameObject*>& objs)
     {
-        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         for (size_t i = 0; i < objs.size(); ++i)
         {
             removeObject(objs[i]);
         }
     }
-    void CanvasObjectGroup::deleteObject(Objects::CanvasObject* obj)
+    void GameObjectGroup::deleteObject(Objects::GameObject* obj)
     {
-        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         removeObject(obj);
         delete obj;
     }
-    void CanvasObjectGroup::deleteObject(const std::vector<Objects::CanvasObject*>& objs)
+    void GameObjectGroup::deleteObject(const std::vector<Objects::GameObject*>& objs)
     {
-        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         removeObject(objs);
         for (size_t i = 0; i < objs.size(); ++i)
         {
             delete objs[i];
         }
     }
-    void CanvasObjectGroup::clearObjects()
+    void GameObjectGroup::clearObjects()
     {
         m_toAddContainer.clear();
         m_container.clear();
     }
 
-    void CanvasObjectGroup::cleanup()
+    void GameObjectGroup::cleanup()
     {
         if(m_container.empty() && m_toAddContainer.empty() && m_toDelete.empty()) 
             return;
-        QSFMLP_CANVAS_FUNCTION(QSFML_COLOR_STAGE_1);
+        QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         for (auto& obj : m_toAddContainer)
         {
-            obj->setCanvasParent(nullptr);
+            obj->setSceneParent(nullptr);
             delete obj;
         }
         m_toAddContainer.clear();
         for (auto& obj : m_container)
         {
-            obj->setCanvasParent(nullptr);
+            obj->setSceneParent(nullptr);
             delete obj;
         }
         m_container.clear();
         m_toDelete.clear();
     }
 
-    void CanvasObjectGroup::reserveObjectsCount(size_t size)
+    void GameObjectGroup::reserveObjectsCount(size_t size)
     {
         m_container.reserve(size);
     }
-    size_t CanvasObjectGroup::getObjectsCount() const
+    size_t GameObjectGroup::getObjectsCount() const
     {
         return m_container.size();
     }
 
-    const std::vector<CanvasObject*>& CanvasObjectGroup::getObjects() const
+    const std::vector<GameObject*>& GameObjectGroup::getObjects() const
     {
         return m_container;
     }
-    const std::vector<Objects::CanvasObject*>& CanvasObjectGroup::getObjectsToAdd() const
+    const std::vector<Objects::GameObject*>& GameObjectGroup::getObjectsToAdd() const
     {
         return m_toAddContainer;
     }
-    const std::vector<Objects::CanvasObject*>& CanvasObjectGroup::getObjectsToDelete() const
+    const std::vector<Objects::GameObject*>& GameObjectGroup::getObjectsToDelete() const
     {
         return m_toDelete;
     }
 
-    bool CanvasObjectGroup::objectExists(CanvasObject* obj)
+    bool GameObjectGroup::objectExists(GameObject* obj)
     {
-        return objectExists<CanvasObject>(obj, m_container);
+        return objectExists<GameObject>(obj, m_container);
     }
-    size_t CanvasObjectGroup::getObjectIndex(CanvasObject* obj)
+    size_t GameObjectGroup::getObjectIndex(GameObject* obj)
     {
-        return getObjectIndex<CanvasObject>(obj, m_container);
+        return getObjectIndex<GameObject>(obj, m_container);
     }
-    void CanvasObjectGroup::deleteLater(Objects::CanvasObject* obj)
+    void GameObjectGroup::deleteLater(Objects::GameObject* obj)
     {
         for (size_t i = 0; i < m_toAddContainer.size(); ++i)
         {
@@ -161,7 +161,7 @@ namespace QSFML
         m_toDelete.push_back(obj);
     }
 
-    void CanvasObjectGroup::updateNewElements()
+    void GameObjectGroup::updateNewElements()
     {
         deleteObject_internal();
         addObject_internal();
@@ -171,21 +171,21 @@ namespace QSFML
                 m_container[i]->updateNewElements();
         }
     }
-    void CanvasObjectGroup::sfEvent(const std::vector<sf::Event>& events)
+    void GameObjectGroup::sfEvent(const std::vector<sf::Event>& events)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {
             m_container[i]->sfEvent(events);
         }
     }
-    void CanvasObjectGroup::update()
+    void GameObjectGroup::update()
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {
             m_container[i]->update_internal();
         }
     }
-    void CanvasObjectGroup::draw(sf::RenderWindow& window)
+    void GameObjectGroup::draw(sf::RenderWindow& window)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {

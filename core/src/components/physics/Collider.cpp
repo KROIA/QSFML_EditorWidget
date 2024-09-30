@@ -1,12 +1,12 @@
 #include "utilities/Stats.h"
 
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 
 #include "components/physics/Collider.h"
 
 #include "utilities/VectorOperations.h"
 #include "utilities/Ray.h"
-#include "Canvas/Canvas.h"
+#include "Scene/Scene.h"
 
 namespace QSFML
 {
@@ -117,12 +117,12 @@ const sf::Vector2f& Collider::getPos() const
     return m_pos;
 }
 
-bool Collider::checkCollision(const std::vector<Objects::CanvasObject*>& objs,
+bool Collider::checkCollision(const std::vector<Objects::GameObject*>& objs,
     std::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
-    //Objects::CanvasObject* thisRootParent = getParent()->getRootParent();
+    //Objects::GameObject* thisRootParent = getParent()->getRootParent();
     bool hasCollision = false;
     for (auto obj : objs)
     {
@@ -148,8 +148,8 @@ bool Collider::checkCollision(const std::vector<Components::Collider*>& other,
 bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 { 
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
-    if(m_canvasParent)
-        m_canvasParent->addBoundingBoxCollisionCheck();
+    if(m_SceneParent)
+        m_SceneParent->addBoundingBoxCollisionCheck();
     QSFMLP_PHYSICS_BLOCK("AABB check", QSFML_COLOR_STAGE_4);
     if (!m_boundingBox.intersects(other->m_boundingBox))
     {
@@ -212,8 +212,8 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
                     if (onlyFirstCollision)
                     {
 
-                        StatsManager::addCollisionCheck(canvasParent, i * o);
-                        StatsManager::addCollision(canvasParent);
+                        StatsManager::addCollisionCheck(SceneParent, i * o);
+                        StatsManager::addCollision(SceneParent);
                         return true;
                     }
                 }
@@ -235,10 +235,10 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
                 if (onlyFirstCollision)
                 {
 
-                    if (m_canvasParent)
+                    if (m_SceneParent)
                     {
-                        m_canvasParent->addCollisionCheck(i * o);
-                        m_canvasParent->addCollision();
+                        m_SceneParent->addCollisionCheck(i * o);
+                        m_SceneParent->addCollision();
                     }
                     return true;
                 }
@@ -248,10 +248,10 @@ bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Col
             
         }
     }
-    if (m_canvasParent)
+    if (m_SceneParent)
     {
-        m_canvasParent->addCollisionCheck(m_absoluteVertices.size() * other->m_absoluteVertices.size());
-        m_canvasParent->addCollision(collisions.size() - currentCollisionCount);
+        m_SceneParent->addCollisionCheck(m_absoluteVertices.size() * other->m_absoluteVertices.size());
+        m_SceneParent->addCollision(collisions.size() - currentCollisionCount);
     }
 
     return collision;
@@ -302,17 +302,17 @@ bool Collider::contains(const sf::Vector2f& point)
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
     
-    if(m_canvasParent)
-        m_canvasParent->addBoundingBoxCollisionCheck();
+    if(m_SceneParent)
+        m_SceneParent->addBoundingBoxCollisionCheck();
     if (!m_boundingBox.contains(point))
         return false;
 
     bool result = contains(m_absoluteVertices, point);
-    if (m_canvasParent)
+    if (m_SceneParent)
     {
         if (result)
-            m_canvasParent->addCollision();
-        m_canvasParent->addCollisionCheck(m_relativeVertices.size());
+            m_SceneParent->addCollision();
+        m_SceneParent->addCollisionCheck(m_relativeVertices.size());
     }
     return result;
 }

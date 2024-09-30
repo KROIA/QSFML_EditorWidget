@@ -3,13 +3,13 @@
 #include "GridPainter.h"
 
 
-class FluidGrid : public QSFML::Objects::CanvasObject
+class FluidGrid : public QSFML::Objects::GameObject
 {
 public:
 	FluidGrid(sf::Vector2u tiles,
 			  sf::Vector2f tileSize,
 			  const std::string& name = "FluidGrid",
-			  CanvasObject* parent = nullptr);
+			  GameObject* parent = nullptr);
 	~FluidGrid();
 
 	CLONE_FUNC_DEC(FluidGrid);

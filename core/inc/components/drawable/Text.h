@@ -52,12 +52,12 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
 
 
 
-        void setParent(Objects::CanvasObject *parent) override;
+        void setParent(Objects::GameObject *parent) override;
 
         /**
          * \brief draw
          * \details This function will be automaticlly called from the
-         *          Canvas once per frame if the Component is enabled
+         *          Scene once per frame if the Component is enabled
          * \param target to draw on
          * \param states
          */
