@@ -10,15 +10,15 @@ namespace QSFML
         DefaultEditor::DefaultEditor(const std::string &name,
                                      const sf::Vector2f &size)
             : GameObject(name)
-            , m_cam(new CameraController("Camera"))
-            , m_grid(new BackgroundGrid("Grid"))
+            , m_cam(std::make_shared<CameraController>("Camera"))
+            , m_grid(std::make_shared<BackgroundGrid>("Grid"))
         {
             setup(size);
         }
         DefaultEditor::DefaultEditor(const DefaultEditor &other)
             : GameObject(other)
-            , m_cam(new CameraController("Camera"))
-            , m_grid(new BackgroundGrid("Grid"))
+            , m_cam(std::make_shared<CameraController>("Camera"))
+            , m_grid(std::make_shared<BackgroundGrid>("Grid"))
         {
             setup(sf::Vector2f(other.m_grid->getSize().width, other.m_grid->getSize().height));
         }
@@ -36,11 +36,11 @@ namespace QSFML
                                 sf::Color(100,100,100) });
             m_cam->setMaxMovingBounds(sf::FloatRect(m_grid->getSize()));
 
-            m_runtimeInfo = new RuntimeInfo();
+            m_runtimeInfo = std::make_shared<RuntimeInfo>();
             m_runtimeInfo->setEnabled(false);
 
-            m_toggleRuntimeInfoEvent = new Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::F3);
-            connect(m_toggleRuntimeInfoEvent, &Components::KeyPressEvent::fallingEdge, this, &DefaultEditor::onToggleRuntimeInfo);
+            m_toggleRuntimeInfoEvent = std::make_shared<Components::KeyPressEvent>("RuntimeInfoToggler", sf::Keyboard::F3);
+            connect(m_toggleRuntimeInfoEvent.get(), &Components::KeyPressEvent::fallingEdge, this, &DefaultEditor::onToggleRuntimeInfo);
             addComponent(m_toggleRuntimeInfoEvent);
 
 
@@ -58,15 +58,15 @@ namespace QSFML
             if (newParent)
                 newParent->addObject(m_runtimeInfo);
         }
-        CameraController* DefaultEditor::getCamera() const
+        std::shared_ptr<CameraController> DefaultEditor::getCamera() const
         {
             return m_cam;
         }
-        BackgroundGrid *DefaultEditor::getGrid() const
+        std::shared_ptr<BackgroundGrid> DefaultEditor::getGrid() const
         {
             return m_grid;
         }
-        RuntimeInfo* DefaultEditor::getRuntimeInfo() const
+        std::shared_ptr<RuntimeInfo> DefaultEditor::getRuntimeInfo() const
         {
             return m_runtimeInfo;
         }

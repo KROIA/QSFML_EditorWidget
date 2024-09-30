@@ -9,14 +9,14 @@ namespace QSFML
                 GameObject* parent)
             : CameraController(name, parent)
         {
-            m_draw = new DrawableComp();
+            m_draw = std::make_shared<DrawableComp>();
             m_draw->setCam(this);
             addComponent(m_draw);
         }
         VisibleCamera::VisibleCamera(const VisibleCamera& other)
             : CameraController(other)
         {
-            m_draw = new DrawableComp(*other.m_draw);
+            m_draw = std::make_shared<DrawableComp>(*other.m_draw);
             m_draw->setCam(this);
             addComponent(m_draw);
         }

@@ -10,7 +10,7 @@ namespace QSFML
 		}
 		void GameObject::addChilds(const std::vector<GameObjectPtr>& childs)
 		{
-			m_childObjectManagerData.toAdd.insert(m_toAddChildObjects.end(), childs.begin(), childs.end());
+			m_childObjectManagerData.toAdd.insert(m_childObjectManagerData.toAdd.end(), childs.begin(), childs.end());
 		}
 
 		void GameObject::removeChild(GameObjectPtr child)
@@ -19,9 +19,9 @@ namespace QSFML
 		}
 		void GameObject::removeChilds(const std::vector<GameObjectPtr>& childs)
 		{
-			m_childObjectManagerData.toRemove.insert(m_toRemoveChildObjects.end(), childs.begin(), childs.end());
+			m_childObjectManagerData.toRemove.insert(m_childObjectManagerData.toRemove.end(), childs.begin(), childs.end());
 		}
-		void GameObject::removeChilds()
+		void GameObject::clearChilds()
 		{
 			m_childObjectManagerData.toAdd.clear();
 			m_childObjectManagerData.toRemove = m_childObjectManagerData.objs;
@@ -30,7 +30,7 @@ namespace QSFML
 
 		bool GameObject::hasChild(GameObjectPtr child) const
 		{
-			for (auto& obj : m_childObjects)
+			for (auto& obj : m_childObjectManagerData.objs)
 			{
 				if (obj == child)
 					return true;

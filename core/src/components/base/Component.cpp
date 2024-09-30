@@ -32,14 +32,7 @@ Component::~Component()
     }
 }
 
-
-
-
-
-
-
-
-
+/*
 void Component::deleteThis()
 {
     if (m_parent)
@@ -49,7 +42,7 @@ void Component::deleteThis()
         parent->deleteComponent(this);
     }
 }
-
+*/
 
 
 sf::Vector2i Component::getMousePosition() const

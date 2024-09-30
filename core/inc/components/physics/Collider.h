@@ -16,8 +16,6 @@ namespace QSFML
 {
 namespace Components
 {
-    class Collider;
-
     class QSFML_EDITOR_WIDGET_EXPORT Collider: public Component
     {
             

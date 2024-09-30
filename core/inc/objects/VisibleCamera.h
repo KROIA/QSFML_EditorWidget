@@ -19,7 +19,7 @@ class QSFML_EDITOR_WIDGET_EXPORT VisibleCamera : public CameraController
         OBJECT_DECL(VisibleCamera)
 
     private:
-        DrawableComp *m_draw;
+        std::shared_ptr<DrawableComp> m_draw;
 
         class DrawableComp : public Components::Drawable
         {

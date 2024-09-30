@@ -43,7 +43,7 @@ void GameObjectContainer::initializeThreads(size_t threadCount)
     {
         m_threadGroups.push_back(new GameObjectGroup(m_parent));
     }
-    const std::vector<GameObject*> &objs = m_allObjects->getObjects();
+    const std::vector<GameObjectPtr> &objs = m_allObjects->getObjects();
     for(size_t i=0; i<objs.size(); ++i)
     {
         m_threadGroups[i%m_threadGroups.size()]->addObject(objs[i]);
@@ -68,12 +68,12 @@ void GameObjectContainer::deinitializeThreads()
     delete currentWorker;
 }
 
-void GameObjectContainer::addObject(GameObject *obj)
+void GameObjectContainer::addObject(GameObjectPtr obj)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToAdd.push_back(obj);
 }
-void GameObjectContainer::addObject(const std::vector<GameObject*> &objs)
+void GameObjectContainer::addObject(const std::vector<GameObjectPtr> &objs)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToAdd.insert(m_objectsToAdd.end(), objs.begin(), objs.end());
@@ -98,22 +98,22 @@ void GameObjectContainer::deleteObject_internal()
     m_parent->setRootCanvesObject(m_allObjects->getObjectsCount());
 }
 
-void GameObjectContainer::removeObject(GameObject *obj)
+void GameObjectContainer::removeObject(GameObjectPtr obj)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToRemove.push_back(obj);
 }
-void GameObjectContainer::removeObject(const std::vector<GameObject*> &objs)
+void GameObjectContainer::removeObject(const std::vector<GameObjectPtr> &objs)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToRemove.insert(m_objectsToRemove.end(), objs.begin(), objs.end());
 }
-void GameObjectContainer::deleteObject(Objects::GameObject *obj)
+void GameObjectContainer::deleteObject(Objects::GameObjectPtr obj)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToDelete.push_back(obj);
 }
-void GameObjectContainer::deleteObject(const std::vector<Objects::GameObject*> &objs)
+void GameObjectContainer::deleteObject(const std::vector<Objects::GameObjectPtr> &objs)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToDelete.insert(m_objectsToRemove.end(), objs.begin(), objs.end());
@@ -139,7 +139,7 @@ void GameObjectContainer::cleanup()
     delete m_allObjects;
     delete m_threadWorker;
 
-    std::vector<Objects::GameObject*> objs = m_allObjects->getObjects();
+    std::vector<Objects::GameObjectPtr> objs = m_allObjects->getObjects();
     m_allObjects->clearObjects();
     m_renderLayerGroup.clearObjects();
     for (auto& obj : objs)
@@ -156,9 +156,9 @@ void GameObjectContainer::cleanup()
 void GameObjectContainer::applyObjectChanges()
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-    std::vector<GameObject*> objectsToAdd = m_objectsToAdd;
-    std::vector<GameObject*> objectsToRemove = m_objectsToRemove;
-    std::vector<GameObject*> objectsToDelete = m_objectsToDelete;
+    std::vector<GameObjectPtr> objectsToAdd = m_objectsToAdd;
+    std::vector<GameObjectPtr> objectsToRemove = m_objectsToRemove;
+    std::vector<GameObjectPtr> objectsToDelete = m_objectsToDelete;
     m_objectsToAdd.clear();
     m_objectsToRemove.clear();
     m_objectsToDelete.clear();
@@ -215,26 +215,26 @@ size_t GameObjectContainer::getObjectsCount() const
     return m_allObjects->getObjectsCount();
 }
 
-const std::vector<GameObject*> &GameObjectContainer::getObjects() const
+const std::vector<GameObjectPtr> &GameObjectContainer::getObjects() const
 {
     return m_allObjects->getObjects();
 }
 
-bool GameObjectContainer::objectExists(GameObject *obj)
+bool GameObjectContainer::objectExists(GameObjectPtr obj)
 {
     if(obj->getRenderLayer() < RenderLayer::count)
         return m_renderLayerGroup.objectExists(obj, obj->getRenderLayer());
 
     return m_allObjects->objectExists(obj);
 }
-size_t GameObjectContainer::getObjectIndex(GameObject *obj)
+size_t GameObjectContainer::getObjectIndex(GameObjectPtr obj)
 {
     if(obj->getRenderLayer() < RenderLayer::count)
         return m_renderLayerGroup.getObjectIndex(obj, obj->getRenderLayer());
 
     return m_allObjects->getObjectIndex(obj);
 }
-Objects::GameObject* GameObjectContainer::findFirstObject(const std::string& name)
+Objects::GameObjectPtr GameObjectContainer::findFirstObject(const std::string& name)
 {
     size_t nameSize = name.size();
     for (auto& obj : m_allObjects->getObjects())
@@ -247,9 +247,9 @@ Objects::GameObject* GameObjectContainer::findFirstObject(const std::string& nam
     }
     return nullptr;
 }
-std::vector<Objects::GameObject*> GameObjectContainer::findAllObjects(const std::string& name)
+std::vector<Objects::GameObjectPtr> GameObjectContainer::findAllObjects(const std::string& name)
 {
-    std::vector<Objects::GameObject*> results;
+    std::vector<Objects::GameObjectPtr> results;
     results.reserve(20);
     size_t nameSize = name.size();
     for (auto& obj : m_allObjects->getObjects())
@@ -262,7 +262,7 @@ std::vector<Objects::GameObject*> GameObjectContainer::findAllObjects(const std:
     }
     return results;
 }
-Objects::GameObject* GameObjectContainer::findFirstObjectRecursive(const std::string& name)
+Objects::GameObjectPtr GameObjectContainer::findFirstObjectRecursive(const std::string& name)
 {
     size_t nameSize = name.size();
     for (auto& obj : m_allObjects->getObjects())
@@ -270,7 +270,7 @@ Objects::GameObject* GameObjectContainer::findFirstObjectRecursive(const std::st
         const std::string& objName = obj->getName();
         if (objName.size() != nameSize)
         {
-			Objects::GameObject* child = obj->findFirstChildRecursive(name);
+			Objects::GameObjectPtr child = obj->findFirstChildRecursive(name);
 			if (child)
 				return child;
             continue;
@@ -280,9 +280,9 @@ Objects::GameObject* GameObjectContainer::findFirstObjectRecursive(const std::st
     }
     return nullptr;
 }
-std::vector<Objects::GameObject*> GameObjectContainer::findAllObjectsRecursive(const std::string& name)
+std::vector<Objects::GameObjectPtr> GameObjectContainer::findAllObjectsRecursive(const std::string& name)
 {
-    std::vector<Objects::GameObject*> results;
+    std::vector<Objects::GameObjectPtr> results;
     results.reserve(50);
     size_t nameSize = name.size();
     for (auto& obj : m_allObjects->getObjects())
@@ -290,7 +290,7 @@ std::vector<Objects::GameObject*> GameObjectContainer::findAllObjectsRecursive(c
         const std::string& objName = obj->getName();
         if (objName.size() != nameSize)
         {
-            std::vector<GameObject*> childs = obj->findAllChildsRecursive(name);
+            std::vector<GameObjectPtr> childs = obj->findAllChildsRecursive(name);
             if (childs.size())
                 results.insert(results.end(), childs.begin(), childs.end());
             continue;
@@ -301,13 +301,13 @@ std::vector<Objects::GameObject*> GameObjectContainer::findAllObjectsRecursive(c
     return results;
 }
 
-void GameObjectContainer::deleteLater(Objects::GameObject *obj)
+void GameObjectContainer::deleteLater(Objects::GameObjectPtr obj)
 {
     m_allObjects->deleteLater(obj);
     if(obj->getRenderLayer() < RenderLayer::count)
         m_renderLayerGroup.removeObject(obj, obj->getRenderLayer());
 }
-void GameObjectContainer::renderLayerSwitch(Objects::GameObject *obj, RenderLayer from, RenderLayer to)
+void GameObjectContainer::renderLayerSwitch(Objects::GameObjectPtr obj, RenderLayer from, RenderLayer to)
 {
     if(!obj)
         return;
@@ -318,7 +318,7 @@ void GameObjectContainer::renderLayerSwitch(Objects::GameObject *obj, RenderLaye
     if(to < RenderLayer::count)
         m_renderLayerGroup.addObject(obj, to);
 }
-void GameObjectContainer::setRenderLayer(Objects::GameObject* obj, RenderLayer to)
+void GameObjectContainer::setRenderLayer(Objects::GameObjectPtr obj, RenderLayer to)
 {
     if (!obj)
         return;
@@ -345,7 +345,7 @@ void GameObjectContainer::updateNewElements()
     
     deleteObject_internal();
     
-    const std::vector<Objects::GameObject*> &toAdd = m_allObjects->getObjectsToAdd();
+    const std::vector<Objects::GameObjectPtr> &toAdd = m_allObjects->getObjectsToAdd();
 
     addObject_internal();
     m_allObjects->updateNewElements();

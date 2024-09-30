@@ -63,7 +63,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
         float m_maxZoom;
         sf::FloatRect m_maxMovingBounds;
 
-        SfEventComponent *m_eventHandleComponent;
+        std::shared_ptr<SfEventComponent> m_eventHandleComponent;
         sf::Mouse::Button m_dragButton;
 
     // Defining component

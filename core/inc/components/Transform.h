@@ -2,12 +2,13 @@
 
 #include "QSFML_EditorWidget_base.h"
 #include <SFML/Graphics.hpp>
+#include "components/base/Component.h"
 
 namespace QSFML
 {
 	namespace Components
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT Transform
+		class QSFML_EDITOR_WIDGET_EXPORT Transform : public Component
 		{
 		public:
         Transform()

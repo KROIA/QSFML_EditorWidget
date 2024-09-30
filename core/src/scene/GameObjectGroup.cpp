@@ -19,7 +19,7 @@ namespace QSFML
         cleanup();
     }
 
-    void GameObjectGroup::addObject(GameObject* obj)
+    void GameObjectGroup::addObject(GameObjectPtr obj)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
 
@@ -28,7 +28,7 @@ namespace QSFML
         m_toAddContainer.push_back(obj);
         obj->setSceneParent(m_parent);
     }
-    void GameObjectGroup::addObject(const std::vector<GameObject*>& objs)
+    void GameObjectGroup::addObject(const std::vector<GameObjectPtr>& objs)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         for (size_t i = 0; i < objs.size(); ++i)
@@ -61,7 +61,7 @@ namespace QSFML
         m_toDelete.clear();
     }
 
-    void GameObjectGroup::removeObject(GameObject* obj)
+    void GameObjectGroup::removeObject(GameObjectPtr obj)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         size_t index = getObjectIndex(obj);
@@ -69,7 +69,7 @@ namespace QSFML
         obj->setSceneParent(nullptr);
         m_container.erase(m_container.begin() + index);
     }
-    void GameObjectGroup::removeObject(const std::vector<GameObject*>& objs)
+    void GameObjectGroup::removeObject(const std::vector<GameObjectPtr>& objs)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         for (size_t i = 0; i < objs.size(); ++i)
@@ -77,13 +77,13 @@ namespace QSFML
             removeObject(objs[i]);
         }
     }
-    void GameObjectGroup::deleteObject(Objects::GameObject* obj)
+    void GameObjectGroup::deleteObject(Objects::GameObjectPtr obj)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         removeObject(obj);
         delete obj;
     }
-    void GameObjectGroup::deleteObject(const std::vector<Objects::GameObject*>& objs)
+    void GameObjectGroup::deleteObject(const std::vector<Objects::GameObjectPtr>& objs)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         removeObject(objs);
@@ -127,28 +127,28 @@ namespace QSFML
         return m_container.size();
     }
 
-    const std::vector<GameObject*>& GameObjectGroup::getObjects() const
+    const std::vector<GameObjectPtr>& GameObjectGroup::getObjects() const
     {
         return m_container;
     }
-    const std::vector<Objects::GameObject*>& GameObjectGroup::getObjectsToAdd() const
+    const std::vector<Objects::GameObjectPtr>& GameObjectGroup::getObjectsToAdd() const
     {
         return m_toAddContainer;
     }
-    const std::vector<Objects::GameObject*>& GameObjectGroup::getObjectsToDelete() const
+    const std::vector<Objects::GameObjectPtr>& GameObjectGroup::getObjectsToDelete() const
     {
         return m_toDelete;
     }
 
-    bool GameObjectGroup::objectExists(GameObject* obj)
+    bool GameObjectGroup::objectExists(GameObjectPtr obj)
     {
         return objectExists<GameObject>(obj, m_container);
     }
-    size_t GameObjectGroup::getObjectIndex(GameObject* obj)
+    size_t GameObjectGroup::getObjectIndex(GameObjectPtr obj)
     {
         return getObjectIndex<GameObject>(obj, m_container);
     }
-    void GameObjectGroup::deleteLater(Objects::GameObject* obj)
+    void GameObjectGroup::deleteLater(Objects::GameObjectPtr obj)
     {
         for (size_t i = 0; i < m_toAddContainer.size(); ++i)
         {

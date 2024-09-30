@@ -18,13 +18,13 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
 
        
 
-        void addObject(Objects::GameObject *obj);
-        void addObject(const std::vector<Objects::GameObject*> &objs);
+        void addObject(Objects::GameObjectPtr obj);
+        void addObject(const std::vector<Objects::GameObjectPtr> &objs);
 
-        void removeObject(Objects::GameObject *obj);
-        void removeObject(const std::vector<Objects::GameObject*> &objs);
-        void deleteObject(Objects::GameObject *obj);
-        void deleteObject(const std::vector<Objects::GameObject*> &objs);
+        void removeObject(Objects::GameObjectPtr obj);
+        void removeObject(const std::vector<Objects::GameObjectPtr> &objs);
+        void deleteObject(Objects::GameObjectPtr obj);
+        void deleteObject(const std::vector<Objects::GameObjectPtr> &objs);
         void clearObjects();
         void cleanup();
 
@@ -34,14 +34,14 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         size_t getObjectsCount() const;
         template<typename T>
         size_t getObjectsCount() const;
-        const std::vector<Objects::GameObject*> &getObjects() const;
+        const std::vector<Objects::GameObjectPtr> &getObjects() const;
         template<typename T>
         std::vector<T*> getObjects() const;
         template<typename T>
         T* getFirstObject() const;
 
-        bool objectExists(Objects::GameObject *obj);
-        size_t getObjectIndex(Objects::GameObject *obj);
+        bool objectExists(Objects::GameObjectPtr obj);
+        size_t getObjectIndex(Objects::GameObjectPtr obj);
 
         /// <summary>
         /// Searches the object with the given name in the object list.
@@ -49,7 +49,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::GameObject* findFirstObject(const std::string &name);
+        Objects::GameObjectPtr findFirstObject(const std::string &name);
 
         /// <summary>
         /// Searches all objects with the given name in the object list.
@@ -57,7 +57,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObject*> findAllObjects(const std::string &name);
+        std::vector<Objects::GameObjectPtr> findAllObjects(const std::string &name);
 
         /// <summary>
         /// Searches the object with the given name in the object list.
@@ -65,7 +65,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::GameObject* findFirstObjectRecursive(const std::string& name);
+        Objects::GameObjectPtr findFirstObjectRecursive(const std::string& name);
 
         /// <summary>
         /// Searches all objects with the given name in the object list.
@@ -73,12 +73,12 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObject*> findAllObjectsRecursive(const std::string& name);
+        std::vector<Objects::GameObjectPtr> findAllObjectsRecursive(const std::string& name);
 
-        void deleteLater(Objects::GameObject *obj);
+        void deleteLater(Objects::GameObjectPtr obj);
 
-        void renderLayerSwitch(Objects::GameObject *obj, RenderLayer from, RenderLayer to);
-        void setRenderLayer(Objects::GameObject* obj, RenderLayer to);
+        void renderLayerSwitch(Objects::GameObjectPtr obj, RenderLayer from, RenderLayer to);
+        void setRenderLayer(Objects::GameObjectPtr obj, RenderLayer to);
 
         std::string getObjectsTreeString() const;
 
@@ -100,9 +100,9 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         void addObject_internal();
         void deleteObject_internal();
 
-        std::vector<Objects::GameObject*> m_objectsToAdd;
-        std::vector<Objects::GameObject*> m_objectsToDelete;
-        std::vector<Objects::GameObject*> m_objectsToRemove;
+        std::vector<Objects::GameObjectPtr> m_objectsToAdd;
+        std::vector<Objects::GameObjectPtr> m_objectsToDelete;
+        std::vector<Objects::GameObjectPtr> m_objectsToRemove;
 
 
         // All objects will be contained in this list

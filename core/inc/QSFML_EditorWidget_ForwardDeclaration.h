@@ -20,6 +20,9 @@ namespace QSFML
         class DefaultEditor;
         class LineChart;
         class VisibleCamera;
+
+        typedef std::shared_ptr<GameObject> GameObjectPtr;
+
     }
     namespace Components
     {
@@ -37,6 +40,8 @@ namespace QSFML
         class SfEventHandle;
         class Text;
         class Image;
+
+        typedef std::shared_ptr<Component> ComponentPtr;
     }
     namespace Utilities
     {

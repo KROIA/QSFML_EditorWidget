@@ -1,4 +1,4 @@
-#include "objects/base/GameObject.h
+#include "objects/base/GameObject.h"
 
 namespace QSFML
 {
@@ -145,28 +145,25 @@ namespace QSFML
 				if (hasComponent(comp))
 					continue;
 				m_componentsManagerData.all.push_back(comp);
-				sortComponent(comp);
+
+				// Check the type and sort it to the lists
+				if (std::shared_ptr<Components::Transform> transform = std::dynamic_pointer_cast<Components::Transform>(comp))
+				{
+					m_componentsManagerData.transform = transform;
+				}
+				if (std::shared_ptr<Utilities::Updatable> updatable = std::dynamic_pointer_cast<Utilities::Updatable>(comp))
+				{
+					m_componentsManagerData.updatables.push_back(updatable);
+				}
+				if (std::shared_ptr<Components::Collider> collider = std::dynamic_pointer_cast<Components::Collider>(comp))
+				{
+					m_componentsManagerData.colliders.push_back(collider);
+				}
+				if (std::shared_ptr<Components::SfEventHandle> eventHandler = std::dynamic_pointer_cast<Components::SfEventHandle>(comp))
+				{
+					m_componentsManagerData.eventHandler.push_back(eventHandler);
+				}
 			}
-		}
-		void GameObject::sortComponent(Components::ComponentPtr comp)
-		{
-			// Check the type and sort it to the lists
-			if (std::shared_ptr<Components::Transform> transform = std::dynamic_pointer_cast<Components::Transform>(comp))
-			{
-				m_componentsManagerData.transform = transform;
-			}
-			if (std::shared_ptr<Utilities::Updatable> updatable = std::dynamic_pointer_cast<Utilities::Updatable>(comp))
-			{
-				m_componentsManagerData.updatables.push_back(updatable);
-			}
-			if (std::shared_ptr<Components::Collider> collider = std::dynamic_pointer_cast<Components::Collider>(comp))
-			{
-				m_componentsManagerData.colliders.push_back(collider);
-			}
-			if (std::shared_ptr<Components::SfEventHandle> eventHandler = std::dynamic_pointer_cast<Components::SfEventHandle>(comp))
-			{
-				m_componentsManagerData.eventHandler.push_back(eventHandler);
-			}				
 		}
 	}
 }

@@ -31,9 +31,6 @@ namespace Objects
 #define OBJECT_TEMPLATE_IMPL(className) \
     CLONE_FUNC_TEMPLATE_IMPL(className)
 
-class GameObject;
-typedef std::shared_ptr<GameObject> GameObjectPtr;
-
 /**
  * \brief The GameObject class
  *
@@ -683,7 +680,8 @@ void GameObject::removeComponents<Components::Collider>()
     m_toRemoveComponents.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.colliders.size());
     for (auto& comp : m_componentsManagerData.colliders)
     {
-        removeComponent(std::dynamic_pointer_cast<Components::Component>(comp));
+        Components::ComponentPtr component = std::static_pointer_cast<Components::Component>(comp);
+        removeComponent(component);
     }
 }
 template <>
@@ -701,18 +699,18 @@ void GameObject::removeComponents<Components::SfEventHandle>()
     m_toRemoveComponents.reserve(m_toRemoveComponents.size() + m_componentsManagerData.eventHandler.size());
     for (auto& comp : m_componentsManagerData.eventHandler)
     {
-        removeComponent(std::dynamic_pointer_cast<Components::Component>(comp));
+        removeComponent(std::static_pointer_cast<Components::Component>(comp));
     }
 }
 template <>
 void GameObject::removeComponents<Components::Transform>()
 {
-    removeComponent(std::dynamic_pointer_cast<Components::Component>(m_componentsManagerData.transform));
+    removeComponent(std::static_pointer_cast<Components::Component>(m_componentsManagerData.transform));
 }
 
 
 template <typename T>
-std::vector<std::shared_ptr<T>> GameObject::getComponents()
+std::vector<std::shared_ptr<T>> GameObject::getComponents() const
 {
     std::vector<std::shared_ptr<T>> components;
     components.reserve(m_components.size());
@@ -726,24 +724,24 @@ std::vector<std::shared_ptr<T>> GameObject::getComponents()
     return components;
 }
 template <>
-std::vector<std::shared_ptr<Components::Collider>> GameObject::getComponents()
+std::vector<std::shared_ptr<Components::Collider>> GameObject::getComponents() const
 {
-    return m_colliders;
+    return m_componentsManagerData.colliders;
 }
 template <>
-std::vector<std::shared_ptr<Utilities::Updatable>> GameObject::getComponents()
+std::vector<std::shared_ptr<Utilities::Updatable>> GameObject::getComponents() const
 {
-    return m_updatables;
+    return m_componentsManagerData.updatables;
 }
 template <>
-std::vector<std::shared_ptr<Components::SfEventHandle>> GameObject::getComponents()
+std::vector<std::shared_ptr<Components::SfEventHandle>> GameObject::getComponents() const
 {
-    return m_eventHandler;
+    return m_componentsManagerData.eventHandler;
 }
 template <>
-std::vector<std::shared_ptr<Components::Transform>> GameObject::getComponents()
+std::vector<std::shared_ptr<Components::Transform>> GameObject::getComponents() const
 {
-    return { m_transform };
+    return { m_componentsManagerData.transform };
 }
 
 template<typename T>

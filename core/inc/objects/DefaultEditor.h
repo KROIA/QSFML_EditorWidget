@@ -22,9 +22,9 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObjec
         ~DefaultEditor();
         OBJECT_DECL(DefaultEditor);
 
-        CameraController* getCamera() const;
-        BackgroundGrid *getGrid() const;
-        RuntimeInfo* getRuntimeInfo() const;
+        std::shared_ptr<CameraController> getCamera() const;
+        std::shared_ptr<BackgroundGrid> getGrid() const;
+        std::shared_ptr<RuntimeInfo> getRuntimeInfo() const;
 
         void setToggleRuntimeInfoKey(const sf::Keyboard::Key& key);
 
@@ -40,11 +40,11 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObjec
         void setup(const sf::Vector2f& size);
         void onSceneParentChange(Scene* oldParent, Scene* newParent) override;
 
-        CameraController* m_cam;
-        BackgroundGrid *m_grid;
-        RuntimeInfo* m_runtimeInfo;
+        std::shared_ptr<CameraController> m_cam;
+        std::shared_ptr<BackgroundGrid> m_grid;
+        std::shared_ptr<RuntimeInfo> m_runtimeInfo;
 
-        QSFML::Components::KeyPressEvent* m_toggleRuntimeInfoEvent;
+        std::shared_ptr<QSFML::Components::KeyPressEvent> m_toggleRuntimeInfoEvent;
 };
 }
 }

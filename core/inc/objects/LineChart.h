@@ -54,7 +54,7 @@ namespace Objects
             float m_yScale;
             bool m_autoScale;
 
-            LineChartPainter *m_painter;
+            std::shared_ptr<LineChartPainter> m_painter;
 
             class LineChartPainter: public Components::Drawable
             {
