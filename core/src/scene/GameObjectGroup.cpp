@@ -168,7 +168,7 @@ namespace QSFML
         for (size_t i = 0; i < m_container.size(); ++i)
         {
             if (m_container[i]->objectsChanged())
-                m_container[i]->updateNewElements();
+                m_container[i]->updateObjectChanges();
         }
     }
     void GameObjectGroup::sfEvent(const std::vector<sf::Event>& events)

@@ -52,7 +52,9 @@ namespace QSFML
 
         }
         void DefaultEditor::onSceneParentChange(Scene* oldParent, Scene* newParent)
-        {
+        {            
+            //QSFML_UNUSED(oldParent);
+            //QSFML_UNUSED(newParent);
             if (oldParent)
 				oldParent->removeObject(m_runtimeInfo);
             if (newParent)

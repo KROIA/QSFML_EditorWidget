@@ -12,8 +12,10 @@ CollisionObject::CollisionObject(const std::string& name, QSFML::Objects::GameOb
 			sf::Vector2f(5,20)
 		});
 
+	createTransform();
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
+	updateObjectChanges();
 }
 CollisionObject::CollisionObject(const std::vector<sf::Vector2f>& vertecies,
 								 const std::string& name, 
@@ -23,8 +25,10 @@ CollisionObject::CollisionObject(const std::vector<sf::Vector2f>& vertecies,
 	m_collider = new QSFML::Components::Collider();
 	m_collider->setVertecies(vertecies);
 
+	createTransform();
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
+	updateObjectChanges();
 }
 CollisionObject::~CollisionObject()
 {

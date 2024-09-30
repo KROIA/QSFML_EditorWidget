@@ -8,13 +8,13 @@ namespace QSFML
     {
         Drawable::Drawable(const std::string& name)
             : Component(name)
-            , Utilities::Transformable()
+            , sf::Transformable()
         {
 
         }
         Drawable::Drawable(const Drawable& other)
             : Component(other)
-            , Utilities::Transformable()
+            , sf::Transformable(other)
         {
 
         }

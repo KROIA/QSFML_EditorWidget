@@ -6,7 +6,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     set(LIB_NAME easy_profiler)
     set(LIB_MACRO_NAME EASY_PROFILER)
     set(GIT_REPO https://github.com/yse/easy_profiler.git)
-    set(GIT_TAG develop)
+    set(GIT_TAG v2.1.0)
 
     FetchContent_Declare(
         ${LIB_NAME}

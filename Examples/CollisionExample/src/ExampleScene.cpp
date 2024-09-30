@@ -20,7 +20,7 @@ ExampleScene::ExampleScene(QWidget *parent)
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300,100);
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 0;
+    settings.timing.frameTime = 0.01;
     //settings.updateControlls.enableMultithreading = false;
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;

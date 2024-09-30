@@ -48,7 +48,7 @@ namespace Components
 ///     };
 /// </code>
 /// </description>
-class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public Utilities::Transformable, public sf::Drawable
+class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, /*public Utilities::Transformable,*/ public sf::Drawable, public sf::Transformable
 {
     public:
         /// <summary>
@@ -70,7 +70,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public Utilities::
         /// <param name="states"></param>
         void draw(sf::RenderTarget& target, sf::RenderStates states) const final override
         {
-            applyTransform(states);
+           // applyTransform(states);
             drawComponent(target, states);
         }
 
@@ -87,10 +87,10 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public Utilities::
         /// Moves the states transform by the relative position of the Drawable
         /// </summary>
         /// <param name="states"></param>
-        void applyTransform(sf::RenderStates& states) const
-        {
-            states.transform.translate(getPosition());
-        }
+        //void applyTransform(sf::RenderStates& states) const
+        //{
+        //    states.transform.translate(getPosition());
+        //}
 
         /// <summary>
         /// User defined draw function

@@ -180,7 +180,7 @@ namespace Objects
  */
 
 class QSFML_EDITOR_WIDGET_EXPORT GameObject: 
-    public Utilities::Transformable, 
+    //public Utilities::Transformable, 
     public Utilities::Updatable, 
     public Events::DestroyEvent
 {
@@ -274,15 +274,15 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         /// <returns>Age in fixed timedomain</returns>
         double getAgeFixed() const;
 
-
+        void updateObjectChanges();
 
         //void setPositionRelative(const sf::Vector2f& pos); // Sets the position relative to its parent
         //void setPosition(const sf::Vector2f& pos); // Sets the position in the absolute world coords.
         //const sf::Vector2f& getPositionRelative() const;   // Gets the position relative to its parent
         //sf::Vector2f getPosition() const;          // Gets the position in absolute world coords
-        sf::Vector2f getGlobalPosition() const; // Gets the position in absolute world coords
+        //sf::Vector2f getGlobalPosition() const; // Gets the position in absolute world coords
 
-        float getGlobalRotation() const; // Gets the rotation in absolute world coords
+        //float getGlobalRotation() const; // Gets the rotation in absolute world coords
 
 
         void setRenderLayer(RenderLayer layer);
@@ -651,7 +651,30 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
         // ---------
 
-        
+        /// Transform interface
+        void setPosition(float x, float y);
+        void setPosition(const sf::Vector2f& position);
+        void setRotation(float angle);
+        void setScale(float factorX, float factorY);
+        void setScale(const sf::Vector2f& factors);
+        void setOrigin(float x, float y);
+        void setOrigin(const sf::Vector2f& origin);
+        const sf::Vector2f& getPosition() const;
+        sf::Vector2f getGlobalPosition() const; // Gets the position in absolute world coords
+        float getRotation() const;
+        float getGlobalRotation() const; // Gets the rotation in absolute world coords
+        const sf::Vector2f& getScale() const;
+        sf::Vector2f getGlobalScale() const;
+        const sf::Vector2f& getOrigin() const;
+        void move(float offsetX, float offsetY);
+        void move(const sf::Vector2f& offset);
+        void rotate(float angle);
+        void scale(float factorX, float factorY);
+        void scale(const sf::Vector2f& factor);
+        const sf::Transform& getTransform() const;
+        const sf::Transform& getInverseTransform() const;
+        sf::Transform getGlobalTransform() const;
+        // ---------
         
 
         const static size_t npos = -1;
@@ -751,7 +774,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         // Scene Object Internal functions
         void setSceneParent(Scene *parent);
         
-        void updateNewElements();
+        
         void sfEvent(const std::vector<sf::Event> &events);
         void update_internal();
         void inSceneAdded_internal();
@@ -782,14 +805,14 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
             std::vector<Components::Collider*> colliders;
             std::vector<Components::SfEventHandle*> eventHandler;
             std::vector<Components::Drawable*> drawable;
-            Components::Transform* transform;
+            Components::Transform* transform = nullptr;
 
             std::vector<Components::ComponentPtr> toAdd;
             std::vector<Components::ComponentPtr> toRemove;
             std::vector<Components::ComponentPtr> toDelete;
 
-            bool thisNeedsDrawUpdate;
-            bool thisNeedsEventUpdate;
+            std::atomic<bool> thisNeedsDrawUpdate = false;
+            std::atomic<bool> thisNeedsEventUpdate = false;
         };
 
 		ChildObjectManagerData m_childObjectManagerData;

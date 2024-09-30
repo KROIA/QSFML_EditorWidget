@@ -1,10 +1,84 @@
 #include "objects/base/GameObject.h"
 #include "Scene/Scene.h"
+#include "components/base/Component.h"
 
 namespace QSFML
 {
 	namespace Objects
 	{
+		void GameObject::setRenderLayer(RenderLayer layer)
+		{
+			if (m_renderLayer == layer)
+				return;
+			RenderLayer oldLayer = m_renderLayer;
+			m_renderLayer = layer;
+			if (m_sceneParent)
+				m_sceneParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
+		}
+		double GameObject::getAge() const
+		{
+			if (!m_sceneParent) return 0;
+			return m_sceneParent->getElapsedTime() - m_birthTime;
+		}
+		size_t GameObject::getAgeTicks() const
+		{
+			if (!m_sceneParent) return 0;
+			return m_sceneParent->getTick() - m_birthTick;
+		}
+		double GameObject::getAgeFixed() const
+		{
+			if (!m_sceneParent) return 0;
+			return m_sceneParent->getFixedDeltaT() * (m_sceneParent->getTick() - m_birthTick);
+		}
+		void GameObject::setSceneParent(Scene* parent)
+		{
+			if (m_sceneParent == parent)
+				return;
+			Scene* oldParent = m_sceneParent;
+			m_sceneParent = parent;
+			if (oldParent != nullptr)
+			{
+				oldParent->removeGameObject();
+				oldParent->removeComponent(m_componentsManagerData.all.size());
+			}
+			if (!m_selfOwnedLogObject)
+			{
+				m_logObject = nullptr;
+			}
+			if (m_sceneParent != nullptr)
+			{
+				m_sceneParent->addGameObject();
+				m_sceneParent->addComponent(m_componentsManagerData.all.size());
+
+				// Set the birth time and tick
+				m_birthTick = m_sceneParent->getTick();
+				m_birthTime = m_sceneParent->getElapsedTime();
+				if (m_selfOwnedLogObject)
+				{
+					m_selfOwnedLogObject->setParentID(m_sceneParent->getObjectLogger().getID());
+				}
+				else
+				{
+					m_logObject = &m_sceneParent->getObjectLogger();
+				}
+			}
+
+			for (size_t i = 0; i < m_componentsManagerData.all.size(); ++i)
+			{
+				Components::Component* comp = m_componentsManagerData.all[i];
+				comp->setSceneParent(m_sceneParent);
+			}
+
+			//for(size_t i=0; i<m_components.size(); ++i)
+			//    m_components[i]->setParent(this);
+
+			for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
+				m_childObjectManagerData.objs[i]->setSceneParent(parent);
+
+			internalOnSceneParentChange(oldParent, m_sceneParent);
+			onSceneParentChange(oldParent, m_sceneParent);
+		}
+
 		void GameObject::addChild(GameObjectPtr child)
 		{
 			m_childObjectManagerData.toAdd.push_back(child);
@@ -158,6 +232,8 @@ namespace QSFML
 				}
 			}
 
+			bool _needsDrawUpdate = false;
+			bool _needsEventUpdate = false;
 			// Add objects
 			for (auto& obj : toAdd)
 			{
@@ -170,10 +246,17 @@ namespace QSFML
 				}
 				m_childObjectManagerData.objs.push_back(obj);
 				obj->setParent_internal(this, m_rootParent, m_sceneParent);
-				obj->updateNewElements();
+				obj->updateObjectChanges();
+				_needsDrawUpdate |= obj->m_componentsManagerData.thisNeedsDrawUpdate;
+				_needsEventUpdate |= obj->m_componentsManagerData.thisNeedsEventUpdate;
 				++addCount;
 				overjump:;
-			}			
+			}	
+			if (_needsDrawUpdate)
+				needsDrawUpdate(_needsDrawUpdate);
+			if (_needsEventUpdate)
+				needsEventUpdate(_needsEventUpdate);
+			
 			m_childObjectManagerData.objectsChanged = false;
 
 			if (m_sceneParent)
@@ -208,6 +291,29 @@ namespace QSFML
 			QSFMLP_OBJECT_END_BLOCK;
 		}
 
-		
+		Objects::GameObjectPtr GameObject::findFirstObjectGlobal(const std::string& name)
+		{
+			if (!m_sceneParent) return nullptr;
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			return m_sceneParent->findFirstObject(name);
+		}
+		std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobal(const std::string& name)
+		{
+			if (!m_sceneParent) return std::vector<GameObjectPtr>();
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			return m_sceneParent->findAllObjects(name);
+		}
+		Objects::GameObjectPtr GameObject::findFirstObjectGlobalRecursive(const std::string& name)
+		{
+			if (!m_sceneParent) return nullptr;
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			return m_sceneParent->findFirstObjectRecursive(name);
+		}
+		std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobalRecusive(const std::string& name)
+		{
+			if (!m_sceneParent) return std::vector<GameObjectPtr>();
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			return m_sceneParent->findAllObjectsRecursive(name);
+		}
 	}
 }

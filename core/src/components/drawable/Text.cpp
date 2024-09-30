@@ -102,6 +102,7 @@ namespace QSFML
         void Text::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
         {
             updateGeometry();
+            states.transform *= getTransform();
             target.draw(m_text, states);
         }
 

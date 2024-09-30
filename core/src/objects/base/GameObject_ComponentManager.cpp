@@ -231,14 +231,14 @@ namespace QSFML
 				if (Components::SfEventHandle* eventHandler = dynamic_cast<Components::SfEventHandle*>(comp))
 				{
 					m_componentsManagerData.eventHandler.push_back(eventHandler);
-					if (!m_componentsManagerData.thisNeedsEventUpdate)
-						needsEventUpdate(true);
+					//if (!m_componentsManagerData.thisNeedsEventUpdate)
+					needsEventUpdate(true);
 				}
 				if (Components::Drawable* drawable = dynamic_cast<Components::Drawable*>(comp))
 				{
 					m_componentsManagerData.drawable.push_back(drawable);
-					if(!m_componentsManagerData.thisNeedsDrawUpdate)
-						needsDrawUpdate(true);
+					//if(!m_componentsManagerData.thisNeedsDrawUpdate)
+					needsDrawUpdate(true);
 				}
 			}
 
@@ -316,8 +316,10 @@ namespace QSFML
 		}
 		void GameObject::needsDrawUpdate(bool needsDrawUpdate)
 		{
-			if (m_componentsManagerData.thisNeedsDrawUpdate == needsDrawUpdate)
-				return;
+			//if (m_componentsManagerData.thisNeedsDrawUpdate == needsDrawUpdate)
+			//	return;
+			//if (getName() == "RuntimeInfo")
+			//	logInfo("RuntimeInfo needs draw update: " + std::to_string(needsDrawUpdate));
 			m_componentsManagerData.thisNeedsDrawUpdate = needsDrawUpdate;
 			if (m_parent)
 				m_parent->needsDrawUpdateChanged(m_componentsManagerData.thisNeedsDrawUpdate);

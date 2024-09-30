@@ -21,6 +21,7 @@ CollisionChecker::CollisionChecker(const std::string& name, QSFML::Objects::Game
 		CollisionObject* obj = new CollisionObject();
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector() * 100.f;
 		obj->setPosition(pos);
+		sf::Vector2f pos2 = obj->getGlobalPosition();
 		m_collisionObjs.push_back(obj);
 		
 	}

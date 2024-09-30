@@ -402,6 +402,7 @@ Collider::Painter::~Painter()
 void Collider::Painter::drawComponent(sf::RenderTarget& target,
                              sf::RenderStates states) const
 {
+    QSFMLP_COMPONENT_FUNCTION(QSFML_COLOR_STAGE_2);
     QSFML_UNUSED(states);
     if (!m_collider)
         return;

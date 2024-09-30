@@ -22,8 +22,8 @@ OBJECT_IMPL(GameObject)
 
 size_t GameObject::s_objNameCounter = 0;
 GameObject::GameObject(const std::string &name, GameObject* parent)
-    : Transformable()
-    , Updatable()
+    //: Transformable()
+    : Updatable()
     , DestroyEvent()
 {
     m_name = name;
@@ -49,8 +49,8 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     
 }
 GameObject::GameObject(const GameObject &other)
-    : Transformable()
-    , Updatable()
+    //: Transformable()
+    : Updatable()
     , DestroyEvent()
 {
     m_enabled = other.m_enabled;
@@ -75,7 +75,7 @@ GameObject::GameObject(const GameObject &other)
         Component *obj = other.m_componentsManagerData.all[i]->clone();
         addComponent(obj);
     }
-    updateNewElements();
+    updateObjectChanges();
 }
 GameObject::~GameObject()
 {
@@ -148,28 +148,16 @@ const std::string &GameObject::getName() const
     return m_name;
 }
 
-double GameObject::getAge() const
-{
-    if (!m_sceneParent) return 0;
-    return m_sceneParent->getElapsedTime() - m_birthTime;
-}
+
 double GameObject::getBirthTime() const
 {
     return m_birthTime;
 }
-size_t GameObject::getAgeTicks() const
-{
-    if (!m_sceneParent) return 0;
-    return m_sceneParent->getTick() - m_birthTick;
-}
+
+
 size_t GameObject::getBirthTick() const
 {
     return m_birthTick;
-}
-double GameObject::getAgeFixed() const
-{
-    if (!m_sceneParent) return 0;
-    return m_sceneParent->getFixedDeltaT() * (m_sceneParent->getTick() - m_birthTick);
 }
 
 
@@ -204,7 +192,7 @@ sf::Vector2f GameObject::getPosition() const
     }
     return m_position;
 }*/
-sf::Vector2f GameObject::getGlobalPosition() const
+/*sf::Vector2f GameObject::getGlobalPosition() const
 {
     sf::Vector2f pos = getPosition();
     GameObjectPtr parent = m_parent;
@@ -226,16 +214,8 @@ float GameObject::getGlobalRotation() const
 	}
 	return rot;
 }
+*/
 
-void GameObject::setRenderLayer(RenderLayer layer)
-{
-    if(m_renderLayer == layer)
-        return;
-    RenderLayer oldLayer = m_renderLayer;
-    m_renderLayer = layer;
-    if(m_sceneParent)
-        m_sceneParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
-}
 
 RenderLayer GameObject::getRenderLayer() const
 {
@@ -926,90 +906,6 @@ void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree,
 
 
 
-sf::Vector2i GameObject::getMousePosition() const
-{
-    if (!m_sceneParent) return sf::Vector2i(0, 0);
-    return m_sceneParent->getMousePosition();
-}
-sf::Vector2f GameObject::getMouseWorldPosition() const
-{
-    if (!m_sceneParent) return sf::Vector2f(0, 0);
-    return m_sceneParent->getMouseWorldPosition();
-}
-sf::Vector2f GameObject::getMouseObjectPosition() const
-{
-    return getMouseWorldPosition() - getGlobalPosition();
-}
-
-sf::Vector2f GameObject::getInWorldSpace(const sf::Vector2i& pixelSpace) const
-{
-    if (!m_sceneParent) return sf::Vector2f(0, 0);
-    return m_sceneParent->getInWorldSpace(pixelSpace);
-}
-sf::Vector2i GameObject::getInScreenSpace(const sf::Vector2f& worldSpace) const
-{
-    if (!m_sceneParent) return sf::Vector2i(0, 0);
-    return m_sceneParent->getInScreenSpace(worldSpace);
-}
-const sf::View GameObject::getCameraView() const
-{
-    static const sf::View dummy;
-    if(!m_sceneParent) return dummy;
-    return m_sceneParent->getCameraView();
-}
-const sf::View &GameObject::getDefaultCameraView() const
-{
-    static const sf::View dummy;
-    if(!m_sceneParent) return dummy;
-    return m_sceneParent->getDefaultCameraView();
-}
-Utilities::AABB GameObject::getCameraViewRect() const
-{
-    if (!m_sceneParent) return Utilities::AABB();
-    return m_sceneParent->getCameraViewRect();
-}
-sf::Vector2u GameObject::getSceneSize() const
-{
-    if(!m_sceneParent) return sf::Vector2u(0,0);
-    return m_sceneParent->getSceneSize();
-}
-sf::Vector2u GameObject::getOldSceneSize() const
-{
-    if(!m_sceneParent) return sf::Vector2u(0,0);
-    return m_sceneParent->getOldSceneSize();
-}
-
-const sf::Font &GameObject::getDefaultTextFont() const
-{
-    return Scene::getDefaultTextFont();
-}
-size_t GameObject::getTick() const
-{
-    if(!m_sceneParent) return 0;
-    return m_sceneParent->getTick();
-}
-double GameObject::getDeltaT() const
-{
-    if(!m_sceneParent) return 0;
-    return m_sceneParent->getDeltaT();
-}
-double GameObject::getFixedDeltaT() const
-{
-    if (!m_sceneParent) return 0;
-    return m_sceneParent->getFixedDeltaT();
-}
-double GameObject::getElapsedTime() const
-{
-    if(!m_sceneParent) return 0;
-    return m_sceneParent->getElapsedTime();
-}
-double GameObject::getFixedElapsedTime() const
-{
-    if (!m_sceneParent) return 0;
-	return m_sceneParent->getFixedElapsedTime();
-}
-
-
 const SceneSettings::UpdateControlls &GameObject::getUpdateControlls() const
 {
     return m_updateControlls;
@@ -1039,30 +935,7 @@ Scene* GameObject::getSceneParent() const
     return m_sceneParent;
 }
 
-Objects::GameObjectPtr GameObject::findFirstObjectGlobal(const std::string& name)
-{
-    if (!m_sceneParent) return nullptr;
-    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_sceneParent->findFirstObject(name);
-}
-std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobal(const std::string& name)
-{
-    if (!m_sceneParent) return std::vector<GameObjectPtr>();
-    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_sceneParent->findAllObjects(name);
-}
-Objects::GameObjectPtr GameObject::findFirstObjectGlobalRecursive(const std::string& name)
-{
-    if (!m_sceneParent) return nullptr;
-    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    return m_sceneParent->findFirstObjectRecursive(name);
-}
-std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobalRecusive(const std::string& name)
-{
-    if (!m_sceneParent) return std::vector<GameObjectPtr>();
-    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-	return m_sceneParent->findAllObjectsRecursive(name);
-}
+
 
 
 void GameObject::createLogger()
@@ -1225,56 +1098,8 @@ void GameObject::deleteLater()
 
 
 
-void GameObject::setSceneParent(Scene *parent)
-{
-    if(m_sceneParent == parent)
-        return;
-    Scene *oldParent = m_sceneParent;
-    m_sceneParent = parent;
-    if (oldParent != nullptr)
-    {
-        oldParent->removeGameObject();
-        oldParent->removeComponent(m_componentsManagerData.all.size());
-    }
-    if (!m_selfOwnedLogObject)
-    {
-        m_logObject = nullptr;
-    }
-    if (m_sceneParent != nullptr)
-    {
-        m_sceneParent->addGameObject();
-        m_sceneParent->addComponent(m_componentsManagerData.all.size());
 
-        // Set the birth time and tick
-        m_birthTick = m_sceneParent->getTick();
-        m_birthTime = m_sceneParent->getElapsedTime();
-        if(m_selfOwnedLogObject)
-		{
-			m_selfOwnedLogObject->setParentID(m_sceneParent->getObjectLogger().getID());
-		}
-        else
-        {
-            m_logObject = &m_sceneParent->getObjectLogger();
-        }
-    }
-
-    for (size_t i = 0; i < m_componentsManagerData.all.size(); ++i)
-    {
-        Component* comp = m_componentsManagerData.all[i];
-        comp->setSceneParent(m_sceneParent);
-    }
-
-    //for(size_t i=0; i<m_components.size(); ++i)
-    //    m_components[i]->setParent(this);
-
-    for(size_t i=0; i< m_childObjectManagerData.objs.size(); ++i)
-        m_childObjectManagerData.objs[i]->setSceneParent(parent);
-
-    internalOnSceneParentChange(oldParent, m_sceneParent);
-    onSceneParentChange(oldParent, m_sceneParent);
-}
-
-void GameObject::updateNewElements()
+void GameObject::updateObjectChanges()
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     //removeChild_internal();
@@ -1327,6 +1152,7 @@ void GameObject::update_internal()
     {
         Utilities::Updatable* comp = m_componentsManagerData.updatables[i];
         Components::Component* comp1 = dynamic_cast<Components::Component*>(comp);
+        
         if (!comp1->isEnabled())
             continue;
         comp->emitUpdate();
@@ -1346,9 +1172,11 @@ void GameObject::update_internal()
 void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
 {
     if (!m_enabled || !m_updateControlls.enablePaintLoop || !m_componentsManagerData.thisNeedsDrawUpdate)
+    {
         return;
+    }
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    states.transform.translate(getPosition());
+    states.transform *= getTransform();
     if (m_componentsManagerData.drawable.size())
     {
         QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
