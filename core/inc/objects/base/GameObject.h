@@ -9,6 +9,7 @@
 #include "utilities/AABB.h"
 #include "utilities/Transformable.h"
 #include "components/base/Drawable.h"
+#include "components/Transform.h"
 
 #include "events/DestroyEvent.h"
 
@@ -29,6 +30,10 @@ namespace Objects
 
 #define OBJECT_TEMPLATE_IMPL(className) \
     CLONE_FUNC_TEMPLATE_IMPL(className)
+
+class GameObject;
+typedef std::shared_ptr<GameObject> GameObjectPtr;
+
 /**
  * \brief The GameObject class
  *
@@ -291,30 +296,24 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
         
         // Childs operations
-        void addChild(GameObject *child);
-        void addChilds(const std::vector<GameObject*> &childs);
+        void addChild(GameObjectPtr child);
+        void addChilds(const std::vector<GameObjectPtr>& childs);
 
-        void removeChild(GameObject *child);
-        void removeChilds(const std::vector<GameObject*>& childs);
-        void removeChilds();
+        void removeChild(GameObjectPtr child);
+        void removeChilds(const std::vector<GameObjectPtr>& childs);
+        void clearChilds();
         template<typename T>
         void removeChilds();
 
-        void deleteChild(GameObject *child);
-        void deleteChilds(const std::vector<GameObject*>& childs);
-        void deleteChilds();
-        template<typename T>
-        void deleteChilds();
-
-        bool childExists(GameObject *child) const;
-        size_t getChildIndex(GameObject *child) const;
-        const std::vector<GameObject*> &getChilds() const;
+        bool hasChild(GameObjectPtr child) const;
+        size_t getChildIndex(GameObjectPtr child) const;
+        const std::vector<GameObjectPtr>& getChilds() const { return m_childObjectManagerData.objs; }
 
         template<typename T>
-        std::vector<T*> getChilds() const;
+        std::vector<std::shared_ptr<T>> getChilds() const;
 
         template<typename T>
-        std::vector<T*> getChildsRecusrive() const;
+        std::vector<std::shared_ptr<T>> getChildsRecusrive() const;
 
         size_t getChildCount() const;
 
@@ -324,52 +323,53 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         template<typename T>
         size_t getChildCountRecusrive() const;
 
-        GameObject* findFirstChild(const std::string &name);
-        std::vector<GameObject*> findAllChilds(const std::string &name);
+        GameObjectPtr findFirstChild(const std::string& name);
+        std::vector<GameObjectPtr> findAllChilds(const std::string& name);
 
-        GameObject* findFirstChildRecursive(const std::string &name);
-        std::vector<GameObject*> findAllChildsRecursive(const std::string &name);
+        GameObjectPtr findFirstChildRecursive(const std::string& name);
+        std::vector<GameObjectPtr> findAllChildsRecursive(const std::string& name);
+
         // ---------
 
         // Component operations
-        void addComponent(Components::Component *comp);
-        void addComponents(const std::vector<Components::Component*>& components);
+        void addComponent(Components::ComponentPtr component);
+        void addComponents(const std::vector<Components::ComponentPtr>& components);
 
-        void removeComponent(Components::Component *comp);
-        void removeComponents(const std::vector<Components::Component*>& components);
-        template<typename T>
-        void removeComponents();
+        void removeComponent(Components::ComponentPtr component);
+        void removeComponents(const std::vector<Components::ComponentPtr>& components);
+        template <typename T> void removeComponents();
+        void clearComponents();
 
-        void deleteComponent(Components::Component *comp);
-        void deleteComponents(const std::vector<Components::Component*>& components);
-        void deleteComponents();
-        template<typename T>
-        void deleteComponents();
+        Components::ComponentPtr getComponent(const std::string& name) const;
+        const std::vector<Components::ComponentPtr>& getComponents() const;
+        template <typename T> std::vector<std::shared_ptr<T>> getComponents() const;
 
-        bool componentExists(Components::Component *comp) const;
-        size_t getComponentIndex(Components::Component *comp) const;
-        const std::vector<Components::Component*> &getComponents()  const;
+        bool hasComponent(const std::string& name) const;
+        bool hasComponent(Components::ComponentPtr component) const;
+
+
+
+        size_t getComponentCount() const { return m_components.size(); }
+        size_t getComponentCountRecursive() const;
         template<typename T>
-        std::vector<T*> getComponents() const;
         size_t getComponentCount() const;
-        template<typename T>
-        size_t getComponentCount() const;
-
         template<typename T>
         size_t getComponentCountRecusrive() const;
 
-        Components::Component* findFirstComponent(const std::string& name);
-        std::vector<Components::Component*> findAllComponents(const std::string& name);
+        Components::ComponentPtr findFirstComponent(const std::string& name);
+        std::vector<Components::ComponentPtr> findAllComponents(const std::string& name);
 
-        Components::Component* findFirstComponentRecursive(const std::string& name);
-        std::vector<Components::Component*> findAllComponentsRecursive(const std::string& name);
+        Components::ComponentPtr findFirstComponentRecursive(const std::string& name);
+        std::vector<Components::ComponentPtr> findAllComponentsRecursive(const std::string& name);
 
 
-        const std::vector<Components::Collider*> &getCollider() const;
-        bool checkCollision(const GameObject* other) const;
-        bool checkCollision(const GameObject* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
-        static void checkCollision(const Utilities::ObjectQuadTree& tree, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true);
-        //void solveCollision(GameObject* other);
+
+
+
+        bool hasEventHandlers() const { return !m_componentsManagerData.eventHandler.empty(); }
+        bool hasColliders() const { return !m_componentsManagerData.colliders.empty(); }
+        bool hasUpdatables() const { return !m_componentsManagerData.updatables.empty(); }
+        bool hasTransform() const { return m_componentsManagerData.transform != nullptr; }
         // ---------
 
         // Scene operations
@@ -583,128 +583,202 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         //void draw(sf::RenderWindow &window) const;
         void draw(sf::RenderWindow& window, sf::RenderStates states) const;
 
+
+
+        // New structure
+        void updateChanges_childObjectManager();
+        void updateChanges_componentsManager();
+
+
+        struct ChildObjectManagerData
+        {
+            std::vector<GameObjectPtr> objs;
+
+            std::vector<GameObjectPtr> toAdd;
+            std::vector<GameObjectPtr> toRemove;
+        };
+        struct ComponentManagerData
+        {
+            std::vector<Components::ComponentPtr> all;
+
+            std::vector<std::shared_ptr<Utilities::Updatable>> updatables;
+            std::vector<std::shared_ptr<Components::Collider>> colliders;
+            std::vector<std::shared_ptr<Components::SfEventHandle>> eventHandler;
+            std::shared_ptr<Components::Transform> transform;
+
+            std::vector<Components::ComponentPtr> toAdd;
+            std::vector<Components::ComponentPtr> toRemove;
+        };
+
+		ChildObjectManagerData m_childObjectManagerData;
+        ComponentManagerData m_componentsManagerData;
+
         // Static
         static size_t s_objNameCounter;
 };
 template<typename T>
 void GameObject::removeChilds()
 {
-    removeChilds(getChilds<T>());
-}
-template<typename T>
-void GameObject::deleteChilds()
-{
-    deleteChilds(getChilds<T>());
-}
-template<typename T>
-std::vector<T*> GameObject::getChilds() const
-{
-    std::vector<T*> list;
-    list.reserve(m_childs.size());
-    for(size_t i=0; i<m_childs.size(); ++i)
+    m_toRemoveChildObjects.reserve(m_toRemoveChildObjects.size() + m_childObjects.size());
+    for (auto& obj : m_childObjects)
     {
-        T* child = dynamic_cast<T*>(m_childs[i]);
-        if(child)
-            list.push_back(child);
+        if (std::dynamic_pointer_cast<T>(obj))
+        {
+            m_toRemoveChildObjects.push_back(obj);
+        }
     }
-    return list;
 }
 
 template<typename T>
-std::vector<T*> GameObject::getChildsRecusrive() const
+std::vector<std::shared_ptr<T>> GameObject::getChilds() const
 {
-    std::vector<T*> list;
-    list.reserve(m_childs.size()*2);
-    getChildsRecusrive_internal(list);
-    return list;
-}
-template<typename T>
-void GameObject::getChildsRecusrive_internal(std::vector<T*>& listOut) const
-{
-    for (GameObject* obj : m_childs)
+    std::vector<std::shared_ptr<T>> childs;
+    for (auto& obj : m_childObjects)
     {
-		T* child = dynamic_cast<T*>(obj);
-		if(child)
-			listOut.push_back(child);
-        obj->getChildsRecusrive_internal(listOut);
-	}
-}
-
-
-template<typename T>
-size_t GameObject::getChildCount() const
-{
-    size_t counter = 0;
-    for(size_t i=0; i<m_childs.size(); ++i)
-    {
-        T* child = dynamic_cast<T*>(m_childs[i]);
-        if(child)
-            ++counter;
+        if (std::shared_ptr<T> child = std::dynamic_pointer_cast<T>(obj))
+        {
+            childs.push_back(child);
+        }
     }
-    return counter;
+    return childs;
 }
 
 template<typename T>
-size_t GameObject::getChildCountRecusrive() const
+std::vector<std::shared_ptr<T>> GameObject::getChildsRecusrive() const
 {
-	size_t counter = 0;
-    for (GameObject* obj : m_childs)
+    std::vector<std::shared_ptr<T>> childs;
+    for (auto& obj : m_childObjects)
     {
-		T* child = dynamic_cast<T*>(obj);
-		if(child)
-			++counter;
-		counter += obj->getChildCountRecusrive<T>();
-	}
-	return counter;
+        if (std::shared_ptr<T> child = std::dynamic_pointer_cast<T>(obj))
+        {
+            childs.push_back(child);
+        }
+        if (std::shared_ptr<GameObject> childManager = std::dynamic_pointer_cast<GameObject>(obj->getComponent<GameObject>()))
+        {
+            std::vector<std::shared_ptr<T>> childChilds = childManager->getChildsRecusrive<T>();
+            childs.insert(childs.end(), childChilds.begin(), childChilds.end());
+        }
+    }
+
+    // <! ToDo recursive
+    return childs;
 }
 
-template<typename T>
+
+template <typename T>
 void GameObject::removeComponents()
 {
-    removeComponent(getComponents<T>());
+    m_toRemoveComponents.reserve(m_toRemoveComponents.size() + m_components.size());
+    for (auto& comp : m_components)
+    {
+        if (std::dynamic_pointer_cast<T>(comp))
+        {
+            removeComponent(comp);
+        }
+    }
+}
+template <>
+void GameObject::removeComponents<Components::Collider>()
+{
+    m_toRemoveComponents.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.colliders.size());
+    for (auto& comp : m_componentsManagerData.colliders)
+    {
+        removeComponent(std::dynamic_pointer_cast<Components::Component>(comp));
+    }
+}
+template <>
+void GameObject::removeComponents<Utilities::Updatable>()
+{
+    m_toRemoveComponents.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.updatables.size());
+    for (auto& comp : m_componentsManagerData.updatables)
+    {
+        removeComponent(std::dynamic_pointer_cast<Components::Component>(comp));
+    }
+}
+template <>
+void GameObject::removeComponents<Components::SfEventHandle>()
+{
+    m_toRemoveComponents.reserve(m_toRemoveComponents.size() + m_componentsManagerData.eventHandler.size());
+    for (auto& comp : m_componentsManagerData.eventHandler)
+    {
+        removeComponent(std::dynamic_pointer_cast<Components::Component>(comp));
+    }
+}
+template <>
+void GameObject::removeComponents<Components::Transform>()
+{
+    removeComponent(std::dynamic_pointer_cast<Components::Component>(m_componentsManagerData.transform));
 }
 
-template<typename T>
-void GameObject::deleteComponents()
-{
-    deleteComponents(getComponents<T>());
-}
 
-template<typename T>
-std::vector<T*> GameObject::getComponents() const
+template <typename T>
+std::vector<std::shared_ptr<T>> GameObject::getComponents()
 {
-    std::vector<T*> list;
-    list.reserve(m_components.size());
-    for(size_t i=0; i<m_components.size(); ++i)
+    std::vector<std::shared_ptr<T>> components;
+    components.reserve(m_components.size());
+    for (auto& comp : m_components)
     {
-        T* comp = dynamic_cast<T*>(m_components[i]);
-        if(comp)
-            list.push_back(comp);
+        if (std::shared_ptr<T> t = std::dynamic_pointer_cast<T>(comp))
+        {
+            components.push_back(t);
+        }
     }
-    return list;
+    return components;
 }
-template<typename T>
-size_t GameObject::getComponentCount() const
+template <>
+std::vector<std::shared_ptr<Components::Collider>> GameObject::getComponents()
 {
-    size_t count = 0;
-    for(size_t i=0; i<m_components.size(); ++i)
-    {
-        T* comp = dynamic_cast<T*>(m_components[i]);
-        if(comp)
-            ++count;
-    }
-    return count;
+    return m_colliders;
+}
+template <>
+std::vector<std::shared_ptr<Utilities::Updatable>> GameObject::getComponents()
+{
+    return m_updatables;
+}
+template <>
+std::vector<std::shared_ptr<Components::SfEventHandle>> GameObject::getComponents()
+{
+    return m_eventHandler;
+}
+template <>
+std::vector<std::shared_ptr<Components::Transform>> GameObject::getComponents()
+{
+    return { m_transform };
 }
 
 template<typename T>
 size_t GameObject::getComponentCountRecusrive() const
 {
-    size_t count = getComponentCount<T>();
-    for (const GameObject* &obj : m_childs)
+    size_t count = 0;
+    for (auto& comp : m_components)
     {
-		count += obj->getComponentCountRecusrive<T>();
-	}
-	return count;
+        if (std::shared_ptr<T> t = std::dynamic_pointer_cast<T>(comp))
+        {
+            ++count;
+        }
+    }
+    // <! ToDo recursive
+
+    return count;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 }

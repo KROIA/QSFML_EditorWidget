@@ -17,6 +17,9 @@ namespace Components
 #define COMPONENT_IMPL(className) \
     CLONE_FUNC_IMPL(className)
 
+class Component;
+typedef std::shared_ptr<Component> ComponentPtr;
+
 /**
  * \brief Component class for GameObjects
  * \details Each GameObject can contain multiple Components.
@@ -148,5 +151,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         std::string m_name;
         
 };
+
 }
 }
