@@ -502,9 +502,6 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
 
         void deleteThis();
 
-        void positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition) override;
-        void rotationChanged(float oldRotation, float newRotation) override;
-
     private:
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
         bool findAllChilds_internal(const std::string& name, std::vector<CanvasObject*>& foundList);
@@ -548,6 +545,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CanvasObject:
 
         std::vector<Utilities::Updatable*> m_updatableComponents;
         std::vector<Components::Collider*> m_colliders;
+        //std::vector<Utilities::Transformable*> m_transformables;
         Utilities::AABB m_boundingBox;
         
 

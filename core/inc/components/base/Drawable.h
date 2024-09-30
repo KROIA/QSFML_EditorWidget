@@ -103,17 +103,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public Utilities::
         /// <param name="target"></param>
         /// <param name="states"></param>
         virtual void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
-
-        void positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition) override
-        {
-            QSFML_UNUSED(oldPosition);
-            QSFML_UNUSED(newPosition);
-        }
-        void rotationChanged(float oldRotation, float newRotation) override
-        {
-            QSFML_UNUSED(oldRotation);
-            QSFML_UNUSED(newRotation);
-        }
 };
 }
 }

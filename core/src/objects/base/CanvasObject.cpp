@@ -91,6 +91,7 @@ CanvasObject::~CanvasObject()
     m_toAddComponents.clear();
     m_updatableComponents.clear();
     m_drawableComponents.clear();
+	//m_transformables.clear();
     m_toRemoveComponents.clear();
     m_toDeleteChilds.clear();
     m_toRemoveChilds.clear();
@@ -544,6 +545,18 @@ void CanvasObject::removeComponent_internal()
                     break;
                 }
         }
+
+        /*// Check for transformables
+		Utilities::Transformable* transformable = dynamic_cast<Utilities::Transformable*>(toRemove);
+        if (transformable)
+        {
+            for (size_t j = 0; j < m_transformables.size(); ++j)
+                if (m_transformables[j] == transformable)
+                {
+                    m_transformables.erase(m_transformables.begin() + j);
+                    break;
+                }
+        }*/
     }
     m_toRemoveComponents.clear();
     if(m_canvasParent)
@@ -613,6 +626,9 @@ void CanvasObject::deleteComponent(Component *comp)
                 break;
             }
     }
+
+    // Check for transformable
+
     delete comp;
 }
 void CanvasObject::deleteComponents(const std::vector<Components::Component*>& components)
@@ -1173,19 +1189,15 @@ void CanvasObject::deleteThis()
 
 }
 
-void CanvasObject::positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition)
-{
-    QSFML_UNUSED(oldPosition);
-    QSFML_UNUSED(newPosition);
-    sf::Vector2f globalPos = getGlobalPosition();
-    for (auto &collider : m_colliders)
-        collider->setPos(globalPos);
-}
-void CanvasObject::rotationChanged(float oldRotation, float newRotation)
-{
-    QSFML_UNUSED(oldRotation);
-    QSFML_UNUSED(newRotation);
-}
+//void CanvasObject::positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition)
+//{
+//    QSFML_UNUSED(oldPosition);
+//    QSFML_UNUSED(newPosition);
+//    sf::Vector2f globalPos = getGlobalPosition();
+//    for (auto &collider : m_colliders)
+//        collider->setPos(globalPos);
+//}
+
 
 
 

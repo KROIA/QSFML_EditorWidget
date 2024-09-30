@@ -1,6 +1,7 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
+#include <SFML/Graphics.hpp>
 
 namespace QSFML
 {
@@ -9,96 +10,143 @@ namespace QSFML
 		class QSFML_EDITOR_WIDGET_EXPORT Transformable
 		{
 		public:
-			Transformable()
-				: m_position(0, 0)
-				, m_rotation(0)
-			{	}
-			Transformable(const Transformable &other)
-				: m_position(other.m_position)
-				, m_rotation(other.m_rotation)
-			{	}
-			Transformable(const sf::Vector2f& position, float rotation)
-				: m_position(position)
-				, m_rotation(rotation)
-			{	}
-			virtual ~Transformable()
-			{	}
+        Transformable()
+        {
 
-			Transformable& operator=(const Transformable &other)
-			{
-				m_position = other.m_position;
-				m_rotation = other.m_rotation;
-				return *this;
-			}
+        }
+        Transformable(const sf::Vector2f& pos, float rot)
+        {
+			setRotation(rot);
+			setPosition(pos);
+        }
 
-			bool operator==(const Transformable &other) const
-			{
-				return m_position == other.m_position && m_rotation == other.m_rotation;
-			}
-			bool operator!=(const Transformable &other) const
-			{
-				return !(*this == other);
-			}
+        bool operator==(const Transformable& other) const
+        {
+            return m_transformable.getTransform() == other.m_transformable.getTransform();
+        }
+		bool operator!=(const Transformable& other) const
+		{
+			return m_transformable.getTransform() != other.m_transformable.getTransform();
+		}
 
-			void setPosition(const sf::Vector2f& position)
-			{
-				sf::Vector2f oldPosition = m_position;
-				m_position = position;
-				positionChanged(oldPosition, m_position);
-			}
-			void setPosition(float x, float y)
-			{
-				sf::Vector2f oldPosition = m_position;
-				m_position.x = x;
-				m_position.y = y;
-				positionChanged(oldPosition, m_position);
-			}
-			const sf::Vector2f& getPosition() const
-			{
-				return m_position;
-			}
+        void setPosition(float x, float y)
+        {
+			m_transformable.setPosition(x, y);
+        }
+        void setPosition(const sf::Vector2f& position)
+        {
+			m_transformable.setPosition(position);
+        }
+        void setRotation(float angle)
+        {
+			m_transformable.setRotation(angle);
+        }
+        void setScale(float factorX, float factorY)
+        {
+			m_transformable.setScale(factorX, factorY);
+        }
+        void setScale(const sf::Vector2f& factors)
+        {
+			m_transformable.setScale(factors);
+        }
+        void setOrigin(float x, float y)
+        {
+			m_transformable.setOrigin(x, y);
+        }
+        void setOrigin(const sf::Vector2f& origin)
+        {
+			m_transformable.setOrigin(origin);
+        }
+        const sf::Vector2f& getPosition() const
+        {
+			return m_transformable.getPosition();
+        }
+        float getRotation() const
+        {
+			return m_transformable.getRotation();
+        }
+        const sf::Vector2f& getScale() const
+        {
+			return m_transformable.getScale();
+        }
+        const sf::Vector2f& getOrigin() const
+        {
+			return m_transformable.getOrigin();
+        }
+        void move(float offsetX, float offsetY)
+        {
+			m_transformable.move(offsetX, offsetY);
+        }
+        void move(const sf::Vector2f& offset)
+        {
+			m_transformable.move(offset);
+        }
+        void rotate(float angle)
+        {
+			m_transformable.rotate(angle);
+        }
+        void scale(float factorX, float factorY)
+        {
+			m_transformable.scale(factorX, factorY);
+        }
+        void scale(const sf::Vector2f& factor)
+        {
+			m_transformable.scale(factor);
+        }
+        const sf::Transform& getTransform() const
+        {
+			return m_transformable.getTransform();
+        }
+        const sf::Transform& getInverseTransform() const
+        {
+			return m_transformable.getInverseTransform();
+        }
 
-			void setRotation(float rotation)
-			{
-				float oldRotation = m_rotation;
-				m_rotation = rotation;
-				rotationChanged(oldRotation, m_rotation);
-			}
-			float getRotation() const
-			{
-				return m_rotation;
-			}
-
-			void move(const sf::Vector2f& offset)
-			{
-				sf::Vector2f oldPosition = m_position;
-				m_position += offset;
-				positionChanged(oldPosition, m_position);
-			}
-			void move(float offsetX, float offsetY)
-			{
-				sf::Vector2f oldPosition = m_position;
-				m_position.x += offsetX;
-				m_position.y += offsetY;
-				positionChanged(oldPosition, m_position);
-			}
-
-			void rotate(float angle)
-			{
-				float oldRotation = m_rotation;
-				m_rotation += angle;
-				rotationChanged(oldRotation, m_rotation);
-			}
-
+        const sf::Transform& getGlobalTransform() const
+        {
+            // <! ToDo only update if needed
+            updateGlobalTransform();
+            return m_globalTransform;
+        }
 
 			
 		protected:
-			virtual void positionChanged(const sf::Vector2f &oldPosition, const sf::Vector2f &newPosition) = 0;
-			virtual void rotationChanged(float oldRotation, float newRotation) = 0;
+        void markDirty()
+        {
+			m_needsTransformUpdate = true;
+			// <! ToDo mark children dirty
+        }
+        void updateGlobalTransform() const
+        {
+            Transformable* parent = m_transformParent;
+			std::vector<const Transformable*> transformTree;
+            transformTree.reserve(20);
+			while (parent)
+			{
+				transformTree.push_back(parent);
+				parent = parent->m_transformParent;
+			}
+
+			sf::Transform globalTransform;
+            for (auto it = transformTree.rbegin(); it != transformTree.rend(); ++it)
+            {
+                globalTransform.combine((*it)->m_transformable.getTransform());
+            }
+			globalTransform.combine(m_transformable.getTransform());
+			m_globalTransform = globalTransform;
+			m_needsTransformUpdate = false;
+        }
 
 		private:
-			sf::Vector2f m_position;
-			float m_rotation;
+
+
+			Transformable* m_transformParent = nullptr;
+			//std::vector<Transformable*> m_children;
+
+			sf::Transformable m_transformable;
+
+			mutable bool m_needsTransformUpdate = false;
+			mutable sf::Transform m_globalTransform;
 		};
 	}
 }
