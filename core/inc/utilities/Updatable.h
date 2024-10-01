@@ -12,10 +12,7 @@ namespace Utilities
         public:
             virtual ~Updatable()
             {
-				if (m_onUpdateExternalFunction)
-				{
-					delete m_onUpdateExternalFunction;
-				}
+				delete m_onUpdateExternalFunction;
             }
             void emitUpdate() 
             { 

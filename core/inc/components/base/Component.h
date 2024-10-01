@@ -32,6 +32,9 @@ namespace Components
  */
 class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 {
+    friend class Internal::LifetimeChecker;
+    protected:
+        virtual ~Component();
     public:
         /**
          * \brief Component constructor
@@ -40,7 +43,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          */
         Component(const std::string &name = "");
         Component(const Component &other);
-        virtual ~Component();
+        
 
         virtual CLONE_FUNC_DEC(Component);
 

@@ -46,35 +46,12 @@ namespace QSFML
             const sf::Color& getColor() const;
             const sf::Color& getColor(size_t index) const;
 
-            /// <summary>
-            /// Setting to switch from relative to global position
-            /// </summary>
-            /// <description>
-            /// Using relative position means that the position of the lines is relative to the parent object.
-            /// Using global position means that the position of the lines is relative to the world.
-            /// </description>
-            /// <param name="useGlobal"></param>
-            void useGlobalPosition(bool useGlobal)
-            {
-                m_useGlobalPosition = useGlobal;
-            }
-
-            /// <summary>
-            /// Gets the positioning mode
-            /// </summary>
-            /// <returns>true if the mode is global positioning</returns>
-            bool isUsingGlobalPosition() const
-            {
-                return m_useGlobalPosition;
-            }
-
             private:
             void drawComponent(sf::RenderTarget& target,
                                sf::RenderStates states) const override;
 
           //  float m_thickness;
             sf::Color m_color;
-            bool m_useGlobalPosition = false;
 
             std::vector<sf::Vertex> m_vertecies;
         };

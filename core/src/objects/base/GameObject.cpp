@@ -1,4 +1,5 @@
 #include "objects/base/GameObject.h"
+#include "utilities/LifetimeChecker.h"
 #include "Scene/Scene.h"
 
 #include "components/base/Component.h"
@@ -28,6 +29,7 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
 	, m_birthTick(0)
 	, m_birthTime(0)
 {
+    Internal::LifetimeChecker::add(this);
     m_name = name;
     m_parent = parent;
     if(m_name.size() == 0)
@@ -63,6 +65,7 @@ GameObject::GameObject(const GameObject &other)
     , m_birthTick(0)
     , m_birthTime(0)
 {
+    Internal::LifetimeChecker::add(this);
     m_enabled = other.m_enabled;
     m_name = other.m_name;
     m_sceneParent = nullptr;
@@ -87,6 +90,7 @@ GameObject::GameObject(const GameObject &other)
 }
 GameObject::~GameObject()
 {
+    Internal::LifetimeChecker::setDead(this);
     if (m_sceneParent)
     {
         m_sceneParent->removeGameObject();
@@ -94,13 +98,17 @@ GameObject::~GameObject()
         m_sceneParent->removeObject(this);
     }
 
-    for(size_t i=0; i< m_childObjectManagerData.objs.size(); ++i)
-        delete m_childObjectManagerData.objs[i];
+    for (auto& child : m_childObjectManagerData.objs)
+    {
+        Internal::LifetimeChecker::deleteSecured(child);
+    }
     m_childObjectManagerData.objs.clear();
 
     
-    for(auto &comp : m_componentsManagerData.all)
-        delete comp;
+    for (auto& comp : m_componentsManagerData.all)
+    {
+        Internal::LifetimeChecker::deleteSecured(comp);
+    }
     m_componentsManagerData.all.clear();
     m_componentsManagerData.toAdd.clear();
     m_componentsManagerData.updatables.clear();
@@ -108,6 +116,8 @@ GameObject::~GameObject()
 	//m_transformables.clear();
     m_childObjectManagerData.toRemove.clear();
     m_childObjectManagerData.toAdd.clear();
+
+
     delete m_selfOwnedLogObject;
 }
 

@@ -21,8 +21,8 @@ namespace Objects
             ~LineChart();
             OBJECT_DECL(LineChart)
 
-            void setOrigin(const sf::Vector2f &pos);
-            const sf::Vector2f &getOrigin() const;
+            //void setOrigin(const sf::Vector2f &pos);
+            //const sf::Vector2f &getOrigin() const;
 
             void setSize(const sf::Vector2f &size);
             const sf::Vector2f &getSize() const;
@@ -30,10 +30,13 @@ namespace Objects
             void setColor(const sf::Color &color);
             const sf::Color &getColor() const;
 
+            void setMaxDataPoints(size_t maxDataPoints);
+            size_t getMaxDataPoints() const;
+
             void enableAutoScale(bool enable);
             bool autoScaleEnabled() const;
-            void setScale(float yScale);
-            float getScale() const;
+            void setPlotScale(float yScale);
+            float getPlotScale() const;
 
             void addDataPoint(float value);
             void removeFirstDataPoint();
@@ -48,11 +51,12 @@ namespace Objects
 
             std::vector<float> m_dataPoints;
             
-            sf::Vector2f m_origin;
+           // sf::Vector2f m_origin;
             sf::Vector2f m_size;
             sf::Color m_color;
             float m_yScale;
             bool m_autoScale;
+            size_t m_maxDataPoints;
 
             LineChartPainter* m_painter;
 

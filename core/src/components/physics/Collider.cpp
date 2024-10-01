@@ -1,5 +1,5 @@
 #include "utilities/Stats.h"
-
+#include "utilities/LifetimeChecker.h"
 #include "objects/base/GameObject.h"
 
 #include "components/physics/Collider.h"
@@ -32,7 +32,10 @@ Collider::Collider(const Collider& other)
 Collider::~Collider()
 {
     for (size_t i = 0; i < m_painters.size(); ++i)
-        m_painters[i]->onColliderDelete();
+    {
+        if(Internal::LifetimeChecker::isAlive(m_painters[i]))
+            m_painters[i]->onColliderDelete();
+    }
 }
 
 Collider& Collider::operator=(const Collider& other)
@@ -421,7 +424,7 @@ Collider::Painter::Painter(const Painter& other)
 }
 Collider::Painter::~Painter()
 {
-    if (m_collider)
+    if (m_collider && Internal::LifetimeChecker::isAlive(m_collider))
         m_collider->onPainterDeleted(this);
 }
 void Collider::Painter::drawComponent(sf::RenderTarget& target,

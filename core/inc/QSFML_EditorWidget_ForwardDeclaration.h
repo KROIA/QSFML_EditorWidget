@@ -70,6 +70,7 @@ namespace QSFML
     namespace Internal
     {
         class SceneLogger;
+        class LifetimeChecker;
     }
     
 

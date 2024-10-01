@@ -1,5 +1,6 @@
 #include "Scene/GameObjectGroup.h"
 #include "Scene/Scene.h"
+#include "utilities/LifetimeChecker.h"
 
 #include "objects/base/GameObject.h"
 
@@ -81,7 +82,7 @@ namespace QSFML
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         removeObject(obj);
-        delete obj;
+        Internal::LifetimeChecker::deleteSecured(obj);
     }
     void GameObjectGroup::deleteObject(const std::vector<Objects::GameObjectPtr>& objs)
     {
@@ -89,7 +90,7 @@ namespace QSFML
         removeObject(objs);
         for (size_t i = 0; i < objs.size(); ++i)
         {
-            delete objs[i];
+            Internal::LifetimeChecker::deleteSecured(objs[i]);
         }
     }
     void GameObjectGroup::clearObjects()
@@ -106,13 +107,13 @@ namespace QSFML
         for (auto& obj : m_toAddContainer)
         {
             obj->setSceneParent(nullptr);
-            delete obj;
+            Internal::LifetimeChecker::deleteSecured(obj);
         }
         m_toAddContainer.clear();
         for (auto& obj : m_container)
         {
             obj->setSceneParent(nullptr);
-            delete obj;
+            Internal::LifetimeChecker::deleteSecured(obj);
         }
         m_container.clear();
         m_toDelete.clear();

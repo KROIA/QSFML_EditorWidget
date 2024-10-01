@@ -51,4 +51,5 @@
 #include "utilities/Origin.h"
 #include "utilities/PerlinNoise.h"
 #include "utilities/Color.h"
+#include "utilities/LifetimeChecker.h"
 /// USER_SECTION_END

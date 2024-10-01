@@ -10,10 +10,12 @@ namespace QSFML
 		void GameObject::addComponent(Components::ComponentPtr component)
 		{
 			m_componentsManagerData.toAdd.push_back(component);
+			onObjectsChanged();
 		}
 		void GameObject::addComponents(const std::vector<Components::ComponentPtr>& components)
 		{
 			m_componentsManagerData.toAdd.insert(m_componentsManagerData.toAdd.end(), components.begin(), components.end());
+			onObjectsChanged();
 		}
 
 		/*void GameObject::createTransform()
@@ -29,10 +31,12 @@ namespace QSFML
 		void GameObject::removeComponent(Components::ComponentPtr component)
 		{
 			m_componentsManagerData.toRemove.push_back(component);
+			onObjectsChanged();
 		}
 		void GameObject::removeComponents(const std::vector<Components::ComponentPtr>& components)
 		{
 			m_componentsManagerData.toRemove.insert(m_componentsManagerData.toRemove.end(), components.begin(), components.end());
+			onObjectsChanged();
 		}
 
 		
@@ -40,11 +44,13 @@ namespace QSFML
 		{
 			m_componentsManagerData.toAdd.clear();
 			m_componentsManagerData.toRemove = m_componentsManagerData.all;
+			onObjectsChanged();
 		}
 
 		void GameObject::deleteComponentLater(Components::ComponentPtr component)
 		{
-			m_componentsManagerData.toDelete.push_back(component);
+			m_componentsManagerData.toDelete.push_back(component); 
+			onObjectsChanged();
 		}
 
 		Components::ComponentPtr GameObject::getComponent(const std::string& name) const
@@ -192,7 +198,8 @@ namespace QSFML
 			{
 				boxes.push_back(m_componentsManagerData.colliders[i]->getBoundingBox());
 			}
-			boxes.push_back(getCustomBoundingBox());
+			if(m_getCustomBoundingBoxFunction)
+				boxes.push_back((*m_getCustomBoundingBoxFunction)());
 			m_boundingBox = Utilities::AABB::getFrame(boxes);
 		}
 	
@@ -373,6 +380,17 @@ namespace QSFML
 				}
 			}
 			return false;
+		}
+		void GameObject::setCustomBoundingBoxFunction(const std::function<Utilities::AABB()>& func)
+		{
+			resetCustomBoundingBoxFunction();
+			m_getCustomBoundingBoxFunction = new std::function<Utilities::AABB()>(func);
+		}
+		void GameObject::resetCustomBoundingBoxFunction()
+		{
+			std::function<Utilities::AABB()> *tmp = m_getCustomBoundingBoxFunction;
+			m_getCustomBoundingBoxFunction = nullptr;
+			delete tmp;
 		}
 		void GameObject::updateColliderData() const
 		{

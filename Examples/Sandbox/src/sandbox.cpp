@@ -17,9 +17,19 @@ using namespace QSFML::Objects;
 void addLineChart(Scene* scene)
 {
     LineChart* m_chart = new LineChart();
-    m_chart->setDataPoints({ 0,1,-1,0.5,-0.5,0 });
-    m_chart->setOrigin(sf::Vector2f(50, 50));
+    
+    m_chart->setOrigin(sf::Vector2f(0, 0));
+    m_chart->setMaxDataPoints(100);
     m_chart->setSize(sf::Vector2f(200, 100));
+    m_chart->setPosition(sf::Vector2f(300, 100));
+    m_chart->setRotation(20);
+    m_chart->setUpdateFunction([m_chart]() {
+        static float t = 0;
+        t += 0.1;
+        m_chart->addDataPoint(std::sin(t) * 50);
+        m_chart->setScale(std::sin(t) * 0.5 + 1, std::sin(t) * 0.5 + 1);
+
+        });
     scene->addObject(m_chart);
 }
 void addMouseCollider(Scene* scene)
@@ -136,8 +146,8 @@ void addNastedRotatingVector(Scene* scene)
 
     GameObjectPtr _root = root;
 
-    float length = 800;
-    for (int i = 0; i < 10; ++i)
+    float length = 500;
+    for (int i = 0; i < 30; ++i)
     {
 		GameObjectPtr child = new AABBDisplayer(length / (i + 1), "RotatingVector");
         //root->addChild(child);
@@ -222,7 +232,7 @@ SandBox::SandBox(QWidget *parent)
         m_Scene_2 = new Scene(ui->SceneWidget_2,settings);
 
         DefaultEditor *defaultEditor = new DefaultEditor();
-        defaultEditor->setRenderLayer(RenderLayer::layer_1);
+        defaultEditor->setRenderLayer(RenderLayer::layer_0);
 
         VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 

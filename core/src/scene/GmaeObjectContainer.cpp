@@ -159,6 +159,8 @@ void GameObjectContainer::applyObjectChanges()
     std::vector<GameObjectPtr> objectsToAdd = m_objectsToAdd;
     std::vector<GameObjectPtr> objectsToRemove = m_objectsToRemove;
     std::vector<GameObjectPtr> objectsToDelete = m_objectsToDelete;
+    if(objectsToAdd.empty() && objectsToRemove.empty() && objectsToDelete.empty())
+		return;
     m_objectsToAdd.clear();
     m_objectsToRemove.clear();
     m_objectsToDelete.clear();

@@ -18,6 +18,7 @@
 
 #include "events/DestroyEvent.h"
 
+
 #include <vector>
 #include <functional>
 #include "SFML/Graphics/Font.hpp"
@@ -187,11 +188,15 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         friend Scene;
         friend GameObjectGroup;
         friend GameObjectContainer;
+        friend class Internal::LifetimeChecker;
+
+protected:
+        virtual ~GameObject();
     public:
         GameObject(const std::string &name = "GameObject",
                      GameObject* parent = nullptr);
         GameObject(const GameObject &other);
-        virtual ~GameObject();
+        
 
         virtual CLONE_FUNC_DEC(GameObject);
 
@@ -727,6 +732,14 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         const sf::Transform& getInverseTransform() const;
         sf::Transform getGlobalTransform() const;
         // ---------
+
+
+        // A function can be defined that gets called when ever the bounding box is updated
+        // Return a custom bounding box in this function.
+        // This box will be added to the other bounding boxes to calculate the final bounding box
+        // All coordinates are in world space absolute coordinates
+        void setCustomBoundingBoxFunction(const std::function<Utilities::AABB()>& func);
+        void resetCustomBoundingBoxFunction();
         
         bool isColliderDirty() const;
 
@@ -747,12 +760,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
         virtual void inSceneAdded();
 
-        
-        virtual Utilities::AABB getCustomBoundingBox() const
-        {
-            // Position and size in global coordinates.
-            return Utilities::AABB();
-        }
+     
 
         virtual void onSceneParentChange(Scene *oldParent, Scene *newParent);
         virtual void onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
@@ -816,8 +824,9 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         //std::vector<Utilities::Updatable*> m_updatableComponents;
         //std::vector<Components::Collider*> m_colliders;
         //std::vector<Utilities::Transformable*> m_transformables;
-        mutable Utilities::AABB m_boundingBox; // <! Todo: Update the bounding box if the object changes
+        mutable Utilities::AABB m_boundingBox; 
         //mutable sf::Vector2f m_oldPosition;
+        std::function<Utilities::AABB()>* m_getCustomBoundingBoxFunction = nullptr;
 
         // Will send a signal to the parent to notify, the new status
         void needsEventUpdateChanged(bool needsEventUpdate);

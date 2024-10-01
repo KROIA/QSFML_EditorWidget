@@ -20,33 +20,43 @@ class AABBDisplayer: public QSFML::Objects::GameObject
 			rectPainter->setOutlineColor(sf::Color::Red);
             rectPainter->setOutlineThickness(1);
 			addComponent(rectPainter);
+
+            Components::PathPainter *pathPainter = new Components::PathPainter();
+            pathPainter->setColor(sf::Color::Green);
+            pathPainter->ignoreTransform(true);
+            addComponent(pathPainter);
+
+            setCustomBoundingBoxFunction([this]() {
+                Components::VectorPainter* p = getComponent<Components::VectorPainter>();
+                if (!p)
+                    return Utilities::AABB();
+                sf::Transform transform = getGlobalTransform();
+                sf::Vector2f start = transform.transformPoint(p->getStart());
+                sf::Vector2f end = transform.transformPoint(p->getEnd());
+
+                return Utilities::AABB(start, end - start);
+                });
         }
 
         void update() override
         {
-			Components::RectPainter* p = getComponent<RectPainterClone>();
-			if (!p)
-				return;
             rotate(200 * getDeltaT());
-            //updateBoundingBox();
-            p->setRect(getBoundingBox());
+
+            Components::RectPainter* rectPainter = getComponent<RectPainterClone>();
+            rectPainter->setRect(getBoundingBox());
             
+
+            Components::PathPainter *pathPainter = getComponent<Components::PathPainter>();
+            Components::VectorPainter *vectorPainter = getComponent<Components::VectorPainter>();
+            sf::Transform transform = getGlobalTransform();
+            pathPainter->appenPoint(transform.transformPoint(vectorPainter->getEnd()));
+            if (pathPainter->getPointCount() > 1000)
+            {
+                pathPainter->popPointAtStart();
+            }
+
         }
 
-        Utilities::AABB getCustomBoundingBox() const override
-        {
-            Components::VectorPainter* p = getComponent<Components::VectorPainter>();
-            if (!p)
-                return Utilities::AABB();
-			sf::Transform transform = getGlobalTransform();
-            sf::Vector2f start = transform.transformPoint(p->getStart());
-			sf::Vector2f end = transform.transformPoint(p->getEnd());
-
-			
-
-
-			return Utilities::AABB(start, end-start);
-        }
     private:
 
         

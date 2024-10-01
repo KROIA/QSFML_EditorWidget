@@ -11,7 +11,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     
-    ExampleScene w;
-    w.show();
-    return a.exec();
+    ExampleScene* w = new ExampleScene();
+    w->show();
+    int ret = a.exec();
+    delete w;
+    qDebug() << "Objects that are not deleted: " << QSFML::Internal::LifetimeChecker::getAliveCount() << " of total: "<< QSFML::Internal::LifetimeChecker::getTotalCount();
+    return ret;
 }

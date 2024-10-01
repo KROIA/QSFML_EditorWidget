@@ -1,6 +1,7 @@
 #include "components/base/Component.h"
 #include "objects/base/GameObject.h"
 #include "Scene/Scene.h"
+#include "utilities/LifetimeChecker.h"
 
 using namespace QSFML::Components;
 using namespace QSFML::Objects;
@@ -13,7 +14,7 @@ Component::Component(const std::string &name)
     , m_parent(nullptr)
     , m_sceneParent(nullptr)
 {
-
+    Internal::LifetimeChecker::add(this);
 }
 Component::Component(const Component &other)
     : m_enabled(other.m_enabled)
@@ -21,15 +22,17 @@ Component::Component(const Component &other)
     , m_parent(nullptr)
     , m_sceneParent(nullptr)
 {
-
+    Internal::LifetimeChecker::add(this);
 }
 Component::~Component()
 {
+    Internal::LifetimeChecker::setDead(this);
     if (m_parent)
     {
         GameObjectPtr parent = m_parent;
         m_parent = nullptr;
-        parent->removeComponent(this);
+        if(Internal::LifetimeChecker::isAlive(parent))
+            parent->removeComponent(this);
     }
 }
 
@@ -40,7 +43,8 @@ void Component::deleteLater()
     {
         //GameObjectPtr parent = m_parent;
         //m_parent = nullptr;
-        m_parent->deleteComponentLater(this);
+        if (Internal::LifetimeChecker::isAlive(m_parent))
+            m_parent->deleteComponentLater(this);
     }
 }
 

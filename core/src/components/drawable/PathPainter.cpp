@@ -74,9 +74,6 @@ namespace QSFML
         void PathPainter::drawComponent(sf::RenderTarget& target,
                                         sf::RenderStates states) const
         {
-            if (m_useGlobalPosition)
-                states = sf::RenderStates();
-
 			target.draw(m_vertecies.data(), m_vertecies.size(), sf::LineStrip, states);
         }
     }

@@ -11,6 +11,7 @@ using namespace QSFML::Objects;
 ExampleScene::ExampleScene(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::ExampleScene)
+    , m_collisionChecker(nullptr)
 {
     ui->setupUi(this);
     ui->consoleFrame->layout()->addWidget(&m_console);
@@ -21,6 +22,7 @@ ExampleScene::ExampleScene(QWidget *parent)
     settings.layout.fixedSize = sf::Vector2u(300,100);
     settings.contextSettings.antialiasingLevel = 8;
     settings.timing.frameTime = 0.01;
+    settings.updateControlls.enableMultithreading = false;
     //settings.updateControlls.enableMultithreading = false;
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
@@ -38,14 +40,15 @@ ExampleScene::ExampleScene(QWidget *parent)
     
 
 
-    m_collisionChecker = new CollisionChecker();
-    m_Scene->addObject(m_collisionChecker);
+   m_collisionChecker = new CollisionChecker();
+   m_Scene->addObject(m_collisionChecker);
 
 
     m_Scene->applyObjectChanges();
 
     qDebug() << defaultEditor->toString().c_str();
-    qDebug() << m_collisionChecker->toString().c_str();
+    if(m_collisionChecker)
+        qDebug() << m_collisionChecker->toString().c_str();
     
 
     QTimer* timer = new QTimer(this);

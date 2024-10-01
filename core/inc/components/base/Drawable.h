@@ -73,7 +73,14 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, /*public Utilities
            // applyTransform(states);
             QSFMLP_COMPONENT_BLOCK("Component draw", QSFML_COLOR_STAGE_1);
             QSFMLP_OBJECT_TEXT("Name", getName());
-			states.transform *= getTransform();
+            if (m_ignoreTransform)
+            {
+                states.transform = sf::Transform(); 
+            }
+            else
+			{
+                states.transform *= getTransform();
+			}
             drawComponent(target, states);
         }
 
@@ -84,6 +91,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, /*public Utilities
         sf::Vector2f getGlobalPosition() const;
 
         float getGlobalRotation() const;
+
+        void ignoreTransform(bool ignore) { m_ignoreTransform = ignore; }
+        bool ignoresTransform() const { return m_ignoreTransform; }
 
     protected:
         /// <summary>
@@ -106,6 +116,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, /*public Utilities
         /// <param name="target"></param>
         /// <param name="states"></param>
         virtual void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
+
+    private:
+        bool m_ignoreTransform = false;
 };
 }
 }

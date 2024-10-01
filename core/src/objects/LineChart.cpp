@@ -17,6 +17,7 @@ LineChart::LineChart(const std::string &name,
 
     m_painter = new LineChartPainter();
     m_painter->m_chart = this;
+    m_maxDataPoints = -1;
 
     addComponent(m_painter);
 }
@@ -24,11 +25,12 @@ LineChart::LineChart(const LineChart &other)
     : GameObject(other)
 {
     m_size = other.m_size;
-    m_origin = other.m_origin;
+   //m_origin = other.m_origin;
     m_dataPoints = other.m_dataPoints;
     m_color = other.m_color;
     m_yScale = other.m_yScale;
     m_autoScale = other.m_autoScale;
+    m_maxDataPoints = other.m_maxDataPoints;
 
     m_painter = new  LineChartPainter();
     m_painter->m_chart = this;
@@ -38,7 +40,7 @@ LineChart::~LineChart()
 {
 
 }
-
+/*
 void LineChart::setOrigin(const sf::Vector2f &pos)
 {
     m_origin = pos;
@@ -47,7 +49,7 @@ const sf::Vector2f &LineChart::getOrigin() const
 {
     return m_origin;
 }
-
+*/
 void LineChart::setSize(const sf::Vector2f &size)
 {
     m_size = size;
@@ -64,6 +66,14 @@ const sf::Color &LineChart::getColor() const
 {
     return m_color;
 }
+void LineChart::setMaxDataPoints(size_t maxDataPoints)
+{
+    m_maxDataPoints = maxDataPoints;
+}
+size_t LineChart::getMaxDataPoints() const
+{
+    return m_maxDataPoints;
+}
 void LineChart::enableAutoScale(bool enable)
 {
     m_autoScale = enable;
@@ -72,12 +82,12 @@ bool LineChart::autoScaleEnabled() const
 {
     return m_autoScale;
 }
-void LineChart::setScale(float yScale)
+void LineChart::setPlotScale(float yScale)
 {
     m_autoScale = false;
     m_yScale = yScale;
 }
-float LineChart::getScale() const
+float LineChart::getPlotScale() const
 {
     return m_yScale;
 }
@@ -85,6 +95,8 @@ float LineChart::getScale() const
 void LineChart::addDataPoint(float value)
 {
     m_dataPoints.push_back(value);
+    if(m_dataPoints.size() > m_maxDataPoints)
+		m_dataPoints.erase(m_dataPoints.begin());
 }
 void LineChart::removeFirstDataPoint()
 {
@@ -94,6 +106,8 @@ void LineChart::removeFirstDataPoint()
 void LineChart::setDataPoints(const std::vector<float> &dataPoints)
 {
     m_dataPoints = dataPoints;
+    if (m_dataPoints.size() > m_maxDataPoints)
+        m_dataPoints.erase(m_dataPoints.begin(), m_dataPoints.end() - m_maxDataPoints);
 }
 const std::vector<float> &LineChart::getDataPoints() const
 {
@@ -148,7 +162,7 @@ void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
         return;
 
     // Draw axis
-    sf::Vector2f origin = m_chart->m_origin;
+    sf::Vector2f origin;// = m_chart->m_origin;
     sf::Vector2f yTop = origin + sf::Vector2f(0, m_chart->m_size.y/2.f);
     sf::Vector2f yMin = origin + sf::Vector2f(0,-m_chart->m_size.y/2.f);
     sf::Vector2f xMax = origin + sf::Vector2f(m_chart->m_size.x, 0);
@@ -158,7 +172,7 @@ void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
         sf::Vertex(origin),
         sf::Vertex(xMax),
     };
-    target.draw(axis, 4, sf::Lines);
+    target.draw(axis, 4, sf::Lines, states);
 
     // Draw content
     size_t count = m_chart->m_dataPoints.size();
@@ -167,8 +181,8 @@ void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
     float xSpacing = m_chart->m_size.x / ((float)count-1.f);
     sf::Vertex *vertecies = new sf::Vertex[count];
 
-    float currentX = m_chart->m_origin.x;
-    float yOffset = m_chart->m_origin.y;
+    float currentX = origin.x;
+    float yOffset = origin.y;
     for(size_t i=0; i<count; ++i)
     {
         vertecies[i].position = {currentX,
@@ -177,7 +191,7 @@ void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
         currentX += xSpacing;
     }
 
-    target.draw(vertecies, count, sf::LineStrip);
+    target.draw(vertecies, count, sf::LineStrip, states);
     delete[] vertecies;
 }
 }
