@@ -196,6 +196,8 @@ protected:
         GameObject(const std::string &name = "GameObject",
                      GameObject* parent = nullptr);
         GameObject(const GameObject &other);
+
+        static void deleteObject(GameObjectPtr obj);
         
 
         virtual CLONE_FUNC_DEC(GameObject);
@@ -330,6 +332,18 @@ protected:
         size_t getChildIndex(GameObjectPtr child) const;
         const std::vector<GameObjectPtr>& getChilds() const { return m_childObjectManagerData.objs; }
 
+        template<typename T>
+        T* getFirstChild() const
+        {
+            for (auto& obj : m_childObjectManagerData.objs)
+            {
+                if (T* child = dynamic_cast<T*>(obj))
+                {
+                    return child;
+                }
+            }
+            return nullptr;
+        }
         template<typename T>
         std::vector<T*> getChilds() const
         {
@@ -690,6 +704,37 @@ protected:
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
         std::vector<Objects::GameObjectPtr> findAllObjectsGlobalRecusive(const std::string& name);
+
+        template<typename T>
+        T* findFirstObjectGlobal() const
+        {
+            Scene *scene = getSceneParent();
+            if (!scene) return nullptr;
+            return scene->findFirstObject<T>();
+        }
+        template<typename T>
+        std::vector<T*> findAllFirstObjectGlobal() const
+        {
+            Scene* scene = getSceneParent();
+            if (!scene) return {};
+            return getSceneParent()->findAllFirstObject<T>();
+        }
+        template<typename T>
+        T* findFirstObjectGlobalRecursive() const
+        {
+            Scene* scene = getSceneParent();
+            if (!scene) return nullptr;
+            return scene->findFirstObjectRecursive<T>();
+        }
+        template<typename T>
+        std::vector<T*> findAllFirstObjectGlobalRecursive() const
+        {
+            Scene* scene = getSceneParent();
+            if (!scene) return {};
+            return getSceneParent()->findAllFirstObjectRecursive<T>();
+        }
+
+        // ---------
 
         /// Logging
         void createLogger(); // Creates a new logger for this object

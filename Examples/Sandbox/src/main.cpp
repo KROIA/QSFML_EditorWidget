@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
 #endif
     QApplication a(argc, argv);
 
+    Log::UI::NativeConsoleView console;
+    console.show();
    // thread_pool.Schedule(f4);
 
 

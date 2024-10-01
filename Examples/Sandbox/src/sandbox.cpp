@@ -5,6 +5,7 @@
 #include "AABBDisplayer.h"
 #include "SandboxObject.h"
 #include "MouseCollider.h"
+#include "Car.h"
 #include <iostream>
 
 #include <QTimer>
@@ -163,9 +164,10 @@ void addNastedRotatingVector(Scene* scene)
     root->updateObjectChanges();
     qDebug() << root->toString().c_str();
 }
-void boundingBoxTest(Scene* scene)
+void addCar(Scene* scene)
 {
-
+    Car* car = new Car();
+    scene->addObject(car);
 }
 
 
@@ -231,8 +233,10 @@ SandBox::SandBox(QWidget *parent)
        //settings.updateControlls.enableUpdateLoop = false;
         m_Scene_2 = new Scene(ui->SceneWidget_2,settings);
 
-        DefaultEditor *defaultEditor = new DefaultEditor();
+        DefaultEditor *defaultEditor = new DefaultEditor("Editor",sf::Vector2f(2000,2000));
         defaultEditor->setRenderLayer(RenderLayer::layer_0);
+        defaultEditor->setPosition(-sf::Vector2f(1000,1000));
+        defaultEditor->getCamera()->setMaxMovingBounds(sf::FloatRect(-1000, -1000, 2000, 2000));
 
         VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 
@@ -299,6 +303,8 @@ SandBox::SandBox(QWidget *parent)
         addMouseCollider(m_Scene_2);
         addShape(m_Scene_2);
         addPerlinNoise(m_Scene_2);
+        addCar(m_Scene_2);
+
         m_Scene_2->applyObjectChanges();
 
         std::cout << obj->toString() << "\n";

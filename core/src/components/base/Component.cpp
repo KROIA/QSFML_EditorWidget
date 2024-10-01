@@ -36,6 +36,11 @@ Component::~Component()
     }
 }
 
+void Component::deleteObject(ComponentPtr comp)
+{
+    Internal::LifetimeChecker::deleteSecured(comp);
+}
+
 
 void Component::deleteLater()
 {

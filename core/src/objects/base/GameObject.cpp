@@ -121,6 +121,11 @@ GameObject::~GameObject()
     delete m_selfOwnedLogObject;
 }
 
+void GameObject::deleteObject(GameObjectPtr obj)
+{
+    Internal::LifetimeChecker::deleteSecured(obj);
+}
+
 
 void GameObject::inSceneAdded()
 {

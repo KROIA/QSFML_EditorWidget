@@ -75,6 +75,70 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// <returns>a list of found objects</returns>
         std::vector<Objects::GameObjectPtr> findAllObjectsRecursive(const std::string& name);
 
+        template<typename T>
+        T* findFirstObject()
+        {
+            for (auto& obj : m_allObjects->getObjects())
+            {
+                T* casted = dynamic_cast<T*>(obj);
+                if (casted)
+				{
+					return casted;
+				}
+            }
+            return nullptr;
+        }
+
+        template<typename T>
+        std::vector<T*> findAllFirstObject()
+        {
+            std::vector<T*> list;
+            for (auto& obj : m_allObjects->getObjects())
+            {
+                T* casted = dynamic_cast<T*>(obj);
+                if (casted)
+                {
+                    list.push_back(casted);
+                }
+            }
+            return list;
+        }
+        template<typename T>
+        T* findFirstObjectRecursive()
+        {
+            for (auto& obj : m_allObjects->getObjects())
+            {
+                T* casted = dynamic_cast<T*>(obj);
+                if (casted)
+                {
+                    return casted;
+                }
+                casted = obj->getFirstChild<T>();
+                if (casted)
+					return casted;
+            }
+            return nullptr;
+        }
+
+        template<typename T>
+        std::vector<T*> findAllFirstObjectRecursive()
+        {
+            std::vector<T*> list;
+            for (auto& obj : m_allObjects->getObjects())
+            {
+                T* casted = dynamic_cast<T*>(obj);
+                if (casted)
+                {
+                    list.push_back(casted);
+                }
+                std::vector<T*> subList = obj->getChilds<T>();
+                if(subList.size() > 0)
+                    list.insert(list.end(), subList.begin(), subList.end());
+            }
+            return list;
+        }
+
+
         void deleteLater(Objects::GameObjectPtr obj);
 
         void renderLayerSwitch(Objects::GameObjectPtr obj, RenderLayer from, RenderLayer to);

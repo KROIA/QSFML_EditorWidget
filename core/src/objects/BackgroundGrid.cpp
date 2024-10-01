@@ -73,14 +73,14 @@ namespace QSFML
         void BackgroundGrid::DrawableComp::drawComponent(sf::RenderTarget& target,
             sf::RenderStates states) const
         {
-            QSFML_UNUSED(states);
             drawGrid(target, m_grid->m_gridArea, m_grid->m_gridSpacing,
-                m_grid->m_alternatingColors);
+                m_grid->m_alternatingColors, states);
         }
         void BackgroundGrid::DrawableComp::drawGrid(sf::RenderTarget& target,
             const sf::IntRect& area,
             unsigned int spacing,
-            const std::vector<sf::Color>& alternatingColors) const
+            const std::vector<sf::Color>& alternatingColors,
+            sf::RenderStates states) const
         {
             sf::Vector2f start((float)area.left, (float)area.top);
             sf::Vector2f end((float)area.left,
@@ -112,7 +112,7 @@ namespace QSFML
                 VcurrentStart.x += spacing;
                 VcurrentEnd.x += spacing;
 
-                target.draw(line, 2, sf::Lines);
+                target.draw(line, 2, sf::Lines, states);
 
             }
             colorIndex = 0;
@@ -128,7 +128,7 @@ namespace QSFML
                 HcurrentStart.y += spacing;
                 HcurrentEnd.y += spacing;
 
-                target.draw(line, 2, sf::Lines);
+                target.draw(line, 2, sf::Lines, states);
 
             }
         }

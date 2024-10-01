@@ -49,7 +49,8 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
             void drawGrid(sf::RenderTarget& target,
                 const sf::IntRect& area,
                 unsigned int spacing,
-                const std::vector<sf::Color>& alternatingColors) const;
+                const std::vector<sf::Color>& alternatingColors,
+                sf::RenderStates states) const;
 
             BackgroundGrid* m_grid;
         };

@@ -55,10 +55,14 @@ namespace QSFML
 	
 			m_text->setText(statsStr);
 			Utilities::AABB viewBox = Scene->getCameraViewRect();
-			const sf::Vector2f &pos = viewBox.TL();
+			sf::View view = Scene->getCameraView();
+			sf::Vector2f pos = -view.getSize()*0.5f;
 			float width = viewBox.getSize().x;
 			m_text->setScale(width / 2000);
 			m_text->setPosition(pos);
+			float rotation = Scene->getCameraView().getRotation();
+			setRotation(rotation);
+			setPosition(view.getCenter());
 
 		}
 	}
