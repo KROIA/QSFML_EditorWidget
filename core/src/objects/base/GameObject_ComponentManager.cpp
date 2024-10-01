@@ -16,14 +16,15 @@ namespace QSFML
 			m_componentsManagerData.toAdd.insert(m_componentsManagerData.toAdd.end(), components.begin(), components.end());
 		}
 
-		void GameObject::createTransform()
+		/*void GameObject::createTransform()
 		{
 			if (!m_componentsManagerData.transform)
 			{
 				Components::Transform* transform = new Components::Transform();
+				m_componentsManagerData.transform = transform;
 				addComponent(transform);
 			}
-		}
+		}*/
 
 		void GameObject::removeComponent(Components::ComponentPtr component)
 		{
@@ -65,6 +66,8 @@ namespace QSFML
 
 		bool GameObject::hasComponent(const std::string& name) const
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			QSFMLP_OBJECT_TEXT("Checking for component", name);
 			for (auto& comp : m_componentsManagerData.all)
 			{
 				if (comp->getName() == name)
@@ -74,6 +77,10 @@ namespace QSFML
 		}
 		bool GameObject::hasComponent(Components::ComponentPtr component) const
 		{
+			if (!component)
+				return false;
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			QSFMLP_OBJECT_TEXT("Checking for component", component->getName());
 			for (auto& comp : m_componentsManagerData.all)
 			{
 				if (comp == component)
@@ -83,15 +90,19 @@ namespace QSFML
 		}
 		size_t GameObject::getComponentCountRecursive() const
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			size_t count = m_componentsManagerData.all.size();
-			// <! ToDo recursive
-
+			for (auto& obj : m_childObjectManagerData.objs)
+			{
+				count += obj->getComponentCountRecursive();
+			}
 			return count;
 		}
 
 
 		Components::ComponentPtr GameObject::findFirstComponent(const std::string& name)
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			for (auto& comp : m_componentsManagerData.all)
 			{
 				if (comp->getName() == name)
@@ -101,6 +112,7 @@ namespace QSFML
 		}
 		std::vector<Components::ComponentPtr> GameObject::findAllComponents(const std::string& name)
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			std::vector<Components::ComponentPtr> comps;
 			for (auto& comp : m_componentsManagerData.all)
 			{
@@ -112,50 +124,79 @@ namespace QSFML
 
 		Components::ComponentPtr GameObject::findFirstComponentRecursive(const std::string& name)
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			for (auto& comp : m_componentsManagerData.all)
 			{
 				if (comp->getName() == name)
 					return comp;
 			}
-
-			// <! ToDo recursive
+			for (auto& obj : m_childObjectManagerData.objs)
+			{
+				Components::ComponentPtr comp = obj->findFirstComponentRecursive(name);
+				if (comp)
+					return comp;
+			}
 			return nullptr;
 		}
 		std::vector<Components::ComponentPtr> GameObject::findAllComponentsRecursive(const std::string& name)
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			std::vector<Components::ComponentPtr> comps;
 			for (auto& comp : m_componentsManagerData.all)
 			{
 				if (comp->getName() == name)
 					comps.push_back(comp);
 			}
-
-			// <! ToDo recursive
+			for (auto& obj : m_childObjectManagerData.objs)
+			{
+				std::vector<Components::ComponentPtr> childComps = obj->findAllComponentsRecursive(name);
+				comps.insert(comps.end(), childComps.begin(), childComps.end());
+			}
 			return comps;
 		}
 
 		const Utilities::AABB& GameObject::getBoundingBox() const
 		{
-			sf::Vector2f globalPos = getGlobalPosition();
-			if(m_oldPosition != globalPos)
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			
+			if (m_componentsManagerData.transform)
 			{
-				m_oldPosition = globalPos;
-				for (auto& collider : m_componentsManagerData.colliders)
-					collider->setPos(globalPos);
-				updateBoundingBox();
+				if (m_componentsManagerData.transform->isDirty())
+				{
+					updateTransformInternal();
+				}
+				//updated = true;
+			}
+			else
+			{
+				if (isColliderDirty())
+					updateColliderData();
 			}
 			return m_boundingBox;
 		}
 		void GameObject::updateBoundingBox() const
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_4);
 			std::vector<Utilities::AABB> boxes;
-			boxes.reserve(m_componentsManagerData.colliders.size());
+			boxes.reserve(m_componentsManagerData.colliders.size()+
+			m_childObjectManagerData.objs.size());
+
+			// get bounding boxes from child objects
+			for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
+			{
+				m_childObjectManagerData.objs[i]->updateBoundingBox();
+				boxes.push_back(m_childObjectManagerData.objs[i]->getBoundingBox());
+			}
+			
 			for (size_t i = 0; i < m_componentsManagerData.colliders.size(); ++i)
 			{
 				boxes.push_back(m_componentsManagerData.colliders[i]->getBoundingBox());
 			}
+			boxes.push_back(getCustomBoundingBox());
 			m_boundingBox = Utilities::AABB::getFrame(boxes);
 		}
+	
+
 
 
 		void GameObject::updateChanges_componentsManager()
@@ -184,10 +225,7 @@ namespace QSFML
 					if (m_componentsManagerData.transform == comp)
 						m_componentsManagerData.transform = nullptr;
 
-					if (Utilities::Updatable* updatable = dynamic_cast<Utilities::Updatable*>(comp))
-					{
-
-					}
+				
 					auto itUpdatable = std::find(m_componentsManagerData.updatables.begin(), m_componentsManagerData.updatables.end(), dynamic_cast<Utilities::Updatable*>(comp));
 					auto itColliders = std::find(m_componentsManagerData.colliders.begin(), m_componentsManagerData.colliders.end(), dynamic_cast<Components::Collider*>(comp));
 					auto itEventHandler = std::find(m_componentsManagerData.eventHandler.begin(), m_componentsManagerData.eventHandler.end(), dynamic_cast<Components::SfEventHandle*>(comp));
@@ -325,7 +363,25 @@ namespace QSFML
 				m_parent->needsDrawUpdateChanged(m_componentsManagerData.thisNeedsDrawUpdate);
 		}
 
-
+		bool GameObject::isColliderDirty() const
+		{
+			for (const auto& collider : m_componentsManagerData.colliders)
+			{
+				if (collider->isDirty())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		void GameObject::updateColliderData() const
+		{
+			for (const auto& collider : m_componentsManagerData.colliders)
+			{
+				collider->updateColliderData();
+			}
+			updateBoundingBox();
+		}
 		bool GameObject::checkCollision(const GameObjectPtr other) const
 		{
 			std::vector<Utilities::Collisioninfo> collisions;
@@ -335,6 +391,14 @@ namespace QSFML
 			std::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision) const
 		{
+			if (!other)
+				return false;
+
+			if(isColliderDirty())
+				updateColliderData();
+			if (other->isColliderDirty())
+				other->updateColliderData();
+			
 			// Check if bounding box intersects
 			const Utilities::AABB& otherBox = other->getBoundingBox();
 			if (!m_boundingBox.intersects(otherBox))
@@ -356,7 +420,7 @@ namespace QSFML
 			std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
 			for (auto& objStruct : objs)
 			{
-				GameObjectPtr obj = objStruct.obj;
+				GameObjectPtr obj = objStruct.obj;				
 				std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
 				tree.search(obj->getBoundingBox(), possibleColliders);
 				for (auto it : possibleColliders)

@@ -25,8 +25,11 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     //: Transformable()
     : Updatable()
     , DestroyEvent()
+	, m_birthTick(0)
+	, m_birthTime(0)
 {
     m_name = name;
+    m_parent = parent;
     if(m_name.size() == 0)
     {
         s_objNameCounter++;
@@ -37,7 +40,7 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     m_updateControlls.enablePaintLoop = true;
    
     m_sceneParent = nullptr;
-    m_parent = parent;
+    
     m_rootParent = this;
     if(m_parent)
         m_rootParent = m_parent->m_rootParent;
@@ -46,20 +49,25 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     m_enabled = true;
     //m_position = sf::Vector2f(0, 0);
     m_renderLayer = RenderLayer::layer_0;
-    
+
+    Components::Transform* transform = new Components::Transform();
+    m_componentsManagerData.transform = transform;
+    addComponent(transform);
+
+    updateObjectChanges();
 }
 GameObject::GameObject(const GameObject &other)
     //: Transformable()
     : Updatable()
     , DestroyEvent()
+    , m_birthTick(0)
+    , m_birthTime(0)
 {
     m_enabled = other.m_enabled;
     m_name = other.m_name;
-    //m_position = other.m_position;
     m_sceneParent = nullptr;
     m_parent = nullptr;
     m_rootParent = this;
-    //m_objectsChanged = false;
     m_componentsManagerData.thisNeedsDrawUpdate = false;
     m_updateControlls = other.m_updateControlls;
     m_renderLayer = other.m_renderLayer;
@@ -106,7 +114,7 @@ GameObject::~GameObject()
 
 void GameObject::inSceneAdded()
 {
-
+    
 }
 void GameObject::setParent(GameObjectPtr parent)
 {
@@ -634,6 +642,9 @@ void GameObject::setParent_internal(GameObjectPtr parent,
                                       GameObjectPtr rootParent,
                                       Scene *SceneParent)
 {
+	QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_TEXT("Name", getName());
+	//QSFMLP_OBJECT_BLOCK("GameObject::setParent_internal: " + getName(), QSFML_COLOR_STAGE_1);
     if(m_parent != nullptr && m_parent == this)
         return;
     if(m_parent)
@@ -1015,7 +1026,9 @@ void GameObject::update()
 }
 std::vector<std::string> GameObject::toStringInternal(const std::string &preStr) const
 {
+	//QSFMLP_OBJECT_BLOCK("GameObject::toStringInternal: " + getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_TEXT("Name", getName());
     using std::string;
     std::vector<string> lines;
     const GameObject* t = this;
@@ -1101,7 +1114,9 @@ void GameObject::deleteLater()
 
 void GameObject::updateObjectChanges()
 {
+	//QSFMLP_OBJECT_BLOCK("GameObject::updateObjectChanges: " + getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_TEXT("Name", getName());
     //removeChild_internal();
     //deleteChild_internal();
     //removeComponent_internal();
@@ -1114,19 +1129,31 @@ void GameObject::updateObjectChanges()
     m_childObjectManagerData.objectsChanged = false;
     updateChanges_componentsManager();
     updateChanges_childObjectManager();
+
+    if (this == m_rootParent)
+    {
+        updateTransformInternal();
+    }
 }
+
 void GameObject::sfEvent(const std::vector<sf::Event>& events)
 {
     if (!m_enabled || !m_updateControlls.enableEventLoop || !m_componentsManagerData.thisNeedsEventUpdate) return;
+    //QSFMLP_OBJECT_BLOCK("GameObject::sfEvent: count="+std::to_string(events.size())+" " + getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_TEXT("Name", getName());
     QSFMLP_OBJECT_BLOCK("Components event", QSFML_COLOR_STAGE_2);
     for (auto component : m_componentsManagerData.eventHandler)
     {
         if (!component->isEnabled())
             continue;
 
-        for (const auto &event : events)
+        for (const auto& event : events)
+        {
+			QSFMLP_COMPONENT_BLOCK("Component event", QSFML_COLOR_STAGE_1);
+            QSFMLP_OBJECT_TEXT("Name", component->getName());
             component->sfEvent(event);
+        }
 
     }
     QSFMLP_OBJECT_END_BLOCK;
@@ -1142,7 +1169,9 @@ void GameObject::sfEvent(const std::vector<sf::Event>& events)
 void GameObject::update_internal()
 {
     if (!m_enabled || !m_updateControlls.enableUpdateLoop) return;
+    //QSFMLP_OBJECT_BLOCK("GameObject::update_internal:"+getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_TEXT("Name", getName());
     QSFMLP_OBJECT_BLOCK("Object update", QSFML_COLOR_STAGE_2);
     Updatable::emitUpdate();
     QSFMLP_OBJECT_END_BLOCK;
@@ -1155,7 +1184,11 @@ void GameObject::update_internal()
         
         if (!comp1->isEnabled())
             continue;
-        comp->emitUpdate();
+        {
+            QSFMLP_COMPONENT_BLOCK("Component update", QSFML_COLOR_STAGE_1);
+            QSFMLP_OBJECT_TEXT("Name", comp1->getName());
+            comp->emitUpdate();
+        }
     }
     QSFMLP_OBJECT_END_BLOCK;
 
@@ -1175,7 +1208,9 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
     {
         return;
     }
+	//QSFMLP_OBJECT_BLOCK("GameObject::draw: " + getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFMLP_OBJECT_TEXT("Name", getName());
     states.transform *= getTransform();
     if (m_componentsManagerData.drawable.size())
     {
@@ -1184,7 +1219,9 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
         {
             if (!comp->isEnabled())
                 continue;
-            window.draw(*comp, states);
+            {
+                window.draw(*comp, states);
+            }
         }
         QSFMLP_OBJECT_END_BLOCK;
     }

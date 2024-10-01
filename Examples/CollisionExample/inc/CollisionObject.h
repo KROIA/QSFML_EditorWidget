@@ -17,5 +17,7 @@ public:
 	//QSFML::Components::Collider* getCollider() const;
 
 private:
+	void setup(const std::vector<sf::Vector2f>& vertecies);
+	void inSceneAdded() override;
 	QSFML::Components::Collider* m_collider;
 };

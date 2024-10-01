@@ -274,7 +274,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         /// <returns>Age in fixed timedomain</returns>
         double getAgeFixed() const;
 
-        void updateObjectChanges();
+        
 
         //void setPositionRelative(const sf::Vector2f& pos); // Sets the position relative to its parent
         //void setPosition(const sf::Vector2f& pos); // Sets the position in the absolute world coords.
@@ -292,7 +292,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         void setUpdateControlls(const SceneSettings::UpdateControlls& controlls);
 
         const Utilities::AABB &getBoundingBox() const;
-        void updateBoundingBox() const;
+        
 
         std::string toString() const;
 
@@ -305,16 +305,14 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         void removeChilds(const std::vector<GameObjectPtr>& childs);
         void clearChilds();
         template<typename T>
-        void removeChilds();
-        template<typename T>
-        void GameObject::removeChilds()
+        void removeChilds()
         {
-            m_toRemoveChildObjects.reserve(m_toRemoveChildObjects.size() + m_childObjectManagerData.objs.size());
+            m_childObjectManagerData.toRemove.reserve(m_childObjectManagerData.toRemove.size() + m_childObjectManagerData.objs.size());
             for (auto& obj : m_childObjectManagerData.objs)
             {
                 if (dynamic_cast<T>(obj))
                 {
-                    m_toRemoveChildObjects.push_back(obj);
+                    m_childObjectManagerData.toRemove.push_back(obj);
                 }
             }
         }
@@ -377,7 +375,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         void addComponent(Components::ComponentPtr component);
         void addComponents(const std::vector<Components::ComponentPtr>& components);
 
-        void createTransform();
+        //void createTransform();
 
         void removeComponent(Components::ComponentPtr component);
         void removeComponents(const std::vector<Components::ComponentPtr>& components);
@@ -431,6 +429,46 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         void deleteComponentLater(Components::ComponentPtr component);
 
         Components::ComponentPtr getComponent(const std::string& name) const;
+		template <typename T>
+        T* getComponent() const
+        {
+            for (auto& comp : m_componentsManagerData.all)
+            {
+                if (T* t = dynamic_cast<T*>(comp))
+                {
+                    return t;
+                }
+            }
+            return nullptr;
+        }
+
+        template <>
+        Components::Collider* getComponent<Components::Collider>() const
+        {
+            if (m_componentsManagerData.colliders.size() > 0)
+                return m_componentsManagerData.colliders[0];
+            return nullptr;
+        }
+        template <>
+        Utilities::Updatable* getComponent<Utilities::Updatable>() const
+        {
+            if (m_componentsManagerData.updatables.size() > 0)
+                return m_componentsManagerData.updatables[0];
+            return nullptr;
+        }
+        template <>
+        Components::SfEventHandle* getComponent<Components::SfEventHandle>() const
+        {
+            if (m_componentsManagerData.eventHandler.size() > 0)
+                return m_componentsManagerData.eventHandler[0];
+            return nullptr;
+        }
+        template <>
+        Components::Transform* getComponent<Components::Transform>() const
+        {
+            return m_componentsManagerData.transform;
+        }
+
         const std::vector<Components::ComponentPtr>& getComponents() const;
         template <typename T>
         std::vector<T*> getComponents() const
@@ -467,6 +505,18 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
             return { m_componentsManagerData.transform };
         }
 
+        template <typename T>
+        std::vector<T*> getComponentsRecursive() const
+        {
+            std::vector<T*> comps = getComponents<T>();
+            for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
+            {
+                std::vector<T*> comps2 = m_childObjectManagerData.objs[i]->getComponentsRecursive<T>();
+                comps.insert(comps.end(), comps2.begin(), comps2.end());
+            }
+            return comps;
+        }
+
         bool hasComponent(const std::string& name) const;
         bool hasComponent(Components::ComponentPtr component) const;
 
@@ -477,6 +527,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         template<typename T>
         size_t getComponentCount() const
         {
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
             size_t count = 0;
             for (auto& comp : m_componentsManagerData.all)
             {
@@ -490,6 +541,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         template<typename T>
         size_t getComponentCountRecusrive() const
         {
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
             size_t count = 0;
             for (auto& comp : m_componentsManagerData.all)
             {
@@ -676,6 +728,15 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         sf::Transform getGlobalTransform() const;
         // ---------
         
+        bool isColliderDirty() const;
+
+        // Called to update the collider geometry
+        void updateColliderData() const;
+
+        // Called when new components/childs are added or removed
+        void updateObjectChanges();
+
+        void updateBoundingBox() const;
 
         const static size_t npos = -1;
     protected:
@@ -686,7 +747,12 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
         virtual void inSceneAdded();
 
-
+        
+        virtual Utilities::AABB getCustomBoundingBox() const
+        {
+            // Position and size in global coordinates.
+            return Utilities::AABB();
+        }
 
         virtual void onSceneParentChange(Scene *oldParent, Scene *newParent);
         virtual void onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
@@ -699,9 +765,15 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         void deleteLater();
 
     private:
+
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
         bool findAllChilds_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
         bool findAllChildsRecursive_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
+        
+        void markTransformDirty();
+        sf::Transform updateTransformInternal(sf::Transform parentTransform) const;
+		sf::Transform updateTransformInternal()const;
+        
         //bool findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList);
 
         //template<typename T>
@@ -745,7 +817,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         //std::vector<Components::Collider*> m_colliders;
         //std::vector<Utilities::Transformable*> m_transformables;
         mutable Utilities::AABB m_boundingBox; // <! Todo: Update the bounding box if the object changes
-        mutable sf::Vector2f m_oldPosition;
+        //mutable sf::Vector2f m_oldPosition;
 
         // Will send a signal to the parent to notify, the new status
         void needsEventUpdateChanged(bool needsEventUpdate);
@@ -788,6 +860,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
         void updateChanges_componentsManager();
 
 
+
         struct ChildObjectManagerData
         {
             std::vector<GameObjectPtr> objs;
@@ -805,7 +878,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
             std::vector<Components::Collider*> colliders;
             std::vector<Components::SfEventHandle*> eventHandler;
             std::vector<Components::Drawable*> drawable;
-            Components::Transform* transform = nullptr;
+            mutable Components::Transform* transform = nullptr;
 
             std::vector<Components::ComponentPtr> toAdd;
             std::vector<Components::ComponentPtr> toRemove;
@@ -813,6 +886,10 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 
             std::atomic<bool> thisNeedsDrawUpdate = false;
             std::atomic<bool> thisNeedsEventUpdate = false;
+
+			// Container to hold which are created by this object
+			// This is needed to delete the components when the object is deleted
+            std::vector<Components::ComponentPtr> selfCreatedComponents;
         };
 
 		ChildObjectManagerData m_childObjectManagerData;

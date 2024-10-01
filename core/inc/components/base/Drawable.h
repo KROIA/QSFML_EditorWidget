@@ -71,6 +71,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, /*public Utilities
         void draw(sf::RenderTarget& target, sf::RenderStates states) const final override
         {
            // applyTransform(states);
+            QSFMLP_COMPONENT_BLOCK("Component draw", QSFML_COLOR_STAGE_1);
+            QSFMLP_OBJECT_TEXT("Name", getName());
+			states.transform *= getTransform();
             drawComponent(target, states);
         }
 

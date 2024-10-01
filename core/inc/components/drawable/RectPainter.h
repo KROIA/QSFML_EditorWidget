@@ -30,7 +30,7 @@ namespace QSFML
             void drawComponent(sf::RenderTarget& target,
                 sf::RenderStates states) const override;
 
-        private:
+        protected:
             Utilities::AABB m_box;
 
             sf::RectangleShape m_rectShape;

@@ -41,6 +41,7 @@ Collider& Collider::operator=(const Collider& other)
     m_relativeVertices = other.m_relativeVertices;
     m_pos = other.m_pos;
     m_boundingBox = other.m_boundingBox;
+    m_dirty = other.m_dirty;
     return *this;
 }
 
@@ -49,8 +50,9 @@ Collider& Collider::operator=(const Collider& other)
 void Collider::setVertecies(const std::vector<sf::Vector2f>& vertecies)
 {
     m_relativeVertices = vertecies;
-    calculateAbsPos();
-    calculateBoundingBox();
+    markDirty();
+    //calculateAbsPos();
+    //calculateBoundingBox();
 }
 void Collider::addVertex(const sf::Vector2f& vertex)
 {
@@ -88,6 +90,8 @@ const std::vector<sf::Vector2f>& Collider::getVertecies() const
 }
 const Utilities::AABB& Collider::getBoundingBox() const
 {
+    if (isDirty())
+        logWarning(__PRETTY_FUNCTION__+std::string(" Collider: ") + getName() + " is dirty, bounding box might be incorrect");
     return m_boundingBox;
 }
 
@@ -95,22 +99,26 @@ void Collider::clear()
 {
     m_relativeVertices.clear();
     m_absoluteVertices.clear();
+	m_boundingBox = Utilities::AABB();
+	markUndirty();
 }
 void Collider::setPos(const sf::Vector2f& pos)
 {
     m_boundingBox.move(pos - m_pos);
     m_pos = pos;
-    calculateAbsPos();
-    if (getParent())
-        getParent()->updateBoundingBox();
+    markDirty();
+    //calculateAbsPos();
+    //if (getParent())
+    //    getParent()->updateBoundingBox();
 }
 void Collider::move(const sf::Vector2f& offset)
 {
     m_boundingBox.move(offset);
     m_pos += offset;
-    calculateAbsPos();
-    if (getParent())
-        getParent()->updateBoundingBox();
+    markDirty();
+    //calculateAbsPos();
+    //if (getParent())
+    //    getParent()->updateBoundingBox();
 }
 const sf::Vector2f& Collider::getPos() const
 {
@@ -122,6 +130,8 @@ bool Collider::checkCollision(const std::vector<Objects::GameObjectPtr>& objs,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
+    if (isDirty())
+        logWarning(__PRETTY_FUNCTION__+std::string("Collider: ") + getName() + " is dirty, collision check might be incorrect");
     //Objects::GameObjectPtr thisRootParent = getParent()->getRootParent();
     bool hasCollision = false;
     for (auto obj : objs)
@@ -136,6 +146,8 @@ bool Collider::checkCollision(const std::vector<Components::Collider*>& other,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);
+    if (isDirty())
+        logWarning(__PRETTY_FUNCTION__ + std::string("Collider: ") + getName() + " is dirty, collision check might be incorrect");
     bool hasCollision = false;
     for (auto otherCollider : other)
     {
@@ -148,6 +160,8 @@ bool Collider::checkCollision(const std::vector<Components::Collider*>& other,
 bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 { 
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
+    if (isDirty())
+        logWarning(__PRETTY_FUNCTION__ + std::string("Collider: ") + getName() + " is dirty, collision check might be incorrect");
     if(m_sceneParent)
         m_sceneParent->addBoundingBoxCollisionCheck();
     QSFMLP_PHYSICS_BLOCK("AABB check", QSFML_COLOR_STAGE_4);
@@ -162,12 +176,16 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
 }
 void Collider::checkCollision_noAABB(const std::vector<Components::Collider*>& other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 {
+    if (isDirty())
+        logWarning(__PRETTY_FUNCTION__ + std::string("Collider: ") + getName() + " is dirty, collision check might be incorrect");
     for (auto otherCollider : other)
         checkCollision_noAABB(otherCollider, collisions, onlyFirstCollision);
 }
 bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
+    if (isDirty())
+        logWarning(__PRETTY_FUNCTION__ + std::string("Collider: ") + getName() + " is dirty, collision check might be incorrect");
     
 #define FAST_COLLISION_CHECK
 
@@ -351,14 +369,21 @@ Collider::Painter* Collider::createPainter()
     return p;
 }
 
-void Collider::calculateBoundingBox()
+void Collider::updateColliderData() const
+{
+	calculateAbsPos();
+	calculateBoundingBox();
+	markUndirty();
+}
+
+void Collider::calculateBoundingBox() const
 {
     m_boundingBox = Utilities::AABB::getFrame(m_relativeVertices);
     m_boundingBox.move(m_pos);
-    if (getParent())
-        getParent()->updateBoundingBox();
+    //if (getParent())
+    //    getParent()->updateBoundingBox();
 }
-void Collider::calculateAbsPos()
+void Collider::calculateAbsPos() const
 {
     m_absoluteVertices.clear();
     m_absoluteVertices.reserve(m_relativeVertices.size());
@@ -402,7 +427,7 @@ Collider::Painter::~Painter()
 void Collider::Painter::drawComponent(sf::RenderTarget& target,
                              sf::RenderStates states) const
 {
-    QSFMLP_COMPONENT_FUNCTION(QSFML_COLOR_STAGE_2);
+   // QSFMLP_COMPONENT_FUNCTION(QSFML_COLOR_STAGE_2);
     QSFML_UNUSED(states);
     if (!m_collider)
         return;

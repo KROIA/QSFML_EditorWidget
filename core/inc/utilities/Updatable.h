@@ -19,11 +19,14 @@ namespace Utilities
             }
             void emitUpdate() 
             { 
-                update(); 
                 if (m_onUpdateExternalFunction)
                 {
                     (*m_onUpdateExternalFunction)();
                 }
+                else
+				{
+					update();
+				}
             }
 
             void setUpdateFunction(const std::function<void()> &function)

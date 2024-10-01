@@ -28,7 +28,7 @@ ExampleScene::ExampleScene(QWidget *parent)
 	GameObjectPtr obj = new GameObject();
 
     // Drawable components
-    //imageComponent(obj);
+    imageComponent(obj);
     //linePainterComponent(obj);
     //pathPainterComponent(obj);
     //pixelPainterComponent(obj);

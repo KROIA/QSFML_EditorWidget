@@ -490,6 +490,7 @@ namespace QSFML
 		void ObjectQuadTree::Tree::draw(sf::Text& text, sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,
 			sf::RenderStates states) const
 		{
+			
 			rect.setPosition(m_area.TL());
 			rect.setSize(m_area.getSize());
 
@@ -506,10 +507,22 @@ namespace QSFML
 				sf::Color col = color;
 				col.a *= fade;
 				rect.setOutlineColor(col);
-				m_childTrees[0].draw(text, rect, col, target, states);
-				m_childTrees[1].draw(text, rect, col, target, states);
-				m_childTrees[2].draw(text, rect, col, target, states);
-				m_childTrees[3].draw(text, rect, col, target, states);
+				{
+					QSFMLP_COMPONENT_BLOCK("leaf 0", QSFML_COLOR_STAGE_1);
+					m_childTrees[0].draw(text, rect, col, target, states);
+				}
+				{
+					QSFMLP_COMPONENT_BLOCK("leaf 1", QSFML_COLOR_STAGE_2);
+					m_childTrees[1].draw(text, rect, col, target, states);
+				}
+				{
+					QSFMLP_COMPONENT_BLOCK("leaf 2", QSFML_COLOR_STAGE_3);
+					m_childTrees[2].draw(text, rect, col, target, states);
+				}
+				{
+					QSFMLP_COMPONENT_BLOCK("leaf 3", QSFML_COLOR_STAGE_4);
+					m_childTrees[3].draw(text, rect, col, target, states);
+				}
 			}
 		}
 		void ObjectQuadTree::Tree::draw(sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,

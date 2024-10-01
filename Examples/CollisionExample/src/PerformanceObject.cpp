@@ -26,10 +26,8 @@ PerformanceObject::PerformanceObject(const std::string& name, QSFML::Objects::Ga
 
 	m_collider->setVertecies(vertecies);
 
-	createTransform();
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
-	updateObjectChanges();
 }
 PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies, const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
@@ -39,10 +37,10 @@ PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies,
 	m_currentDirection = QSFML::Utilities::RandomEngine::getFloat(-M_PI, M_PI);
 
 	m_collider->setVertecies(vertecies);
-	createTransform();
+	
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
-	updateObjectChanges();
+	
 }
 PerformanceObject::~PerformanceObject()
 {

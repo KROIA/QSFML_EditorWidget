@@ -345,7 +345,7 @@ void GameObjectContainer::updateNewElements()
     
     deleteObject_internal();
     
-    const std::vector<Objects::GameObjectPtr> &toAdd = m_allObjects->getObjectsToAdd();
+    std::vector<Objects::GameObjectPtr> toAdd = m_allObjects->getObjectsToAdd();
 
     addObject_internal();
     m_allObjects->updateNewElements();

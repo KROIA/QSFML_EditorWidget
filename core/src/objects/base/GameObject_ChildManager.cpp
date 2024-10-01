@@ -1,6 +1,7 @@
 #include "objects/base/GameObject.h"
 #include "Scene/Scene.h"
 #include "components/base/Component.h"
+#include "components/Transform.h"
 
 namespace QSFML
 {
@@ -128,6 +129,7 @@ namespace QSFML
 
 		GameObjectPtr GameObject::findFirstChild(const std::string& name)
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			for (auto& obj : m_childObjectManagerData.objs)
 			{
 				if (obj->getName() == name)
@@ -137,6 +139,7 @@ namespace QSFML
 		}
 		std::vector<GameObjectPtr> GameObject::findAllChilds(const std::string& name)
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			std::vector<GameObjectPtr> result;
 			for (auto& obj : m_childObjectManagerData.objs)
 			{
@@ -206,7 +209,7 @@ namespace QSFML
 			return found;
 		}
 
-
+		
 
 
 		void GameObject::updateChanges_childObjectManager()

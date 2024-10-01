@@ -14,20 +14,20 @@
 using namespace QSFML;
 using namespace QSFML::Objects;
 
-void addLineChart(Scene* Scene)
+void addLineChart(Scene* scene)
 {
     LineChart* m_chart = new LineChart();
     m_chart->setDataPoints({ 0,1,-1,0.5,-0.5,0 });
     m_chart->setOrigin(sf::Vector2f(50, 50));
     m_chart->setSize(sf::Vector2f(200, 100));
-    Scene->addObject(m_chart);
+    scene->addObject(m_chart);
 }
-void addMouseCollider(Scene* Scene)
+void addMouseCollider(Scene* scene)
 {
 	MouseCollider* mouseCollider = new MouseCollider("MOUSE_COLLIDER");
-	Scene->addObject(mouseCollider);
+	scene->addObject(mouseCollider);
 }
-void addShape(Scene* Scene)
+void addShape(Scene* scene)
 {
 
     QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject();
@@ -87,9 +87,9 @@ void addShape(Scene* Scene)
 
     obj->addComponent(shape);
     obj->addComponent(linePainter);
-    Scene->addObject(obj);
+    scene->addObject(obj);
 }
-void addPerlinNoise(Scene* Scene)
+void addPerlinNoise(Scene* scene)
 {
     GameObjectPtr obj = new GameObject();
 
@@ -128,7 +128,34 @@ void addPerlinNoise(Scene* Scene)
     obj->addComponent(pixelPainter);
     //obj->setPosition(sf::Vector2f(300, 100));
     pixelPainter->setPosition(sf::Vector2f(300, 100));
-    Scene->addObject(obj);
+    scene->addObject(obj);
+}
+void addNastedRotatingVector(Scene* scene)
+{
+    GameObjectPtr root = new GameObject("RotatingVector");
+
+    GameObjectPtr _root = root;
+
+    float length = 800;
+    for (int i = 0; i < 10; ++i)
+    {
+		GameObjectPtr child = new AABBDisplayer(length / (i + 1), "RotatingVector");
+        //root->addChild(child);
+        if (i > 0)
+        {
+			child->setPosition(sf::Vector2f(length /i, 0));
+        }
+		_root->addChild(child);
+		_root = child;
+	}
+	root->setPosition(sf::Vector2f(400, 300));
+	scene->addObject(root);
+    root->updateObjectChanges();
+    qDebug() << root->toString().c_str();
+}
+void boundingBoxTest(Scene* scene)
+{
+
 }
 
 
@@ -155,21 +182,24 @@ SandBox::SandBox(QWidget *parent)
 
         DefaultEditor *defaultEditor = new DefaultEditor();
 
-        VectorDisplayer *m_vecDisplay = new VectorDisplayer();
+        //VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 
         m_Scene_1->addObject(defaultEditor);
-        m_Scene_1->addObject(m_vecDisplay);
+        //m_Scene_1->addObject(m_vecDisplay);
         //m_Scene->addObject(grid);
-        qDebug() << defaultEditor->toString().c_str();
-        qDebug() << m_vecDisplay->toString().c_str();
+        //qDebug() << defaultEditor->toString().c_str();
+        //qDebug() << m_vecDisplay->toString().c_str();
 
-        SandboxObject *sbObj = new SandboxObject();
-        m_Scene_1->addObject(sbObj);
+        //SandboxObject *sbObj = new SandboxObject();
+        //m_Scene_1->addObject(sbObj);
 
         m_pointPainter = new QSFML::Components::PointPainter();
         QSFML::Objects::GameObjectPtr GameObject = new QSFML::Objects::GameObject();
         GameObject->addComponent(m_pointPainter);
         m_Scene_1->addObject(GameObject);
+        GameObject->setEnabled(false);
+
+		addNastedRotatingVector(m_Scene_1);
 
         QTimer* timer = new QTimer(this);
 
@@ -250,7 +280,7 @@ SandBox::SandBox(QWidget *parent)
 
         
 
-        m_Scene_1->addObject(obj);
+        m_Scene_2->addObject(obj);
         
 
 
@@ -259,7 +289,7 @@ SandBox::SandBox(QWidget *parent)
         addMouseCollider(m_Scene_2);
         addShape(m_Scene_2);
         addPerlinNoise(m_Scene_2);
-        m_Scene_1->applyObjectChanges();
+        m_Scene_2->applyObjectChanges();
 
         std::cout << obj->toString() << "\n";
     }
