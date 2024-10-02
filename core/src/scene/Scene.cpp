@@ -61,7 +61,7 @@ namespace QSFML {
         setFocusPolicy(Qt::StrongFocus);
         */
         //m_updateTimer.onFinished(std::bind(&Scene::update, this));
-        connect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
+        connect(&m_frameTimer, &QTimer::timeout, this, &Scene::firstUpdate);
         setSettings(settings);
 
 		m_cameras.defaultCamera = new Objects::CameraWindow(settings.contextSettings, "DefaultCamera", parent);
@@ -183,6 +183,8 @@ namespace QSFML {
     void Scene::stop()
     {
         m_frameTimer.stop();
+        connect(&m_frameTimer, &QTimer::timeout, this, &Scene::firstUpdate);
+        disconnect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
     }
 
     void Scene::setCameraView(const sf::View& view)
@@ -342,6 +344,15 @@ namespace QSFML {
         }
     }*/
 
+    void Scene::firstUpdate()
+    {
+        disconnect(&m_frameTimer, &QTimer::timeout, this, &Scene::firstUpdate);
+        connect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
+        m_syncedUpdateT_t1 = std::chrono::high_resolution_clock::now();
+        m_update_t1 = m_syncedUpdateT_t1;
+        m_paint_t1 = m_syncedUpdateT_t1;
+        update();
+    }
     void Scene::update()
     {
         if (!m_cameras.defaultCamera)
