@@ -62,13 +62,15 @@ class VectorDisplayer: public QSFML::Objects::GameObject
                 {
 
                 }
-                void sfEvent(const sf::Event &e) override
+                void sfEvent(const std::pair<QSFML::Objects::CameraWindow*, std::vector<sf::Event>>& events) override
                 {
-                    switch(e.type)
+                    for (const auto& e : events.second)
                     {
+                        switch (e.type)
+                        {
                         case sf::Event::MouseMoved:
                         {
-                            sf::Vector2f pos = m_vec->getInWorldSpace(sf::Vector2i(e.mouseMove.x,e.mouseMove.y));
+                            sf::Vector2f pos = m_vec->getInWorldSpace(sf::Vector2i(e.mouseMove.x, e.mouseMove.y));
                             m_vec->m_vec1->setStart(pos);
                             m_vec->m_vec2->setStart(pos);
 
@@ -80,7 +82,8 @@ class VectorDisplayer: public QSFML::Objects::GameObject
                             m_vec->m_ray2.setPosition(m_vec->m_vec2->getStart());
                             m_vec->m_ray2.setDirection(m_vec->m_vec2->getDirection());
                             m_vec->m_vec3->setAngle(m_vec->m_ray1.getAngle(m_vec->m_ray2));
-          
+
+                        }
                         }
                     }
                 }

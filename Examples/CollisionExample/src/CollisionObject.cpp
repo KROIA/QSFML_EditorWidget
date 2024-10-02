@@ -31,7 +31,7 @@ void CollisionObject::setup(const std::vector<sf::Vector2f>& vertecies)
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
 }
-void CollisionObject::inSceneAdded()
+void CollisionObject::onAwake()
 {
 	//logInfo("CollisionObject added to scene");
 }

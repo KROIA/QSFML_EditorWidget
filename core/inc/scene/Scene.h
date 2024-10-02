@@ -87,7 +87,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         Log::LogObject& getComponentLogger() { return m_logger.getComponentLogger(); }
         Log::LogObject& getPhysicsLogger() { return m_logger.getPhysicsLogger(); }
 
-        Objects::CameraWindow* createSecondCamera(QWidget* parent);
         Objects::CameraWindow* getDefaultCamera() { return m_cameras.defaultCamera; }
     
         void paint(sf::RenderWindow& target);
@@ -115,7 +114,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
 
     private:
 
-        void internal_event(const std::vector<sf::Event> &events);
+        void internal_event(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>> &events);
 
 
 

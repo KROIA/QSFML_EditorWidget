@@ -164,10 +164,15 @@ void addNastedRotatingVector(Scene* scene)
     root->updateObjectChanges();
     qDebug() << root->toString().c_str();
 }
-void addCar(Scene* scene)
+void addCar(Scene* scene,
+    const sf::ContextSettings& settings,
+    QWidget* qparent)
 {
-    Car* car = new Car();
+    Car* car = new Car(settings, qparent);
     scene->addObject(car);
+
+    std::vector< Objects::CameraWindow*> cams = car->getChildsRecusrive<Objects::CameraWindow>();
+
 }
 
 
@@ -180,6 +185,7 @@ SandBox::SandBox(QWidget *parent)
     m_Scene_1 = nullptr;
     m_Scene_2 = nullptr;
     
+    if(true)
     {
         SceneSettings settings;
         //settings.layout.autoAjustSize = false;
@@ -191,11 +197,16 @@ SandBox::SandBox(QWidget *parent)
         //settings.updateControlls.enableEventLoop = false;
         //settings.updateControlls.enableUpdateLoop = false;
         m_Scene_1 = new Scene(ui->SceneWidget_1,settings);
-        auto* cam = m_Scene_1->createSecondCamera(ui->secondCamera_frame);
-        //DefaultEditor *defaultEditor = new DefaultEditor();
+        //auto* cam2 = new Objects::CameraWindow("CustomCamera2", ui->secondCamera_frame);
+        auto* cam3 = new Objects::CameraWindow(settings.contextSettings, "CustomCamera3", ui->thirtCamera_frame);
+        DefaultEditor *defaultEditor = new DefaultEditor();
 
-		Objects::CameraController* camController = new Objects::CameraController();
-		cam->addChild(camController);
+		//Objects::CameraController* camController2 = new Objects::CameraController();
+		Objects::CameraController* camController3 = new Objects::CameraController();
+		//cam2->addChild(camController2);
+		cam3->addChild(camController3);
+        //m_Scene_1->addObject(cam2);
+        m_Scene_1->addObject(cam3);
 
 		Objects::GameObject* zeroPoint = new Objects::GameObject();
 		Components::PointPainter* pointPainter = new Components::PointPainter();
@@ -217,7 +228,7 @@ SandBox::SandBox(QWidget *parent)
 
         //VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 
-        //m_Scene_1->addObject(defaultEditor);
+        m_Scene_1->addObject(defaultEditor);
         //m_Scene_1->addObject(m_vecDisplay);
         //m_Scene->addObject(grid);
         //qDebug() << defaultEditor->toString().c_str();
@@ -238,10 +249,11 @@ SandBox::SandBox(QWidget *parent)
 
         connect(timer, &QTimer::timeout, this, &SandBox::onTimerFinished);
         timer->start(1000);
+        m_Scene_1->start();
     }
     
+    if(true)
     {
-
         SceneSettings settings;
         //settings.layout.autoAjustSize = false;
         settings.layout.fixedSize = sf::Vector2u(300,100);
@@ -260,6 +272,12 @@ SandBox::SandBox(QWidget *parent)
         defaultEditor->getCamera()->setMaxMovingBounds(sf::FloatRect(-1000, -1000, 2000, 2000));
 
         VectorDisplayer *m_vecDisplay = new VectorDisplayer();
+
+        //auto* cam2 = new Objects::CameraWindow(settings.contextSettings, "CustomCamera2", ui->secondCamera_frame);
+        //Objects::CameraController* camController2 = new Objects::CameraController();
+        //cam2->addChild(camController2);
+        //m_Scene_2->addObject(cam2);
+
 
         //m_Scene_2->addObject(obj);
         //m_Scene_2->addObject(m_vecDisplay);
@@ -324,11 +342,12 @@ SandBox::SandBox(QWidget *parent)
         addMouseCollider(m_Scene_2);
         addShape(m_Scene_2);
         addPerlinNoise(m_Scene_2);
-        addCar(m_Scene_2);
+        addCar(m_Scene_2, settings.contextSettings, ui->secondCamera_frame);
 
         m_Scene_2->applyObjectChanges();
 
         std::cout << obj->toString() << "\n";
+        m_Scene_2->start();
     }
 
     QSFML::Utilities::Ray func1(sf::Vector2f(0, 0), sf::Vector2f(0, 1));
@@ -339,8 +358,8 @@ SandBox::SandBox(QWidget *parent)
     std::cout << "PosFactor: " << factor << " pos: " << pos.x << " " << pos.y << " distance: "<< distance<<"\n";
     
     
-    m_Scene_1->start();
-    m_Scene_2->start();
+    
+    
     
 }
 

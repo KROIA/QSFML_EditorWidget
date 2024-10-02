@@ -32,13 +32,10 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
 
         void reserveObjectsCount(size_t size);
         size_t getObjectsCount() const;
-        template<typename T>
-        size_t getObjectsCount() const;
+        template<typename T> size_t getObjectsCount() const;
         const std::vector<Objects::GameObjectPtr> &getObjects() const;
-        template<typename T>
-        std::vector<T*> getObjects() const;
-        template<typename T>
-        T* getFirstObject() const;
+        template<typename T> std::vector<T*> getObjects() const;
+        template<typename T> T* getFirstObject() const;
 
         bool objectExists(Objects::GameObjectPtr obj);
         size_t getObjectIndex(Objects::GameObjectPtr obj);
@@ -78,41 +75,38 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         template<typename T>
         T* findFirstObject()
         {
+            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
             for (auto& obj : m_allObjects->getObjects())
             {
                 T* casted = dynamic_cast<T*>(obj);
                 if (casted)
-				{
 					return casted;
-				}
             }
             return nullptr;
         }
 
         template<typename T>
-        std::vector<T*> findAllFirstObject()
+        std::vector<T*> findAllObject()
         {
+            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
             std::vector<T*> list;
             for (auto& obj : m_allObjects->getObjects())
             {
                 T* casted = dynamic_cast<T*>(obj);
                 if (casted)
-                {
                     list.push_back(casted);
-                }
             }
             return list;
         }
         template<typename T>
         T* findFirstObjectRecursive()
         {
+            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
             for (auto& obj : m_allObjects->getObjects())
             {
                 T* casted = dynamic_cast<T*>(obj);
                 if (casted)
-                {
                     return casted;
-                }
                 casted = obj->getFirstChild<T>();
                 if (casted)
 					return casted;
@@ -121,18 +115,91 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         }
 
         template<typename T>
-        std::vector<T*> findAllFirstObjectRecursive()
+        std::vector<T*> findAllObjectRecursive()
         {
+            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+            std::vector<T*> list;
+            for (auto& obj : m_allObjects->getObjects())
+            {
+                T* casted = dynamic_cast<T*>(obj);
+                if (casted)
+                    list.push_back(casted);
+                std::vector<T*> subList = obj->getChilds<T>();
+                if(subList.size() > 0)
+                    list.insert(list.end(), subList.begin(), subList.end());
+            }
+            return list;
+        }
+
+        template<typename T>
+        T* findFirstObject(const std::string &objName)
+        {
+            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+            for (auto& obj : m_allObjects->getObjects())
+            {
+                T* casted = dynamic_cast<T*>(obj);
+                if (casted)
+                {
+                    if (casted->getName() == objName)
+                        return casted;
+                }
+            }
+            return nullptr;
+        }
+
+        template<typename T>
+        std::vector<T*> findAllObject(const std::string& objName)
+        {
+            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
             std::vector<T*> list;
             for (auto& obj : m_allObjects->getObjects())
             {
                 T* casted = dynamic_cast<T*>(obj);
                 if (casted)
                 {
-                    list.push_back(casted);
+                    if (casted->getName() == objName)
+                        list.push_back(casted);
+                }
+            }
+            return list;
+        }
+        template<typename T>
+        T* findFirstObjectRecursive(const std::string& objName)
+        {
+            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+            for (auto& obj : m_allObjects->getObjects())
+            {
+                T* casted = dynamic_cast<T*>(obj);
+                if (casted)
+                {
+                    if (casted->getName() == objName)
+                        return casted;
+                }
+                casted = obj->getFirstChild<T>();
+                if (casted)
+                {
+                    if (casted->getName() == objName)
+                        return casted;
+                }
+            }
+            return nullptr;
+        }
+
+        template<typename T>
+        std::vector<T*> findAllObjectRecursive(const std::string& objName)
+        {
+            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+            std::vector<T*> list;
+            for (auto& obj : m_allObjects->getObjects())
+            {
+                T* casted = dynamic_cast<T*>(obj);
+                if (casted)
+                {
+                    if (casted->getName() == objName)
+                        list.push_back(casted);
                 }
                 std::vector<T*> subList = obj->getChilds<T>();
-                if(subList.size() > 0)
+                if (subList.size() > 0)
                     list.insert(list.end(), subList.begin(), subList.end());
             }
             return list;
@@ -151,7 +218,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         void draw(sf::RenderWindow& window);
     protected:
         void updateNewElements();
-        void sfEvent(const std::vector<sf::Event> &events);
+        void sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&events);
         void update();
         
 
@@ -185,6 +252,8 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         SceneSettings& m_settings;
         
 };
+
+
 template<typename T>
 size_t GameObjectContainer::getObjectsCount() const
 {

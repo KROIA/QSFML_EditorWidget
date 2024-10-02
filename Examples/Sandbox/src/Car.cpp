@@ -1,7 +1,10 @@
 #include "Car.h"
 
 
-Car::Car(const std::string& name, Objects::GameObjectPtr parent)
+Car::Car(const sf::ContextSettings& settings,
+		 QWidget* qparent, 
+		 const std::string& name, 
+		 Objects::GameObjectPtr parent)
 	: QObject()
 	, GameObject(name)
 	, m_painter(new Painter())
@@ -17,6 +20,10 @@ Car::Car(const std::string& name, Objects::GameObjectPtr parent)
 	addComponent(m_keyEventDown);
 	addComponent(m_keyEventLeft);
 	addComponent(m_keyEventRight);
+
+
+	m_camera = new Objects::CameraWindow(settings, "CustomCamera2", qparent);
+	addChild(m_camera);
 	
 
 	m_image->setScale(0.5, 0.5);
@@ -40,6 +47,12 @@ Car::Car(const std::string& name, Objects::GameObjectPtr parent)
 
 	setRenderLayer(RenderLayer::layer_0);
 }
+
+void Car::onAwake()
+{
+	//m_camera = findFirstObjectGlobalRecursive<Objects::CameraWindow>("CustomCamera2");
+}
+
 
 void Car::update()
 {
@@ -100,22 +113,23 @@ void Car::update()
 	m_acceleration = m_acceleration *0.98;
 
 
-	Objects::CameraController* camera = findFirstObjectGlobalRecursive<Objects::CameraController>();
-	if (camera)
+
+	if (m_camera)
 	{
-		camera->setPosition(getPosition());
-		camera->setRotation(getRotation());
+		//m_camera->setPosition(getPosition());
+		//m_camera->setRotation(getRotation());
+		m_images.push_back(new sf::Image(m_camera->captureThisCameraScreen()));
+		if (m_images.size() > 1)
+		{
+			delete m_images[0];
+			m_images.erase(m_images.begin());
+		}
+		m_image->loadFromImage(*m_images.back());
+		m_image->setPosition(-m_image->getLocalBounds().width * m_image->getScale().x / 2.f,
+			-m_image->getLocalBounds().height * m_image->getScale().y / 2.f);
 	}
 
-	m_images.push_back(new sf::Image(captureScreen()));
-	if (m_images.size() > 1)
-	{
-		delete m_images[0];
-		m_images.erase(m_images.begin());
-	}
-	m_image->loadFromImage(*m_images.back());
-	m_image->setPosition(-m_image->getLocalBounds().width * m_image->getScale().x / 2.f, 
-						 -m_image->getLocalBounds().height * m_image->getScale().y / 2.f);
+	
 }
 
 void Car::onKeyPressUp()

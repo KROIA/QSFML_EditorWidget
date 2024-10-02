@@ -282,11 +282,11 @@ namespace QSFML
 		void GameObject::inSceneAdded_internal()
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			QSFMLP_OBJECT_BLOCK("Object inSceneAdded", QSFML_COLOR_STAGE_2);
-			inSceneAdded();
+			QSFMLP_OBJECT_BLOCK("Object onAwake", QSFML_COLOR_STAGE_2);
+			onAwake();
 			QSFMLP_OBJECT_END_BLOCK;
 
-			QSFMLP_OBJECT_BLOCK("Childs inSceneAdded", QSFML_COLOR_STAGE_4);
+			QSFMLP_OBJECT_BLOCK("Childs onAwake", QSFML_COLOR_STAGE_4);
 			for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
 			{
 				m_childObjectManagerData.objs[i]->inSceneAdded_internal();

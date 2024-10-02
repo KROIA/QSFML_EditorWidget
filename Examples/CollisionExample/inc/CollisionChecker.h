@@ -32,7 +32,7 @@ private slots:
 
 private:
 	void onSceneParentChange(QSFML::Scene* oldParent, QSFML::Scene* newParent) override;
-	void inSceneAdded() override;
+	void onAwake() override;
 	void update() override;
 	void update_intersecting();
 	void update_contains();

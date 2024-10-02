@@ -173,10 +173,17 @@ void GameObjectContainer::applyObjectChanges()
     {
         // Check if it is a camera
         Objects::CameraWindow* cam = dynamic_cast<Objects::CameraWindow*>(obj);
-        if (cam && m_parent)
+
+        if (cam)
         {
-			m_parent->m_cameras.removeCamera(cam);
+            m_parent->m_cameras.removeCamera(cam);
         }
+        std::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
+        for (auto& cam1 : cams)
+        {
+        	m_parent->m_cameras.removeCamera(cam1);
+        }
+        
 
         m_allObjects->removeObject(obj);
         if (m_threadWorker)
@@ -193,9 +200,14 @@ void GameObjectContainer::applyObjectChanges()
     for (auto& obj : objectsToDelete)
     {
         Objects::CameraWindow* cam = dynamic_cast<Objects::CameraWindow*>(obj);
-        if (cam && m_parent)
+        if (cam)
         {
 			m_parent->m_cameras.removeCamera(cam);
+        }
+        std::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
+        for (auto& cam1 : cams)
+        {
+            m_parent->m_cameras.removeCamera(cam1);
         }
 		Internal::LifetimeChecker::deleteSecured(obj);
 	}
@@ -203,13 +215,6 @@ void GameObjectContainer::applyObjectChanges()
     m_allObjects->reserveObjectsCount(m_allObjects->getObjectsCount() + objectsToAdd.size());
     for (auto& obj : objectsToAdd)
     {
-        // Check if it is a camera
-		Objects::CameraWindow* cam = dynamic_cast<Objects::CameraWindow*>(obj);
-        if (cam && m_parent)
-        {
-			m_parent->m_cameras.addCamera(cam);
-        }
-
         if (obj->getSceneParent() != m_parent && obj->getSceneParent())
             obj->getSceneParent()->removeObject(obj);
         m_allObjects->addObject(obj);
@@ -226,6 +231,20 @@ void GameObjectContainer::applyObjectChanges()
         m_parent->setRootGameObject(m_allObjects->getObjectsCount());
     
     updateNewElements();
+    for (auto& obj : objectsToAdd)
+    {
+        // Check if it is a camera
+        Objects::CameraWindow* cam = dynamic_cast<Objects::CameraWindow*>(obj);
+        if (cam && m_parent)
+        {
+            m_parent->m_cameras.addCamera(cam);
+        }
+        std::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
+        for (auto& cam1 : cams)
+        {
+            m_parent->m_cameras.addCamera(cam1);
+        }
+    }
 }
 
 void GameObjectContainer::reserveObjectsCount(size_t size)
@@ -376,7 +395,7 @@ void GameObjectContainer::updateNewElements()
     for (auto obj : toAdd)
         obj->inSceneAdded_internal();
 }
-void GameObjectContainer::sfEvent(const std::vector<sf::Event> &events)
+void GameObjectContainer::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&events)
 {
     m_allObjects->sfEvent(events);
 }

@@ -64,7 +64,7 @@ namespace QSFML {
         connect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
         setSettings(settings);
 
-		m_cameras.defaultCamera = new Objects::CameraWindow("DefaultCamera", parent);
+		m_cameras.defaultCamera = new Objects::CameraWindow(settings.contextSettings, "DefaultCamera", parent);
         m_cameras.defaultCamera->enableFrameTimer(false);
 		addObject(m_cameras.defaultCamera);
 
@@ -225,12 +225,11 @@ namespace QSFML {
 	}
     const std::vector<sf::Event>& Scene::getEvents() const
     {
-        if (!m_cameras.defaultCamera)
-        {
-			static std::vector<sf::Event> dummy;
-			return dummy;
-        }
-        return m_cameras.defaultCamera->getThisCameraEvents();
+        if (m_cameras.defaultCamera)
+            return m_cameras.defaultCamera->getThisCameraEvents();
+
+        static std::vector<sf::Event> dummy;
+        return dummy;
     }
     const std::vector<sf::Event>& Scene::getEvents(Objects::CameraWindow* camera) const
     {
@@ -278,13 +277,6 @@ namespace QSFML {
     void Scene::OnUpdate()
     {
 
-    }
-    Objects::CameraWindow* Scene::createSecondCamera(QWidget* parent)
-    {
-        Objects::CameraWindow* camera = new Objects::CameraWindow("CameraWindow", parent);
-		//m_cameras.push_back(camera);
-		addObject(camera);
-        return camera;
     }
     /*
     QPaintEngine* Scene::paintEngine() const
@@ -392,15 +384,18 @@ namespace QSFML {
         QSFMLP_SCENE_BLOCK("Process sf::Events", QSFML_COLOR_STAGE_3);
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         StatsManager::resetFrame_eventloop();
-        std::vector<sf::Event> events;
-        events.reserve(20);
-        sf::Event event;
-        while (m_cameras.defaultCamera->getRenderWindow()->pollEvent(event))
-        {
-            events.push_back(event);
-        }
-        //sfEvent(events);
-        internal_event(events);
+        
+        std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>> events;
+        for(auto camera : m_cameras.cameras)
+		{
+            camera->pollEvents();
+            const std::vector<sf::Event> &cameraEvents = camera->getThisCameraEvents();
+            if (cameraEvents.size() > 0)
+			    events[camera] = cameraEvents;
+		}
+        
+        if(events.size() > 0)
+            internal_event(events);
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsed = std::chrono::duration<double>(t2 - t1).count();
         StatsManager::setEventTime(elapsed);
@@ -512,7 +507,7 @@ namespace QSFML {
         }
         return textfont;
     }
-    void Scene::internal_event(const std::vector<sf::Event>& events)
+    void Scene::internal_event(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>& events)
     {
         GameObjectContainer::sfEvent(events);
     }

@@ -191,7 +191,7 @@ namespace QSFML
         for (size_t i = 0; i < m_container.size(); ++i)
             m_container[i]->updateNewElements();
     }
-    void GameObjectLayerGroup::sfEvent(const std::vector<sf::Event>& events)
+    void GameObjectLayerGroup::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>& events)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
             m_container[i]->sfEvent(events);

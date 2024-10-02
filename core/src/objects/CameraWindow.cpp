@@ -3,17 +3,20 @@
 #include <QResizeEvent>
 #include "scene/Scene.h"
 #include "utilities/AABB.h"
+#include "utilities/VectorOperations.h"
 
 namespace QSFML
 {
     namespace Objects
     {
         OBJECT_IMPL(CameraWindow);
-        CameraWindow::CameraWindow(const std::string& name,
+        CameraWindow::CameraWindow(const sf::ContextSettings &settings,
+                                   const std::string& name,
                                    QWidget* parent)
             : QWidget(parent)
             , GameObject(name)
             , m_window(nullptr)
+            , m_settings(settings)
 			, m_dpiScale(1.f, 1.f)
         {
             setup();
@@ -22,6 +25,7 @@ namespace QSFML
             : QWidget()
             , GameObject(other)
             , m_window(nullptr)
+            , m_settings(other.m_settings)
 			, m_dpiScale(other.m_dpiScale)
         {
             setup();
@@ -34,6 +38,7 @@ namespace QSFML
                 if (!parentWidget()->layout())
                 {
                     QHBoxLayout* layout = new QHBoxLayout(parentWidget());
+                    layout->setContentsMargins(0, 0, 0, 0);
                     parentWidget()->setLayout(layout);
                 }
                 parentWidget()->layout()->addWidget(this);
@@ -63,8 +68,22 @@ namespace QSFML
 
         void CameraWindow::setThisCameraView(const sf::View& view)
         {
-			if(m_window)
-				m_window->setView(view);
+            if (m_window)
+            {
+                m_window->setView(view);
+                
+                sf::Transform transform;
+                if(getParent())
+                    transform = getParent()->getGlobalTransform().getInverse();
+
+                sf::Vector2f center = transform.transformPoint(view.getCenter());
+                float rotation = std::atan2(transform.getMatrix()[1], transform.getMatrix()[0]) * 180 / M_PI;
+                sf::Vector2f size = transform.transformPoint(view.getCenter() + view.getSize() / 2.f) - center;
+                sf::Vector2f scale = VectorMath::getScale(transform);
+                GameObject::setPosition(center);
+                GameObject::setRotation(rotation);
+                GameObject::setScale(size);
+            }
         }
         const sf::View& CameraWindow::getThisCameraView() const
         {
@@ -167,6 +186,70 @@ namespace QSFML
 			static sf::Vector2u dummy;
 			return dummy;
         }
+
+
+        /*
+        void CameraWindow::setPosition(float x, float y)
+        {
+            GameObject::setPosition(x, y);
+            updateView();
+        }
+        void CameraWindow::setPosition(const sf::Vector2f& position)
+        {
+            GameObject::setPosition(position);
+            updateView();
+        }
+        void CameraWindow::setRotation(float angle)
+        {
+            GameObject::setRotation(angle);
+            updateView();
+        }
+        void CameraWindow::setScale(float factorX, float factorY)
+        {
+            GameObject::setScale(factorX, factorY);
+            updateView();
+        }
+        void CameraWindow::setScale(const sf::Vector2f& factors)
+        {
+            GameObject::setScale(factors);
+            updateView();
+        }
+        void CameraWindow::setOrigin(float x, float y)
+        {
+            GameObject::setOrigin(x, y);
+            updateView();
+        }
+        void CameraWindow::setOrigin(const sf::Vector2f& origin)
+        {
+            GameObject::setOrigin(origin);
+            updateView();
+        }
+        void CameraWindow::move(float offsetX, float offsetY)
+        {
+            GameObject::move(offsetX, offsetY);
+            updateView();
+        }
+        void CameraWindow::move(const sf::Vector2f& offset)
+        {
+            GameObject::move(offset);
+            updateView();
+        }
+        void CameraWindow::rotate(float angle)
+        {
+            GameObject::rotate(angle);
+            updateView();
+        }
+        void CameraWindow::scale(float factorX, float factorY)
+        {
+            GameObject::scale(factorX, factorY);
+            updateView();
+        }
+        void CameraWindow::scale(const sf::Vector2f& factor)
+        {
+            GameObject::scale(factor);
+            updateView();
+        }*/
+
         void CameraWindow::onFrame()
         {
             if (!getSceneParent() || !m_window)
@@ -184,6 +267,39 @@ namespace QSFML
                 m_events.push_back(event);
             }
         }
+
+        void CameraWindow::update()
+        {
+            if (!m_window) return;
+            sf::Transform transform = getGlobalTransform();
+            if(m_lastTransform == transform)
+				return;
+            m_lastTransform = transform;
+			sf::View view = m_window->getView();
+            
+            view.setCenter(transform.transformPoint(sf::Vector2f(0,0)));
+            float rotation = std::atan2(transform.getMatrix()[1], transform.getMatrix()[0]) * 180 / M_PI;
+            view.setRotation(rotation);
+            //view.setSize(sf::Vector2f(
+            //    std::sqrt(transform.getMatrix()[0] * transform.getMatrix()[0] + transform.getMatrix()[1] * transform.getMatrix()[1]),
+            //    std::sqrt(transform.getMatrix()[4] * transform.getMatrix()[4] + transform.getMatrix()[5] * transform.getMatrix()[5])));
+            //view.setSize(transform.transformRect(sf::FloatRect(sf::Vector2f(0, 0), getScale())).getSize());
+            
+
+            m_window->setView(view);
+        }
+        //void CameraWindow::updateView()
+        //{
+            //if (!m_window) return;
+			//sf::View view = m_window->getView();
+			//view.setCenter(getPosition());
+			//view.setRotation(getRotation());
+			//view.setSize(getScale());
+			////view.setOrigin(getOrigin());
+			//m_window->setView(view);
+        //}
+
+
         QPaintEngine* CameraWindow::paintEngine() const
         {
             return nullptr;
@@ -199,9 +315,7 @@ namespace QSFML
 #endif
 
                 // Create the SFML window with the widget handle
-                sf::ContextSettings settings;
-                m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(), settings);
-
+                m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(), m_settings);
                 //m_view = m_window->getView();
 
                
@@ -218,6 +332,12 @@ namespace QSFML
                 QRect geometry = QWidget::geometry();
                 m_dpiScale.x = (float)m_oldViewSize.x / geometry.width();
                 m_dpiScale.y = (float)m_oldViewSize.y / geometry.height();
+
+
+                //sf::View view = m_window->getView();
+                //GameObject::setPosition(view.getCenter());
+                //GameObject::setRotation(view.getRotation());
+                //GameObject::setScale(view.getSize());
             }
 
             // Setup the timer to trigger a refresh at specified framerate
@@ -239,35 +359,26 @@ namespace QSFML
             if (!m_window) return;
 
             QSize size = event->size();
+            QSize oldSize = event->oldSize();
+            m_oldViewSize.x = oldSize.width();
+            m_oldViewSize.y = oldSize.height();
+
+            sf::View oldView = getThisCameraView();
+			sf::View view = getThisCameraDefaultView();
 
 
-			sf::View view = getThisCameraView();
+            // resize the view such that it shows the same area as before by respecting the aspect ratio
+            float aspectRatio = (float)size.height() / (float)size.width();
+            float newWidth = oldView.getSize().x;
+            float newHeight = newWidth * aspectRatio;
 
-            sf::Vector2u oldWindowSize = m_oldViewSize;
-            sf::Vector2u newWindowSize = m_window->getSize();
-            sf::FloatRect viewRect = sf::FloatRect(view.getCenter() - view.getSize() / 2.f, view.getSize());
+            //view.setSize(newWidth, newHeight);
+            view.setSize(newWidth, newHeight);
+            view.setCenter(oldView.getCenter());
 
-            viewRect.width = viewRect.width / oldWindowSize.x * newWindowSize.x;
-            viewRect.height = viewRect.height / oldWindowSize.y * newWindowSize.y;
-
-            view.setSize(viewRect.width, viewRect.height);
-            view.setCenter(viewRect.left + viewRect.width / 2.f, viewRect.top + viewRect.height / 2.f);
-
-            float aspectRatio = (float)newWindowSize.x / (float)newWindowSize.y;
-
-            if (viewRect.width / viewRect.height > aspectRatio)
-            {
-                viewRect.width = viewRect.height * aspectRatio;
-            }
-            else
-            {
-                viewRect.height = viewRect.width / aspectRatio;
-            }
-            view.setSize(viewRect.width, viewRect.height);
-            //view.rotate(45);
-
+            // Update the view
             setThisCameraView(view);
-            m_oldViewSize = m_window->getSize();
+            
         }
     }
 }

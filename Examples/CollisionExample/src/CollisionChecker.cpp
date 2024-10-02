@@ -145,7 +145,7 @@ void CollisionChecker::onSceneParentChange(QSFML::Scene* oldParent, QSFML::Scene
 {
 	m_tree.setStatsManager(newParent);
 }
-void CollisionChecker::inSceneAdded()
+void CollisionChecker::onAwake()
 {
 	m_tree.insert(m_performanceObjs);
 }

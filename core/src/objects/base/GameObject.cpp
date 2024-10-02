@@ -127,7 +127,7 @@ void GameObject::deleteObject(GameObjectPtr obj)
 }
 
 
-void GameObject::inSceneAdded()
+void GameObject::onAwake()
 {
     
 }
@@ -1157,7 +1157,7 @@ void GameObject::updateObjectChanges()
     }
 }
 
-void GameObject::sfEvent(const std::vector<sf::Event>& events)
+void GameObject::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>& events)
 {
     if (!m_enabled || !m_updateControlls.enableEventLoop || !m_componentsManagerData.thisNeedsEventUpdate) return;
     //QSFMLP_OBJECT_BLOCK("GameObject::sfEvent: count="+std::to_string(events.size())+" " + getName(), QSFML_COLOR_STAGE_1);
@@ -1169,12 +1169,10 @@ void GameObject::sfEvent(const std::vector<sf::Event>& events)
         if (!component->isEnabled())
             continue;
 
-        for (const auto& event : events)
-        {
-			QSFMLP_COMPONENT_BLOCK("Component event", QSFML_COLOR_STAGE_1);
-            QSFMLP_OBJECT_TEXT("Name", component->getName());
-            component->sfEvent(event);
-        }
+        QSFMLP_COMPONENT_BLOCK("Component event", QSFML_COLOR_STAGE_1);
+        QSFMLP_OBJECT_TEXT("Name", component->getName());
+        component->sfEvent_internal(events);
+
 
     }
     QSFMLP_OBJECT_END_BLOCK;

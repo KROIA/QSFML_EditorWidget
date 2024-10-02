@@ -56,7 +56,6 @@ namespace QSFML
         class Ray;
         class Singelton;
         class Updatable;
-        class VectorOperations;
         class ObjectQuadTree;
         class Timer;
         struct Collisioninfo;

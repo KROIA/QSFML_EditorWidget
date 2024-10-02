@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "QSFML_EditorWidget_base.h"
+#include "SFML/Graphics.hpp"
 
 
 namespace QSFML
@@ -48,6 +49,9 @@ namespace VectorMath
 	QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t);
 	QSFML_EDITOR_WIDGET_EXPORT extern Vector2d lerp(const Vector2d& start, const Vector2d& end, double t);
 
+
+    QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f getScale(const sf::Transform &transform);
+    QSFML_EDITOR_WIDGET_EXPORT extern float getRotation(const sf::Transform &transform);
 
 }
 

@@ -1,4 +1,5 @@
 #include "objects/base/GameObject.h"
+#include "utilities/VectorOperations.h"
 
 namespace QSFML
 {
@@ -69,7 +70,7 @@ namespace QSFML
         {
             sf::Transform globalTransform = getGlobalTransform();
             // Get the rotation from the global transform
-            return std::atan2(globalTransform.getMatrix()[1], globalTransform.getMatrix()[0]) * 180 / 3.14159265;
+            return VectorMath::getRotation(globalTransform);
         }
         const sf::Vector2f& GameObject::getScale() const
         {
@@ -84,10 +85,7 @@ namespace QSFML
         {
             sf::Transform globalTransform = getGlobalTransform();
 			// Get the scale from the global transform
-            return sf::Vector2f(
-                std::sqrt(globalTransform.getMatrix()[0] * globalTransform.getMatrix()[0] + globalTransform.getMatrix()[1] * globalTransform.getMatrix()[1]),
-                std::sqrt(globalTransform.getMatrix()[4] * globalTransform.getMatrix()[4] + globalTransform.getMatrix()[5] * globalTransform.getMatrix()[5]));
-
+            return VectorMath::getScale(globalTransform);
         }
         const sf::Vector2f& GameObject::getOrigin() const
         {
@@ -182,8 +180,8 @@ namespace QSFML
 
         void GameObject::markTransformDirty()
         {
-            //if (m_componentsManagerData.transform)
-            //	m_componentsManagerData.transform->markDirty();
+            if (m_componentsManagerData.transform)
+            	m_componentsManagerData.transform->markDirty();
             for (auto& obj : m_childObjectManagerData.objs)
                 obj->markTransformDirty();
         }

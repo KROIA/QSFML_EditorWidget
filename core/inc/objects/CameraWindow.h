@@ -17,7 +17,7 @@ namespace QSFML
 				void setup();
 			friend class Scene;
 			public:
-			CameraWindow(const std::string& name = "CameraWindow",
+			CameraWindow(const sf::ContextSettings &settings, const std::string& name = "CameraWindow",
 						 QWidget* parent = nullptr);
 			CameraWindow(const CameraWindow& other);
 			~CameraWindow();
@@ -41,6 +41,22 @@ namespace QSFML
 			const sf::Vector2f &getThisCameraDpiScale() const { return m_dpiScale; }
 
 			void enableFrameTimer(bool enable);
+
+			/*
+			void setPosition(float x, float y) override;
+			void setPosition(const sf::Vector2f& position) override;
+			void setRotation(float angle) override;
+			void setScale(float factorX, float factorY) override;
+			void setScale(const sf::Vector2f& factors) override;
+			void setOrigin(float x, float y) override;
+			void setOrigin(const sf::Vector2f& origin) override;
+			void move(float offsetX, float offsetY) override;
+			void move(const sf::Vector2f& offset) override;
+			void rotate(float angle) override;
+			void scale(float factorX, float factorY) override;
+			void scale(const sf::Vector2f& factor) override;
+			*/
+
 			private slots:
 			void onFrame();
 
@@ -48,7 +64,13 @@ namespace QSFML
 			const std::vector<sf::Event>& getThisCameraEvents() const { return m_events; }
 			
 			
+			
+
+
 			protected:
+
+			void update() override;
+			//void updateView();
 			QPaintEngine* paintEngine() const override;
 			void showEvent(QShowEvent*) override;
 			void closeEvent(QCloseEvent*) override;
@@ -60,13 +82,16 @@ namespace QSFML
 			private:
 
 
+
 			sf::RenderWindow* m_window = nullptr;
+			sf::ContextSettings m_settings;
 			//sf::View m_view;
 			sf::Vector2f m_dpiScale;
 			sf::Vector2u m_oldViewSize;
 			QTimer m_frameTimer;
 			bool m_enableFrameTimer = true;
 			std::vector<sf::Event> m_events;
+			sf::Transform m_lastTransform;
 
 			//Scene* m_scene = nullptr;
 		};

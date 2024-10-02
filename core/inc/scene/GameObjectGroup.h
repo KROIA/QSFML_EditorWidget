@@ -64,7 +64,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectGroup
         private:
 
         void updateNewElements();
-        void sfEvent(const std::vector<sf::Event> &events);
+        void sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&events);
         void update();
         void draw(sf::RenderWindow &window);
 

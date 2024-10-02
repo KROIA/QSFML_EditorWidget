@@ -143,11 +143,11 @@ namespace QSFML
 
     bool GameObjectGroup::objectExists(GameObjectPtr obj)
     {
-        return objectExists<GameObject>(obj, m_container);
+        return objectExists<Objects::GameObject>(obj, m_container);
     }
     size_t GameObjectGroup::getObjectIndex(GameObjectPtr obj)
     {
-        return getObjectIndex<GameObject>(obj, m_container);
+        return getObjectIndex<Objects::GameObject>(obj, m_container);
     }
     void GameObjectGroup::deleteLater(Objects::GameObjectPtr obj)
     {
@@ -172,7 +172,7 @@ namespace QSFML
                 m_container[i]->updateObjectChanges();
         }
     }
-    void GameObjectGroup::sfEvent(const std::vector<sf::Event>& events)
+    void GameObjectGroup::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>& events)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {

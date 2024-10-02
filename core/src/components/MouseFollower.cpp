@@ -1,5 +1,6 @@
 #include "components/MouseFollower.h"
 #include "objects/base/GameObject.h"
+#include "objects/CameraWindow.h"
 
 namespace QSFML
 {
@@ -19,20 +20,25 @@ MouseFollower::MouseFollower(const MouseFollower &other)
 
 }
 
-void MouseFollower::sfEvent(const sf::Event &e)
+void MouseFollower::sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>>& events)
 {
-     switch(e.type)
-     {
-         case sf::Event::MouseMoved:
-         {
-             sf::Vector2f worldPos = getParent()->getMouseWorldPosition();
-             sf::Vector2i pixelPos = getParent()->getMousePosition();
-
-             emit mousePosChanged(worldPos,pixelPos);
-         }
-         default:
-             break;
-     }
+    Objects::CameraWindow* cam = events.first;
+    for (auto& event : events.second)
+    {
+        switch (event.type)
+        {
+            case sf::Event::MouseMoved:
+            {
+                sf::Vector2f worldPos = cam->getThisCameraMouseWorldPosition();
+                sf::Vector2i pixelPos = cam->getThisCameraMousePosition();
+    
+                emit mousePosChanged(worldPos, pixelPos);
+                return;
+            }
+            default:
+                break;
+        }
+    }
 }
 }
 }

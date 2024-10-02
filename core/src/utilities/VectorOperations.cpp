@@ -1,6 +1,6 @@
 #include "utilities/VectorOperations.h"
 #include "utilities/RandomEngine.h"
-
+#include <SFML/Graphics.hpp>
 
 #define M_2PI (2 * M_PI)
 
@@ -312,6 +312,27 @@ namespace VectorMath
 	Vector2d lerp(const Vector2d& start, const Vector2d& end, double t)
 	{
 		return start + (end - start) * t;
+	}
+
+    sf::Vector2f getScale(const sf::Transform& transform)
+    {
+        // Extract the matrix values from sf::Transform
+        const float* matrix = transform.getMatrix();
+
+        // The scaling components are derived from the matrix values
+        float scaleX = std::sqrt(matrix[0] * matrix[0] + matrix[1] * matrix[1]);
+        float scaleY = std::sqrt(matrix[4] * matrix[4] + matrix[5] * matrix[5]);
+
+        return sf::Vector2f(scaleX, scaleY);
+    }
+
+    float getRotation(const sf::Transform& transform)
+	{
+		// Extract the matrix values from sf::Transform
+		const float* matrix = transform.getMatrix();
+
+		// The rotation components are derived from the matrix values
+		return std::atan2(matrix[1], matrix[0]) * 180 / M_PI;
 	}
 }
 }

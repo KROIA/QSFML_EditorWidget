@@ -18,6 +18,6 @@ public:
 
 private:
 	void setup(const std::vector<sf::Vector2f>& vertecies);
-	void inSceneAdded() override;
+	void onAwake() override;
 	QSFML::Components::Collider* m_collider;
 };

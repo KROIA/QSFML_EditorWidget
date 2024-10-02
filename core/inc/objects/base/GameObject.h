@@ -713,11 +713,11 @@ protected:
             return scene->findFirstObject<T>();
         }
         template<typename T>
-        std::vector<T*> findAllFirstObjectGlobal() const
+        std::vector<T*> findAllObjectGlobal() const
         {
             Scene* scene = getSceneParent();
             if (!scene) return {};
-            return getSceneParent()->findAllFirstObject<T>();
+            return getSceneParent()->findAllObject<T>();
         }
         template<typename T>
         T* findFirstObjectGlobalRecursive() const
@@ -727,12 +727,43 @@ protected:
             return scene->findFirstObjectRecursive<T>();
         }
         template<typename T>
-        std::vector<T*> findAllFirstObjectGlobalRecursive() const
+        std::vector<T*> findAllObjectsGlobalRecursive() const
         {
             Scene* scene = getSceneParent();
             if (!scene) return {};
-            return getSceneParent()->findAllFirstObjectRecursive<T>();
+            return getSceneParent()->findAllObjectRecursive<T>();
         }
+
+        template<typename T>
+        T* findFirstObjectGlobal(const std::string &objName) const
+        {
+            Scene* scene = getSceneParent();
+            if (!scene) return nullptr;
+            return scene->findFirstObject<T>(objName);
+        }
+        template<typename T>
+        std::vector<T*> findAllObjectGlobal(const std::string& objName) const
+        {
+            Scene* scene = getSceneParent();
+            if (!scene) return {};
+            return getSceneParent()->findAllObject<T>(objName);
+        }
+        template<typename T>
+        T* findFirstObjectGlobalRecursive(const std::string& objName) const
+        {
+            Scene* scene = getSceneParent();
+            if (!scene) return nullptr;
+            return scene->findFirstObjectRecursive<T>(objName);
+        }
+        template<typename T>
+        std::vector<T*> findAllObjectsGlobalRecursive(const std::string& objName) const
+        {
+            Scene* scene = getSceneParent();
+            if (!scene) return {};
+            return getSceneParent()->findAllObjectRecursive<T>(objName);
+        }
+
+
 
         sf::Image captureScreen();
 
@@ -756,13 +787,18 @@ protected:
         // ---------
 
         /// Transform interface
-        void setPosition(float x, float y);
-        void setPosition(const sf::Vector2f& position);
-        void setRotation(float angle);
-        void setScale(float factorX, float factorY);
-        void setScale(const sf::Vector2f& factors);
-        void setOrigin(float x, float y);
-        void setOrigin(const sf::Vector2f& origin);
+        virtual void setPosition(float x, float y);
+        virtual void setPosition(const sf::Vector2f& position);
+        virtual void setRotation(float angle);
+        virtual void setScale(float factorX, float factorY);
+        virtual void setScale(const sf::Vector2f& factors);
+        virtual void setOrigin(float x, float y);
+        virtual void setOrigin(const sf::Vector2f& origin);
+        virtual void move(float offsetX, float offsetY);
+        virtual void move(const sf::Vector2f& offset);
+        virtual void rotate(float angle);
+        virtual void scale(float factorX, float factorY);
+        virtual void scale(const sf::Vector2f& factor);
         const sf::Vector2f& getPosition() const;
         sf::Vector2f getGlobalPosition() const; // Gets the position in absolute world coords
         float getRotation() const;
@@ -770,11 +806,7 @@ protected:
         const sf::Vector2f& getScale() const;
         sf::Vector2f getGlobalScale() const;
         const sf::Vector2f& getOrigin() const;
-        void move(float offsetX, float offsetY);
-        void move(const sf::Vector2f& offset);
-        void rotate(float angle);
-        void scale(float factorX, float factorY);
-        void scale(const sf::Vector2f& factor);
+        
         const sf::Transform& getTransform() const;
         const sf::Transform& getInverseTransform() const;
         sf::Transform getGlobalTransform() const;
@@ -805,7 +837,7 @@ protected:
          */
         void update() override;
 
-        virtual void inSceneAdded();
+        virtual void onAwake();
 
      
 
@@ -903,7 +935,7 @@ protected:
         void setSceneParent(Scene *parent);
         
         
-        void sfEvent(const std::vector<sf::Event> &events);
+        void sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>> &events);
         void update_internal();
         void inSceneAdded_internal();
         //void draw(sf::RenderWindow &window) const;

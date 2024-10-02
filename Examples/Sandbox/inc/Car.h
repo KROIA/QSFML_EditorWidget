@@ -8,7 +8,9 @@ class Car : public QObject, public QSFML::Objects::GameObject
 {
 	Q_OBJECT
 public:
-	Car(const std::string& name = "Car",
+	Car(const sf::ContextSettings& settings,
+		QWidget* qparent,
+		const std::string& name = "Car",
 		Objects::GameObjectPtr parent = nullptr);
 
 	void update() override;
@@ -21,7 +23,7 @@ private slots:
 	void onKeyPressRight();
 private:
 
-
+	void onAwake() override;
 
 	class Painter : public QSFML::Components::Drawable
 	{
@@ -52,5 +54,8 @@ private:
 	float m_acceleration;
 	float m_accelerationSpeed;
 	float m_stearingSpeed;
+
+	Objects::CameraWindow *m_camera = nullptr;
+	//Objects::CameraController *m_cameraController = nullptr;
 
 };

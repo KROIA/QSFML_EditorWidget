@@ -154,7 +154,7 @@ private:
 		QSFML::SceneSettings settings;
 		settings.timing.frameTime = 0;
 		QSFML::Scene Scene(nullptr, settings);
-		Scene.show();
+		//Scene.show();
 		Scene.start();
 		QSFML::Scene::setProfilerOutputFileName("drawTest.prof");
 		m_stopTimer.start(1000);
@@ -195,7 +195,7 @@ private:
 		QSFML::SceneSettings settings;
 		settings.timing.frameTime = 0;
 		QSFML::Scene Scene(nullptr, settings);
-		Scene.show();
+		//Scene.show();
 		Scene.start();
 		QSFML::Scene::setProfilerOutputFileName("collisionTest.prof");
 		m_tree.setStatsManager(&Scene);
