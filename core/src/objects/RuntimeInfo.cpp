@@ -54,7 +54,7 @@ namespace QSFML
 
 	
 			m_text->setText(statsStr);
-			Utilities::AABB viewBox = Scene->getCameraViewRect();
+			Utilities::AABB viewBox = Scene->getViewRect();
 			sf::View view = Scene->getCameraView();
 			sf::Vector2f pos = -view.getSize()*0.5f;
 			float width = viewBox.getSize().x;

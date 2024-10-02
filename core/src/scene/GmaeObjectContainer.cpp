@@ -1,11 +1,13 @@
 #include "Scene/GameObjectContainer.h"
 #include "Scene/Scene.h"
 #include "utilities/Stats.h"
+#include "utilities/LifetimeChecker.h"
 #include "Scene/GameObjectGroup.h"
 #include "Scene/SceneThreadWorker.h"
 
 #include "objects/base/GameObject.h"
 #include "objects/CameraController.h"
+#include "objects/CameraWindow.h"
 
 #include "components/base/Drawable.h"
 
@@ -169,6 +171,13 @@ void GameObjectContainer::applyObjectChanges()
 
     for (auto& obj : objectsToRemove)
     {
+        // Check if it is a camera
+        Objects::CameraWindow* cam = dynamic_cast<Objects::CameraWindow*>(obj);
+        if (cam && m_parent)
+        {
+			m_parent->m_cameras.removeCamera(cam);
+        }
+
         m_allObjects->removeObject(obj);
         if (m_threadWorker)
         {
@@ -183,12 +192,24 @@ void GameObjectContainer::applyObjectChanges()
 
     for (auto& obj : objectsToDelete)
     {
-		delete obj;
+        Objects::CameraWindow* cam = dynamic_cast<Objects::CameraWindow*>(obj);
+        if (cam && m_parent)
+        {
+			m_parent->m_cameras.removeCamera(cam);
+        }
+		Internal::LifetimeChecker::deleteSecured(obj);
 	}
    
     m_allObjects->reserveObjectsCount(m_allObjects->getObjectsCount() + objectsToAdd.size());
     for (auto& obj : objectsToAdd)
     {
+        // Check if it is a camera
+		Objects::CameraWindow* cam = dynamic_cast<Objects::CameraWindow*>(obj);
+        if (cam && m_parent)
+        {
+			m_parent->m_cameras.addCamera(cam);
+        }
+
         if (obj->getSceneParent() != m_parent && obj->getSceneParent())
             obj->getSceneParent()->removeObject(obj);
         m_allObjects->addObject(obj);

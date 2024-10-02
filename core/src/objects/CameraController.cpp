@@ -1,5 +1,6 @@
 #include "objects/CameraController.h"
 #include "Scene/Scene.h"
+#include "objects/CameraWindow.h"
 #include <QDebug>
 
 using namespace QSFML::Objects;
@@ -175,12 +176,60 @@ namespace QSFML
         }
         void CameraController::setCameraView(const sf::View& view)
         {
-            if (!getSceneParent()) return;
-            getSceneParent()->setCameraView(view);
+            Objects::CameraWindow* cam = getCamera();
+            if (cam)
+				cam->setThisCameraView(view);
         }
         void CameraController::update()
         {
 
+        }
+        Objects::CameraWindow* CameraController::getCamera() const
+        {
+            if (m_customCam)
+                return m_customCam;
+            Scene* sc = getSceneParent();
+            if (sc)
+                return sc->getDefaultCamera();
+            return nullptr;
+        }
+
+
+        sf::Vector2i CameraController::getThisCameraMousePosition() const
+        {
+            Objects::CameraWindow* cam = getCamera();
+            if (cam)
+                return cam->getThisCameraMousePosition();
+            return sf::Vector2i(0, 0);
+        }
+        sf::Vector2f CameraController::getInThisCameraWorldSpace(const sf::Vector2i& pixelSpace) const
+        {
+            Objects::CameraWindow* cam = getCamera();
+            if (cam)
+                return cam->getInThisCameraWorldSpace(pixelSpace);
+            return sf::Vector2f(0, 0);
+        }
+        sf::Vector2u CameraController::getThisCameraOldSize() const
+        {
+            Objects::CameraWindow* cam = getCamera();
+            if (cam)
+                return cam->getThisCameraOldSize();
+            return sf::Vector2u(0, 0);
+        }
+        sf::Vector2u CameraController::getThisCameraSize() const
+        {
+            Objects::CameraWindow* cam = getCamera();
+            if (cam)
+                return cam->getThisCameraSize();
+            return sf::Vector2u(0, 0);
+        }
+        sf::View CameraController::getThisCameraView() const
+        {
+			Objects::CameraWindow* cam = getCamera();
+			if (cam)
+				return cam->getThisCameraView();
+			static sf::View dummy;
+			return dummy;
         }
 
         void CameraController::SfEventComponent::setController(CameraController* controller)
@@ -198,7 +247,7 @@ namespace QSFML
             case sf::Event::MouseWheelScrolled:
             {
                 float zoomAmount = 1.1;
-                sf::Vector2i mousePos = m_controller->getMousePosition();
+                sf::Vector2i mousePos = m_controller->getThisCameraMousePosition();
                 if (e.mouseWheelScroll.delta > 0)
                     m_controller->zoom(1 / zoomAmount, mousePos);
                 else if (e.mouseWheelScroll.delta < 0)
@@ -209,7 +258,7 @@ namespace QSFML
             {
                 if (e.mouseButton.button == m_controller->m_dragButton)
                 {
-                    startPos = sf::Vector2f(m_controller->getMousePosition());
+                    startPos = sf::Vector2f(m_controller->getThisCameraMousePosition());
                     mousePressed = true;
                 }
                 break;
@@ -226,8 +275,8 @@ namespace QSFML
                 if (!mousePressed)
                     break;
                 
-                sf::Vector2f newPos = sf::Vector2f(m_controller->getMousePosition());
-                sf::Vector2f deltaPos = m_controller->getInWorldSpace(sf::Vector2i(startPos)) - m_controller->getInWorldSpace(sf::Vector2i(newPos));
+                sf::Vector2f newPos = sf::Vector2f(m_controller->getThisCameraMousePosition());
+                sf::Vector2f deltaPos = m_controller->getInThisCameraWorldSpace(sf::Vector2i(startPos)) - m_controller->getInWorldSpace(sf::Vector2i(newPos));
 
                 m_controller->movePosition(deltaPos);
                 startPos = newPos;
@@ -235,10 +284,10 @@ namespace QSFML
             }
             case sf::Event::Resized:
             {
-                sf::View view = m_controller->getCameraView();
+                sf::View view = m_controller->getThisCameraView();
 
-                sf::Vector2u oldWindowSize = m_controller->getOldSceneSize();
-                sf::Vector2u newWindowSize = m_controller->getSceneSize();
+                sf::Vector2u oldWindowSize = m_controller->getThisCameraOldSize();
+                sf::Vector2u newWindowSize = m_controller->getThisCameraSize();
                 sf::FloatRect viewRect = sf::FloatRect(view.getCenter() - view.getSize() / 2.f, view.getSize());
 
                 viewRect.width = viewRect.width / oldWindowSize.x * newWindowSize.x;
@@ -254,11 +303,16 @@ namespace QSFML
 
         }
 
+        void CameraController::onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent)
+        {
+            GameObject::onParentChange(oldParent, newParent);
+            m_customCam = dynamic_cast<Objects::CameraWindow*>(newParent);
+        }
         void CameraController::positionCheck(sf::View& view)
         {
             sf::FloatRect viewRect = sf::FloatRect(view.getCenter() - view.getSize() / 2.f, view.getSize());
             sf::Vector2f cameraPos = view.getCenter();
-            sf::Vector2u windowSize = getSceneSize();
+            sf::Vector2u windowSize = getThisCameraSize();
             float aspectRatio = (float)windowSize.x / (float)windowSize.y;
 
             if (viewRect.width / viewRect.height > aspectRatio)

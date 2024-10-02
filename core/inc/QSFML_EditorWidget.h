@@ -39,6 +39,7 @@
 #include "objects/VisibleCamera.h"
 #include "objects/LineChart.h"
 #include "objects/RuntimeInfo.h"
+#include "objects/CameraWindow.h"
 
 
 #include "utilities/AABB.h"

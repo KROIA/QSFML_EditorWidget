@@ -51,9 +51,16 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
 
         void update() override;
 
-
+        Objects::CameraWindow* getCamera() const;
 
     private:
+        sf::Vector2i getThisCameraMousePosition() const;
+        sf::Vector2f getInThisCameraWorldSpace(const sf::Vector2i& pixelSpace) const;
+        sf::Vector2u getThisCameraOldSize() const;
+        sf::Vector2u getThisCameraSize() const;
+		sf::View getThisCameraView() const;
+
+        void onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent) override;
         //void internalOnSceneParentChange(Scene *oldParent, Scene *newParent) override;
         //void internalOnParentChange(GameObjectPtr oldParent, GameObjectPtr newParent) override;
         void positionCheck(sf::View &view);
@@ -65,6 +72,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
 
         SfEventComponent* m_eventHandleComponent;
         sf::Mouse::Button m_dragButton;
+        Objects::CameraWindow* m_customCam = nullptr;
 
     // Defining component
     class SfEventComponent : public Components::SfEventHandle

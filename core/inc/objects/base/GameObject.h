@@ -628,8 +628,8 @@ protected:
         const sf::View getCameraView() const;
         const sf::View &getDefaultCameraView() const;
         Utilities::AABB getCameraViewRect() const;
-        sf::Vector2u getSceneSize() const;
-        sf::Vector2u getOldSceneSize() const;
+        sf::Vector2u getCameraSize() const;
+        sf::Vector2u getOldCameraSize() const;
 
         const sf::Font& getDefaultTextFont() const;
 
@@ -733,6 +733,8 @@ protected:
             if (!scene) return {};
             return getSceneParent()->findAllFirstObjectRecursive<T>();
         }
+
+        sf::Image captureScreen();
 
         // ---------
 

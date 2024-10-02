@@ -961,6 +961,12 @@ Scene* GameObject::getSceneParent() const
     return m_sceneParent;
 }
 
+sf::Image GameObject::captureScreen()
+{
+	if (m_sceneParent)
+		return m_sceneParent->captureScreen();
+	return sf::Image();
+}
 
 
 

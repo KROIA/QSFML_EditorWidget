@@ -5,21 +5,28 @@ Car::Car(const std::string& name, Objects::GameObjectPtr parent)
 	: QObject()
 	, GameObject(name)
 	, m_painter(new Painter())
+	, m_image(new Components::Image("CarImage", "Resources/Car.png"))
 	, m_keyEventUp(new Components::KeyPressEvent("Forward", sf::Keyboard::Key::W))
 	, m_keyEventDown(new Components::KeyPressEvent("Backward", sf::Keyboard::Key::S))
 	, m_keyEventLeft(new Components::KeyPressEvent("Left", sf::Keyboard::Key::A))
 	, m_keyEventRight(new Components::KeyPressEvent("Right", sf::Keyboard::Key::D))
 {
+	addComponent(m_image);
 	addComponent(m_painter);
 	addComponent(m_keyEventUp);
 	addComponent(m_keyEventDown);
 	addComponent(m_keyEventLeft);
 	addComponent(m_keyEventRight);
+	
+
+	m_image->setScale(0.5, 0.5);
 
 	connect(m_keyEventUp, &Components::KeyPressEvent::down, this, &Car::onKeyPressUp);
 	connect(m_keyEventDown, &Components::KeyPressEvent::down, this, &Car::onKeyPressDown);
 	connect(m_keyEventLeft, &Components::KeyPressEvent::down, this, &Car::onKeyPressLeft);
 	connect(m_keyEventRight, &Components::KeyPressEvent::down, this, &Car::onKeyPressRight);
+
+	
 
 	m_stearingAngle = 0;
 	m_maxStearingAngle = 1000;
@@ -31,7 +38,7 @@ Car::Car(const std::string& name, Objects::GameObjectPtr parent)
 	m_stearingSpeed = 500;
 	//m_acceleration = sf::Vector2f(0, 0);
 
-	setRenderLayer(RenderLayer::layer_3);
+	setRenderLayer(RenderLayer::layer_0);
 }
 
 void Car::update()
@@ -61,7 +68,7 @@ void Car::update()
 	sf::Vector2f deltaPos = QSFML::VectorMath::getRotated(sf::Vector2f(0, m_acceleration * deltaT), getRotation()*M_PI/180.f);
 	GameObject::move(deltaPos);
 	sf::Vector2f pos = getPosition();
-	logInfo("Position: " + std::to_string(pos.x) + " " + std::to_string(pos.y));
+	//logInfo("Position: " + std::to_string(pos.x) + " " + std::to_string(pos.y));
 
 	if (pos.x > 1000)
 	{
@@ -99,6 +106,16 @@ void Car::update()
 		camera->setPosition(getPosition());
 		camera->setRotation(getRotation());
 	}
+
+	m_images.push_back(new sf::Image(captureScreen()));
+	if (m_images.size() > 1)
+	{
+		delete m_images[0];
+		m_images.erase(m_images.begin());
+	}
+	m_image->loadFromImage(*m_images.back());
+	m_image->setPosition(-m_image->getLocalBounds().width * m_image->getScale().x / 2.f, 
+						 -m_image->getLocalBounds().height * m_image->getScale().y / 2.f);
 }
 
 void Car::onKeyPressUp()

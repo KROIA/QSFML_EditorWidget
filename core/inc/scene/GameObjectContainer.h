@@ -148,11 +148,12 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
 
         const static size_t npos = -1;
 
+        void draw(sf::RenderWindow& window);
     protected:
         void updateNewElements();
         void sfEvent(const std::vector<sf::Event> &events);
         void update();
-        void draw(sf::RenderWindow &window);
+        
 
         void initializeThreads(size_t threadCount);
         void deinitializeThreads();

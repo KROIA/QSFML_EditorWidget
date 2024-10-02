@@ -46,17 +46,17 @@ namespace QSFML
         Utilities::AABB GameObject::getCameraViewRect() const
         {
             if (!m_sceneParent) return Utilities::AABB();
-            return m_sceneParent->getCameraViewRect();
+            return m_sceneParent->getViewRect();
         }
-        sf::Vector2u GameObject::getSceneSize() const
+        sf::Vector2u GameObject::getCameraSize() const
         {
             if (!m_sceneParent) return sf::Vector2u(0, 0);
-            return m_sceneParent->getSceneSize();
+            return m_sceneParent->getCameraSize();
         }
-        sf::Vector2u GameObject::getOldSceneSize() const
+        sf::Vector2u GameObject::getOldCameraSize() const
         {
             if (!m_sceneParent) return sf::Vector2u(0, 0);
-            return m_sceneParent->getOldSceneSize();
+            return m_sceneParent->getOldCameraSize();
         }
 
         const sf::Font& GameObject::getDefaultTextFont() const

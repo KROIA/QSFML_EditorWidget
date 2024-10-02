@@ -17,11 +17,11 @@ namespace QSFML
 {
 
 class QSFML_EDITOR_WIDGET_EXPORT Scene :
-        public QWidget,
+        public QObject,
         public Utilities::StatsManager,
         public GameObjectContainer
     {
-        Q_OBJECT
+    Q_OBJECT
         friend GameObjectContainer;
     public:
 
@@ -51,10 +51,12 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         void setCameraView(const sf::View &view);
         const sf::View &getCameraView() const;
         const sf::View &getDefaultCameraView() const;
-        Utilities::AABB getCameraViewRect() const;
-        sf::Vector2u getSceneSize() const;
-        sf::Vector2u getOldSceneSize() const;
+        Utilities::AABB getViewRect() const;
+        sf::Vector2u getCameraSize() const;
+        sf::Vector2u getOldCameraSize() const;
         sf::Vector2f getViewCenterPosition() const;
+		const std::vector<sf::Event>& getEvents() const;
+		const std::vector<sf::Event>& getEvents(Objects::CameraWindow *camera) const;
 
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;
@@ -62,8 +64,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         sf::Vector2i getInScreenSpace(const sf::Vector2f &worldSpace);
 
         
-
-        void sfEvent(const std::vector<sf::Event> &events);
+		sf::Image captureScreen();
+        //void sfEvent(const std::vector<sf::Event> &events);
 
         static const sf::Font& getDefaultTextFont();
 
@@ -85,25 +87,30 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         Log::LogObject& getComponentLogger() { return m_logger.getComponentLogger(); }
         Log::LogObject& getPhysicsLogger() { return m_logger.getPhysicsLogger(); }
 
+        Objects::CameraWindow* createSecondCamera(QWidget* parent);
+        Objects::CameraWindow* getDefaultCamera() { return m_cameras.defaultCamera; }
+    
+        void paint(sf::RenderWindow& target);
     protected:
-        QPaintEngine* paintEngine() const override;
-        void showEvent(QShowEvent*) override;
-        void closeEvent(QCloseEvent*) override;
-        void paintEvent(QPaintEvent*) override;
-
-        void resizeEvent(QResizeEvent *event) override;
+        //QPaintEngine* paintEngine() const override;
+        //void showEvent(QShowEvent*) override;
+        //void closeEvent(QCloseEvent*) override;
+        //void paintEvent(QPaintEvent*) override;
+        //
+        //void resizeEvent(QResizeEvent *event) override;
 
 
 
         virtual void OnInit();
         virtual void OnUpdate();
 
-    private slots:
+    //private slots:
         
         void update();
         void checkEvents();
         void updateObjects();
         void paint();
+		
 
 
     private:
@@ -119,13 +126,55 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
 
 
         SceneSettings m_settings;
-        sf::RenderWindow *m_window;
-        sf::Vector2u m_oldSceneSize;
-        sf::View m_view;
-        sf::Vector2f m_dpiScale;
+        //sf::RenderWindow *m_window;
+        //sf::Vector2u m_oldSceneSize;
+        //sf::View m_view;
+        //sf::Vector2f m_dpiScale;
 
         Internal::SceneLogger m_logger;
 
+
+		 
+        struct Cameras
+		{
+            Objects::CameraWindow* defaultCamera = nullptr;
+			std::vector<Objects::CameraWindow*> cameras;
+			std::unordered_map<Objects::CameraWindow*, Objects::CameraWindow*> cameraMap;
+		
+            bool hasCamera(Objects::CameraWindow* camera) const
+            {
+				return cameraMap.find(camera) != cameraMap.end();
+            }
+            void addCamera(Objects::CameraWindow* camera)
+            {
+                if (!hasCamera(camera))
+                {
+                    cameras.push_back(camera);
+                    cameraMap[camera] = camera;
+                }
+            }
+			void removeCamera(Objects::CameraWindow* camera)
+			{
+				if (hasCamera(camera))
+				{
+					cameras.erase(std::remove(cameras.begin(), cameras.end(), camera), cameras.end());
+					cameraMap.erase(camera);
+				}
+				if (camera == defaultCamera)
+				{
+					defaultCamera = nullptr;
+				}
+			}
+			void setDefaultCamera(Objects::CameraWindow* camera)
+			{
+                defaultCamera = camera;
+                if (!hasCamera(camera))
+                {
+					addCamera(camera);
+                }
+			}
+        };
+        Cameras m_cameras;
 
         static std::string m_profilerOutputFile;
         static std::vector<Scene*> s_instances;

@@ -3,6 +3,7 @@
 namespace QSFML
 {
     class Scene;
+    
     class GameObjectContainer;
     class GameObjectGroup;
     class GameObjectLayerGroup;
@@ -15,6 +16,7 @@ namespace QSFML
     namespace Objects
     {
         class GameObject;
+        class CameraWindow;
         class BackgroundGrid;
         class CameraController;
         class DefaultEditor;

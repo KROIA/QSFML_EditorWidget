@@ -35,12 +35,14 @@ private:
 	};
 
 	Painter* m_painter;
+	Components::Image* m_image;
 	Components::KeyPressEvent* m_keyEventUp;
 	Components::KeyPressEvent* m_keyEventDown;
 	Components::KeyPressEvent* m_keyEventLeft;
 	Components::KeyPressEvent* m_keyEventRight;
 
 	sf::Vector2f m_velocity;
+	std::vector<sf::Image*> m_images;
 	//sf::Vector2f m_acceleration;
 
 	float m_stearingAngle;

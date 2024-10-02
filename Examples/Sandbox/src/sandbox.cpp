@@ -191,12 +191,33 @@ SandBox::SandBox(QWidget *parent)
         //settings.updateControlls.enableEventLoop = false;
         //settings.updateControlls.enableUpdateLoop = false;
         m_Scene_1 = new Scene(ui->SceneWidget_1,settings);
+        auto* cam = m_Scene_1->createSecondCamera(ui->secondCamera_frame);
+        //DefaultEditor *defaultEditor = new DefaultEditor();
 
-        DefaultEditor *defaultEditor = new DefaultEditor();
+		Objects::CameraController* camController = new Objects::CameraController();
+		cam->addChild(camController);
+
+		Objects::GameObject* zeroPoint = new Objects::GameObject();
+		Components::PointPainter* pointPainter = new Components::PointPainter();
+		pointPainter->setColor(sf::Color::Red);
+		pointPainter->setRadius(5);
+		zeroPoint->addComponent(pointPainter);
+		pointPainter->addPoint(sf::Vector2f(0, 0));
+		m_Scene_1->addObject(zeroPoint);
+
+
+        
+
+
+
+
+
+
+
 
         //VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 
-        m_Scene_1->addObject(defaultEditor);
+        //m_Scene_1->addObject(defaultEditor);
         //m_Scene_1->addObject(m_vecDisplay);
         //m_Scene->addObject(grid);
         //qDebug() << defaultEditor->toString().c_str();
@@ -318,7 +339,8 @@ SandBox::SandBox(QWidget *parent)
     std::cout << "PosFactor: " << factor << " pos: " << pos.x << " " << pos.y << " distance: "<< distance<<"\n";
     
     
-
+    m_Scene_1->start();
+    m_Scene_2->start();
     
 }
 

@@ -8,6 +8,8 @@
 #include <thread>
 #include <iostream>
 
+#include "objects/CameraWindow.h"
+
 #include <QDebug>
 
 namespace QSFML {
@@ -26,7 +28,7 @@ namespace QSFML {
     std::string Scene::m_profilerOutputFile = "profiler_output.prof";
 
     Scene::Scene(QWidget* parent, const SceneSettings &settings) 
-        : QWidget(parent)
+        : QObject(parent)
         , StatsManager::StatsManager()
         , GameObjectContainer(this, m_settings)
     {
@@ -38,9 +40,9 @@ namespace QSFML {
             EASY_PROFILER_ENABLE;
 #endif
         }
-        m_window = nullptr;
+        //m_window = nullptr;
         // Setup layout of this widget
-        if (parentWidget())
+        /*if (parentWidget())
         {
             if (!parentWidget()->layout())
             {
@@ -57,10 +59,14 @@ namespace QSFML {
 
         // Set strong focus to enable keyboard events to be received
         setFocusPolicy(Qt::StrongFocus);
-
+        */
         //m_updateTimer.onFinished(std::bind(&Scene::update, this));
         connect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
         setSettings(settings);
+
+		m_cameras.defaultCamera = new Objects::CameraWindow("DefaultCamera", parent);
+        m_cameras.defaultCamera->enableFrameTimer(false);
+		addObject(m_cameras.defaultCamera);
 
     }
     Scene::~Scene()
@@ -70,9 +76,9 @@ namespace QSFML {
 		// Crashes sometimes when the window is closed
         //if (parentWidget())
         //    parentWidget()->layout()->removeWidget(this);
-        m_window->close();
-        delete m_window;
-        m_window = nullptr;
+        //m_window->close();
+        //delete m_window;
+        //m_window = nullptr;
 #ifdef QSFML_PROFILING
         if (s_instances.size() == 1)
         {
@@ -110,14 +116,16 @@ namespace QSFML {
     void Scene::setLayout(const SceneSettings::Layout& layout)
     {
         m_settings.layout = layout;
-        if (parentWidget())
-            parentWidget()->layout()->setContentsMargins(m_settings.layout.margin.left,
+        if (!m_cameras.defaultCamera)
+            return;
+        if (m_cameras.defaultCamera->parentWidget())
+            m_cameras.defaultCamera->parentWidget()->layout()->setContentsMargins(m_settings.layout.margin.left,
                 m_settings.layout.margin.top,
                 m_settings.layout.margin.right,
                 m_settings.layout.margin.bottom);
         if (!m_settings.layout.autoAjustSize)
         {
-            QWidget::setFixedSize(m_settings.layout.fixedSize.x, m_settings.layout.fixedSize.y);
+            m_cameras.defaultCamera->setFixedSize(m_settings.layout.fixedSize.x, m_settings.layout.fixedSize.y);
         }
     }
     const SceneSettings::Layout &Scene::getLayout() const
@@ -179,77 +187,86 @@ namespace QSFML {
 
     void Scene::setCameraView(const sf::View& view)
     {
-        if (!m_window) return;
-        m_view = view;
-        m_window->setView(m_view);
+        if (!m_cameras.defaultCamera) return;
+        m_cameras.defaultCamera->setThisCameraView(view);
     }
     const sf::View& Scene::getCameraView() const
     {
         static sf::View dummy;
-        if (!m_window) return dummy;
-        return m_view;
+        if (!m_cameras.defaultCamera) return dummy;
+        return m_cameras.defaultCamera->getThisCameraView();
     }
     const sf::View& Scene::getDefaultCameraView() const
     {
         static sf::View dummy;
-        if (!m_window) return dummy;
-        return m_window->getDefaultView();
+        if (!m_cameras.defaultCamera) return dummy;
+        return m_cameras.defaultCamera->getThisCameraDefaultView();
     }
-    Utilities::AABB Scene::getCameraViewRect() const
+    Utilities::AABB Scene::getViewRect() const
     {
-        return Utilities::AABB(m_view.getCenter() - m_view.getSize() * 0.5f, m_view.getSize());
+        if(m_cameras.defaultCamera)
+			return m_cameras.defaultCamera->getThisCameraViewRect();
+		return Utilities::AABB();
     }
-    sf::Vector2u Scene::getSceneSize() const
+    sf::Vector2u Scene::getCameraSize() const
     {
-        return m_window->getSize();
+		if (!m_cameras.defaultCamera) return sf::Vector2u(0, 0);
+        return m_cameras.defaultCamera->getThisCameraSize();
     }
-    sf::Vector2u Scene::getOldSceneSize() const
+    sf::Vector2u Scene::getOldCameraSize() const
     {
-        return m_oldSceneSize;
+		if (!m_cameras.defaultCamera) return sf::Vector2u(0, 0);
+        return m_cameras.defaultCamera->getThisCameraOldSize();
     }
     sf::Vector2f Scene::getViewCenterPosition() const
     {
-        return m_view.getCenter();
+		if (!m_cameras.defaultCamera) return sf::Vector2f(0, 0);
+        return m_cameras.defaultCamera->getThisCameraViewCenterPosition();
 	}
+    const std::vector<sf::Event>& Scene::getEvents() const
+    {
+        if (!m_cameras.defaultCamera)
+        {
+			static std::vector<sf::Event> dummy;
+			return dummy;
+        }
+        return m_cameras.defaultCamera->getThisCameraEvents();
+    }
+    const std::vector<sf::Event>& Scene::getEvents(Objects::CameraWindow* camera) const
+    {
+		if (m_cameras.hasCamera(camera))
+			return camera->getThisCameraEvents();
+
+		static std::vector<sf::Event> dummy;
+        return dummy;
+    }
 
 
     sf::Vector2i Scene::getMousePosition() const
     {
-        if (m_window)
-        {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
-            mousePos.x /= m_dpiScale.x;
-            mousePos.y /= m_dpiScale.y;
-            return mousePos;
-        }
-        sf::Vector2i mousePos = sf::Mouse::getPosition();
-        mousePos.x /= m_dpiScale.x;
-        mousePos.y /= m_dpiScale.y;
-        return mousePos;
+        if (!m_cameras.defaultCamera) return sf::Vector2i(0, 0);
+        return m_cameras.defaultCamera->getThisCameraMousePosition();
     }
     sf::Vector2f Scene::getMouseWorldPosition() const
     {
-        if (!m_window)
-            return sf::Vector2f(0, 0);
-        sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
-        return m_window->mapPixelToCoords(mousePos);
+        if (!m_cameras.defaultCamera) return sf::Vector2f(0, 0);
+        return m_cameras.defaultCamera->getThisCameraMouseWorldPosition();
     }
     sf::Vector2f Scene::getInWorldSpace(sf::Vector2i pixelSpace)
     {
-        if (!m_window) return sf::Vector2f(0, 0);
-        pixelSpace.x *= m_dpiScale.x;
-        pixelSpace.y *= m_dpiScale.y;
-        return m_window->mapPixelToCoords(pixelSpace);
+        if (!m_cameras.defaultCamera) return sf::Vector2f(0, 0);
+        return m_cameras.defaultCamera->getInThisCameraWorldSpace(pixelSpace);
     }
     sf::Vector2i Scene::getInScreenSpace(const sf::Vector2f& worldSpace)
     {
-        sf::Vector2i pos(0, 0);
-        if (!m_window) return pos;
+        if (!m_cameras.defaultCamera) return sf::Vector2i(0, 0);
+        return m_cameras.defaultCamera->getInThisCameraScreenSpace(worldSpace);
+    }
 
-        pos = m_window->mapCoordsToPixel(worldSpace);
-        pos.x /= m_dpiScale.x;
-        pos.y /= m_dpiScale.y;
-        return pos;
+    sf::Image Scene::captureScreen()
+    {
+        if (!m_cameras.defaultCamera) return sf::Image();
+        return m_cameras.defaultCamera->captureThisCameraScreen();
     }
 
 
@@ -262,11 +279,19 @@ namespace QSFML {
     {
 
     }
-
+    Objects::CameraWindow* Scene::createSecondCamera(QWidget* parent)
+    {
+        Objects::CameraWindow* camera = new Objects::CameraWindow("CameraWindow", parent);
+		//m_cameras.push_back(camera);
+		addObject(camera);
+        return camera;
+    }
+    /*
     QPaintEngine* Scene::paintEngine() const
     {
         return nullptr;
     }
+
     void Scene::showEvent(QShowEvent*)
     {
         if (!m_window)
@@ -323,11 +348,11 @@ namespace QSFML {
             m_window->setSize(m_settings.layout.fixedSize);
             QWidget::setFixedSize(m_settings.layout.fixedSize.x, m_settings.layout.fixedSize.y);
         }
-    }
+    }*/
 
     void Scene::update()
     {
-        if (!m_window)
+        if (!m_cameras.defaultCamera)
             return;
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
 
@@ -370,11 +395,11 @@ namespace QSFML {
         std::vector<sf::Event> events;
         events.reserve(20);
         sf::Event event;
-        while (m_window->pollEvent(event))
+        while (m_cameras.defaultCamera->getRenderWindow()->pollEvent(event))
         {
             events.push_back(event);
         }
-        sfEvent(events);
+        //sfEvent(events);
         internal_event(events);
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsed = std::chrono::duration<double>(t2 - t1).count();
@@ -406,7 +431,7 @@ namespace QSFML {
     }
     void Scene::paint()
     {
-        QSFMLP_SCENE_BLOCK("Clear Display", QSFML_COLOR_STAGE_5);
+        QSFMLP_SCENE_BLOCK("paint", QSFML_COLOR_STAGE_5);
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         StatsManager::resetFrame_paintLoop();
         double elapsedSeconds = std::chrono::duration<double>(t1 - m_paint_t1).count();
@@ -416,8 +441,24 @@ namespace QSFML {
             StatsManager::setFPS(9999999);
 
         m_paint_t1 = t1;
-        m_window->clear(m_settings.colors.defaultBackground);
-        QSFMLP_SCENE_END_BLOCK;
+
+		paint(*m_cameras.defaultCamera->getRenderWindow());
+		/*for (auto camera : m_cameras)
+		{
+			QSFMLP_SCENE_BLOCK("Repaint camera", QSFML_COLOR_STAGE_5);
+			QSFMLP_SCENE_TEXT("Camera", camera->getName().c_str());
+            QSFMLP_SCENE_BLOCK("Clear Display", QSFML_COLOR_STAGE_6);
+			camera->getRenderWindow()->clear(m_settings.colors.defaultBackground);
+            QSFMLP_SCENE_END_BLOCK;
+            QSFMLP_SCENE_BLOCK("Process draw", QSFML_COLOR_STAGE_7);
+			GameObjectContainer::draw(*camera->getRenderWindow());
+            QSFMLP_SCENE_END_BLOCK;
+            QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_8);
+			camera->getRenderWindow()->display();
+            QSFMLP_SCENE_END_BLOCK;
+		}*/
+
+        /*
 
         QSFMLP_SCENE_BLOCK("Process draw", QSFML_COLOR_STAGE_6);
         GameObjectContainer::draw(*m_window);
@@ -425,17 +466,31 @@ namespace QSFML {
 
         QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_7);
         // Display on screen
-        m_window->display();
+        m_window->display();*/
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsed = std::chrono::duration<double>(t2 - t1).count();
         StatsManager::setDrawTime(elapsed);
         QSFMLP_SCENE_END_BLOCK;
     }
-
-    void Scene::sfEvent(const std::vector<sf::Event>& events)
+    void Scene::paint(sf::RenderWindow& target)
     {
-        QSFML_UNUSED(events);
+        QSFMLP_SCENE_BLOCK("Repaint camera", QSFML_COLOR_STAGE_5);
+        //QSFMLP_SCENE_TEXT("Camera", camera->getName().c_str());
+        QSFMLP_SCENE_BLOCK("Clear Display", QSFML_COLOR_STAGE_6);
+        target.clear(m_settings.colors.defaultBackground);
+        QSFMLP_SCENE_END_BLOCK;
+        QSFMLP_SCENE_BLOCK("Process draw", QSFML_COLOR_STAGE_7);
+        GameObjectContainer::draw(target);
+        QSFMLP_SCENE_END_BLOCK;
+        QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_8);
+        target.display();
+        QSFMLP_SCENE_END_BLOCK;
     }
+
+    //void Scene::sfEvent(const std::vector<sf::Event>& events)
+    //{
+    //    QSFML_UNUSED(events);
+    //}
     const sf::Font& Scene::getDefaultTextFont()
     {
         static sf::Font textfont;

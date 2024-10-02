@@ -95,12 +95,12 @@ QSFML::Utilities::AABB Component::getCameraViewRect() const
 sf::Vector2u Component::getSceneSize() const
 {
     if (!m_parent) return sf::Vector2u(0, 0);
-    return m_parent->getSceneSize();
+    return m_parent->getCameraSize();
 }
 sf::Vector2u Component::getOldSceneSize() const
 {
     if (!m_parent) return sf::Vector2u(0, 0);
-    return m_parent->getOldSceneSize();
+    return m_parent->getOldCameraSize();
 }
 
 const sf::Font& Component::getTextFont() const
