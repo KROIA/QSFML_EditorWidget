@@ -24,7 +24,7 @@ void addLineChart(Scene* scene)
     m_chart->setSize(sf::Vector2f(200, 100));
     m_chart->setPosition(sf::Vector2f(300, 100));
     m_chart->setRotation(20);
-    m_chart->setUpdateFunction([m_chart]() {
+    m_chart->addUpdateFunction([m_chart](GameObjec&) {
         static float t = 0;
         t += 0.1;
         m_chart->addDataPoint(std::sin(t) * 50);
@@ -63,7 +63,7 @@ void addShape(Scene* scene)
     //sf::Transform t = shape->getTransform();
    // t.translate(obj->getPosition());
     //shape->setTransform(t);
-    obj->setUpdateFunction([shape, testRay, obj, linePainter]()
+    obj->addUpdateFunction([shape, testRay, obj, linePainter](GameObject&)
         {
             //sf::Transform t = shape->getTransform();
             //t.rotate(obj->getDeltaT()*300);
