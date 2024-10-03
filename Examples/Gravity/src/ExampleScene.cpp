@@ -90,7 +90,7 @@ void ExampleScene::setupScene()
         planet->setMass((rand() % 100)+1);
 		planetSystem->addChild(planet);
     }
-    planetSystem->setUpdateFunction([planetSystem, vectorField]()
+    planetSystem->addUpdateFunction([planetSystem, vectorField](GameObject &)
 	{
         static bool first = true;
         if (first)

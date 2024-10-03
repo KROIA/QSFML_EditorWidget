@@ -24,8 +24,7 @@ OBJECT_IMPL(GameObject)
 size_t GameObject::s_objNameCounter = 0;
 GameObject::GameObject(const std::string &name, GameObject* parent)
     //: Transformable()
-    : Updatable()
-    , DestroyEvent()
+    : DestroyEvent()
 	, m_birthTick(0)
 	, m_birthTime(0)
 {
@@ -40,6 +39,21 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     m_updateControlls.enableUpdateLoop = true;
     m_updateControlls.enableEventLoop = true;
     m_updateControlls.enablePaintLoop = true;
+
+    m_eventOrder = {
+        EventSequenceElement::components,
+        EventSequenceElement::childs
+    };
+    m_updateOrder = { 
+        UpdateSequenceElement::thisUpdate, 
+        UpdateSequenceElement::customUpdateFunctions,
+        UpdateSequenceElement::components,
+        UpdateSequenceElement::childs
+    };
+    m_drawOrder = {
+        DrawSequenceElement::components,
+        DrawSequenceElement::childs
+    };
    
     m_sceneParent = nullptr;
     
@@ -59,9 +73,7 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     updateObjectChanges();
 }
 GameObject::GameObject(const GameObject &other)
-    //: Transformable()
-    : Updatable()
-    , DestroyEvent()
+    : DestroyEvent()
     , m_birthTick(0)
     , m_birthTime(0)
 {
@@ -74,6 +86,7 @@ GameObject::GameObject(const GameObject &other)
     m_componentsManagerData.thisNeedsDrawUpdate = false;
     m_updateControlls = other.m_updateControlls;
     m_renderLayer = other.m_renderLayer;
+	m_updateOrder = other.m_updateOrder;
 
     //m_childs.reserve(other.m_childs.size());
     for(size_t i=0; i<other.m_childObjectManagerData.objs.size(); ++i)
@@ -131,6 +144,15 @@ void GameObject::onAwake()
 {
     
 }
+void GameObject::onEnable()
+{
+
+}
+void GameObject::onDisable()
+{
+
+}
+
 void GameObject::setParent(GameObjectPtr parent)
 {
     if(parent == m_parent)
@@ -148,6 +170,10 @@ void GameObject::setParent(GameObjectPtr parent)
 void GameObject::setEnabled(bool enable)
 {
     m_enabled = enable;
+	if (m_enabled)
+		onEnable();
+	else
+		onDisable();
 }
 bool GameObject::isEnabled() const
 {
@@ -1163,27 +1189,46 @@ void GameObject::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::v
     //QSFMLP_OBJECT_BLOCK("GameObject::sfEvent: count="+std::to_string(events.size())+" " + getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_TEXT("Name", getName());
-    QSFMLP_OBJECT_BLOCK("Components event", QSFML_COLOR_STAGE_2);
-    for (auto component : m_componentsManagerData.eventHandler)
+
+    for (const auto& seq : m_eventOrder)
     {
-        if (!component->isEnabled())
-            continue;
-
-        QSFMLP_COMPONENT_BLOCK("Component event", QSFML_COLOR_STAGE_1);
-        QSFMLP_OBJECT_TEXT("Name", component->getName());
-        component->sfEvent_internal(events);
-
-
+        switch (seq)
+        {
+            case EventSequenceElement::childs:
+            {
+                if (m_childObjectManagerData.objs.size())
+                {
+                    QSFMLP_OBJECT_BLOCK("Childs event", QSFML_COLOR_STAGE_3);
+                    for (auto& child : m_childObjectManagerData.objs)
+                    {
+                        if (child->m_enabled)
+                            child->sfEvent(events);
+                    }
+                    QSFMLP_OBJECT_END_BLOCK;
+                }
+                break;
+            }
+            case EventSequenceElement::components:
+            {
+                if (m_componentsManagerData.eventHandler.size())
+                {
+                    QSFMLP_OBJECT_BLOCK("Components event", QSFML_COLOR_STAGE_2);
+                    for (auto& comp : m_componentsManagerData.eventHandler)
+                    {
+                        if (!comp->isEnabled())
+                            continue;
+                        {
+                            QSFMLP_COMPONENT_BLOCK("Component event", QSFML_COLOR_STAGE_1);
+                            QSFMLP_OBJECT_TEXT("Name", comp->getName());
+                            comp->sfEvent_internal(events);
+                        }
+                    }
+                    QSFMLP_OBJECT_END_BLOCK;
+                }
+                break;
+            }
+        }
     }
-    QSFMLP_OBJECT_END_BLOCK;
-
-    QSFMLP_OBJECT_BLOCK("Childs event", QSFML_COLOR_STAGE_3);
-    for (auto obj : m_childObjectManagerData.objs)
-    {
-        if (obj->m_enabled)
-            obj->sfEvent(events);
-    }
-    QSFMLP_OBJECT_END_BLOCK;
 }
 void GameObject::update_internal()
 {
@@ -1191,34 +1236,70 @@ void GameObject::update_internal()
     //QSFMLP_OBJECT_BLOCK("GameObject::update_internal:"+getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_TEXT("Name", getName());
-    QSFMLP_OBJECT_BLOCK("Object update", QSFML_COLOR_STAGE_2);
-    Updatable::emitUpdate();
-    QSFMLP_OBJECT_END_BLOCK;
-
-    QSFMLP_OBJECT_BLOCK("Components update", QSFML_COLOR_STAGE_2);
-    for (size_t i = 0; i < m_componentsManagerData.updatables.size(); ++i)
+    for (const auto& seq : m_updateOrder)
     {
-        Utilities::Updatable* comp = m_componentsManagerData.updatables[i];
-        Components::Component* comp1 = dynamic_cast<Components::Component*>(comp);
-        
-        if (!comp1->isEnabled())
-            continue;
-        {
-            QSFMLP_COMPONENT_BLOCK("Component update", QSFML_COLOR_STAGE_1);
-            QSFMLP_OBJECT_TEXT("Name", comp1->getName());
-            comp->emitUpdate();
+        switch (seq)
+        {            
+            case UpdateSequenceElement::childs:
+            {
+                QSFMLP_OBJECT_BLOCK("Childs update", QSFML_COLOR_STAGE_4);
+                for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
+                {
+                    GameObjectPtr obj = m_childObjectManagerData.objs[i];
+                    if (obj->m_enabled)
+                        obj->update_internal();
+                }
+                QSFMLP_OBJECT_END_BLOCK;
+                break;
+            }
+            case UpdateSequenceElement::components:
+            {
+                QSFMLP_OBJECT_BLOCK("Components update", QSFML_COLOR_STAGE_2);
+                for (size_t i = 0; i < m_componentsManagerData.updatables.size(); ++i)
+                {
+                    Utilities::Updatable* comp = m_componentsManagerData.updatables[i];
+                    Components::Component* comp1 = dynamic_cast<Components::Component*>(comp);
+
+                    if (!comp1->isEnabled())
+                        continue;
+                    {
+                        QSFMLP_COMPONENT_BLOCK("Component update", QSFML_COLOR_STAGE_1);
+                        QSFMLP_OBJECT_TEXT("Name", comp1->getName());
+                        comp->emitUpdate();
+                    }
+                }
+                QSFMLP_OBJECT_END_BLOCK;
+                break;
+            }
+            case UpdateSequenceElement::thisUpdate:
+            {
+                QSFMLP_OBJECT_BLOCK("Object update", QSFML_COLOR_STAGE_2);
+                update();
+                QSFMLP_OBJECT_END_BLOCK;
+                break;
+            }
+            case UpdateSequenceElement::customUpdateFunctions:
+            {
+				if (m_onUpdateCallbacks.size() == 0)
+					break;
+                QSFMLP_OBJECT_BLOCK("Custom update functions", QSFML_COLOR_STAGE_2);
+                for (size_t i = 0; i < m_onUpdateCallbacks.size(); ++i)
+                {
+                    m_onUpdateCallbacks[i](*this);
+                }
+                QSFMLP_OBJECT_END_BLOCK;
+                break;
+            }
+            default:
+            {
+				std::string typeName = typeid(*this).name();
+				const std::string& name = getName();
+                logError("update_internal(): Unknown sequence element: " + 
+                         std::to_string(static_cast<int>(seq))+ 
+                " for object of type: "+typeName + " name: "+name);
+            }
         }
     }
-    QSFMLP_OBJECT_END_BLOCK;
-
-    QSFMLP_OBJECT_BLOCK("Childs update", QSFML_COLOR_STAGE_4);
-    for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
-    {
-        GameObjectPtr obj = m_childObjectManagerData.objs[i];
-        if (obj->m_enabled)
-            obj->update_internal();
-    }
-    QSFMLP_OBJECT_END_BLOCK;
 }
 
 void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
@@ -1231,29 +1312,43 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_TEXT("Name", getName());
     states.transform *= getTransform();
-    if (m_componentsManagerData.drawable.size())
+
+    for (const auto& seq : m_drawOrder)
     {
-        QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
-        for (auto& comp : m_componentsManagerData.drawable)
+        switch (seq)
         {
-            if (!comp->isEnabled())
-                continue;
+            case DrawSequenceElement::childs:
             {
-                window.draw(*comp, states);
+                if (m_childObjectManagerData.objs.size())
+                {
+                    QSFMLP_OBJECT_BLOCK("Childs draw", QSFML_COLOR_STAGE_3);
+                    for (auto& child : m_childObjectManagerData.objs)
+                    {
+                        if (child->m_enabled)
+                            child->draw(window, states);
+                    }
+                    QSFMLP_OBJECT_END_BLOCK;
+                }
+                break;
+            }
+            case DrawSequenceElement::components:
+            {
+                if (m_componentsManagerData.drawable.size())
+                {
+                    QSFMLP_OBJECT_BLOCK("Components draw", QSFML_COLOR_STAGE_2);
+                    for (auto& comp : m_componentsManagerData.drawable)
+                    {
+                        if (!comp->isEnabled())
+                            continue;
+                        {
+                            window.draw(*comp, states);
+                        }
+                    }
+                    QSFMLP_OBJECT_END_BLOCK;
+                }
+                break;
             }
         }
-        QSFMLP_OBJECT_END_BLOCK;
-    }
-
-    if (m_childObjectManagerData.objs.size())
-    {
-        QSFMLP_OBJECT_BLOCK("Childs draw", QSFML_COLOR_STAGE_3);
-        for (auto& child : m_childObjectManagerData.objs)
-        {
-            if (child->m_enabled)
-                child->draw(window, states);
-        }
-        QSFMLP_OBJECT_END_BLOCK;
     }
 }
 

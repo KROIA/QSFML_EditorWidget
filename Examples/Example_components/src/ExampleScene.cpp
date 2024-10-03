@@ -97,7 +97,7 @@ void pathPainterComponent(GameObjectPtr obj)
 
 	pathPainter->setColor(sf::Color::Red);
 	obj->addComponent(pathPainter);
-    obj->setUpdateFunction([pathPainter]()
+    obj->addUpdateFunction([pathPainter](GameObject&)
         {
             sf::Vector2f lastPoint;
             float lastDirAngle = 0;
@@ -124,7 +124,7 @@ void pixelPainterComponent(GameObjectPtr obj)
 
 
 	obj->addComponent(pixelPainter);
-	obj->setUpdateFunction([pixelPainter, obj]()
+	obj->addUpdateFunction([pixelPainter, obj](GameObject&)
 		{
             sf::Vector2u pos = sf::Vector2u(rand() % pixelPainter->getPixelCount().x, rand() % pixelPainter->getPixelCount().y);
 			pixelPainter->setPixel(pos, sf::Color(rand() % 255, rand() % 255, rand() % 255));
@@ -137,7 +137,7 @@ void pointPainterComponent(GameObjectPtr obj)
     pointPainter->setRadius(5);
     pointPainter->setColor(sf::Color::Red);
     obj->addComponent(pointPainter);
-    obj->setUpdateFunction([pointPainter]()
+    obj->addUpdateFunction([pointPainter](GameObject&)
         {
             pointPainter->addPoint(sf::Vector2f(rand() % 1000, rand() % 1000)- sf::Vector2f(500,500));
         });
@@ -150,7 +150,7 @@ void rectPainterComponent(GameObjectPtr obj)
 	rectPainter->setFillColor(sf::Color::Red);
 
 	obj->addComponent(rectPainter);
-	obj->setUpdateFunction([rectPainter]()
+	obj->addUpdateFunction([rectPainter](GameObject&)
 						   {
                                static QSFML::Utilities::AABB lastRect(rand() % 1000, rand() % 1000, rand() % 500, rand() % 500);
 							   static QSFML::Utilities::AABB targetRect(rand() % 1000, rand() % 1000, rand() % 500, rand() % 500);
@@ -190,7 +190,7 @@ void shapeComponent(GameObjectPtr obj)
     boundingBox->setOutlineThickness(3);
     obj->addComponent(shape);
     obj->addComponent(boundingBox);
-    obj->setUpdateFunction([shape, boundingBox]()
+    obj->addUpdateFunction([shape, boundingBox](GameObject&)
                            {
                                static float t = 0;
 							   static std::vector<sf::Vector2f> lastPoints = shape->getPoints();
@@ -227,7 +227,7 @@ void textComponent(GameObjectPtr obj)
     text->setScale(1);
     text->setOrigin(QSFML::Utilities::Origin::Center);
     obj->addComponent(text);
-    obj->setUpdateFunction([text]()
+    obj->addUpdateFunction([text](GameObject&)
                            {
                                static float rotation = 0;
                                rotation += 0.01;

@@ -181,8 +181,6 @@ namespace Objects
  */
 
 class QSFML_EDITOR_WIDGET_EXPORT GameObject: 
-    //public Utilities::Transformable, 
-    public Utilities::Updatable, 
     public Events::DestroyEvent
 {
         friend Scene;
@@ -193,6 +191,24 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 protected:
         virtual ~GameObject();
     public:
+        enum class EventSequenceElement
+        {
+            childs,
+            components,
+        };
+        enum class UpdateSequenceElement
+        {
+            childs,
+            components,
+			thisUpdate,
+            customUpdateFunctions
+        };
+        enum class DrawSequenceElement
+		{
+            childs,
+			components,
+		};
+
         GameObject(const std::string &name = "GameObject",
                      GameObject* parent = nullptr);
         GameObject(const GameObject &other);
@@ -281,7 +297,23 @@ protected:
         /// <returns>Age in fixed timedomain</returns>
         double getAgeFixed() const;
 
+
+		void setEventOrder(const std::vector<EventSequenceElement>& order) { m_eventOrder = order; }
+		const std::vector<EventSequenceElement>& getEventOrder() const { return m_eventOrder; }
+		void setUpdateOrder(const std::vector<UpdateSequenceElement>& order) { m_updateOrder = order; }
+		const std::vector<UpdateSequenceElement>& getUpdateOrder() const { return m_updateOrder; }
+        void setDrawOrder(const std::vector<DrawSequenceElement>& order) { m_drawOrder = order; }
+        const std::vector<DrawSequenceElement>& getDrawOrder() const { return m_drawOrder; }
+
+
+
+
+		void addUpdateFunction(const std::function<void(GameObject&)>& func) { m_onUpdateCallbacks.push_back(func); }
+		void clearUpdateFunctions() { m_onUpdateCallbacks.clear(); }
+		size_t getUpdateFunctionCount() const { return m_onUpdateCallbacks.size(); }
+		const std::vector<std::function<void(GameObject&)>>& getUpdateFunctions() const { return m_onUpdateCallbacks; }
         
+		
 
         //void setPositionRelative(const sf::Vector2f& pos); // Sets the position relative to its parent
         //void setPosition(const sf::Vector2f& pos); // Sets the position in the absolute world coords.
@@ -835,9 +867,11 @@ protected:
         /**
          * \brief update will be called once per frame
          */
-        void update() override;
+        virtual void update();
 
         virtual void onAwake();
+        virtual void onEnable();
+        virtual void onDisable();
 
      
 
@@ -928,7 +962,7 @@ protected:
         //std::vector<Components::Component*> m_toRemoveComponents;
 
         SceneSettings::UpdateControlls m_updateControlls;
-
+		std::vector< std::function<void(GameObject&)> > m_onUpdateCallbacks;
         RenderLayer m_renderLayer;
 
         // Scene Object Internal functions
@@ -982,6 +1016,10 @@ protected:
 
 		ChildObjectManagerData m_childObjectManagerData;
         ComponentManagerData m_componentsManagerData;
+
+		std::vector<EventSequenceElement> m_eventOrder;
+		std::vector<UpdateSequenceElement> m_updateOrder;
+		std::vector<DrawSequenceElement> m_drawOrder;
 
         // Static
         static size_t s_objNameCounter;
