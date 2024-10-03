@@ -42,14 +42,14 @@ void addShape(Scene* scene)
 {
 
     QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject();
-    QSFML::Components::Shape* shape = new QSFML::Components::Shape();
+    QSFML::Components::Shape* shape = new QSFML::Components::Shape("TestShape");
     QSFML::Utilities::Ray* testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
     QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
     linePainter->useGlobalPosition(true);
-    obj->setPosition(sf::Vector2f(200, 200));
+    obj->setPosition(sf::Vector2f(0,0));
     //delete testRay->createRayPainter();
 
-    obj->addComponent(testRay->createRayPainter());
+    
 
 
     shape->setPoints(
@@ -59,6 +59,7 @@ void addShape(Scene* scene)
             sf::Vector2f(100,100),
             sf::Vector2f(0,100)
         });
+	shape->setPosition(sf::Vector2f(200, 200));
 
     //sf::Transform t = shape->getTransform();
    // t.translate(obj->getPosition());
@@ -95,9 +96,13 @@ void addShape(Scene* scene)
     //shape->setOutlineThickness(5);
 
     shape->setFill(true);
-
-    obj->addComponent(shape);
     obj->addComponent(linePainter);
+    //
+    
+    
+    obj->addComponent(testRay->createRayPainter());
+    obj->addComponent(shape);
+    
     scene->addObject(obj);
 }
 void addPerlinNoise(Scene* scene)
@@ -185,7 +190,7 @@ SandBox::SandBox(QWidget *parent)
     m_Scene_1 = nullptr;
     m_Scene_2 = nullptr;
     
-    if(true)
+    if(false)
     {
         SceneSettings settings;
         //settings.layout.autoAjustSize = false;
@@ -333,15 +338,15 @@ SandBox::SandBox(QWidget *parent)
 
         
 
-        m_Scene_2->addObject(obj);
+        //m_Scene_2->addObject(obj);
         
 
 
 
-        addLineChart(m_Scene_2);
+       // addLineChart(m_Scene_2);
         addMouseCollider(m_Scene_2);
         addShape(m_Scene_2);
-        addPerlinNoise(m_Scene_2);
+       // addPerlinNoise(m_Scene_2);
         addCar(m_Scene_2, settings.contextSettings, ui->secondCamera_frame);
 
         m_Scene_2->applyObjectChanges();

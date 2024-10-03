@@ -95,6 +95,21 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, /*public Utilities
         void ignoreTransform(bool ignore) { m_ignoreTransform = ignore; }
         bool ignoresTransform() const { return m_ignoreTransform; }
 
+        bool isVisible(const sf::Vector2f& position, const sf::RenderTarget& target) const
+        {
+            const sf::View& view = target.getView();
+            // Get the view bounds in world coordinates
+            sf::FloatRect viewBounds(
+                view.getCenter().x - view.getSize().x * 0.5f,
+                view.getCenter().y - view.getSize().y * 0.5f,
+                view.getSize().x,
+                view.getSize().y
+            );
+
+            // Check if the position is within the view bounds
+            return viewBounds.contains(position);
+        }
+
     protected:
         /// <summary>
         /// Moves the states transform by the relative position of the Drawable

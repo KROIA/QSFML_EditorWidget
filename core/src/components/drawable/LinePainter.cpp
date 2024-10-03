@@ -1,6 +1,7 @@
 #include "components/drawable/LinePainter.h"
 #include <math.h>
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
 
 namespace QSFML
 {
@@ -101,8 +102,51 @@ const sf::Color& LinePainter::getColor(size_t index) const
 void LinePainter::drawComponent(sf::RenderTarget& target,
                         sf::RenderStates states) const
 {
-    if (m_useGlobalPosition)
-        states = sf::RenderStates();
+    /*
+    QSFML_UNUSED(target);
+    glPushMatrix(); // Save the current transformation matrix
+    // Apply SFML transform
+    glMultMatrixf(states.transform.getMatrix());
+
+    // Enable blending to match SFML's alpha blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Iterate through the lines and draw each one using OpenGL
+    for (auto& line : m_lines)
+    {
+        sf::Vector2f direction = line.end - line.start;
+        float dist = sqrt(direction.x * direction.x + direction.y * direction.y);
+        if (dist == 0)
+            continue;
+
+        sf::Vector2f unitDirection = direction / dist;
+        sf::Vector2f unitPerpendicular(-unitDirection.y, unitDirection.x);
+        sf::Vector2f offset = (line.thickness / 2.f) * unitPerpendicular;
+
+        // Compute the four vertices of the quad
+        sf::Vector2f vertices[4];
+        vertices[0] = line.start + offset;
+        vertices[1] = line.end + offset;
+        vertices[2] = line.end - offset;
+        vertices[3] = line.start - offset;
+
+        // Set the color for the line
+        sf::Color color = line.color;
+
+        // Draw the quad using OpenGL immediate mode
+        glBegin(GL_QUADS);
+        glColor4ub(color.r, color.g, color.b, color.a); // Set color with RGBA
+        glVertex2f(vertices[0].x, vertices[0].y);
+        glVertex2f(vertices[1].x, vertices[1].y);
+        glVertex2f(vertices[2].x, vertices[2].y);
+        glVertex2f(vertices[3].x, vertices[3].y);
+        glEnd();
+    }
+
+    glPopMatrix(); // Restore the original transformation matrix
+    */
+    
     for (auto& line : m_lines)
     {
         sf::Vertex m_relativeVertices[4];

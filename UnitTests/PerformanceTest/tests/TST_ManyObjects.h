@@ -19,14 +19,18 @@ public:
 		: Test("TST_ManyObjects")
 		, m_tree(nullptr, QSFML::Utilities::AABB({ 0,0 }, { 800,600 }), 4)
 	{
-		ADD_TEST(TST_ManyObjects::drawTest);
-		ADD_TEST(TST_ManyObjects::collisionTest);
+		ADD_TEST(TST_ManyObjects::drawShapseTest);
+		//ADD_TEST(TST_ManyObjects::drawLinesTest);
+		//ADD_TEST(TST_ManyObjects::drawPathTest);
+		//ADD_TEST(TST_ManyObjects::collisionTest);
 
 
 		setBreakOnFail(false);
 
 		connect(&m_stopTimer, &QTimer::timeout, this, &TST_ManyObjects::onTimeout);
 		
+
+		m_stopTimer.setInterval(1000);
 	}
 
 private slots:
@@ -144,46 +148,84 @@ private:
 	}
 
 	// Tests
-	TEST_FUNCTION(drawTest)
+	TEST_FUNCTION(drawShapseTest)
 	{
 		TEST_START(results);
-		size_t objectCount = 10000;
-		size_t verteciesCount = 5;
+		size_t objectCount = 100;
+		size_t verteciesCount = 30;
 
-		
-		QSFML::SceneSettings settings;
-		settings.timing.frameTime = 0;
-		QSFML::Scene Scene(nullptr, settings);
-		//Scene.show();
-		Scene.start();
-		QSFML::Scene::setProfilerOutputFileName("drawTest.prof");
-		m_stopTimer.start(1000);
-		m_update.start(10);
+		QSFML::Scene::setProfilerOutputFileName("drawShapseTest.prof");
+		QSFML::Scene* scene = createDefaultScene();
 		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
-		m_currentScene = &Scene;
-		m_currentResults = &results;
-		m_stats.clear();
-		m_stats.reserve(m_stopTimer.interval()/ m_update.interval() + 50);
 
 		sf::Color color1 = sf::Color::Red;
 		sf::Color color2 = sf::Color::Green;
-
-		Scene.addObject(new QSFML::Objects::DefaultEditor());
 		
 		for (size_t i = 0; i < objectCount; ++i)
 		{
 			sf::Vector2f randPos = QSFML::Utilities::RandomEngine::getVector() * 1000.f;
 			sf::Color color = QSFML::Color::lerpLinear(color1, color2, (float)i / objectCount);
-			Scene.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
+			scene->addObject(Factories::randomShapeObject(randPos, 20, color, verteciesCount));
 		}
 
+		qApp->exec();
+		m_currentScene = nullptr;
+		m_currentResults = nullptr;
+		m_update.stop();
+		delete scene;
+		processStats(results);
+	}
+
+	TEST_FUNCTION(drawLinesTest)
+	{
+		TEST_START(results);
+		m_currentResults = &results;
+		size_t objectCount = 100;
+		size_t linesCount = 1000;
+
+		QSFML::Scene::setProfilerOutputFileName("drawLinesTest.prof");
+		QSFML::Scene* scene = createDefaultScene();
+		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
+
+		for (size_t i = 0; i < objectCount; ++i)
+		{
+			scene->addObject(Factories::randomLinesObject(linesCount));
+		}
 
 
 		qApp->exec();
 		m_currentScene = nullptr;
 		m_currentResults = nullptr;
+		m_update.stop();
+		delete scene;
 		processStats(results);
 	}
+
+
+	TEST_FUNCTION(drawPathTest)
+	{
+		TEST_START(results);
+		size_t objectCount = 100;
+		size_t linesCount = 1000;
+
+		QSFML::Scene::setProfilerOutputFileName("drawPathTest.prof");
+		QSFML::Scene* scene = createDefaultScene();
+		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
+
+		for (size_t i = 0; i < objectCount; ++i)
+		{
+			scene->addObject(Factories::randomLinesObject(linesCount));
+		}
+
+		qApp->exec();
+		m_currentScene = nullptr;
+		m_currentResults = nullptr;
+		m_update.stop();
+		delete scene;
+		processStats(results);
+	}
+
+
 
 	TEST_FUNCTION(collisionTest)
 	{
@@ -191,52 +233,72 @@ private:
 		size_t objectCount = 10000;
 		size_t verteciesCount = 5;
 
-
-		QSFML::SceneSettings settings;
-		settings.timing.frameTime = 0;
-		QSFML::Scene Scene(nullptr, settings);
-		//Scene.show();
-		Scene.start();
 		QSFML::Scene::setProfilerOutputFileName("collisionTest.prof");
-		m_tree.setStatsManager(&Scene);
-		m_stopTimer.start(1000);
-		m_update.start(10);
-		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onCollisionTest_Update);
-		m_currentScene = &Scene;
-		m_currentResults = &results;
-		m_stats.clear();
-		m_stats.reserve(m_stopTimer.interval() / m_update.interval() + 50);
+		QSFML::Scene* scene = createDefaultScene();
 
-		sf::Color color1 = sf::Color::Red;
-		sf::Color color2 = sf::Color::Green;
-
-		Scene.addObject(new QSFML::Objects::DefaultEditor());
-		QSFML::Objects::GameObjectPtr  pointPainterObj = new QSFML::Objects::GameObject();
+		QSFML::Objects::GameObjectPtr pointPainterObj = new QSFML::Objects::GameObject();
 		m_pointPainter = new QSFML::Components::PointPainter();
 		m_pointPainter->setColor(sf::Color::Yellow);
 		pointPainterObj->addComponent(m_pointPainter);
 		QSFML::Utilities::ObjectQuadTree::ObjectQuadTreePainter* treePainter = m_tree.createPainter();
 		//treePainter->enableText(false);
 		pointPainterObj->addComponent(treePainter);
+		
 
-		Scene.addObject(pointPainterObj);
+		//m_update.start(10);
+		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onCollisionTest_Update);
 
 
+		scene->addObject(pointPainterObj);
+
+		sf::Color color1 = sf::Color::Red;
+		sf::Color color2 = sf::Color::Green;
+		m_tree.setStatsManager(scene);
+		std::vector<QSFML::Objects::GameObjectPtr> objs;
 		for (size_t i = 0; i < objectCount; ++i)
 		{
 			sf::Vector2f randPos = QSFML::Utilities::RandomEngine::getVector({ 0,0 }, { 800,600 });
 			sf::Color color = QSFML::Color::lerpLinear(color1, color2, (float)i / objectCount);
-			Scene.addObject(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
+			objs.push_back(Factories::randomShapeObject(randPos, 5, color, verteciesCount));
 		}
+		scene->addObject(objs);
+		//pointPainterObj->addUpdateFunction([this, scene](QSFML::Objects::GameObject&) {
+		//	m_tree.clear();
+		//	m_tree.shrink();
+		//	m_tree.insert(m_currentScene->getObjects());
+		//	std::vector<QSFML::Utilities::Collisioninfo> collisions;
+		//	m_tree.checkCollisions(collisions, false);
+		//	});
 		
-
 
 		qApp->exec();
 		m_currentScene = nullptr;
 		m_currentResults = nullptr;
 		processStats(results);
 		m_tree.setStatsManager(nullptr);
+		m_update.stop();
+		delete scene;
 		m_pointPainter = nullptr;
 	}
 
+
+
+	QSFML::Scene *createDefaultScene()
+	{
+		QSFML::SceneSettings settings;
+		settings.timing.frameTime = 0;
+		QSFML::Scene* scene = new QSFML::Scene(nullptr, settings);
+		//scene.show();
+		scene->start();
+		//QSFML::Scene::setProfilerOutputFileName("drawLinesTest.prof");
+		m_stopTimer.start();
+		m_update.start(10);
+
+		m_currentScene = scene;
+		m_stats.clear();
+		m_stats.reserve(m_stopTimer.interval() / m_update.interval() + 50);
+
+		scene->addObject(new QSFML::Objects::DefaultEditor());
+		return scene;
+	}
 };

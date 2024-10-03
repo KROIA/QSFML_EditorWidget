@@ -330,7 +330,10 @@ protected:
         const SceneSettings::UpdateControlls& getUpdateControlls() const;
         void setUpdateControlls(const SceneSettings::UpdateControlls& controlls);
 
+		// checks if the BB needs to be updated and does so if needed
         const Utilities::AABB &getBoundingBox() const;
+
+		const Utilities::AABB& getBoundingBoxNoUpdate() const { return m_boundingBox; }
         
 
         std::string toString() const;

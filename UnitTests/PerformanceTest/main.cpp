@@ -33,9 +33,9 @@ int main(int argc, char* argv[])
 	UnitTest::Test::printResults(results);
 
 #ifdef QT_WIDGETS_ENABLED
-	QWidget* widget = QSFML::LibraryInfo::createInfoWidget();
-	if (widget)
-		widget->show();
+	//QWidget* widget = QSFML::LibraryInfo::createInfoWidget();
+	//if (widget)
+	//	widget->show();
 #endif
 #ifdef QT_ENABLED
 	return app.exec();

@@ -18,4 +18,7 @@ namespace Factories
 		float radius,
 		const sf::Color& color,
 		size_t vertecies);
+
+	QSFML::Objects::GameObjectPtr randomLinesObject(
+		size_t lines);
 }

@@ -267,8 +267,22 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
         }
         bool intersects(const AABB& b) const
         {
-            return (m_pos.x <= b.m_pos.x + b.m_size.x && m_pos.x + m_size.x >= b.m_pos.x) &&
-                (m_pos.y <= b.m_pos.y + b.m_size.y && m_pos.y + m_size.y >= b.m_pos.y);
+            float minX1 = m_pos.x, maxX1 = m_pos.x + m_size.x;
+            float minY1 = m_pos.y, maxY1 = m_pos.y + m_size.y;
+            float minX2 = b.m_pos.x, maxX2 = b.m_pos.x + b.m_size.x;
+            float minY2 = b.m_pos.y, maxY2 = b.m_pos.y + b.m_size.y;
+
+            return !(minX1 > maxX2 || maxX1 < minX2 || minY1 > maxY2 || maxY1 < minY2);
+
+            //if (!(m_pos.x <= b.m_pos.x + b.m_size.x && m_pos.x + m_size.x >= b.m_pos.x))
+            //    return false;
+            //
+            //if (!(m_pos.y <= b.m_pos.y + b.m_size.y && m_pos.y + m_size.y >= b.m_pos.y))
+            //    return false;
+            //return true;
+            
+            //return (m_pos.x <= b.m_pos.x + b.m_size.x && m_pos.x + m_size.x >= b.m_pos.x) &&
+            //       (m_pos.y <= b.m_pos.y + b.m_size.y && m_pos.y + m_size.y >= b.m_pos.y);
         }
         bool intersectsInverseOf(const AABB& b) const
         {

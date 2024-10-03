@@ -1,6 +1,7 @@
 #include "components/drawable/PathPainter.h"
 #include <math.h>
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
 
 namespace QSFML
 {
@@ -74,6 +75,14 @@ namespace QSFML
         void PathPainter::drawComponent(sf::RenderTarget& target,
                                         sf::RenderStates states) const
         {
+            //target; states;
+            //glBegin(GL_LINE_STRIP);
+            //for (const auto& el : m_vertecies)
+            //{
+            //    glColor3f(el.color.r / 255.0f, el.color.g / 255.0f, el.color.b / 255.0f);
+            //    glVertex2f(el.position.x, el.position.y);
+            //}
+            //glEnd();
 			target.draw(m_vertecies.data(), m_vertecies.size(), sf::LineStrip, states);
         }
     }

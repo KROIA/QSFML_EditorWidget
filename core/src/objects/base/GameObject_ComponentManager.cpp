@@ -163,7 +163,7 @@ namespace QSFML
 
 		const Utilities::AABB& GameObject::getBoundingBox() const
 		{
-			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			//QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			
 			if (m_componentsManagerData.transform)
 			{
@@ -200,7 +200,10 @@ namespace QSFML
 			}
 			if(m_getCustomBoundingBoxFunction)
 				boxes.push_back((*m_getCustomBoundingBoxFunction)());
-			m_boundingBox = Utilities::AABB::getFrame(boxes);
+			if (boxes.size() == 0)
+				m_boundingBox = Utilities::AABB();
+			else
+				m_boundingBox = Utilities::AABB::getFrame(boxes);
 		}
 	
 
@@ -394,6 +397,7 @@ namespace QSFML
 		}
 		void GameObject::updateColliderData() const
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			for (const auto& collider : m_componentsManagerData.colliders)
 			{
 				collider->updateColliderData();
@@ -409,23 +413,24 @@ namespace QSFML
 			std::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision) const
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			if (!other)
 				return false;
 
-			if(isColliderDirty())
-				updateColliderData();
-			if (other->isColliderDirty())
-				other->updateColliderData();
+			//if(isColliderDirty())
+			//	updateColliderData();
+			//if (other->isColliderDirty())
+			//	other->updateColliderData();
 			
 			// Check if bounding box intersects
-			const Utilities::AABB& otherBox = other->getBoundingBox();
+			const Utilities::AABB& otherBox = other->getBoundingBoxNoUpdate();
 			if (!m_boundingBox.intersects(otherBox))
 				return false;
 
 			// Check for collisions
-			const std::vector<Components::Collider*>& otherColliders = other->getComponents<Components::Collider>();
+			const std::vector<Components::Collider*>& otherColliders = other->m_componentsManagerData.colliders;
 			bool hasCollision = false;
-			for (auto thisCollider : getComponents<Components::Collider>())
+			for (auto thisCollider : m_componentsManagerData.colliders)
 			{
 				hasCollision |= thisCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
 			}
@@ -435,6 +440,7 @@ namespace QSFML
 			std::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision)
 		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
 			for (auto& objStruct : objs)
 			{
@@ -446,8 +452,8 @@ namespace QSFML
 					if (obj == it)
 						continue;
 
-					const std::vector<Components::Collider*>& otherColliders = it->getComponents<Components::Collider>();
-					for (auto objCollider : obj->getComponents<Components::Collider>())
+					const std::vector<Components::Collider*>& otherColliders = it->m_componentsManagerData.colliders;
+					for (auto objCollider : obj->m_componentsManagerData.colliders)
 					{
 						objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
 					}

@@ -58,4 +58,19 @@ namespace Factories
 		obj->setPosition(position);
 		return obj;
 	}
+
+	QSFML::Objects::GameObjectPtr randomLinesObject(
+		size_t lines)
+	{
+		QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject("RandomLineObj");
+		QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
+		obj->addComponent(linePainter);
+		for (size_t i = 0; i < lines; ++i)
+		{
+			sf::Vector2f p1 = QSFML::Utilities::RandomEngine::getVector() * 1000.f;
+			sf::Vector2f p2 = QSFML::Utilities::RandomEngine::getVector() * 1000.f;
+			linePainter->addLine(p1, p2, sf::Color(rand() % 255, rand() % 255, rand() % 255), rand() % 20);
+		}
+		return obj;
+	}
 }

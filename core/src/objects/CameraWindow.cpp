@@ -316,6 +316,7 @@ namespace QSFML
 
                 // Create the SFML window with the widget handle
                 m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(), m_settings);
+                m_window->setFramerateLimit(0);
                 //m_view = m_window->getView();
 
                

@@ -341,7 +341,7 @@ namespace QSFML
 			if (!raycast_internal(aabb, dummy1, edge))
 				return false;
 
-			const std::vector<sf::Vector2f>& points = shape.getTransformedPoints();
+			std::vector<sf::Vector2f> points = shape.getTransformedPoints();
 
 			float minDistance = std::numeric_limits<float>::max();
 			for (size_t i = 0; i < points.size(); ++i)
@@ -450,17 +450,19 @@ namespace QSFML
 		void Ray::RayPainter::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			QSFML_UNUSED(states);
+			states.transform = sf::Transform();
 			for (size_t i = 0; i < m_lines.size(); ++i)
 			{
-				target.draw(m_lines[i].m_line, 2, sf::Lines);
+				target.draw(m_lines[i].m_line, 2, sf::Lines, states);
 			}
+			
 			sf::CircleShape point(m_pointRadius);
 			point.setFillColor(m_pointColor);
 			point.setOrigin(m_pointRadius, m_pointRadius);
 			for (size_t i = 0; i < m_points.size(); ++i)
 			{
 				point.setPosition(m_points[i]);
-				target.draw(point);
+				target.draw(point, states);
 			}
 			m_lines.clear();
 			m_points.clear();

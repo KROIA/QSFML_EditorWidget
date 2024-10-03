@@ -66,7 +66,8 @@ void ExampleScene::setupScene()
 
     int spacing = 10;
    
-    vectorField->m_field.reserve((worldSize / spacing)*(worldSize / spacing));
+    std::vector<VectorField::FieldElement> field;
+    field.reserve((worldSize / spacing)*(worldSize / spacing));
     for (int x = -worldSize * 0.5; x < worldSize*0.5; x += spacing)
     {
         for (int y = -worldSize * 0.5; y < worldSize*0.5; y += spacing)
@@ -74,9 +75,10 @@ void ExampleScene::setupScene()
             VectorField::FieldElement element;
             element.position = sf::Vector2f(x, y);
             element.direction = sf::Vector2f(0, 0);
-            vectorField->m_field.push_back(element);
+            field.push_back(element);
         }
     }
+    vectorField->setField(field);
 
 
     int positions = worldSize / 2;
@@ -105,7 +107,7 @@ void ExampleScene::setupScene()
 		}
 
         // Calculate vector Field
-        for(auto & fieldElement : vectorField->m_field)
+        for(auto & fieldElement : *vectorField)
 		{
             sf::Vector2f dir = Planet::calculateGravityPotential(fieldElement.position)*10.f;
             float magnitudeSqr = dir.x * dir.x + dir.y * dir.y;

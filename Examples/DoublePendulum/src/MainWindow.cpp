@@ -146,6 +146,7 @@ void MainWindow::setupScene()
     createPendulums();
     m_Scene->applyObjectChanges();
     std::cout << m_Scene->getObjectsTreeString();
+    m_Scene->start();
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {

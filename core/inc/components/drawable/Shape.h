@@ -56,34 +56,7 @@ namespace QSFML
 			//void drawComponent(sf::RenderTarget& target,
 			//	sf::RenderStates states) const override;
 
-			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override
-			{
-				QSFML_UNUSED(states);
-				std::vector<sf::Vector2f> transformedPoints = getTransformedPoints();
-				if (transformedPoints.size() == 0)
-				{
-					return;
-				}
-				std::vector<sf::Vertex> transformedVertecies;
-				transformedVertecies.reserve(transformedPoints.size()+1);
-				for (const auto& point : transformedPoints)
-				{
-					transformedVertecies.push_back(sf::Vertex(point, m_fillColor));
-				}
-				transformedVertecies.push_back(sf::Vertex(transformedPoints[0], m_fillColor));
-				if (m_fill)
-				{
-					target.draw(&transformedVertecies[0], transformedVertecies.size(), sf::TriangleFan);
-				}
-				if (m_outline)
-				{
-					for (auto& vertex : transformedVertecies)
-					{
-						vertex.color = m_outlineColor;
-					}
-					target.draw(&transformedVertecies[0], transformedVertecies.size(), sf::LineStrip);
-				}
-			}
+			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 		private:
 			void updateTranformedPoints();
 			void updateVertexColors();

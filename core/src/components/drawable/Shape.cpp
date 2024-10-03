@@ -1,4 +1,6 @@
 #include "components/drawable/Shape.h"
+#include "objects/base/GameObject.h"
+#include <SFML/OpenGL.hpp>
 
 namespace QSFML
 {
@@ -157,12 +159,15 @@ namespace QSFML
 		{
 			std::vector<sf::Vector2f> transformedPoints;
 			sf::Transform transform;
-			transform.translate(getGlobalPosition());
-			transform.rotate(getRotation());
+			if (m_parent)
+				transform = m_parent->getGlobalTransform() * getTransform();
+			else
+				transform = getTransform();
 			transformedPoints.reserve(m_points.size());
 			for (auto& point : m_points)
 			{
 				transformedPoints.push_back(transform.transformPoint(point));
+				//transformedPoints.push_back((point));
 			}
 			return transformedPoints;
 		}
@@ -174,6 +179,79 @@ namespace QSFML
 		Utilities::AABB Shape::getGlobalBounds() const
 		{
 			return Utilities::AABB::getFrame(getTransformedPoints());
+		}
+
+		void Shape::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
+		{
+			
+			QSFML_UNUSED(target);
+			QSFML_UNUSED(states);
+
+			if (m_points.size() == 0)
+				return;
+
+			
+			// Apply the transform to the gl context
+			glPushMatrix(); // Save the current transformation matrix
+			// Apply SFML transform
+	
+			glMultMatrixf(states.transform.getMatrix());
+
+			
+			// use gl Calls. Fill the shape if fill is true
+			if (m_fill)
+			{
+				glBegin(GL_TRIANGLE_FAN);
+				glColor3f(m_fillColor.r / 255.0f, m_fillColor.g / 255.0f, m_fillColor.b / 255.0f);
+				for (const auto& point : m_points)
+				{
+					glVertex2f(point.x, point.y);
+				}
+				glEnd();
+			}
+			// use gl calls. Draw the outline if outline is true
+			if (m_outline)
+			{
+				glBegin(GL_LINE_STRIP);
+				glColor3f(m_outlineColor.r / 255.0f, m_outlineColor.g / 255.0f, m_outlineColor.b / 255.0f);
+				for (const auto& point : m_points)
+				{
+					glVertex2f(point.x, point.y);
+				}
+				glVertex2f(m_points[0].x, m_points[0].y);
+				glEnd();
+			}
+			glPopMatrix(); // Restore the original transformation matrix
+			
+			
+			
+			/*
+			QSFML_UNUSED(states);
+			//std::vector<sf::Vector2f> transformedPoints = getTransformedPoints();
+			if (m_points.size() == 0)
+			{
+				return;
+			}
+			std::vector<sf::Vertex> transformedVertecies;
+			transformedVertecies.reserve(m_points.size() + 1);
+			for (const auto& point : m_points)
+			{
+				transformedVertecies.push_back(sf::Vertex(point, m_fillColor));
+			}
+			transformedVertecies.push_back(sf::Vertex(m_points[0], m_fillColor));
+			if (m_fill)
+			{
+				target.draw(&transformedVertecies[0], transformedVertecies.size(), sf::TriangleFan, states);
+			}
+			if (m_outline)
+			{
+				for (auto& vertex : transformedVertecies)
+				{
+					vertex.color = m_outlineColor;
+				}
+				target.draw(&transformedVertecies[0], transformedVertecies.size(), sf::LineStrip, states);
+			}*/
+			
 		}
 
 		void Shape::updateTranformedPoints()

@@ -274,7 +274,7 @@ namespace QSFML
 
 		void ObjectQuadTree::Tree::insert(TreeItem& item)
 		{
-			AABB objBB = item.obj->getBoundingBox();
+			const AABB &objBB = item.obj->getBoundingBox();
 			if (m_enableChilds)
 			{
 				if (m_childAreas[0].contains(objBB))
@@ -315,7 +315,7 @@ namespace QSFML
 		{
 			for (auto obj : m_objects)
 			{
-				if (obj->getBoundingBox().intersects(area))
+				if (obj->getBoundingBoxNoUpdate().intersects(area))
 					container.push_back(obj);
 			}
 			if (m_childTrees)
@@ -384,6 +384,7 @@ namespace QSFML
 		void ObjectQuadTree::Tree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
 												   bool onlyFirstCollision)
 		{
+			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);
 			checkCollisionsSingleLayerSelf(collisions, onlyFirstCollision);
 			if (!m_childTrees)
 				return;
@@ -418,25 +419,27 @@ namespace QSFML
 		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(std::vector<Utilities::Collisioninfo>& collisions,
 																	  bool onlyFirstCollision)
 		{
+			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
 			Tree& tree0 = m_childTrees[0];
 			Tree& tree1 = m_childTrees[1];
 			Tree& tree2 = m_childTrees[2];
 			Tree& tree3 = m_childTrees[3];
 			for (auto objA : m_objects)
 			{
-				if (objA->getBoundingBox().intersects(m_childAreas[0]))
+				const AABB& bb = objA->getBoundingBoxNoUpdate();
+				if (bb.intersects(m_childAreas[0]))
 				{
 					tree0.checkCollision(objA, collisions, onlyFirstCollision);
 				}
-				if (objA->getBoundingBox().intersects(m_childAreas[1]))
+				if (bb.intersects(m_childAreas[1]))
 				{
 					tree1.checkCollision(objA, collisions, onlyFirstCollision);
 				}
-				if (objA->getBoundingBox().intersects(m_childAreas[2]))
+				if (bb.intersects(m_childAreas[2]))
 				{
 					tree2.checkCollision(objA, collisions, onlyFirstCollision);
 				}
-				if (objA->getBoundingBox().intersects(m_childAreas[3]))
+				if (bb.intersects(m_childAreas[3]))
 				{
 					tree3.checkCollision(objA, collisions, onlyFirstCollision);
 				}
@@ -447,11 +450,12 @@ namespace QSFML
 		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(size_t index, std::vector<Utilities::Collisioninfo>& collisions,
 															          bool onlyFirstCollision)
 		{
+			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
 			Tree& tree = m_childTrees[index];
 			AABB& box = m_childAreas[index];
 			for (auto objA : m_objects)
 			{
-				if (objA->getBoundingBox().intersects(box))
+				if (objA->getBoundingBoxNoUpdate().intersects(box))
 				{
 					tree.checkCollision(objA, collisions, onlyFirstCollision);
 				}
@@ -461,6 +465,7 @@ namespace QSFML
 			std::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision)
 		{
+			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_4);
 			for (auto obj : m_objects)
 			{
 				other->checkCollision(obj, collisions, onlyFirstCollision);

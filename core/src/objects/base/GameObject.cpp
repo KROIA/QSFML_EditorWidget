@@ -1312,6 +1312,7 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_TEXT("Name", getName());
     states.transform *= getTransform();
+    //states.transform = sf::Transform();
 
     for (const auto& seq : m_drawOrder)
     {

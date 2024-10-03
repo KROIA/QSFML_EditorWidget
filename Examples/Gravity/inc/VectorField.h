@@ -1,6 +1,7 @@
 #pragma once
 
 #include "QSFML_EditorWidget.h"
+#include <SFML/OpenGL.hpp>
 #include <unordered_map>
 using namespace QSFML;
 
@@ -21,18 +22,66 @@ public:
 		
 	}
 
+	void setField(const std::vector<FieldElement>& field)
+	{
+		m_field = field;
+	}
+
+	const std::vector<FieldElement>& getField() const
+	{
+		return m_field;
+	}
+	FieldElement& getFieldElement(size_t index)
+	{
+		return m_field[index];
+	}
+	size_t getFieldSize() const
+	{
+		return m_field.size();
+	}
+
+	// Iterator
+	std::vector<FieldElement>::iterator begin()
+	{
+		return m_field.begin();
+	}
+	std::vector<FieldElement>::iterator end()
+	{
+		return m_field.end();
+	}
+
+	// Const Iterator
+	std::vector<FieldElement>::const_iterator begin() const
+	{
+		return m_field.begin();
+	}
+	std::vector<FieldElement>::const_iterator end() const
+	{
+		return m_field.end();
+	}
+
+
 	void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override
 	{
-		for(auto& el : m_field)
+		glPushMatrix(); // Save the current transformation matrix
+		// Apply SFML transform
+		glMultMatrixf(states.transform.getMatrix());
+		glBegin(GL_LINES);
+		for (const auto& el : m_field)
 		{
-			sf::Vertex line[] =
+			if (isVisible(el.position, target) || isVisible(el.position + el.direction, target))
 			{
-				sf::Vertex(el.position, el.color),
-				sf::Vertex(el.position + el.direction, el.color)
-			};
-			target.draw(line, 2, sf::Lines);
+				glColor3f(el.color.r / 255.0f, el.color.g / 255.0f, el.color.b / 255.0f);
+				glVertex2f(el.position.x, el.position.y);
+				glVertex2f(el.position.x + el.direction.x, el.position.y + el.direction.y);
+			}
 		}
+		glEnd();
+		glPopMatrix(); // Restore the previous transformation matrix
 	}
+
+	private:
+
 
 	std::vector<FieldElement> m_field;
 };
