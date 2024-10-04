@@ -22,6 +22,9 @@ namespace Factories
 	QSFML::Objects::GameObjectPtr randomLinesObject(
 		size_t lines);
 
+	QSFML::Objects::GameObjectPtr randomPathObject(
+		size_t length);
+
 	QSFML::Objects::GameObjectPtr randomPointsObject(
 		size_t points);
 }

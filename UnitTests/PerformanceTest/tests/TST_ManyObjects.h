@@ -19,11 +19,11 @@ public:
 		: Test("TST_ManyObjects")
 		, m_tree(nullptr, QSFML::Utilities::AABB({ 0,0 }, { 800,600 }), 4)
 	{
-		//ADD_TEST(TST_ManyObjects::drawShapseTest);
-		//ADD_TEST(TST_ManyObjects::drawLinesTest);
-		//ADD_TEST(TST_ManyObjects::drawPathTest);
+		ADD_TEST(TST_ManyObjects::drawShapseTest);
+		ADD_TEST(TST_ManyObjects::drawLinesTest);
+		ADD_TEST(TST_ManyObjects::drawPathTest);
 		ADD_TEST(TST_ManyObjects::drawPointsTest);
-		//ADD_TEST(TST_ManyObjects::collisionTest);
+		ADD_TEST(TST_ManyObjects::collisionTest);
 
 
 		setBreakOnFail(false);
@@ -31,7 +31,7 @@ public:
 		connect(&m_stopTimer, &QTimer::timeout, this, &TST_ManyObjects::onTimeout);
 		
 
-		m_stopTimer.setInterval(10000);
+		m_stopTimer.setInterval(1000);
 	}
 
 private slots:
@@ -113,9 +113,10 @@ private:
 	{ 
 	
 	}
-	TEST_FUNCTION(processStats)
+	//TEST_FUNCTION(processStats)
+	void processStats(TestResults& results)
 	{
-		TEST_START(results);
+		//TEST_START(results);
 		TEST_MESSAGE("Stats:");
 
 		double averageFPS = 0;
@@ -151,7 +152,8 @@ private:
 	// Tests
 	TEST_FUNCTION(drawShapseTest)
 	{
-		TEST_START(results);
+		TEST_START;
+		m_currentResults = &results;
 		size_t objectCount = 100;
 		size_t verteciesCount = 30;
 
@@ -179,7 +181,7 @@ private:
 
 	TEST_FUNCTION(drawLinesTest)
 	{
-		TEST_START(results);
+		TEST_START;
 		m_currentResults = &results;
 		size_t objectCount = 100;
 		size_t linesCount = 1000;
@@ -205,9 +207,10 @@ private:
 
 	TEST_FUNCTION(drawPathTest)
 	{
-		TEST_START(results);
+		TEST_START;
+		m_currentResults = &results;
 		size_t objectCount = 100;
-		size_t linesCount = 1000;
+		size_t length = 10000;
 
 		QSFML::Scene::setProfilerOutputFileName("drawPathTest.prof");
 		QSFML::Scene* scene = createDefaultScene();
@@ -215,7 +218,7 @@ private:
 
 		for (size_t i = 0; i < objectCount; ++i)
 		{
-			scene->addObject(Factories::randomLinesObject(linesCount));
+			scene->addObject(Factories::randomPathObject(length));
 		}
 
 		qApp->exec();
@@ -229,11 +232,11 @@ private:
 
 	TEST_FUNCTION(drawPointsTest)
 	{
-		TEST_START(results);
+		TEST_START;
 		m_currentResults = &results;
 		size_t pointCount = 10000;
 
-		QSFML::Scene::setProfilerOutputFileName("drawLinesTest.prof");
+		QSFML::Scene::setProfilerOutputFileName("drawPointsTest.prof");
 		QSFML::Scene* scene = createDefaultScene();
 		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
 
@@ -253,7 +256,8 @@ private:
 
 	TEST_FUNCTION(collisionTest)
 	{
-		TEST_START(results);
+		TEST_START;
+		m_currentResults = &results;
 		size_t objectCount = 10000;
 		size_t verteciesCount = 5;
 

@@ -439,7 +439,7 @@ void Collider::Painter::drawComponent(sf::RenderTarget& target,
         return;
     
     
-    //glLoadMatrixf(states.transform.getMatrix());
+    glLoadMatrixf(sf::Transform::Identity.getMatrix());
     glBegin(GL_LINE_LOOP);
 	glColor4ub(m_colliderColor.r, m_colliderColor.g, m_colliderColor.b, m_colliderColor.a);
     for (size_t i = 0; i < m_collider->m_absoluteVertices.size(); ++i)

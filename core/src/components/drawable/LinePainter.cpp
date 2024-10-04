@@ -23,25 +23,50 @@ LinePainter::LinePainter(const LinePainter &other)
 {
 
 }
+
+void LinePainter::LineData::updateGeometry()
+{
+    sf::Vector2f direction = end - start;
+    float dist = sqrt(direction.x * direction.x + direction.y * direction.y);
+    if (dist == 0)
+    {
+        points[0] = start;
+        points[1] = start;
+        points[2] = start;
+        points[3] = start;
+		return;
+    }
+    sf::Vector2f unitDirection = direction / dist;
+    sf::Vector2f unitPerpendicular(-unitDirection.y, unitDirection.x);
+    sf::Vector2f offset = (thickness * 0.5f) * unitPerpendicular;
+
+    points[0] = start + offset;
+    points[1] = end + offset;
+    points[2] = end - offset;
+    points[3] = start - offset;
+}
+
 void LinePainter::setPoints(const sf::Vector2f& start, const sf::Vector2f& end)
 {
 	m_lines = { {start, end, m_color, m_thickness} };
+	m_lines[0].updateGeometry();
 }
 void LinePainter::setPoints(size_t index, const sf::Vector2f& start, const sf::Vector2f& end)
 {
    LineData &data = m_lines[index];
    data.start = start;
    data.end = end;
+   data.updateGeometry();
 }
 void LinePainter::addLine(const sf::Vector2f& start, const sf::Vector2f& end, const sf::Color& col, float thickness)
 {
-    LineData data = {start, end, col, thickness};
-    m_lines.push_back(data);
+    m_lines.push_back({ start, end, col, thickness });
+	m_lines.back().updateGeometry();
 }
 void LinePainter::addLine(const sf::Vector2f& start, const sf::Vector2f& end)
 {
-    LineData data = {start, end, m_color, m_thickness};
-    m_lines.push_back(data);
+    m_lines.push_back({ start, end, m_color, m_thickness });
+	m_lines.back().updateGeometry();
 }
 const sf::Vector2f &LinePainter::getStartPos() const
 {
@@ -65,11 +90,13 @@ void LinePainter::setThickness(float thickness)
     for (auto& line : m_lines)
     {
 		line.thickness = thickness;
+		line.updateGeometry();
 	}
 }
 void LinePainter::setThickness(size_t index, float thickness)
 {
     m_lines[index].thickness = thickness;
+	m_lines[index].updateGeometry();
 }
 float LinePainter::getThickness() const
 {
@@ -113,32 +140,16 @@ void LinePainter::drawComponent(sf::RenderTarget& target,
     // Iterate through the lines and draw each one using OpenGL
     for (auto& line : m_lines)
     {
-        sf::Vector2f direction = line.end - line.start;
-        float dist = sqrt(direction.x * direction.x + direction.y * direction.y);
-        if (dist == 0)
-            continue;
-
-        sf::Vector2f unitDirection = direction / dist;
-        sf::Vector2f unitPerpendicular(-unitDirection.y, unitDirection.x);
-        sf::Vector2f offset = (line.thickness / 2.f) * unitPerpendicular;
-
-        // Compute the four vertices of the quad
-        sf::Vector2f vertices[4];
-        vertices[0] = line.start + offset;
-        vertices[1] = line.end + offset;
-        vertices[2] = line.end - offset;
-        vertices[3] = line.start - offset;
-
         // Set the color for the line
         sf::Color color = line.color;
 
         // Draw the quad using OpenGL immediate mode
         glBegin(GL_QUADS);
         glColor4ub(color.r, color.g, color.b, color.a); // Set color with RGBA
-        glVertex2f(vertices[0].x, vertices[0].y);
-        glVertex2f(vertices[1].x, vertices[1].y);
-        glVertex2f(vertices[2].x, vertices[2].y);
-        glVertex2f(vertices[3].x, vertices[3].y);
+        glVertex2f(line.points[0].x, line.points[0].y);
+        glVertex2f(line.points[1].x, line.points[1].y);
+        glVertex2f(line.points[2].x, line.points[2].y);
+        glVertex2f(line.points[3].x, line.points[3].y);
         glEnd();
     }
 #else    

@@ -54,6 +54,7 @@ namespace QSFML
             sf::Color m_color;
 
             std::vector<sf::Vertex> m_vertecies;
+
         };
     }
 }

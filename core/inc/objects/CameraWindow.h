@@ -40,6 +40,12 @@ namespace QSFML
 			const sf::Vector2u &getThisCameraOldSize() const { return m_oldViewSize; }
 			const sf::Vector2f &getThisCameraDpiScale() const { return m_dpiScale; }
 
+			bool isOpen() const {
+				if (m_window)
+					return m_window->isOpen();
+				return false;
+			}
+
 			void enableFrameTimer(bool enable);
 
 			/*

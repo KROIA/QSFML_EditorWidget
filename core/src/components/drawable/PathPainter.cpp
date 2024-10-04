@@ -1,6 +1,7 @@
 #include "components/drawable/PathPainter.h"
 #include <math.h>
 #include <SFML/Graphics.hpp>
+
 #include <SFML/OpenGL.hpp>
 
 namespace QSFML
@@ -77,13 +78,43 @@ namespace QSFML
         {
 #ifdef QSFML_USE_GL_DRAW
 			QSFML_UNUSED(target);
-            glLoadMatrixf(states.transform.getMatrix());
+            /*glLoadMatrixf(states.transform.getMatrix());
             glBegin(GL_LINE_STRIP);
-            for (const auto& el : m_vertecies)
+			const sf::Vertex* data = m_vertecies.data();
+            for (size_t i=0; i< m_vertecies.size(); ++i)
             {
+				const auto& el = data[i];
                 glColor4ub(el.color.r, el.color.g, el.color.b, el.color.a);
                 glVertex2f(el.position.x, el.position.y);
             }
+            glEnd();*/
+
+            glLoadMatrixf(states.transform.getMatrix());
+
+            // Start drawing the line strip
+            glBegin(GL_LINE_STRIP);
+
+            // Retrieve the data pointer
+            const sf::Vertex* data = m_vertecies.data();
+
+            // Initialize previous color to a value that is different from any vertex color.
+            sf::Color previousColor = sf::Color(0, 0, 0, 0);
+
+            for (size_t i = 0; i < m_vertecies.size(); ++i)
+            {
+                const auto& el = data[i];
+
+                // Only set the color if it's different from the previous vertex
+                if (el.color != previousColor)
+                {
+                    glColor4ub(el.color.r, el.color.g, el.color.b, el.color.a);
+                    previousColor = el.color;
+                }
+
+                // Set the vertex position
+                glVertex2f(el.position.x, el.position.y);
+            }
+
             glEnd();
 #else
 			target.draw(m_vertecies.data(), m_vertecies.size(), sf::LineStrip, states);

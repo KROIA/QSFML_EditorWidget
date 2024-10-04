@@ -62,8 +62,11 @@ namespace QSFML
         CameraWindow::~CameraWindow()
         {
             m_frameTimer.stop();
-            m_window->close();
-            delete m_window;
+            if (m_window)
+            {
+                m_window->close();
+                delete m_window;
+            }
         }
 
         void CameraWindow::setThisCameraView(const sf::View& view)
@@ -258,13 +261,26 @@ namespace QSFML
         }
         void CameraWindow::pollEvents()
         {
+			size_t lastSize = m_events.size();
             m_events.clear();
 			if (!m_window) return;
-            m_events.reserve(20);
+            m_events.reserve(lastSize+5);
             sf::Event event;
+            bool wasClosed = false;
             while (m_window->pollEvent(event))
             {
+                if (event.type == sf::Event::Closed)
+                {
+                    wasClosed = true;
+					
+                }
                 m_events.push_back(event);
+            }
+
+            if (wasClosed)
+            {
+                m_frameTimer.stop();
+                close();
             }
         }
 
@@ -317,6 +333,7 @@ namespace QSFML
                 // Create the SFML window with the widget handle
                 m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(), m_settings);
                 m_window->setFramerateLimit(0);
+                //m_window->setVerticalSyncEnabled(false);
                 //m_view = m_window->getView();
 
                
@@ -348,10 +365,22 @@ namespace QSFML
         void CameraWindow::closeEvent(QCloseEvent*)
         {
             m_frameTimer.stop();
+            if (m_window)
+            {
+                m_window->close();
+                delete m_window;
+                m_window = nullptr;
+            }
         }
         void CameraWindow::hideEvent(QHideEvent*)
         {
 			m_frameTimer.stop();
+            if (m_window)
+            {
+                m_window->close();
+                delete m_window;
+                m_window = nullptr;
+            }
         }
 
 

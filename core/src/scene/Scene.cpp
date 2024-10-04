@@ -449,7 +449,8 @@ namespace QSFML {
 
         m_paint_t1 = t1;
 
-		paint(*m_cameras.defaultCamera->getRenderWindow());
+		if (m_cameras.defaultCamera->isOpen())
+		    paint(*m_cameras.defaultCamera->getRenderWindow());
 		/*for (auto camera : m_cameras)
 		{
 			QSFMLP_SCENE_BLOCK("Repaint camera", QSFML_COLOR_STAGE_5);

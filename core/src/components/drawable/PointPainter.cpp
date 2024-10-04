@@ -173,13 +173,19 @@ namespace QSFML
 #ifdef QSFML_USE_GL_DRAW
             QSFML_UNUSED(target);
             glLoadMatrixf(states.transform.getMatrix());
+            sf::Color previousColor = sf::Color(0, 0, 0, 0);
             
             for (auto& point : m_points)
             {
                 if (point.m_isDirty)
                     point.updateVertecies(m_verteciesCount);
                 glBegin(GL_TRIANGLE_FAN);
-				glColor4ub(point.m_color.r, point.m_color.g, point.m_color.b, point.m_color.a);
+				//glColor4ub(point.m_color.r, point.m_color.g, point.m_color.b, point.m_color.a);
+                if (point.m_color != previousColor)
+                {
+                    glColor4ub(point.m_color.r, point.m_color.g, point.m_color.b, point.m_color.a);
+                    previousColor = point.m_color;
+                }
 				for (auto& vertex : point.m_vertecies)
 				{
 					glVertex2f(vertex.x, vertex.y);
