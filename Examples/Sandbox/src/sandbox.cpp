@@ -69,9 +69,10 @@ void addShape(Scene* scene)
             //sf::Transform t = shape->getTransform();
             //t.rotate(obj->getDeltaT()*300);
             //shape->setTransform(t);
-            shape->rotate(obj->getDeltaT() * 300);
+            //shape->rotate(obj->getDeltaT() * 300);
 
             testRay->setDirection(obj->getMouseWorldPosition() - testRay->getPosition());
+            //testRay->setDirection(sf::Vector2f(1,1));
             testRay->normalize();
             float d1;
             size_t d2;
@@ -190,7 +191,7 @@ SandBox::SandBox(QWidget *parent)
     m_Scene_1 = nullptr;
     m_Scene_2 = nullptr;
     
-    if(false)
+    if(true)
     {
         SceneSettings settings;
         //settings.layout.autoAjustSize = false;
@@ -338,15 +339,15 @@ SandBox::SandBox(QWidget *parent)
 
         
 
-        //m_Scene_2->addObject(obj);
+        m_Scene_2->addObject(obj);
         
 
 
 
-       // addLineChart(m_Scene_2);
+        addLineChart(m_Scene_2);
         addMouseCollider(m_Scene_2);
         addShape(m_Scene_2);
-       // addPerlinNoise(m_Scene_2);
+        addPerlinNoise(m_Scene_2);
         addCar(m_Scene_2, settings.contextSettings, ui->secondCamera_frame);
 
         m_Scene_2->applyObjectChanges();

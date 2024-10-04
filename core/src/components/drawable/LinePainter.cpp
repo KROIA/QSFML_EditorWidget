@@ -102,11 +102,9 @@ const sf::Color& LinePainter::getColor(size_t index) const
 void LinePainter::drawComponent(sf::RenderTarget& target,
                         sf::RenderStates states) const
 {
-    /*
+#ifdef QSFML_USE_GL_DRAW
     QSFML_UNUSED(target);
-    glPushMatrix(); // Save the current transformation matrix
-    // Apply SFML transform
-    glMultMatrixf(states.transform.getMatrix());
+    glLoadMatrixf(states.transform.getMatrix());
 
     // Enable blending to match SFML's alpha blending
     glEnable(GL_BLEND);
@@ -143,10 +141,7 @@ void LinePainter::drawComponent(sf::RenderTarget& target,
         glVertex2f(vertices[3].x, vertices[3].y);
         glEnd();
     }
-
-    glPopMatrix(); // Restore the original transformation matrix
-    */
-    
+#else    
     for (auto& line : m_lines)
     {
         sf::Vertex m_relativeVertices[4];
@@ -167,6 +162,7 @@ void LinePainter::drawComponent(sf::RenderTarget& target,
 			m_relativeVertices[i].color = line.color;
 		target.draw(m_relativeVertices,4,sf::Quads, states);
     }
+#endif
 }
 }
 }

@@ -2,6 +2,8 @@
 #include "utilities/VectorOperations.h"
 #include "components/drawable/Shape.h"
 
+#include <SFML/OpenGL.hpp>
+
 namespace QSFML
 {
 	namespace Utilities
@@ -438,11 +440,8 @@ namespace QSFML
 		void Ray::RayPainter::addLine(const sf::Vector2f& pointA, const sf::Vector2f& pointB)
 		{
 			LinePainter line;
-			line.m_line[0].position = pointA;
-			line.m_line[1].position = pointB;
-
-			line.m_line[0].color = m_lineColor;
-			line.m_line[1].color = m_lineColor;
+			line.line[0] = pointA;
+			line.line[1] = pointB;
 
 			m_lines.push_back(line);
 		}
@@ -450,10 +449,40 @@ namespace QSFML
 		void Ray::RayPainter::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			QSFML_UNUSED(states);
-			states.transform = sf::Transform();
+#ifdef QSFML_USE_GL_DRAW
+			QSFML_UNUSED(target);
+			glBegin(GL_LINES);
+			glColor4ub(m_lineColor.r, m_lineColor.g, m_lineColor.b, m_lineColor.a);
 			for (size_t i = 0; i < m_lines.size(); ++i)
 			{
-				target.draw(m_lines[i].m_line, 2, sf::Lines, states);
+				const LinePainter& line = m_lines[i];
+				
+				glVertex2f(line.line[0].x, line.line[0].y);
+				//glColor4ub(line.m_line[1].color.r, line.m_line[1].color.g, line.m_line[1].color.b, line.m_line[1].color.a);
+				glVertex2f(line.line[1].x, line.line[1].y);
+			}
+			glEnd();
+
+			glBegin(GL_POINTS);
+			glColor4ub(m_pointColor.r, m_pointColor.g, m_pointColor.b, m_pointColor.a);
+			for (size_t i = 0; i < m_points.size(); ++i)
+			{
+				const sf::Vector2f& point = m_points[i];
+				glVertex2f(point.x, point.y);
+			}
+			glEnd();
+			m_lines.clear();
+			m_points.clear();
+#else
+			//states.transform = m_ra();
+			for (size_t i = 0; i < m_lines.size(); ++i)
+			{
+				sf::Vertex line[2];
+				line[0].position = m_lines[i].line[0];
+				line[1].position = m_lines[i].line[1];
+				line[0].color = m_lineColor;
+				line[1].color = m_lineColor;
+				target.draw(line, 2, sf::Lines);
 			}
 			
 			sf::CircleShape point(m_pointRadius);
@@ -462,10 +491,11 @@ namespace QSFML
 			for (size_t i = 0; i < m_points.size(); ++i)
 			{
 				point.setPosition(m_points[i]);
-				target.draw(point, states);
+				target.draw(point);
 			}
 			m_lines.clear();
 			m_points.clear();
+#endif
 		}
 
 	}

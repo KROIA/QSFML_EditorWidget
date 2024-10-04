@@ -63,21 +63,19 @@ public:
 
 	void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override
 	{
-		glPushMatrix(); // Save the current transformation matrix
 		// Apply SFML transform
-		glMultMatrixf(states.transform.getMatrix());
+		glLoadMatrixf(states.transform.getMatrix());
 		glBegin(GL_LINES);
 		for (const auto& el : m_field)
 		{
 			if (isVisible(el.position, target) || isVisible(el.position + el.direction, target))
 			{
-				glColor3f(el.color.r / 255.0f, el.color.g / 255.0f, el.color.b / 255.0f);
+				glColor4ub(el.color.r, el.color.g, el.color.b, el.color.a);
 				glVertex2f(el.position.x, el.position.y);
 				glVertex2f(el.position.x + el.direction.x, el.position.y + el.direction.y);
 			}
 		}
 		glEnd();
-		glPopMatrix(); // Restore the previous transformation matrix
 	}
 
 	private:

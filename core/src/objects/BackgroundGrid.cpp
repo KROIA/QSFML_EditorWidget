@@ -83,41 +83,26 @@ namespace QSFML
             const std::vector<sf::Color>& alternatingColors,
             sf::RenderStates states) const
         {
-
-            /*QSFML_UNUSED(target);
+#ifdef QSFML_USE_GL_DRAW
+            QSFML_UNUSED(target);
             QSFML_UNUSED(alternatingColors);
 
-            // Apply the transform to the gl context
-            glPushMatrix(); // Save the current transformation matrix
-            // Apply SFML transform
-            glMultMatrixf(states.transform.getMatrix());
-
+            glLoadMatrixf(states.transform.getMatrix());
 			glBegin(GL_LINES);
 
 			
             size_t colorIndex = 0;
             size_t colorCount = alternatingColors.size();
-            struct GLCol
-            {
-				GLfloat r;
-				GLfloat g;
-				GLfloat b;
-            };
-			std::vector<GLCol> glAlternatingColors(colorCount);
-			for (size_t i = 0; i < colorCount; ++i)
-			{
-				glAlternatingColors[i].r = (GLfloat)alternatingColors[i].r / 255.f;
-				glAlternatingColors[i].g = (GLfloat)alternatingColors[i].g / 255.f;
-				glAlternatingColors[i].b = (GLfloat)alternatingColors[i].b / 255.f;
-			}
+            
 
 			
 			for (int x = area.left; x <= area.left + area.width; x += spacing)
 			{
                 
-                glColor3f(glAlternatingColors[colorIndex].r,
-                    glAlternatingColors[colorIndex].g,
-                    glAlternatingColors[colorIndex].b);
+                glColor4ub(alternatingColors[colorIndex].r,
+                           alternatingColors[colorIndex].g,
+                           alternatingColors[colorIndex].b,
+                           alternatingColors[colorIndex].a);
 
 				glVertex2i(x, area.top);
 				glVertex2i(x, area.top + area.height);
@@ -127,25 +112,18 @@ namespace QSFML
 			for (int y = area.top; y <= area.top + area.height; y += spacing)
 			{
                 
-                glColor3f(glAlternatingColors[colorIndex].r,
-                    glAlternatingColors[colorIndex].g,
-                    glAlternatingColors[colorIndex].b);
+                glColor4ub(alternatingColors[colorIndex].r,
+                          alternatingColors[colorIndex].g,
+                          alternatingColors[colorIndex].b,
+                          alternatingColors[colorIndex].a);
 				glVertex2i(area.left, y);
 				glVertex2i(area.left + area.width, y);
                 colorIndex = (colorIndex + 1) % colorCount;
 			}
             
             glEnd();
-
-
-
-
-            glPopMatrix(); // Restore the original transformation matrix
-
-            */
-
             
-
+#else
             sf::Vector2f start((float)area.left, (float)area.top);
             sf::Vector2f end((float)area.left,
                 (float)(area.top + area.height));
@@ -195,6 +173,8 @@ namespace QSFML
                 target.draw(line, 2, sf::Lines, states);
 
             }
+
+#endif
             
         }
     }

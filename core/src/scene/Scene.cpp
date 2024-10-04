@@ -11,6 +11,7 @@
 #include "objects/CameraWindow.h"
 
 #include <QDebug>
+#include <SFML/OpenGL.hpp>
 
 namespace QSFML {
     const static size_t defaultFontPathsSize = 7;
@@ -481,6 +482,24 @@ namespace QSFML {
     void Scene::paint(sf::RenderWindow& target)
     {
         QSFMLP_SCENE_BLOCK("Repaint camera", QSFML_COLOR_STAGE_5);
+
+        // Set the viewport
+        target.setActive(true);
+
+        // In case a user only draws using gl calls, we need to set the viewport first.
+        // SFML would handle this if sfml draw calls are used.
+		const sf::View& view = target.getView();
+        sf::IntRect viewport = target.getViewport(view);
+        int top = static_cast<int>(target.getSize().y) - (viewport.top + viewport.height);
+        glViewport(viewport.left, top, viewport.width, viewport.height);
+
+        // Set the projection matrix
+        glMatrixMode(GL_PROJECTION);
+        glLoadMatrixf(view.getTransform().getMatrix());
+
+        // Go back to model-view mode
+        glMatrixMode(GL_MODELVIEW);
+
         //QSFMLP_SCENE_TEXT("Camera", camera->getName().c_str());
         QSFMLP_SCENE_BLOCK("Clear Display", QSFML_COLOR_STAGE_6);
         target.clear(m_settings.colors.defaultBackground);
@@ -490,6 +509,7 @@ namespace QSFML {
         QSFMLP_SCENE_END_BLOCK;
         QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_8);
         target.display();
+        target.setActive(false);
         QSFMLP_SCENE_END_BLOCK;
     }
 

@@ -66,5 +66,5 @@
 #endif
 
 /// USER_SECTION_START 5
-
+#define QSFML_USE_GL_DRAW
 /// USER_SECTION_END

@@ -183,37 +183,34 @@ namespace QSFML
 
 		void Shape::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
 		{
-			
-			QSFML_UNUSED(target);
-			QSFML_UNUSED(states);
-
 			if (m_points.size() == 0)
 				return;
+#ifdef QSFML_USE_GL_DRAW
+			QSFML_UNUSED(target);
+			QSFML_UNUSED(states);
+			sf::Vector2f pos = states.transform.transformPoint({ 0, 0 });
 
-			
-			// Apply the transform to the gl context
-			glPushMatrix(); // Save the current transformation matrix
 			// Apply SFML transform
-	
-			glMultMatrixf(states.transform.getMatrix());
-
+			glLoadMatrixf(states.transform.getMatrix());
+			
 			
 			// use gl Calls. Fill the shape if fill is true
 			if (m_fill)
 			{
 				glBegin(GL_TRIANGLE_FAN);
-				glColor3f(m_fillColor.r / 255.0f, m_fillColor.g / 255.0f, m_fillColor.b / 255.0f);
+				glColor4ub(m_fillColor.r, m_fillColor.g, m_fillColor.b, m_fillColor.a);
 				for (const auto& point : m_points)
 				{
 					glVertex2f(point.x, point.y);
 				}
+				
 				glEnd();
 			}
 			// use gl calls. Draw the outline if outline is true
 			if (m_outline)
 			{
 				glBegin(GL_LINE_STRIP);
-				glColor3f(m_outlineColor.r / 255.0f, m_outlineColor.g / 255.0f, m_outlineColor.b / 255.0f);
+				glColor4ub(m_outlineColor.r, m_outlineColor.g, m_outlineColor.b, m_outlineColor.a);
 				for (const auto& point : m_points)
 				{
 					glVertex2f(point.x, point.y);
@@ -221,13 +218,7 @@ namespace QSFML
 				glVertex2f(m_points[0].x, m_points[0].y);
 				glEnd();
 			}
-			glPopMatrix(); // Restore the original transformation matrix
-			
-			
-			
-			/*
-			QSFML_UNUSED(states);
-			//std::vector<sf::Vector2f> transformedPoints = getTransformedPoints();
+#else
 			if (m_points.size() == 0)
 			{
 				return;
@@ -250,8 +241,8 @@ namespace QSFML
 					vertex.color = m_outlineColor;
 				}
 				target.draw(&transformedVertecies[0], transformedVertecies.size(), sf::LineStrip, states);
-			}*/
-			
+			}
+#endif
 		}
 
 		void Shape::updateTranformedPoints()

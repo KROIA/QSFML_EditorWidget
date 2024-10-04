@@ -75,15 +75,19 @@ namespace QSFML
         void PathPainter::drawComponent(sf::RenderTarget& target,
                                         sf::RenderStates states) const
         {
-            //target; states;
-            //glBegin(GL_LINE_STRIP);
-            //for (const auto& el : m_vertecies)
-            //{
-            //    glColor3f(el.color.r / 255.0f, el.color.g / 255.0f, el.color.b / 255.0f);
-            //    glVertex2f(el.position.x, el.position.y);
-            //}
-            //glEnd();
+#ifdef QSFML_USE_GL_DRAW
+			QSFML_UNUSED(target);
+            glLoadMatrixf(states.transform.getMatrix());
+            glBegin(GL_LINE_STRIP);
+            for (const auto& el : m_vertecies)
+            {
+                glColor4ub(el.color.r, el.color.g, el.color.b, el.color.a);
+                glVertex2f(el.position.x, el.position.y);
+            }
+            glEnd();
+#else
 			target.draw(m_vertecies.data(), m_vertecies.size(), sf::LineStrip, states);
+#endif
         }
     }
 }

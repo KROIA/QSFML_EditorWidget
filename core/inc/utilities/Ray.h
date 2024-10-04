@@ -179,7 +179,7 @@ namespace QSFML
 			
 				struct LinePainter
 				{
-					sf::Vertex m_line[2];
+					sf::Vector2f line[2];
 				};
 				sf::Color m_pointColor;
 				sf::Color m_lineColor;

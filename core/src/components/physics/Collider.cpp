@@ -432,20 +432,16 @@ Collider::Painter::~Painter()
 void Collider::Painter::drawComponent(sf::RenderTarget& target,
                              sf::RenderStates states) const
 {
-    
+#ifdef QSFML_USE_GL_DRAW
     QSFML_UNUSED(target);
     QSFML_UNUSED(states);
-   // QSFMLP_COMPONENT_FUNCTION(QSFML_COLOR_STAGE_2);
     if (!m_collider)
         return;
-
-    // Apply the transform to the gl context
-    //glPushMatrix(); // Save the current transformation matrix
-    // Apply SFML transform
-    //glMultMatrixf(states.transform.getMatrix());
-    /*
-	glBegin(GL_LINE_LOOP);
-	glColor3f(m_colliderColor.r / 255.0f, m_colliderColor.g / 255.0f, m_colliderColor.b / 255.0f);
+    
+    
+    //glLoadMatrixf(states.transform.getMatrix());
+    glBegin(GL_LINE_LOOP);
+	glColor4ub(m_colliderColor.r, m_colliderColor.g, m_colliderColor.b, m_colliderColor.a);
     for (size_t i = 0; i < m_collider->m_absoluteVertices.size(); ++i)
 	{
 		glVertex2f(m_collider->m_absoluteVertices[i].x, m_collider->m_absoluteVertices[i].y);
@@ -454,17 +450,13 @@ void Collider::Painter::drawComponent(sf::RenderTarget& target,
 
     glBegin(GL_LINE_LOOP);
     // set color
-	glColor3f(m_aabbColor.r / 255.0f, m_aabbColor.g / 255.0f, m_aabbColor.b / 255.0f);
+	glColor4ub(m_aabbColor.r, m_aabbColor.g, m_aabbColor.b, m_aabbColor.a);
 	glVertex2f(m_collider->m_boundingBox.TL().x, m_collider->m_boundingBox.TL().y);
 	glVertex2f(m_collider->m_boundingBox.TR().x, m_collider->m_boundingBox.TR().y);
 	glVertex2f(m_collider->m_boundingBox.BR().x, m_collider->m_boundingBox.BR().y);
 	glVertex2f(m_collider->m_boundingBox.BL().x, m_collider->m_boundingBox.BL().y);
     glEnd();
-    */
-    //glPopMatrix(); // Restore the original transformation matrix
-    
-
-    
+#else
     QSFML_UNUSED(states);
     if (!m_collider)
         return;
@@ -490,6 +482,7 @@ void Collider::Painter::drawComponent(sf::RenderTarget& target,
         delete[] coll;
     }
     target.draw(aabb, 5, sf::LineStrip);
+#endif
     
 }
 void Collider::Painter::setColor(const sf::Color& color)
