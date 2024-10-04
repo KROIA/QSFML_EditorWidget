@@ -73,4 +73,21 @@ namespace Factories
 		}
 		return obj;
 	}
+
+	QSFML::Objects::GameObjectPtr randomPointsObject(
+		size_t points)
+	{
+		QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject("RandomLineObj");
+		QSFML::Components::PointPainter* painter = new QSFML::Components::PointPainter();
+		painter->setVerteciesCount(20);
+		obj->addComponent(painter);
+		for (size_t i = 0; i < points; ++i)
+		{
+			sf::Vector2f p1 = QSFML::Utilities::RandomEngine::getVector() * 1000.f;
+			float radius = QSFML::Utilities::RandomEngine::getFloat(1, 10);
+			sf::Color color = QSFML::Utilities::RandomEngine::getColor();
+			painter->addPoint(p1, radius, color);
+		}
+		return obj;
+	}
 }

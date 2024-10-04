@@ -1,5 +1,6 @@
 #include "components/drawable/PointPainter.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
 
 namespace QSFML
 {
@@ -11,20 +12,34 @@ namespace QSFML
 			{
                 //QSFMLP_COMPONENT_BLOCK("PointPainter::PointData::updateVertecies", QSFML_COLOR_STAGE_2);
 				//QSFMLP_COMPONENT_VALUE("vertexCount", vertexCount);
+#ifdef QSFML_USE_GL_DRAW
+				if (m_vertecies.size() != vertexCount)
+#else
                 if (m_vertecies.getVertexCount() != vertexCount)
+#endif
                 {
                     m_vertecies.clear();
 					m_vertecies.resize(vertexCount);
                 }
+#ifndef QSFML_USE_GL_DRAW
 				m_vertecies.setPrimitiveType(sf::PrimitiveType::TriangleFan);
+#endif
 				
 				float dAngle = (float)(2 * M_PI / vertexCount);
 				float angle = 0;
+#ifdef QSFML_USE_GL_DRAW
+				for (size_t i = 0; i < vertexCount; ++i)
+#else
 				for (size_t i=0; i< m_vertecies.getVertexCount(); ++i)
+#endif
 				{
+#ifdef QSFML_USE_GL_DRAW
+					sf::Vector2f& pos = m_vertecies[i];
+#else
 					sf::Vertex& vertex = m_vertecies[i];
 					vertex.color = m_color;
 					sf::Vector2f& pos = vertex.position;
+#endif
 					pos.x = cos(angle) * m_radius + m_position.x;
 					pos.y = sin(angle) * m_radius + m_position.y;
 					angle += dAngle;
@@ -153,16 +168,33 @@ namespace QSFML
         {
             QSFMLP_COMPONENT_FUNCTION(QSFML_COLOR_STAGE_1);
             QSFMLP_COMPONENT_VALUE("pointCount", m_points.size());
-            
             if (m_useGlobalPosition)
                 states = sf::RenderStates();
-
+#ifdef QSFML_USE_GL_DRAW
+            QSFML_UNUSED(target);
+            glLoadMatrixf(states.transform.getMatrix());
+            
+            for (auto& point : m_points)
+            {
+                if (point.m_isDirty)
+                    point.updateVertecies(m_verteciesCount);
+                glBegin(GL_TRIANGLE_FAN);
+				glColor4ub(point.m_color.r, point.m_color.g, point.m_color.b, point.m_color.a);
+				for (auto& vertex : point.m_vertecies)
+				{
+					glVertex2f(vertex.x, vertex.y);
+				}
+                glEnd();
+            }
+            
+#else
             for (auto& point : m_points)
             {
 				if (point.m_isDirty)
 				    point.updateVertecies(m_verteciesCount);
                 target.draw(point.m_vertecies, states);                
             }
+#endif
         }
     }
 }

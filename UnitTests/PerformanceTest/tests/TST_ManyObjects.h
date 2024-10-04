@@ -19,9 +19,10 @@ public:
 		: Test("TST_ManyObjects")
 		, m_tree(nullptr, QSFML::Utilities::AABB({ 0,0 }, { 800,600 }), 4)
 	{
-		ADD_TEST(TST_ManyObjects::drawShapseTest);
+		//ADD_TEST(TST_ManyObjects::drawShapseTest);
 		//ADD_TEST(TST_ManyObjects::drawLinesTest);
 		//ADD_TEST(TST_ManyObjects::drawPathTest);
+		ADD_TEST(TST_ManyObjects::drawPointsTest);
 		//ADD_TEST(TST_ManyObjects::collisionTest);
 
 
@@ -30,7 +31,7 @@ public:
 		connect(&m_stopTimer, &QTimer::timeout, this, &TST_ManyObjects::onTimeout);
 		
 
-		m_stopTimer.setInterval(1000);
+		m_stopTimer.setInterval(10000);
 	}
 
 private slots:
@@ -225,6 +226,29 @@ private:
 		processStats(results);
 	}
 
+
+	TEST_FUNCTION(drawPointsTest)
+	{
+		TEST_START(results);
+		m_currentResults = &results;
+		size_t pointCount = 10000;
+
+		QSFML::Scene::setProfilerOutputFileName("drawLinesTest.prof");
+		QSFML::Scene* scene = createDefaultScene();
+		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
+
+		
+		scene->addObject(Factories::randomPointsObject(pointCount));
+		
+
+
+		qApp->exec();
+		m_currentScene = nullptr;
+		m_currentResults = nullptr;
+		m_update.stop();
+		delete scene;
+		processStats(results);
+	}
 
 
 	TEST_FUNCTION(collisionTest)

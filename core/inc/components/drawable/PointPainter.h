@@ -35,7 +35,11 @@ namespace QSFML
 
                 void updateVertecies(size_t vertexCount) const;
 				mutable bool m_isDirty = true;
-				mutable sf::VertexArray m_vertecies;
+#ifdef QSFML_USE_GL_DRAW
+				mutable std::vector<sf::Vector2f> m_vertecies;
+#else
+                mutable sf::VertexArray m_vertecies;
+#endif
             };
 
             PointPainter(const std::string& name = "PointPainter");
