@@ -463,12 +463,24 @@ namespace QSFML
 			}
 			glEnd();
 
-			glBegin(GL_POINTS);
+			glBegin(GL_LINES);
 			glColor4ub(m_pointColor.r, m_pointColor.g, m_pointColor.b, m_pointColor.a);
 			for (size_t i = 0; i < m_points.size(); ++i)
 			{
 				const sf::Vector2f& point = m_points[i];
-				glVertex2f(point.x, point.y);
+				sf::Vector2f tl = point - sf::Vector2f(m_pointRadius, m_pointRadius);
+				sf::Vector2f tr = point + sf::Vector2f(m_pointRadius, -m_pointRadius);
+				sf::Vector2f bl = point + sf::Vector2f(-m_pointRadius, m_pointRadius);
+				sf::Vector2f br = point + sf::Vector2f(m_pointRadius, m_pointRadius);
+
+				// Draw cross on that point
+				glVertex2f(tl.x,tl.y);
+				glVertex2f(br.x,br.y);
+				glVertex2f(tr.x,tr.y);
+				glVertex2f(bl.x,bl.y);
+
+
+				//glVertex2f(point.x, point.y);
 			}
 			glEnd();
 			m_lines.clear();
