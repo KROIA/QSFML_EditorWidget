@@ -10,8 +10,10 @@ int main(int argc, char *argv[])
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
     QApplication a(argc, argv);
+	//QSFML::Profiler::start();
     ExampleScene* w = new ExampleScene();
     w->show();
+    QSFML::Scene::setProfilerOutputFileName("Gravity.prof");
 
     int ret = a.exec();
     delete w;

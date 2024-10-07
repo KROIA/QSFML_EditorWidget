@@ -4,7 +4,6 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include "Planet.h"
-#include "VectorField.h"
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -57,7 +56,7 @@ void ExampleScene::setupScene()
     m_Scene->getDefaultCamera()->setPosition(0, 1);
 
     GameObject* planetSystem = new GameObject("PlanetSystem");
-    VectorField *vectorField = new VectorField();
+    QSFML::Components::VectorFieldPainter *vectorField = new QSFML::Components::VectorFieldPainter();
     planetSystem->addComponent(vectorField);
     // CreateVectorField
 
@@ -66,13 +65,13 @@ void ExampleScene::setupScene()
 
     int spacing = 10;
    
-    std::vector<VectorField::FieldElement> field;
+    std::vector<QSFML::Components::VectorFieldPainter::Element> field;
     field.reserve((worldSize / spacing)*(worldSize / spacing));
     for (int x = -worldSize * 0.5; x < worldSize*0.5; x += spacing)
     {
         for (int y = -worldSize * 0.5; y < worldSize*0.5; y += spacing)
         {
-            VectorField::FieldElement element;
+            QSFML::Components::VectorFieldPainter::Element element;
             element.position = sf::Vector2f(x, y);
             element.direction = sf::Vector2f(0, 0);
             field.push_back(element);

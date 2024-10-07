@@ -22,6 +22,7 @@
 #include "components/drawable/PathPainter.h"
 #include "components/drawable/PointPainter.h"
 #include "components/drawable/VectorPainter.h"
+#include "components/drawable/VectorFieldPainter.h"
 #include "components/drawable/PixelPainter.h"
 #include "components/drawable/RectPainter.h"
 #include "components/drawable/Image.h"
