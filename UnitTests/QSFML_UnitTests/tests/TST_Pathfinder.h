@@ -20,7 +20,7 @@ public:
 
 
 		connect(&m_stopTimer, &QTimer::timeout, this, &TST_Pathfinder::onTimeout);
-		m_stopTimer.setInterval(1000);
+		//m_stopTimer.setInterval(10000);
 	}
 
 
