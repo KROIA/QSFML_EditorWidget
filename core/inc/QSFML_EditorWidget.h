@@ -45,6 +45,7 @@
 
 #include "utilities/AABB.h"
 #include "utilities/Ray.h"
+#include "utilities/PathFinder.h"
 #include "utilities/Updatable.h"
 #include "utilities/VectorOperations.h"
 #include "utilities/RandomEngine.h"

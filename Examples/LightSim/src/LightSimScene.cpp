@@ -137,15 +137,15 @@ void LightSimScene::setupScene()
         //m_convexLenss.push_back(lense);
         //brennweite = lense->getFocusLength();
     }*/
-   /* {
+   {
         ConvexLens* lense = new ConvexLens();
         //lense->setPos(sf::Vector2f(400, 200));
-        lense->setPos(sf::Vector2f(600, 250));
+        lense->setPosition(sf::Vector2f(600, 250));
         lense->setFocusLength(200);
         lense->setThickness(50);
         lense->setRotation(0);
         lense->setColor(sf::Color(200, 200, 200));
-        lense->serDiameter(200);
+        lense->setDiameter(200);
         lense->setRefractionIndexInside(refraction);
         m_Scene->addObject(lense);
         m_convexLenss.push_back(lense);
@@ -153,64 +153,64 @@ void LightSimScene::setupScene()
     
         {
              ConvexLens* lense = new ConvexLens();
-             lense->setPos(sf::Vector2f(300, 300));
+             lense->setPosition(sf::Vector2f(400, 300));
              lense->setFocusLength(100);
              lense->setRefractionIndexInside(1.5);
              lense->setRotation(0);
              lense->setColor(sf::Color(200, 200, 200));
-             lense->serDiameter(100);
+             lense->setDiameter(100);
              lense->setRotation(M_PI / 10);
              m_Scene->addObject(lense);
              m_convexLenss.push_back(lense);
          }
-         */
+         
     sf::Vector2f laserPos(0, 180);
     // Setup Laser
      /*{
         Laser* laser = new Laser();
-        laser->setPos(sf::Vector2f(0,110));
+        laser->setPosition(sf::Vector2f(0,110));
         laser->setDirection(sf::Vector2f(200,200) - laser->getPos());
         m_Scene->addObject(laser);
         m_lasers.push_back(laser);
     }
       {
           Laser* laser = new Laser();
-          laser->setPos(sf::Vector2f(0, 110));
+          laser->setPosition(sf::Vector2f(0, 110));
           laser->setDirection(sf::Vector2f(1,0));
           m_Scene->addObject(laser);
           m_lasers.push_back(laser);
       }*/
    /* {
         Laser* laser = new Laser();
-        laser->setPos(sf::Vector2f(-200, 10));
+        laser->setPosition(sf::Vector2f(-200, 10));
         laser->setDirection(sf::Vector2f(1, 0));
         m_Scene->addObject(laser);
         m_lasers.push_back(laser);
     }*/
    /* {
         Laser* laser = new Laser();
-        laser->setPos(laserPos);
+        laser->setPosition(laserPos);
         laser->setDirection(sf::Vector2f(1, 0));
         m_Scene->addObject(laser);
         m_lasers.push_back(laser);
     }
    {
         Laser* laser = new Laser();
-        laser->setPos(laserPos);
+        laser->setPosition(laserPos);
         laser->setDirection(sf::Vector2f(1, 0.1));
         m_Scene->addObject(laser);
         m_lasers.push_back(laser);
     }
    {
         Laser* laser = new Laser();
-        laser->setPos(laserPos);
+        laser->setPosition(laserPos);
         laser->setDirection(sf::Vector2f(1, 0.12));
         m_Scene->addObject(laser);
         m_lasers.push_back(laser);
     }
     {
         Laser* laser = new Laser();
-        laser->setPos(laserPos);
+        laser->setPosition(laserPos);
         laser->setDirection(sf::Vector2f(1, 0.14));
         laser->setColor(sf::Color::Green);
         m_Scene->addObject(laser);
@@ -218,7 +218,7 @@ void LightSimScene::setupScene()
     }
     {
         Laser* laser = new Laser();
-        laser->setPos(laserPos);
+        laser->setPosition(laserPos);
         laser->setDirection(sf::Vector2f(1, 0.16));
         laser->setColor(sf::Color::Green);
         m_Scene->addObject(laser);
@@ -226,7 +226,7 @@ void LightSimScene::setupScene()
     }
     {
         Laser* laser = new Laser();
-        laser->setPos(laserPos);
+        laser->setPosition(laserPos);
         laser->setDirection(sf::Vector2f(1, 0.18));
         laser->setColor(sf::Color::Blue);
         m_Scene->addObject(laser);
@@ -234,7 +234,7 @@ void LightSimScene::setupScene()
     }
     {
         Laser* laser = new Laser();
-        laser->setPos(laserPos);
+        laser->setPosition(laserPos);
         laser->setDirection(sf::Vector2f(1, 0.2));
         laser->setColor(sf::Color::Blue);
         m_Scene->addObject(laser);
@@ -254,21 +254,21 @@ void LightSimScene::setupScene()
         }
     }
 
-    /* {
+      {
         sf::Vector2f offset(0, 5);
         sf::Vector2f startPos(10, 100);
         sf::Vector2f dir(1, -0.1);
             for (int i = 0; i < 10; ++i)
             {
                 Laser* laser = new Laser();
-                laser->setPos(startPos + (float)i * offset);
+                laser->setPosition(startPos + (float)i * offset);
                 laser->setDirection(dir);
                 dir.y += 0.05;
                 laser->setColor(sf::Color::Yellow);
                 m_Scene->addObject(laser);
                 m_lasers.push_back(laser);
             }
-    }*/
+    }
 
    // GlasRectangle* rect = new GlasRectangle();
    // m_Scene->addObject(rect);
@@ -276,7 +276,7 @@ void LightSimScene::setupScene()
     
 
 
-
+  m_Scene->start();
 }
 void LightSimScene::closeEvent(QCloseEvent* event)
 {
