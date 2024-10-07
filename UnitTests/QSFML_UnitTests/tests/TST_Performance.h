@@ -10,25 +10,25 @@
 #include "Factories/Factories.h"
 
 
-class TST_ManyObjects : public QObject, public UnitTest::Test
+class TST_Performance : public QObject, public UnitTest::Test
 {
-	TEST_CLASS(TST_ManyObjects);
+	TEST_CLASS(TST_Performance);
 	Q_OBJECT;
 public:
-	TST_ManyObjects()
-		: Test("TST_ManyObjects")
+	TST_Performance()
+		: Test("TST_Performance")
 		, m_tree(nullptr, QSFML::Utilities::AABB({ 0,0 }, { 800,600 }), 4)
 	{
-		ADD_TEST(TST_ManyObjects::drawShapseTest);
-		ADD_TEST(TST_ManyObjects::drawLinesTest);
-		ADD_TEST(TST_ManyObjects::drawPathTest);
-		ADD_TEST(TST_ManyObjects::drawPointsTest);
-		ADD_TEST(TST_ManyObjects::collisionTest);
+		ADD_TEST(TST_Performance::drawShapseTest);
+		ADD_TEST(TST_Performance::drawLinesTest);
+		ADD_TEST(TST_Performance::drawPathTest);
+		ADD_TEST(TST_Performance::drawPointsTest);
+		ADD_TEST(TST_Performance::collisionTest);
 
 
 		setBreakOnFail(false);
 
-		connect(&m_stopTimer, &QTimer::timeout, this, &TST_ManyObjects::onTimeout);
+		connect(&m_stopTimer, &QTimer::timeout, this, &TST_Performance::onTimeout);
 		
 
 		m_stopTimer.setInterval(1000);
@@ -159,7 +159,7 @@ private:
 
 		QSFML::Scene::setProfilerOutputFileName("drawShapseTest.prof");
 		QSFML::Scene* scene = createDefaultScene();
-		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
+		connect(&m_update, &QTimer::timeout, this, &TST_Performance::onDrawTest_Update);
 
 		sf::Color color1 = sf::Color::Red;
 		sf::Color color2 = sf::Color::Green;
@@ -188,7 +188,7 @@ private:
 
 		QSFML::Scene::setProfilerOutputFileName("drawLinesTest.prof");
 		QSFML::Scene* scene = createDefaultScene();
-		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
+		connect(&m_update, &QTimer::timeout, this, &TST_Performance::onDrawTest_Update);
 
 		for (size_t i = 0; i < objectCount; ++i)
 		{
@@ -214,7 +214,7 @@ private:
 
 		QSFML::Scene::setProfilerOutputFileName("drawPathTest.prof");
 		QSFML::Scene* scene = createDefaultScene();
-		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
+		connect(&m_update, &QTimer::timeout, this, &TST_Performance::onDrawTest_Update);
 
 		for (size_t i = 0; i < objectCount; ++i)
 		{
@@ -238,7 +238,7 @@ private:
 
 		QSFML::Scene::setProfilerOutputFileName("drawPointsTest.prof");
 		QSFML::Scene* scene = createDefaultScene();
-		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onDrawTest_Update);
+		connect(&m_update, &QTimer::timeout, this, &TST_Performance::onDrawTest_Update);
 
 		
 		scene->addObject(Factories::randomPointsObject(pointCount));
@@ -274,7 +274,7 @@ private:
 		
 
 		//m_update.start(10);
-		connect(&m_update, &QTimer::timeout, this, &TST_ManyObjects::onCollisionTest_Update);
+		connect(&m_update, &QTimer::timeout, this, &TST_Performance::onCollisionTest_Update);
 
 
 		scene->addObject(pointPainterObj);
