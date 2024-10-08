@@ -11,10 +11,18 @@ namespace QSFML
 namespace VectorMath
 {
     typedef sf::Vector2<double> Vector2d;
-    QSFML_EDITOR_WIDGET_EXPORT extern float getLength(const sf::Vector2f &vec);
+
+    /// @brief 
+	/// Returns the length of the vector
+    QSFML_EDITOR_WIDGET_EXPORT extern float getLength(const sf::Vector2f &vec);                     
     QSFML_EDITOR_WIDGET_EXPORT extern double getLength(const Vector2d&vec);
+
+	/// @brief
+	/// Returns the squared length of the vector
     QSFML_EDITOR_WIDGET_EXPORT extern float getSquareLength(const sf::Vector2f &vec);
     QSFML_EDITOR_WIDGET_EXPORT extern double getSquareLength(const Vector2d&vec);
+
+
     QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f getRotatedUnitVector(float rad);
     QSFML_EDITOR_WIDGET_EXPORT extern Vector2d getRotatedUnitVector(double rad);
     QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f getRotated(const sf::Vector2f &vec, float rad);

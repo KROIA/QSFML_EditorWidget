@@ -134,6 +134,7 @@ private:
 		if (lastNodeIt != pathfinder.getEdges().end())
 			lastNodeConnections = lastNodeIt->second;
 
+		pathfinder.clearEdges();
 		for (auto& firstNode : nodes)
 		{
 			// Sort by distance ( shortest first )
@@ -149,7 +150,7 @@ private:
 					  {
 						  return a.second < b.second;
 					  });
-			pathfinder.clearEdges(firstNode.first);
+			//pathfinder.clearEdges(firstNode.first);
 
 			// Add the 5 closest nodes to the last node
 			for (int i = 0; i < std::min(distances.size(), connectionCount); ++i)
@@ -172,6 +173,7 @@ private:
 	TEST_FUNCTION(randomPaths)
 	{
 		TEST_START;
+		QSFML::Scene::setProfilerOutputFileName("randomPaths.prof");
 		QSFML::Scene* scene = createDefaultScene();
 		Pathfinder pathfinder;
 

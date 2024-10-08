@@ -90,6 +90,7 @@ namespace QSFML
 		}
         void Pathfinder::setEdges(const std::unordered_map<std::string, std::vector<Edge>>& edges)
         {
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
             std::unordered_map<std::string, std::vector<Edge>> newEdges;
 
             // Remove edges that can't exist
@@ -123,6 +124,7 @@ namespace QSFML
         }
         void Pathfinder::clearEdges(const std::string& nodeID)
         {
+            QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 			m_edges.erase(nodeID);
 			for (auto& pair : m_edges)
 			{
@@ -158,6 +160,7 @@ namespace QSFML
 
         void Pathfinder::setWeigthsFromNodeDistances()
         {
+            QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
             for (auto& pair : m_edges)
             {
                 for (Edge& edge : pair.second)
@@ -226,6 +229,7 @@ namespace QSFML
 
 		std::vector<std::string> Pathfinder::findPath(const std::string& startNodeID, const std::string& endNodeID) const
 		{
+            QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
             // If either start or end node is missing, return an empty path
             if (m_nodes.find(startNodeID) == m_nodes.end() || m_nodes.find(endNodeID) == m_nodes.end())
             {
@@ -291,6 +295,7 @@ namespace QSFML
 
             // Build the path by tracing from endNodeID to startNodeID
             std::vector<std::string> path;
+			path.reserve(50);
             if (previousNode.find(endNodeID) != previousNode.end() || startNodeID == endNodeID)
             {
                 std::string currentNodeID = endNodeID;
@@ -309,6 +314,7 @@ namespace QSFML
 		}
         std::vector<sf::Vector2f> Pathfinder::findPathPositions(const std::string& startNodeID, const std::string& endNodeID) const
         {
+            QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
             std::vector<std::string> path = findPath(startNodeID, endNodeID);
             std::vector<sf::Vector2f> positions;
             for (const std::string& nodeID : path)
@@ -319,6 +325,7 @@ namespace QSFML
         }
         std::vector<sf::Vector2f> Pathfinder::getPathPositions(const std::vector<std::string> &path) const
         {
+            QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
             std::vector<sf::Vector2f> positions;
             for (const std::string& nodeID : path)
             {
@@ -425,12 +432,14 @@ namespace QSFML
             {
                 if (pathPositions.size() > 1)
                 {
+#ifdef QSFML_USE_GL_DRAW
+                    glColor4ub(m_pathColor.r, m_pathColor.g, m_pathColor.b, m_pathColor.a);
+#endif
                     for (size_t i = 0; i < pathPositions.size() - 1; i++)
                     {
                         pathLength += VectorMath::getLength(pathPositions[i+1] - pathPositions[i]);
 #ifdef QSFML_USE_GL_DRAW
 						glBegin(GL_LINES);
-
 						glVertex2f(pathPositions[i].x, pathPositions[i].y);
 						glVertex2f(pathPositions[i + 1].x, pathPositions[i + 1].y);
 						glEnd();
@@ -452,85 +461,37 @@ namespace QSFML
                     pathLength += VectorMath::getLength(pathPositions[i + 1] - pathPositions[i]);
                 }
             }
-
-			// Draw nodes
-
-            //glPointSize(m_nodeRadius * 3);
             
+            sf::Color color = m_nodeColor;
+#ifdef QSFML_USE_GL_DRAW
+            glColor4ub(color.r, color.g, color.b, color.a);
+#endif
 			for (const auto& pair : m_pathfinder->m_nodes)
 			{
 				const Node& node = pair.second;
+                
+                if (m_pathNodes.find(pair.first) != m_pathNodes.end())
+                {
 #ifdef QSFML_USE_GL_DRAW
-				/*static const size_t segments = 10;
-				
-				static bool initialized = false;
-				static sf::Vector2f shape[segments];
-                if (!initialized)
-                {
-                    float dAngle = 2 * M_PI / segments;
-                    for (size_t i = 0; i < segments; i++)
-                    {
-						shape[i].x = std::cos(i * dAngle);
-						shape[i].y = std::sin(i * dAngle);
-                    }
+                    if(color != m_pathColor)
+                        glColor4ub(m_pathColor.r, m_pathColor.g, m_pathColor.b, m_pathColor.a);
+#endif
+                    color = m_pathColor;
                 }
-
-                glColor4ub(m_nodeColor.r, m_nodeColor.g, m_nodeColor.b, m_nodeColor.a);
-                glBegin(GL_TRIANGLE_FAN);
-                for (size_t i = 0; i < segments; i++)
+                else
                 {
-					glVertex2f(node.position.x + shape[i].x * m_nodeRadius, node.position.y + shape[i].y * m_nodeRadius);
+#ifdef QSFML_USE_GL_DRAW
+                    if (color != m_nodeColor)
+                        glColor4ub(m_nodeColor.r, m_nodeColor.g, m_nodeColor.b, m_nodeColor.a);
+#endif
+                    color = m_nodeColor;
                 }
-                glEnd();
-                */
-
-				// get current time using high-precision clock
-                glColor4ub(m_nodeColor.r, m_nodeColor.g, m_nodeColor.b, m_nodeColor.a);
-				std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();
-
-                
-				drawGlCircleShape<10000>(node.position, m_nodeRadius);
-
-				// get current time using high-precision clock
-				std::chrono::time_point<std::chrono::high_resolution_clock> now2 = std::chrono::high_resolution_clock::now();
-				std::chrono::duration<double> elapsed1 = now2 - now;
-
-                glColor4ub(m_nodeColor.r, m_nodeColor.g, m_nodeColor.b, m_nodeColor.a);
-
-                now = std::chrono::high_resolution_clock::now();
-
-                
-                static const size_t segments = 10000;
-
-                static bool initialized = false;
-                static sf::Vector2f shape[segments];
-                if (!initialized)
-                {
-                    float dAngle = 2 * M_PI / segments;
-                    for (size_t i = 0; i < segments; i++)
-                    {
-                        shape[i].x = std::cos(i * dAngle);
-                        shape[i].y = std::sin(i * dAngle);
-                    }
-                }
-                glBegin(GL_TRIANGLE_FAN);
-                for (size_t i = 0; i < segments; i++)
-                {
-                    glVertex2f(node.position.x + shape[i].x * m_nodeRadius, node.position.y + shape[i].y * m_nodeRadius);
-                }
-                glEnd();
-                // get current time using high-precision clock
-                now2 = std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> elapsed2 = now2 - now;
-				logInfo("Elapsed time: " + std::to_string(elapsed1.count()) + " " + std::to_string(elapsed2.count()));
-               
+#ifdef QSFML_USE_GL_DRAW
+				drawGlCircleShape<16>(node.position, m_nodeRadius);               
 #else
 				sf::CircleShape circle(m_nodeRadius);
 				circle.setOrigin(m_nodeRadius, m_nodeRadius);
 				circle.setPosition(node.position);
-				sf::Color color = m_nodeColor;
-				if (m_pathNodes.find(pair.first) != m_pathNodes.end())
-					color = m_pathColor;
 				circle.setFillColor(color);
 
 				target.draw(circle, states);
@@ -566,9 +527,7 @@ namespace QSFML
                         }
                         sf::Vector2f position = QSFML::VectorMath::lerp(pathPositions, t);
 #ifdef QSFML_USE_GL_DRAW
-						glBegin(GL_POINTS);
-						glVertex2f(position.x, position.y);
-						glEnd();
+                        drawGlCircleShape<16>(position, m_pathPointRadius);
 #else
                         circle.setPosition(position);
                         target.draw(circle, states);

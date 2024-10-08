@@ -14,7 +14,7 @@ namespace VectorMath
     }
     double getLength(const Vector2d &vec)
     {
-        return (float)sqrt((double)(vec.x * vec.x + vec.y * vec.y));
+        return (float)sqrt((vec.x * vec.x + vec.y * vec.y));
     }
     float getSquareLength(const sf::Vector2f &vec)
     {
