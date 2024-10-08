@@ -491,8 +491,8 @@ void GameObject::addComponents(const std::vector<Components::Component*>& compon
 void GameObject::removeComponent(Component *comp)
 {
     if(!comp)return;
-    for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
-        if(m_toRemoveComponents[i] == comp)
+    for(size_t i=0; i<m_componentsManagerData.toRemove.size(); ++i)
+        if(m_componentsManagerData.toRemove[i] == comp)
             return;
     for(size_t i=0; i<m_toAddComponents.size(); ++i)
         if(m_toAddComponents[i] == comp)
@@ -500,7 +500,7 @@ void GameObject::removeComponent(Component *comp)
             m_toAddComponents.erase(m_toAddComponents.begin() + i);
             break;
         }
-    m_toRemoveComponents.push_back(comp);
+    m_componentsManagerData.toRemove.push_back(comp);
     onObjectsChanged();
 }
 void GameObject::removeComponents(const std::vector<Components::Component*>& components)
@@ -508,8 +508,8 @@ void GameObject::removeComponents(const std::vector<Components::Component*>& com
     for (size_t j = 0; j < components.size(); ++j)
     {
         Components::Component* comp = components[j];
-        for (size_t i = 0; i < m_toRemoveComponents.size(); ++i)
-            if (m_toRemoveComponents[i] == comp)
+        for (size_t i = 0; i < m_componentsManagerData.toRemove.size(); ++i)
+            if (m_componentsManagerData.toRemove[i] == comp)
                 return;
         for (size_t i = 0; i < m_toAddComponents.size(); ++i)
             if (m_toAddComponents[i] == comp)
@@ -517,7 +517,7 @@ void GameObject::removeComponents(const std::vector<Components::Component*>& com
                 m_toAddComponents.erase(m_toAddComponents.begin() + i);
                 break;
             }
-        m_toRemoveComponents.push_back(comp);
+        m_componentsManagerData.toRemove.push_back(comp);
     }
     onObjectsChanged();
 }*/
@@ -525,9 +525,9 @@ void GameObject::removeComponents(const std::vector<Components::Component*>& com
 void GameObject::removeComponent_internal()
 {
     size_t removedCount = 0;
-    for(size_t i=0; i<m_toRemoveComponents.size(); ++i)
+    for(size_t i=0; i<m_componentsManagerData.toRemove.size(); ++i)
     {
-        Components::Component *toRemove = m_toRemoveComponents[i];
+        Components::Component *toRemove = m_componentsManagerData.toRemove[i];
         size_t index = getComponentIndex(toRemove);
         if (index == npos)
             continue;
@@ -580,7 +580,7 @@ void GameObject::removeComponent_internal()
 
         
     }
-    m_toRemoveComponents.clear();
+    m_componentsManagerData.toRemove.clear();
     if(m_sceneParent)
         m_sceneParent->removeComponent(removedCount);
 

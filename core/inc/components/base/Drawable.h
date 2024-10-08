@@ -6,6 +6,10 @@
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/OpenGL.hpp>
+#include <array>  
+#include <cmath>
+#include <numbers>  
 
 namespace QSFML
 {
@@ -132,7 +136,99 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, /*public Utilities
         /// <param name="states"></param>
         virtual void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 
-    private:
+
+
+		template <size_t segments>
+        static void drawGlCircleShape(const sf::Vector2f& pos, float radius)
+        {
+            static constexpr auto shape = generateCircleVertices<segments>();
+
+           // glColor4ub(m_nodeColor.r, m_nodeColor.g, m_nodeColor.b, m_nodeColor.a);
+            glBegin(GL_TRIANGLE_FAN);
+            for (size_t i = 0; i < segments; i++)
+            {
+                glVertex2f(pos.x + shape.at(i).at(0) * radius, pos.y + shape.at(i).at(1) * radius);
+            }
+            glEnd();
+        }
+
+   // private:
+
+
+        
+        // Generate the shape array at compile-time
+        template <size_t segments>
+        static constexpr auto generateCircleVertices()
+        {
+            std::array<std::array<float, 2>, segments> shape{};
+            constexpr float PI = M_PI;  // Use constexpr PI from <numbers>
+
+            for (size_t i = 0; i < segments; ++i)
+            {
+                float angle = 2.0f * PI * i / static_cast<float>(segments) - PI;
+                shape.at(i).at(0) = cosine(angle);
+                shape.at(i).at(1) = sine(angle);
+            }
+            return shape;
+        }
+
+
+        // A constexpr approximation for sine using more terms of a Taylor series
+        static constexpr float sine(float x)
+        {
+            float result = x;  // First term
+            float term = x;    // Current term
+            const float x_squared = x * x;
+
+            term *= -x_squared / (2.0f * 3.0f);  // Second term
+            result += term;
+
+            term *= -x_squared / (4.0f * 5.0f);  // Third term
+            result += term;
+
+            term *= -x_squared / (6.0f * 7.0f);  // Fourth term
+            result += term;
+
+            term *= -x_squared / (8.0f * 9.0f);  // Fifth term
+            result += term;
+
+            term *= -x_squared / (10.0f * 11.0f);  // Sixth term
+            result += term;
+
+            term *= -x_squared / (12.0f * 13.0f);  // Seventh term
+            result += term;
+
+            return result;
+        }
+
+        // A constexpr approximation for cosine using more terms of a Taylor series
+        static constexpr float cosine(float x)
+        {
+            float result = 1.0f;  // First term
+            float term = 1.0f;    // Current term
+            const float x_squared = x * x;
+
+            term *= -x_squared / (1.0f * 2.0f);  // Second term
+            result += term;
+
+            term *= -x_squared / (3.0f * 4.0f);  // Third term
+            result += term;
+
+            term *= -x_squared / (5.0f * 6.0f);  // Fourth term
+            result += term;
+
+            term *= -x_squared / (7.0f * 8.0f);  // Fifth term
+            result += term;
+
+            term *= -x_squared / (9.0f * 10.0f);  // Sixth term
+            result += term;
+
+            term *= -x_squared / (11.0f * 12.0f);  // Seventh term
+            result += term;
+
+            return result;
+        }
+
         bool m_ignoreTransform = false;
 };
 }

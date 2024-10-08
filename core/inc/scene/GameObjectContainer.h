@@ -4,6 +4,7 @@
 #include "RenderLayer.h"
 #include "scene/SceneSettings.h"
 #include "scene/GameObjectLayerGroup.h"
+#include "objects/base/GameObject.h"
 
 #include "SFML/Graphics.hpp"
 #include <vector>

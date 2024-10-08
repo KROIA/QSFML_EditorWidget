@@ -313,6 +313,67 @@ namespace VectorMath
 	{
 		return start + (end - start) * t;
 	}
+    sf::Vector2f lerp(const std::vector<sf::Vector2f>& path, float t)
+    {
+        if (path.size() == 0)
+            return sf::Vector2f(0, 0);
+        if (path.size() == 1)
+            return path[0];
+        if (t <= 0)
+            return path[0];
+        if (t >= 1)
+            return path[path.size() - 1];
+
+        double pathLength = 0;
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            pathLength += getLength(path[i] - path[i - 1]);
+        }
+
+        double currentLength = 0;
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            double length = getLength(path[i] - path[i - 1]);
+            if (currentLength + length >= pathLength * t)
+            {
+                double t2 = (pathLength * t - currentLength) / length;
+                return lerp(path[i - 1], path[i], t2);
+            }
+            currentLength += length;
+        }
+        return path[path.size() - 1];
+    }
+
+    Vector2d lerp(const std::vector<Vector2d>& path, double t)
+    {
+        if (path.size() == 0)
+            return Vector2d(0, 0);
+        if (path.size() == 1)
+            return path[0];
+        if (t <= 0)
+            return path[0];
+        if (t >= 1)
+            return path[path.size() - 1];
+
+        double pathLength = 0;
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            pathLength += getLength(path[i] - path[i - 1]);
+        }
+
+        double currentLength = 0;
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            double length = getLength(path[i] - path[i - 1]);
+            if (currentLength + length >= pathLength * t)
+            {
+                double t2 = (pathLength * t - currentLength) / length;
+                return lerp(path[i - 1], path[i], t2);
+            }
+            currentLength += length;
+        }
+        return path[path.size() - 1];
+    }
 
     sf::Vector2f getScale(const sf::Transform& transform)
     {

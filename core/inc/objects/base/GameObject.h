@@ -1,8 +1,9 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
-#include "Scene/RenderLayer.h"
-#include "Scene/SceneSettings.h"
+#include "scene/RenderLayer.h"
+#include "scene/SceneSettings.h"
+//#include "scene/Scene.h"
 
 #include "utilities/CollisionInfo.h"
 
@@ -436,7 +437,7 @@ protected:
         template <typename T>
         void removeComponents()
         {
-            m_toRemoveComponents.reserve(m_toRemoveComponents.size() + m_componentsManagerData.all.size());
+            m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.all.size());
             for (auto& comp : m_componentsManagerData.all)
             {
                 if (dynamic_cast<T>(comp))
@@ -740,6 +741,7 @@ protected:
         /// <returns>a list of found objects</returns>
         std::vector<Objects::GameObjectPtr> findAllObjectsGlobalRecusive(const std::string& name);
 
+        /*
         template<typename T>
         T* findFirstObjectGlobal() const
         {
@@ -752,7 +754,7 @@ protected:
         {
             Scene* scene = getSceneParent();
             if (!scene) return {};
-            return getSceneParent()->findAllObject<T>();
+            return scene->findAllObject<T>();
         }
         template<typename T>
         T* findFirstObjectGlobalRecursive() const
@@ -766,7 +768,7 @@ protected:
         {
             Scene* scene = getSceneParent();
             if (!scene) return {};
-            return getSceneParent()->findAllObjectRecursive<T>();
+            return scene->findAllObjectRecursive<T>();
         }
 
         template<typename T>
@@ -781,7 +783,7 @@ protected:
         {
             Scene* scene = getSceneParent();
             if (!scene) return {};
-            return getSceneParent()->findAllObject<T>(objName);
+            return scene->findAllObject<T>(objName);
         }
         template<typename T>
         T* findFirstObjectGlobalRecursive(const std::string& objName) const
@@ -795,9 +797,9 @@ protected:
         {
             Scene* scene = getSceneParent();
             if (!scene) return {};
-            return getSceneParent()->findAllObjectRecursive<T>(objName);
+            return scene->findAllObjectRecursive<T>(objName);
         }
-
+        */
 
 
         sf::Image captureScreen();
@@ -962,7 +964,7 @@ protected:
         //std::vector<GameObjectPtr> m_toRemoveChilds;
         
         //std::vector<Components::Component*> m_toAddComponents;
-        //std::vector<Components::Component*> m_toRemoveComponents;
+        //std::vector<Components::Component*> m_componentsManagerData.toRemove;
 
         SceneSettings::UpdateControlls m_updateControlls;
 		std::vector< std::function<void(GameObject&)> > m_onUpdateCallbacks;

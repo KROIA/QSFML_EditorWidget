@@ -124,6 +124,51 @@ private:
 		delete scene;
 	}
 
+	static void connectNearestNeighbours(Pathfinder& pathfinder, size_t connectionCount, const std::string& lastNode)
+	{
+		std::unordered_map<std::string, Pathfinder::Node> nodes = pathfinder.getNodes();
+		nodes.erase(lastNode);
+		// Get connections from last node to save them
+		std::vector<Pathfinder::Edge> lastNodeConnections;
+		auto lastNodeIt = pathfinder.getEdges().find(lastNode);
+		if (lastNodeIt != pathfinder.getEdges().end())
+			lastNodeConnections = lastNodeIt->second;
+
+		for (auto& firstNode : nodes)
+		{
+			// Sort by distance ( shortest first )
+			std::vector<std::pair<std::string, float>> distances;
+			for (auto& node : nodes)
+			{
+				if (node.first == firstNode.first)
+					continue;
+				float dist = std::sqrt(std::pow(node.second.position.x - firstNode.second.position.x, 2) + std::pow(node.second.position.y - firstNode.second.position.y, 2));
+				distances.push_back({ node.first, dist });
+			}
+			std::sort(distances.begin(), distances.end(), [](const std::pair<std::string, float>& a, const std::pair<std::string, float>& b)
+					  {
+						  return a.second < b.second;
+					  });
+			pathfinder.clearEdges(firstNode.first);
+
+			// Add the 5 closest nodes to the last node
+			for (int i = 0; i < std::min(distances.size(), connectionCount); ++i)
+			{
+				pathfinder.addEdge(firstNode.first, distances[i].first, Pathfinder::Direction::Bidirectional);
+			}
+		}
+
+		// Add connections from last node
+		for (auto& edge : lastNodeConnections)
+		{
+			pathfinder.addEdge(lastNode, edge.destinationNodeID, Pathfinder::Direction::Bidirectional);
+		}
+		
+
+		// Calculate the weights of the edges based on the distance between the nodes
+		pathfinder.setWeigthsFromNodeDistances();
+	}
+
 	TEST_FUNCTION(randomPaths)
 	{
 		TEST_START;
@@ -137,36 +182,28 @@ private:
 		// Nodes which define the start and end of the path
 		std::string firstNode;
 		std::string lastNode;
+		sf::Vector2u area(800, 600);
+		float lastNodeForce = 15;
+		int nodeCount = 200;
+		float targetDistance = sqrt(area.x*area.y/sqrt(nodeCount));
+		size_t lastNodeConnectionCount = 5;
+		size_t connectionCountPerNode = 7;
 
 		// Add random nodes and edges
-		int nodeCount = 20;
 		for (int i = 0; i < nodeCount; ++i)
 		{
 			std::string id = "Node" + std::to_string(i);
-			pathfinder.addNode(id, { (float)(rand() % 1000), (float)(rand() % 1000) });
-			if (i > 0)
-				pathfinder.addEdge("Node" + std::to_string(i - 1), id, Pathfinder::Direction::Bidirectional);
+			pathfinder.addNode(id, { (float)(rand() % area.x), (float)(rand() % area.y) });
+			//if (i > 0)
+			//	pathfinder.addEdge("Node" + std::to_string(i - 1), id, Pathfinder::Direction::Bidirectional);
 			if (i == 0)
 				firstNode = id;
 			if (i == nodeCount-1)
 				lastNode = id;
 		}
 
-		// Add random edges
-		int edgeCount = 20;
-		for (int i = 0; i < edgeCount; ++i)
-		{
-			int firstIndex = rand() % nodeCount;
-			int secondIndex = rand() % nodeCount;
-			while(firstIndex == secondIndex)
-				secondIndex = rand() % nodeCount;
-			std::string source = "Node" + std::to_string(firstIndex);
-			std::string dest = "Node" + std::to_string(secondIndex);
-			pathfinder.addEdge(source, dest, Pathfinder::Direction::Bidirectional);
-		}
-
-		
-		
+		// Connect closest n points
+		connectNearestNeighbours(pathfinder, connectionCountPerNode, lastNode);	
 		
 		
 		// Create a painter to draw the graph
@@ -179,7 +216,7 @@ private:
 		// Create a mouse follower to move the last node
 		Components::MouseFollower* mouseFollower = new Components::MouseFollower();
 		obj->addComponent(mouseFollower);
-		QObject::connect(mouseFollower, &Components::MouseFollower::mousePosChanged, [obj, &lastNode, &pathfinder, painter](const sf::Vector2f& worldPos,
+		QObject::connect(mouseFollower, &Components::MouseFollower::mousePosChanged, [obj, &lastNode, lastNodeConnectionCount ,&pathfinder, painter](const sf::Vector2f& worldPos,
 			const sf::Vector2i& pixelPos)
 			{
 				// This function is called when the mouse is moved
@@ -192,9 +229,6 @@ private:
 				pathfinder.setNode(lastNode, node);
 				std::unordered_map<std::string, Pathfinder::Node> nodes = pathfinder.getNodes();
 				nodes.erase(lastNode);
-
-				// Find the closest node to "B"
-				float minDist = std::numeric_limits<float>::max();
 				
 				// Sort by distance ( shortest first )
 				std::vector<std::pair<std::string, float>> distances;
@@ -213,7 +247,7 @@ private:
 				pathfinder.clearEdges(lastNode);
 
 				// Add the 5 closest nodes to the last node
-				for (int i = 0; i < std::min(distances.size(), (size_t)5); ++i)
+				for (int i = 0; i < std::min(distances.size(), lastNodeConnectionCount); ++i)
 				{
 					pathfinder.addEdge(lastNode, distances[i].first, Pathfinder::Direction::Bidirectional);
 				}
@@ -224,7 +258,7 @@ private:
 
 		// This update function calculates the forces between the nodes and moves them
 		// It simulates edges as springs that apply a force to the nodes
-		obj->addUpdateFunction([&pathfinder, lastNode](Objects::GameObject& obj)
+		obj->addUpdateFunction([&pathfinder, lastNode, lastNodeForce, lastNodeConnectionCount, targetDistance, connectionCountPerNode](Objects::GameObject& obj)
 			{
 				std::unordered_map<std::string, Pathfinder::Node> nodes = pathfinder.getNodes();
 				std::unordered_map<std::string, std::vector<Pathfinder::Edge>>edges = pathfinder.getEdges();
@@ -241,12 +275,13 @@ private:
 						float distance = std::sqrt(std::pow(edgeDir.x, 2) + std::pow(edgeDir.y, 2));
 
 						// Only apply force if the distance is larger than 100
-						if(distance < 100)
+						//distance -= 100;
+						if(distance < targetDistance)
 							continue;
-						float force = distance;
+						float force = distance * distance / 100;
 
 						if (edge2.destinationNodeID == lastNode)
-							force *= 10;
+							force *= lastNodeForce/(float)lastNodeConnectionCount;
 						
 						sf::Vector2f edgeDirNorm = edgeDir / distance;
 						
@@ -258,6 +293,27 @@ private:
 					}
 				}
 
+				for (auto& node1 : nodes)
+				{
+					for (auto& node2 : nodes)
+					{
+						if (node1.first == node2.first)
+							continue;
+						sf::Vector2f dir = node2.second.position - node1.second.position;
+						float distance = QSFML::VectorMath::getLength(dir);
+						if(distance > targetDistance)
+							continue;
+						if (distance < 1)
+							distance = 1;
+						float force = -targetDistance*10 /(distance);
+						if (node2.first == lastNode)
+							force *= lastNodeForce;
+						sf::Vector2f dirNorm = dir / distance;
+						forces[node1.first] += dirNorm * force;
+					}
+				}
+
+
 				for (auto& node : nodes)
 				{
 					// Do not move the last node, since it is connected to the mouse movement
@@ -268,6 +324,7 @@ private:
 						node.second.position += forceElement->second * speed;
 				}
 				pathfinder.setNodes(nodes);
+				connectNearestNeighbours(pathfinder, connectionCountPerNode, lastNode);
 			});
 
 

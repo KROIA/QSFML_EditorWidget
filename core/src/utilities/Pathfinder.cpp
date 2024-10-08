@@ -1,5 +1,8 @@
 #include "utilities/Pathfinder.h"
 #include "utilities/LifetimeChecker.h"
+#include "utilities/VectorOperations.h"
+#include "objects/base/GameObject.h"
+#include <SFML/OpenGL.hpp>
 #include <queue>
 #include <unordered_set>
 #include <cmath>
@@ -145,7 +148,7 @@ namespace QSFML
         }
         void Pathfinder::setNode(const std::string& id, const Node& node)
         {
-			auto& it = m_nodes.find(id);
+			const auto& it = m_nodes.find(id);
             if (it != m_nodes.end())
             {
 				it->second = node;
@@ -178,6 +181,31 @@ namespace QSFML
 			return std::sqrt(std::pow(startPos.x - endPos.x, 2) + std::pow(startPos.y - endPos.y, 2));
         }
 
+        float Pathfinder::getPathDistance(const std::string& startNodeID, const std::string& endNodeID) const
+        {
+			return getPathDistance(findPath(startNodeID, endNodeID));
+        }
+        float Pathfinder::getPathDistance(const std::vector<std::string>& path) const
+        {
+			std::vector<sf::Vector2f> positions = getPathPositions(path);
+            float length = 0;
+			for (size_t i = 0; i < positions.size() - 1; i++)
+			{
+				length += VectorMath::getLength(positions[i + 1] - positions[i]);
+			}
+			return length;
+        }
+        sf::Vector2f Pathfinder::lerp(const std::string& startNodeID, const std::string& endNodeID, float t) const
+        {
+			std::vector<sf::Vector2f> positions = findPathPositions(startNodeID, endNodeID);
+			return VectorMath::lerp(positions, t);
+        }
+        sf::Vector2f Pathfinder::lerp(const std::vector<std::string>& path, float t) const
+        {
+			std::vector<sf::Vector2f> positions = getPathPositions(path);
+			return VectorMath::lerp(positions, t);
+        }
+
         Pathfinder::Painter* Pathfinder::createPainter()
         {
 			Painter* painter = new Pathfinder::Painter(this);
@@ -196,7 +224,7 @@ namespace QSFML
 			}
         }
 
-		std::vector<std::string> Pathfinder::findPath(const std::string& startNodeID, const std::string& endNodeID)
+		std::vector<std::string> Pathfinder::findPath(const std::string& startNodeID, const std::string& endNodeID) const
 		{
             // If either start or end node is missing, return an empty path
             if (m_nodes.find(startNodeID) == m_nodes.end() || m_nodes.find(endNodeID) == m_nodes.end())
@@ -245,7 +273,8 @@ namespace QSFML
                 // Process each neighboring edge
                 if (m_edges.find(currentNodeID) != m_edges.end())
                 {
-                    for (const Edge& edge : m_edges[currentNodeID])
+					const auto& edges = m_edges.at(currentNodeID);
+                    for (const Edge& edge : edges)
                     {
                         float newCost = currentCost + edge.weight;
 
@@ -278,7 +307,27 @@ namespace QSFML
 
             return path;
 		}
-
+        std::vector<sf::Vector2f> Pathfinder::findPathPositions(const std::string& startNodeID, const std::string& endNodeID) const
+        {
+            std::vector<std::string> path = findPath(startNodeID, endNodeID);
+            std::vector<sf::Vector2f> positions;
+            for (const std::string& nodeID : path)
+            {
+                positions.push_back(m_nodes.at(nodeID).position);
+            }
+            return positions;
+        }
+        std::vector<sf::Vector2f> Pathfinder::getPathPositions(const std::vector<std::string> &path) const
+        {
+            std::vector<sf::Vector2f> positions;
+            for (const std::string& nodeID : path)
+            {
+				const auto& it = m_nodes.find(nodeID);
+				if (it != m_nodes.end())
+                    positions.push_back(it->second.position);
+            }
+            return positions;
+        }
 
 
 
@@ -291,7 +340,7 @@ namespace QSFML
 			: Components::Drawable(name)
 			, m_pathfinder(pathfinder)
 		{
-
+            Drawable::ignoreTransform(true);
 		}
 
     
@@ -329,6 +378,20 @@ namespace QSFML
             if (!m_pathfinder)
                 return;
 
+            // Draw path if it is defined
+            if (m_pathChanged && (m_enablePathPoints || m_enablePathLines))
+            {
+                updatePath();
+            }
+            float pathLength = 0;
+            std::vector<sf::Vector2f> pathPositions = m_pathfinder->getPathPositions(m_path);
+
+#ifdef QSFML_USE_GL_DRAW
+            QSFML_UNUSED(target);
+			QSFML_UNUSED(states);
+            glColor4ub(m_edgeColor.r, m_edgeColor.g, m_edgeColor.b, m_edgeColor.a);
+#endif
+
 			// Draw edges
 			for (const auto& pair : m_pathfinder->m_edges)
 			{
@@ -337,53 +400,187 @@ namespace QSFML
 				{
 					const Node& destinationNode = m_pathfinder->m_nodes.at(edge.destinationNodeID);
 
+#ifdef QSFML_USE_GL_DRAW
+                    glBegin(GL_LINES);
+
+                    glVertex2f(sourceNode.position.x, sourceNode.position.y);
+                    glVertex2f(destinationNode.position.x, destinationNode.position.y);
+                    glEnd();
+#else
+
 					sf::Vertex line[] =
 					{
-						sf::Vertex(sourceNode.position, sf::Color::White),
-						sf::Vertex(destinationNode.position, sf::Color::White)
+						sf::Vertex(sourceNode.position, m_edgeColor),
+						sf::Vertex(destinationNode.position, m_edgeColor)
 					};
 
 					target.draw(line, 2, sf::Lines, states);
+#endif
 				}
 			}
 
-			// Draw path if it is defined
-			if (m_pathChanged)
-			{
-				updatePath();
-			}
-            if (m_path.size() > 1)
+			
+            
+            if (m_enablePathLines)
             {
-                for (size_t i = 0; i < m_path.size() - 1; i++)
+                if (pathPositions.size() > 1)
                 {
-                    const Node& sourceNode = m_pathfinder->m_nodes.at(m_path[i]);
-                    const Node& destinationNode = m_pathfinder->m_nodes.at(m_path[i + 1]);
-
-                    sf::Vertex line[] =
+                    for (size_t i = 0; i < pathPositions.size() - 1; i++)
                     {
-                        sf::Vertex(sourceNode.position, sf::Color::Green),
-                        sf::Vertex(destinationNode.position, sf::Color::Green)
-                    };
+                        pathLength += VectorMath::getLength(pathPositions[i+1] - pathPositions[i]);
+#ifdef QSFML_USE_GL_DRAW
+						glBegin(GL_LINES);
 
-                    target.draw(line, 2, sf::Lines, states);
+						glVertex2f(pathPositions[i].x, pathPositions[i].y);
+						glVertex2f(pathPositions[i + 1].x, pathPositions[i + 1].y);
+						glEnd();
+#else
+                        sf::Vertex line[] =
+                        {
+                            sf::Vertex(pathPositions[i+1], m_pathColor),
+                            sf::Vertex(pathPositions[i], m_pathColor)
+                        };
+                        target.draw(line, 2, sf::Lines, states);
+#endif
+                    }
+                }
+            }
+            else
+            {
+                for (size_t i = 0; i < pathPositions.size() - 1; i++)
+                {
+                    pathLength += VectorMath::getLength(pathPositions[i + 1] - pathPositions[i]);
                 }
             }
 
 			// Draw nodes
+
+            //glPointSize(m_nodeRadius * 3);
+            
 			for (const auto& pair : m_pathfinder->m_nodes)
 			{
 				const Node& node = pair.second;
+#ifdef QSFML_USE_GL_DRAW
+				/*static const size_t segments = 10;
+				
+				static bool initialized = false;
+				static sf::Vector2f shape[segments];
+                if (!initialized)
+                {
+                    float dAngle = 2 * M_PI / segments;
+                    for (size_t i = 0; i < segments; i++)
+                    {
+						shape[i].x = std::cos(i * dAngle);
+						shape[i].y = std::sin(i * dAngle);
+                    }
+                }
 
-				sf::CircleShape circle(5.0f);
-				circle.setOrigin(5.0f, 5.0f);
+                glColor4ub(m_nodeColor.r, m_nodeColor.g, m_nodeColor.b, m_nodeColor.a);
+                glBegin(GL_TRIANGLE_FAN);
+                for (size_t i = 0; i < segments; i++)
+                {
+					glVertex2f(node.position.x + shape[i].x * m_nodeRadius, node.position.y + shape[i].y * m_nodeRadius);
+                }
+                glEnd();
+                */
+
+				// get current time using high-precision clock
+                glColor4ub(m_nodeColor.r, m_nodeColor.g, m_nodeColor.b, m_nodeColor.a);
+				std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();
+
+                
+				drawGlCircleShape<10000>(node.position, m_nodeRadius);
+
+				// get current time using high-precision clock
+				std::chrono::time_point<std::chrono::high_resolution_clock> now2 = std::chrono::high_resolution_clock::now();
+				std::chrono::duration<double> elapsed1 = now2 - now;
+
+                glColor4ub(m_nodeColor.r, m_nodeColor.g, m_nodeColor.b, m_nodeColor.a);
+
+                now = std::chrono::high_resolution_clock::now();
+
+                
+                static const size_t segments = 10000;
+
+                static bool initialized = false;
+                static sf::Vector2f shape[segments];
+                if (!initialized)
+                {
+                    float dAngle = 2 * M_PI / segments;
+                    for (size_t i = 0; i < segments; i++)
+                    {
+                        shape[i].x = std::cos(i * dAngle);
+                        shape[i].y = std::sin(i * dAngle);
+                    }
+                }
+                glBegin(GL_TRIANGLE_FAN);
+                for (size_t i = 0; i < segments; i++)
+                {
+                    glVertex2f(node.position.x + shape[i].x * m_nodeRadius, node.position.y + shape[i].y * m_nodeRadius);
+                }
+                glEnd();
+                // get current time using high-precision clock
+                now2 = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> elapsed2 = now2 - now;
+				logInfo("Elapsed time: " + std::to_string(elapsed1.count()) + " " + std::to_string(elapsed2.count()));
+               
+#else
+				sf::CircleShape circle(m_nodeRadius);
+				circle.setOrigin(m_nodeRadius, m_nodeRadius);
 				circle.setPosition(node.position);
-				sf::Color color = sf::Color::White;
+				sf::Color color = m_nodeColor;
 				if (m_pathNodes.find(pair.first) != m_pathNodes.end())
-					color = sf::Color::Green;
+					color = m_pathColor;
 				circle.setFillColor(color);
 
 				target.draw(circle, states);
+#endif
 			}
+            
+
+            // Draw moving dot
+            if (m_enablePathPoints)
+            {
+                if (pathPositions.size() > 1)
+                {
+#ifdef QSFML_USE_GL_DRAW
+					glColor4ub(m_pathPointColor.r, m_pathPointColor.g, m_pathPointColor.b, m_pathPointColor.a);
+
+#else
+                    sf::CircleShape circle(m_pathPointRadius);
+                    circle.setOrigin(m_pathPointRadius, m_pathPointRadius);
+                    circle.setFillColor(m_pathPointColor);
+#endif
+
+                    int points = pathLength / m_pathPointDistance;
+                    for (int i = 0; i < points; i++)
+                    {
+                        float t = m_t + (float)i / points;
+                        if (t > 1)
+                        {
+                            t -= (int)t;
+                        }
+                        else if (t < 0)
+                        {
+                            t += (int)t;
+                        }
+                        sf::Vector2f position = QSFML::VectorMath::lerp(pathPositions, t);
+#ifdef QSFML_USE_GL_DRAW
+						glBegin(GL_POINTS);
+						glVertex2f(position.x, position.y);
+						glEnd();
+#else
+                        circle.setPosition(position);
+                        target.draw(circle, states);
+#endif
+                    }
+                }
+                m_t += getDeltaT() * m_pathPointSpeed / pathLength;
+                if (m_t > 1)
+                {
+                    m_t = 0;
+                }
+            }			
 		}
 
 

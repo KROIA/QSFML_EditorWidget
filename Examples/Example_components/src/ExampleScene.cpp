@@ -65,6 +65,7 @@ void ExampleScene::setupScene()
 
     DefaultEditor* defaultEditor = new DefaultEditor();
     m_Scene->addObject(defaultEditor);
+    m_Scene->start();
     qDebug() << defaultEditor->toString().c_str();
 }
 void ExampleScene::closeEvent(QCloseEvent* event)
