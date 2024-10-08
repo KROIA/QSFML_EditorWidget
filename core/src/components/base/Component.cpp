@@ -46,8 +46,6 @@ void Component::deleteLater()
 {
     if (m_parent)
     {
-        //GameObjectPtr parent = m_parent;
-        //m_parent = nullptr;
         if (Internal::LifetimeChecker::isAlive(m_parent))
             m_parent->deleteComponentLater(this);
     }

@@ -3,7 +3,6 @@
 #include "QSFML_EditorWidget_base.h"
 #include "scene/RenderLayer.h"
 #include "scene/SceneSettings.h"
-//#include "scene/Scene.h"
 
 #include "utilities/CollisionInfo.h"
 
@@ -409,14 +408,6 @@ protected:
             }
             return childs;
         }
-
-        //size_t getChildCount() const;
-        //
-        //template<typename T>
-        //size_t getChildCount() const;
-        //
-        //template<typename T>
-        //size_t getChildCountRecusrive() const;
 
         GameObjectPtr findFirstChild(const std::string& name);
         std::vector<GameObjectPtr> findAllChilds(const std::string& name);
