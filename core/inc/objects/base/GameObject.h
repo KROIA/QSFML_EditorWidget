@@ -973,32 +973,34 @@ protected:
          */
         size_t getTick() const;
 
-        /// <summary>
-        /// Gets the time in seconds between each update call
-        /// Timedomain: Real simulation time
-        /// </summary>
-        /// <returns>Delta time</returns>
+        /**
+         * @brief 
+		 * Gets the time in seconds between each update call
+		 * Timedomain: Real simulation time
+		 * @return time in seconds since the last upfate call
+         */
         double getDeltaT() const;
 
-        /// <summary>
-        /// Gets the time in seconds between each update call
-        /// Timedomain: Fixed simulation time
-        /// </summary>
-        /// <returns>Delta time</returns>
+        /**
+         * @brief 
+         * Gets a fixed delta time
+		 * Timedomain: Fixed simulation time
+         * @return 
+         */
         double getFixedDeltaT() const;
-
-        /// <summary>
-        /// Gets the time in seconds since the start of the Scene
-        /// Timedomain: Real simulation time
-        /// </summary>
-        /// <returns>Time since start</returns>
+        
+        /**
+         * @brief 
+		 * Gets the time in seconds since the start of the Scene
+		 * @return time in seconds since the start of the Scene
+         */
         double getElapsedTime() const; 
-
-        /// <summary>
-        /// Gets the time in seconds since the start of the Scene
-        /// Timedomain: Fixed simulation time
-        /// </summary>
-        /// <returns>Time since start</returns>
+        
+        /**
+         * @brief 
+		 * Gets the fixed time in seconds since the start of the Scene
+		 * @return fixed time in seconds since the start of the Scene
+         */
         double getFixedElapsedTime() const; 
 
         /// <summary>
