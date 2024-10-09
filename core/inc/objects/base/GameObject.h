@@ -195,6 +195,7 @@ protected:
         {
             childs,
             components,
+            customEventFunctions
         };
         enum class UpdateSequenceElement
         {
@@ -207,6 +208,7 @@ protected:
 		{
             childs,
 			components,
+            customDrawFunctions
 		};
 
         GameObject(const std::string &name = "GameObject",
@@ -217,411 +219,665 @@ protected:
         
 
         virtual CLONE_FUNC_DEC(GameObject);
-
-        /// <summary>
-        /// Sets the object as a child of the parent
-        /// This removes the object from the old parent
-        /// </summary>
-        /// <param name="parent">new parent</param>
+        
+        /**
+         * @brief 
+		 * Sets the object as a child of the parent
+		 * This removes the object from the old parent
+         * @param parent 
+         */
         void setParent(GameObjectPtr parent);
-
-        /// <summary>
-        /// Gets the parent of the object
-        /// </summary>
-        /// <returns>Parent object</returns>
+        
+        /**
+         * @brief 
+		 * Gets the parent of the object
+         * @return the parent object
+         */
         GameObjectPtr getParent() const;
-
-        /// <summary>
-        /// Gets the root parent of the object
-        /// The root is the topmost parent in the hirarchy
-        /// </summary>
-        /// <returns>Root object</returns>
+        
+        /**
+         * @brief 
+		 * Gets the most top parent of the object
+		 * @return most top parent
+         */
         GameObjectPtr getRootParent() const;
 
-        /// <summary>
-        /// Enables/Disables the object
-        /// If the object is disabled, it will not be updated or drawn
-        /// and no events get received
-        /// </summary>
-        /// <param name="enable">enable=true, disable=false</param>
+        /**
+         * @brief 
+		 * Enables/Disables the object
+         * @param enable 
+         */
         void setEnabled(bool enable);
 
-        /// <summary>
-        /// Gets the current enabled state of the object
-        /// </summary>
-        /// <returns>true if the object is enabled</returns>
+        /**
+         * @brief 
+		 * Gets the current enabled state of the object
+         * @return true if the object is enabled
+         */
         bool isEnabled() const;
 
-        /// <summary>
-        /// Sets the name of the object
-        /// </summary>
-        /// <param name="name">name text</param>
+        /**
+         * @brief 
+		 * Sets the name of the object
+         * @param name 
+         */
         void setName(const std::string &name);
 
-        /// <summary>
-        /// Gets the name of the object
-        /// </summary>
-        /// <returns>name text</returns>
+        /**
+         * @brief 
+		 * Gets the name of the object
+         * @return name of the object
+         */
         const std::string &getName() const;
 
-        /// <summary>
-        /// Gets the age of the object in seconds
-        /// Timedomain: Real simulation time
-        /// </summary>
-        /// <returns>Age</returns>
+        /**
+         * @brief 
+		 * Gets the age of the object in seconds
+		 * Timedomain: Real simulation time
+         * @return age in seconds
+         */
         double getAge() const;
 
-        /// <summary>
-        /// Gets the time in seconds where the object was added to a Scene
-        /// Timedomain: Real simulation time
-        /// </summary>
-        /// <returns>Time of birth</returns>
+        /**
+         * @brief 
+		 * Gets the time in seconds where the object was added to a Scene
+		 * Timedomain: Real simulation time
+		 * @return time of birth
+         */
         double getBirthTime() const;
 
-        /// <summary>
-        /// Gets the age of the object in ticks
-        /// </summary>
-        /// <returns>Age in ticks</returns>
+        /**
+         * @brief 
+		 * Gets the age of the object in ticks
+		 * @return age in ticks
+         */
         size_t getAgeTicks() const;
 
-        /// <summary>
-        /// Gets the tick where the object was added to a Scene
-        /// </summary>
-        /// <returns>Birth tick</returns>
+        /**
+         * @brief 
+		 * Gets the tick where the object was added to a Scene
+		 * @return the tick where the object was added to a Scene
+         */
         size_t getBirthTick() const;
 
-        /// <summary>
-        /// Gets the age of the object in seconds
-        /// Timedomain: Fixed simulation time
-        /// </summary>
-        /// <returns>Age in fixed timedomain</returns>
+        /**
+         * @brief 
+		 * Gets the age of the object in seconds
+		 * Timedomain: Fixed simulation time
+		 * @return age in seconds
+         */
         double getAgeFixed() const;
 
-
+		/**
+		 * @brief 
+         * Sets the order in which events are processed by this object
+		 * @param order 
+		 */
 		void setEventOrder(const std::vector<EventSequenceElement>& order) { m_eventOrder = order; }
+
+		/**
+		 * @brief 
+		 * Gets the order in which events are processed by this object
+		 * @return event order list
+		 */
 		const std::vector<EventSequenceElement>& getEventOrder() const { return m_eventOrder; }
+
+		/**
+		 * @brief
+		 * Sets the order in which the object is updated
+		 * @param order
+		 */
 		void setUpdateOrder(const std::vector<UpdateSequenceElement>& order) { m_updateOrder = order; }
+
+		/**
+		 * @brief
+		 * Gets the order in which the object is updated
+		 * @return update order list
+		 */
 		const std::vector<UpdateSequenceElement>& getUpdateOrder() const { return m_updateOrder; }
+
+		/**
+		 * @brief
+		 * Sets the order in which the object is drawn
+		 * @param order
+		 */
         void setDrawOrder(const std::vector<DrawSequenceElement>& order) { m_drawOrder = order; }
+
+        /**
+         * @brief 
+		 * Gets the order in which the object is drawn
+		 * @return draw order list
+         */
         const std::vector<DrawSequenceElement>& getDrawOrder() const { return m_drawOrder; }
 
 
+        /**
+         * @brief 
+		 * Adds a custom event function to the object
+		 * This function will be called when an event is received
+         * The function gets the object.
+         * The map contains all events that were received by a specific camera
+         * @param func 
+         */
+        void addEventFunction(const std::function<void(GameObject&, const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&)>& func) { m_onEventCallbacks.push_back(func); }
+        
+        /**
+         * @brief 
+		 * Removes all custom event functions
+         */
+        void clearEventFunctions() { m_onEventCallbacks.clear(); }
+
+        /**
+         * @brief 
+		 * Gets the number of custom event functions
+		 * @return the number of custom event functions
+         */
+        size_t getEventFunctionCount() const { return m_onEventCallbacks.size(); }
+
+        /**
+         * @brief 
+		 * Gets the custom event functions
+		 * @return the custom event functions
+         */
+        const std::vector<std::function<void(GameObject&, const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&)> >& getEventFunctions() const { return m_onEventCallbacks; }
 
 
+		/**
+		 * @brief 
+		 * Adds a custom update function to the object
+         * This function will be called on update.
+		 * The function gets the object as parameter
+		 * @param func 
+		 */
 		void addUpdateFunction(const std::function<void(GameObject&)>& func) { m_onUpdateCallbacks.push_back(func); }
-		void clearUpdateFunctions() { m_onUpdateCallbacks.clear(); }
+		
+        /**
+         * @brief 
+		 * Removes all custom update functions
+         */
+        void clearUpdateFunctions() { m_onUpdateCallbacks.clear(); }
+
+		/**
+		 * @brief 
+		 * Gets the number of custom update functions
+		 * @return number of custom update functions
+		 */
 		size_t getUpdateFunctionCount() const { return m_onUpdateCallbacks.size(); }
+
+		/**
+		 * @brief 
+		 * Gets the custom update functions
+		 * @return list of update functions
+		 */
 		const std::vector<std::function<void(GameObject&)>>& getUpdateFunctions() const { return m_onUpdateCallbacks; }
         
+
+		/**
+		 * @brief 
+		 * Adds a custom draw function to the object
+		 * This function will be called on draw.
+		 * The function gets the object, the render target and the render states as parameter
+		 * @param func 
+		 */
+		void addDrawFunction(const std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)>& func) { m_onDrawCallbacks.push_back(func); }
 		
+        /**
+         * @brief 
+		 * Removes all custom draw functions
+         */
+        void clearDrawFunctions() { m_onDrawCallbacks.clear(); }
 
-        //void setPositionRelative(const sf::Vector2f& pos); // Sets the position relative to its parent
-        //void setPosition(const sf::Vector2f& pos); // Sets the position in the absolute world coords.
-        //const sf::Vector2f& getPositionRelative() const;   // Gets the position relative to its parent
-        //sf::Vector2f getPosition() const;          // Gets the position in absolute world coords
-        //sf::Vector2f getGlobalPosition() const; // Gets the position in absolute world coords
+		/**
+		 * @brief 
+		 * Gets the number of custom draw functions
+		 * @return size of custom draw functions
+		 */
+		size_t getDrawFunctionCount() const { return m_onDrawCallbacks.size(); }
 
-        //float getGlobalRotation() const; // Gets the rotation in absolute world coords
+		/**
+		 * @brief 
+		 * Gets the custom draw functions
+		 * @return list of custom draw functions
+		 */
+		const std::vector<std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)> >& getDrawFunctions() const { return m_onDrawCallbacks; }
 
-
+        /**
+         * @brief 
+		 * Sets the render layer of the root object of this
+		 * Objects in a higher layer will be drawn on top of objects in a lower layer
+         * The renderlayer can only be applyed to the root object.
+         * If this function is called from a child, it will change the renderlayer of the root object
+         * @param layer 
+         */
         void setRenderLayer(RenderLayer layer);
+
+        /**
+         * @brief 
+		 * Gets the render layer of the root object
+         * @return renderlayer of the root object
+         */
         RenderLayer getRenderLayer() const;
 
-        const SceneSettings::UpdateControlls& getUpdateControlls() const;
+        /**
+         * @brief 
+		 * Sets the update controlls for this object
+         * Can be used to enable/disable event,update and draw calls
+		 * @param controlls
+         */
         void setUpdateControlls(const SceneSettings::UpdateControlls& controlls);
 
-		// checks if the BB needs to be updated and does so if needed
-        const Utilities::AABB &getBoundingBox() const;
+        /**
+         * @brief 
+		 * Gets the update controlls for this object
+         * @return the update controlls for this object
+         */
+        const SceneSettings::UpdateControlls& getUpdateControlls() const;
+       
+		
+        /**
+         * @brief 
+		 * Checks if the boundingBox of this object needs to be updated
+         * If so, it will be updated
+         * @return the updated boundingBox
+         */
+        const Utilities::AABB& getBoundingBox() const;
 
+		/**
+		 * @brief 
+         * Gets the boundingBox without updating it
+		 * @return boundingBox
+		 */
 		const Utilities::AABB& getBoundingBoxNoUpdate() const { return m_boundingBox; }
         
-
+        /**
+         * @brief 
+         * Stringifies the objects child and component hirarchy
+		 * @return stringified object
+         */
         std::string toString() const;
 
         
         // Childs operations
+
+        /**
+         * @brief 
+		 * Adds a child to this object
+         * @param child 
+         */
         void addChild(GameObjectPtr child);
+
+        /**
+         * @brief 
+		 * Adds multiple childs to this object
+         * @param childs 
+         */
         void addChilds(const std::vector<GameObjectPtr>& childs);
 
+        /**
+         * @brief 
+		 * Removes a child from this object
+         * This does not delete the child
+         * @param child 
+         */
         void removeChild(GameObjectPtr child);
+
+        /**
+         * @brief 
+		 * Removes multiple childs from this object
+		 * This does not delete the childs
+         * @param childs 
+         */
         void removeChilds(const std::vector<GameObjectPtr>& childs);
+
+        /**
+         * @brief 
+         * Removes all childs
+		 * This does not delete the childs
+         */
         void clearChilds();
+
+		/**
+		 * @brief 
+         * Removes and deletes the child before the next update loop
+		 * The child only gets deleted if this is its parent
+		 * @param child which will be deleted
+		 */
+		void deleteChildLater(GameObjectPtr child);
+
+        /**
+         * @brief 
+		 * Removes all childs of the given type
+         * @tparam T childtype
+         */
         template<typename T>
-        void removeChilds()
-        {
-            m_childObjectManagerData.toRemove.reserve(m_childObjectManagerData.toRemove.size() + m_childObjectManagerData.objs.size());
-            for (auto& obj : m_childObjectManagerData.objs)
-            {
-                if (dynamic_cast<T>(obj))
-                {
-                    m_childObjectManagerData.toRemove.push_back(obj);
-                }
-            }
-        }
+        void removeChilds();
 
-
-
-        
-
+        /**
+         * @brief 
+         * Checks if the given object is a child of this
+         * @param child to search in this
+         * @return true uf child is a direct child of this, otherwise false
+         */
         bool hasChild(GameObjectPtr child) const;
+
+        /**
+         * @brief 
+		 * Gets the index of the given child
+         * @param child 
+         * @return index where the child is stored in this object
+         */
         size_t getChildIndex(GameObjectPtr child) const;
+
+        /**
+         * @brief 
+         * Gets the list of childs
+         * @return list of childs
+         */
         const std::vector<GameObjectPtr>& getChilds() const { return m_childObjectManagerData.objs; }
 
+		/**
+		 * @brief
+		 * Gets the first child of the given type
+		 * @tparam T childtype
+		 * @return first child of the given type
+		 */
         template<typename T>
-        T* getFirstChild() const
-        {
-            for (auto& obj : m_childObjectManagerData.objs)
-            {
-                if (T* child = dynamic_cast<T*>(obj))
-                {
-                    return child;
-                }
-            }
-            return nullptr;
-        }
+        T* getFirstChild() const;
+
+        /**
+         * @brief 
+		 * Gets all childs of the given type
+         * @tparam T childtype
+		 * @return list of childs of the given type
+         */
         template<typename T>
-        std::vector<T*> getChilds() const
-        {
-            std::vector<T*> childs;
-            for (auto& obj : m_childObjectManagerData.objs)
-            {
-                if (T* child = dynamic_cast<T*>(obj))
-                {
-                    childs.push_back(child);
-                }
-            }
-            return childs;
-        }
+        std::vector<T*> getChilds() const;
 
+        /**
+         * @brief 
+		 * Gets all childs of the given type recursive
+		 * It scans the whole child hirarchy
+		 * @tparam T childtype
+		 * @return list of childs of the given type
+         */
         template<typename T>
-        std::vector<T*> getChildsRecusrive() const
-        {
-            std::vector<T*> childs;
-            for (auto& obj : m_childObjectManagerData.objs)
-            {
-                if (T* child = dynamic_cast<T*>(obj))
-                {
-                    childs.push_back(child);
-                }
-                std::vector<T*> childChilds = obj->getChildsRecusrive<T>();
-                childs.insert(childs.end(), childChilds.begin(), childChilds.end());
-            }
-            return childs;
-        }
+        std::vector<T*> getChildsRecusrive() const;
 
-        GameObjectPtr findFirstChild(const std::string& name);
-        std::vector<GameObjectPtr> findAllChilds(const std::string& name);
+        /**
+         * @brief 
+		 * Searches the first child with the given name
+         * @param name of the searched child
+		 * @return child with the given name or nullptr if not found
+         */
+        GameObjectPtr getFirstChild(const std::string& name);
 
-        GameObjectPtr findFirstChildRecursive(const std::string& name);
-        std::vector<GameObjectPtr> findAllChildsRecursive(const std::string& name);
+        /**
+         * @brief 
+		 * Searches all childs with the given name
+         * @param name of the searched child
+		 * @return list of childs with the given name
+         */
+        std::vector<GameObjectPtr> getAllChilds(const std::string& name);
+
+        /**
+         * @brief 
+		 * Searches the first child with the given name recursive
+		 * It scans the whole child hirarchy
+         * @param name of the searched child
+		 * @return child with the given name or nullptr if not found
+         */
+        GameObjectPtr getFirstChildRecursive(const std::string& name);
+
+        /**
+         * @brief 
+		 * Searches all childs with the given name recursive
+		 * It scans the whole child hirarchy
+         * @param name of the searched child
+		 * @return list of childs with the given name
+         */
+        std::vector<GameObjectPtr> getAllChildsRecursive(const std::string& name);
 
         // ---------
 
         // Component operations
+
+        /**
+         * @brief 
+		 * Adds a component to this object
+         * @param component 
+         */
         void addComponent(Components::ComponentPtr component);
+
+        /**
+         * @brief 
+		 * Adds multiple components to this object
+         * @param components 
+         */
         void addComponents(const std::vector<Components::ComponentPtr>& components);
 
-        //void createTransform();
-
+        /**
+         * @brief 
+		 * Removes a component from this object
+         * @param component 
+         */
         void removeComponent(Components::ComponentPtr component);
+
+        /**
+         * @brief 
+		 * Removes multiple components from this object
+         * @param components 
+         */
         void removeComponents(const std::vector<Components::ComponentPtr>& components);
+
+        /**
+         * @brief 
+		 * Removes all components of a given type
+         * It will not delete the removed component
+         * @tparam T of component to remove
+         */
         template <typename T>
-        void removeComponents()
-        {
-            m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.all.size());
-            for (auto& comp : m_componentsManagerData.all)
-            {
-                if (dynamic_cast<T>(comp))
-                {
-                    removeComponent(comp);
-                }
-            }
-        }
+        void removeComponents();
         template <>
-        void removeComponents<Components::Collider>()
-        {
-            m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.colliders.size());
-            for (size_t i = 0; i < m_componentsManagerData.colliders.size(); ++i)
-            {
-                Components::ComponentPtr component = static_cast<Components::Component*>(m_componentsManagerData.colliders[i]);
-                removeComponent(component);
-            }
-        }
+        void removeComponents<Components::Collider>();
         template <>
-        void removeComponents<Utilities::Updatable>()
-        {
-            m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.updatables.size());
-            for (auto& comp : m_componentsManagerData.updatables)
-            {
-                removeComponent(dynamic_cast<Components::Component*>(comp));
-            }
-        }
+        void removeComponents<Utilities::Updatable>();
         template <>
-        void removeComponents<Components::SfEventHandle>()
-        {
-            m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.eventHandler.size());
-            for (size_t i = 0; i < m_componentsManagerData.eventHandler.size(); ++i)
-            {
-                removeComponent(dynamic_cast<Components::Component*>(m_componentsManagerData.eventHandler[i]));
-            }
-        }
+        void removeComponents<Components::SfEventHandle>();
         template <>
-        void removeComponents<Components::Transform>()
-        {
-            removeComponent(static_cast<Components::Component*>(m_componentsManagerData.transform));
-        }
+        void removeComponents<Components::Transform>();
 
+        /**
+         * @brief 
+		 * Removes all components
+         * It will not delete the removed components
+         */
         void clearComponents();
-        void deleteComponentLater(Components::ComponentPtr component);
 
-        Components::ComponentPtr getComponent(const std::string& name) const;
+        /**
+         * @brief 
+		 * Removes and deletes the component before the next update loop
+         * The component only gets deleted if this is its parent
+         * @param comp that shuld be deleted
+         */
+        void deleteComponentLater(Components::ComponentPtr comp);
+
+		/**
+		 * @brief
+		 * Gets the first component of the given type
+		 * @tparam T type of the component
+		 * @return component or nullptr if not found
+		 */
 		template <typename T>
-        T* getComponent() const
-        {
-            for (auto& comp : m_componentsManagerData.all)
-            {
-                if (T* t = dynamic_cast<T*>(comp))
-                {
-                    return t;
-                }
-            }
-            return nullptr;
-        }
+        T* getFirstComponent() const;
+        template <>
+        Components::Collider* getFirstComponent<Components::Collider>() const;
+        template <>
+        Utilities::Updatable* getFirstComponent<Utilities::Updatable>() const;
+        template <>
+        Components::SfEventHandle* getFirstComponent<Components::SfEventHandle>() const;
+        template <>
+        Components::Transform* getFirstComponent<Components::Transform>() const;
 
-        template <>
-        Components::Collider* getComponent<Components::Collider>() const
-        {
-            if (m_componentsManagerData.colliders.size() > 0)
-                return m_componentsManagerData.colliders[0];
-            return nullptr;
-        }
-        template <>
-        Utilities::Updatable* getComponent<Utilities::Updatable>() const
-        {
-            if (m_componentsManagerData.updatables.size() > 0)
-                return m_componentsManagerData.updatables[0];
-            return nullptr;
-        }
-        template <>
-        Components::SfEventHandle* getComponent<Components::SfEventHandle>() const
-        {
-            if (m_componentsManagerData.eventHandler.size() > 0)
-                return m_componentsManagerData.eventHandler[0];
-            return nullptr;
-        }
-        template <>
-        Components::Transform* getComponent<Components::Transform>() const
-        {
-            return m_componentsManagerData.transform;
-        }
-
+        /**
+         * @brief 
+		 * Gets all components of the given type
+		 * @return list of components with the given type
+         */
         const std::vector<Components::ComponentPtr>& getComponents() const;
         template <typename T>
-        std::vector<T*> getComponents() const
-        {
-            std::vector<T*> components;
-            components.reserve(m_componentsManagerData.all.size());
-            for (auto& comp : m_componentsManagerData.all)
-            {
-                if (T* t = dynamic_cast<T*>(comp))
-                {
-                    components.push_back(t);
-                }
-            }
-            return components;
-        }
+        std::vector<T*> getComponents() const;
         template <>
-        std::vector<Components::Collider*> getComponents<Components::Collider>() const
-        {
-            return m_componentsManagerData.colliders;
-        }
+        std::vector<Components::Collider*> getComponents<Components::Collider>() const;
         template <>
-        std::vector<Utilities::Updatable*> getComponents<Utilities::Updatable>() const
-        {
-            return m_componentsManagerData.updatables;
-        }
+        std::vector<Utilities::Updatable*> getComponents<Utilities::Updatable>() const;
         template <>
-        std::vector<Components::SfEventHandle*> getComponents<Components::SfEventHandle>() const
-        {
-            return m_componentsManagerData.eventHandler;
-        }
+        std::vector<Components::SfEventHandle*> getComponents<Components::SfEventHandle>() const;
         template <>
-        std::vector<Components::Transform*> getComponents<Components::Transform>() const
-        {
-            return { m_componentsManagerData.transform };
-        }
-
+        std::vector<Components::Transform*> getComponents<Components::Transform>() const;
         template <typename T>
-        std::vector<T*> getComponentsRecursive() const
-        {
-            std::vector<T*> comps = getComponents<T>();
-            for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
-            {
-                std::vector<T*> comps2 = m_childObjectManagerData.objs[i]->getComponentsRecursive<T>();
-                comps.insert(comps.end(), comps2.begin(), comps2.end());
-            }
-            return comps;
-        }
+        std::vector<T*> getComponentsRecursive() const;
 
+        /**
+         * @brief 
+		 * Checks if this object has a component with the given name
+         * @param name of the component
+		 * @return true if this object has a component with the given name, otherwise false
+         */
         bool hasComponent(const std::string& name) const;
+
+        /**
+         * @brief 
+		 * Checks if this object has the given component
+         * @param component 
+		 * @return true if this object has the given component, otherwise false
+         */
         bool hasComponent(Components::ComponentPtr component) const;
 
 
-
+        /**
+         * @brief 
+         * Gets the amount of components
+         * @return amount of components
+         */
         size_t getComponentCount() const { return m_componentsManagerData.all.size(); }
+        
+        /**
+         * @brief 
+         * Gets the amount of components of the whole object hirarchy
+         * @return amount of components of the whole object hirarchy
+         */
         size_t getComponentCountRecursive() const;
+
+        /**
+         * @brief 
+         * Gets the amount of components of a specific component type
+         * @tparam T type of the component
+         * @return amount of components that are from type T
+         */
         template<typename T>
-        size_t getComponentCount() const
-        {
-            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-            size_t count = 0;
-            for (auto& comp : m_componentsManagerData.all)
-            {
-                if (T* t = dynamic_cast<T*>(comp))
-                {
-                    ++count;
-                }
-            }
-            return count;
-        }
+        size_t getComponentCount() const;
+
+        /**
+         * @brief 
+         * Gets the amount of components of a specific component type in the whole object hirarchy
+         * @tparam T type of the component
+         * @return amount of components in the tree that are from type T
+         */
         template<typename T>
-        size_t getComponentCountRecusrive() const
-        {
-            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-            size_t count = 0;
-            for (auto& comp : m_componentsManagerData.all)
-            {
-                if (T* t = dynamic_cast<T*>(comp))
-                {
-                    ++count;
-                }
-            }
-            for (auto& obj : m_childObjectManagerData.objs)
-            {
-                count += obj->getComponentCountRecusrive<T>();
-            }
-            return count;
-        }
+        size_t getComponentCountRecusrive() const;
 
-        Components::ComponentPtr findFirstComponent(const std::string& name);
-        std::vector<Components::ComponentPtr> findAllComponents(const std::string& name);
+        /**
+         * @brief 
+		 * Gets the first component with the given name
+         * @param name of the component
+		 * @return first component with the given name or nullptr if not found
+         */
+        Components::ComponentPtr getFirstComponent(const std::string& name);
+        
+        /**
+         * @brief 
+		 * Gets all components with the given name
+         * @param name of the component
+         * @return list of all components with the given name
+         */
+        std::vector<Components::ComponentPtr> getAllComponents(const std::string& name);
 
-        Components::ComponentPtr findFirstComponentRecursive(const std::string& name);
-        std::vector<Components::ComponentPtr> findAllComponentsRecursive(const std::string& name);
+        /**
+         * @brief 
+		 * Gets the first component with the given name recursive
+		 * It scans the whole object hirarchy
+         * @param name of the component
+		 * @return component with the given name or nullptr if not found
+         */
+        Components::ComponentPtr getFirstComponentRecursive(const std::string& name);
+        
+        /**
+         * @brief 
+		 * Gets all components with the given name recursive
+		 * It scans the whole object hirarchy
+         * @param name of the component
+		 * @return list of all components with the given name
+         */
+        std::vector<Components::ComponentPtr> getAllComponentsRecursive(const std::string& name);
 
 
 
 
-
+        /**
+         * @brief 
+         * Checks if this object has components of type SfEventHandle
+		 * @return true if this object has components of type SfEventHandle, otherwise false
+         */
         bool hasEventHandlers() const { return !m_componentsManagerData.eventHandler.empty(); }
+        
+        /**
+         * @brief 
+		 * Checks if this object has components of type Collider
+		 * @return true if this object has components of type Collider, otherwise false
+         */
         bool hasColliders() const { return !m_componentsManagerData.colliders.empty(); }
+       
+        /**
+         * @brief 
+		 * Checks if this object has components of type Updatable
+		 * @return true if this object has components of type Updatable, otherwise false
+         */
         bool hasUpdatables() const { return !m_componentsManagerData.updatables.empty(); }
+        
+        /**
+         * @brief 
+         * Checks if this object has transform component
+         * @return true if this object has a transform component, otherwise false
+         */
         bool hasTransform() const { return m_componentsManagerData.transform != nullptr; }
 
+        /**
+         * @brief 
+         * Checks for collisions between this and the other object
+         * @param other object collision is checked against
+         * @return true if a collision occured, otherwise false
+         */
         bool checkCollision(const GameObjectPtr other) const;
+
+        /**
+         * @brief 
+		 * Checks for collisions between this and the other object
+         * @param other object collision is checked against
+         * @param collisions that have occured (out parameter)
+         * @param onlyFirstCollision, if set to true, the check will stop after the first collision 
+         * @return true if a collision occured, otherweise false
+         */
         bool checkCollision(const GameObjectPtr other,
             std::vector<Utilities::Collisioninfo>& collisions,
             bool onlyFirstCollision) const;
+
+        /**
+         * @brief 
+		 * Checks for collisions between this and all objects contained in the quadtree
+         * @param tree that consists many objects
+         * @param collisions that have occured (out parameter)
+		 * @param onlyFirstCollision if set to true, the check will stop for each object after the first collision
+         */
         void checkCollision(const Utilities::ObjectQuadTree& tree,
             std::vector<Utilities::Collisioninfo>& collisions,
             bool onlyFirstCollision);
@@ -629,41 +885,92 @@ protected:
 
         // Scene operations
 
-        /// <summary>
-        /// Gets the pixel coordinate of the mouse
-        /// </summary>
-        /// <returns>pixel pos</returns>
+        /**
+         * @brief 
+		 * Gets the current mouse position in pixel space of the main camera
+         * @return pixel coordinate of the mouse
+         */
         sf::Vector2i getMousePosition() const;
 
-        /// <summary>
-        /// Gets the world coordinate of the mouse
-        /// </summary>
-        /// <returns>world mouse pos</returns>
+        /**
+         * @brief 
+         * Gets the current mouse position in the world 
+		 * @return world coordinate of the mouse
+         */
         sf::Vector2f getMouseWorldPosition() const;
 
-        /// <summary>
-        /// Gets the world coordinate of the mouse, relative to this object
-        /// </summary>
-        /// <returns>relative mouse pos</returns>
+        /**
+         * @brief 
+         * Gets the relative (to this object) mouse position in world coordinates 
+         * @return relative mouse position in world coordinates
+         */
         sf::Vector2f getMouseObjectPosition() const;
 
-
+        /**
+         * @brief 
+		 * Converts a pixel coordinate to a world coordinate
+		 * Pixel coordinates are relative to the main camera
+         * @param pixelSpace coordinates relative to the main camera
+         * @return world space coordinates
+         */
         sf::Vector2f getInWorldSpace(const sf::Vector2i& pixelSpace) const;
+        
+        /**
+         * @brief 
+		 * Converts a world coordinate to a pixel coordinate
+		 * Pixel coordinates are relative to the main camera
+         * @param worldSpace coordinates
+         * @return pixel coordinates relative to the main camera
+         */
         sf::Vector2i getInScreenSpace(const sf::Vector2f& worldSpace) const;
 
-        
+        /**
+         * @brief 
+         * Gets the view of the main camera
+         * @return main camera view
+         */
         const sf::View getCameraView() const;
+
+        /**
+         * @brief 
+         * Gets the default view of the main camera
+         * @return default view of the main camera
+         */
         const sf::View &getDefaultCameraView() const;
+
+        /**
+         * @brief 
+         * Gets the view rect of the main camera
+         * @return view rect of the main camera
+         */
         Utilities::AABB getCameraViewRect() const;
+
+        /**
+         * @brief 
+         * Gets the main camera size
+         * @return main camera size
+         */
         sf::Vector2u getCameraSize() const;
+
+        /**
+         * @brief 
+         * Gets the main camera size before a change in size was detected
+		 * @return main camera size before a change in size was detected
+         */
         sf::Vector2u getOldCameraSize() const;
 
+        /**
+         * @brief 
+		 * Gets the default font for text rendering
+         * @return default font
+         */
         const sf::Font& getDefaultTextFont() const;
 
-        /// <summary>
-        /// Gets the current Scene tick count
-        /// </summary>
-        /// <returns>current tick</returns>
+        /**
+         * @brief 
+         * Gets the current tick count of the scene
+         * @return scene tick count
+         */
         size_t getTick() const;
 
         /// <summary>
@@ -706,7 +1013,7 @@ protected:
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::GameObjectPtr findFirstObjectGlobal(const std::string& name);
+        Objects::GameObjectPtr getFirstObjectGlobal(const std::string& name);
 
         /// <summary>
         /// Searches all objects with the given name in the Scene
@@ -714,7 +1021,7 @@ protected:
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObjectPtr> findAllObjectsGlobal(const std::string& name);
+        std::vector<Objects::GameObjectPtr> getAllObjectsGlobal(const std::string& name);
 
         /// <summary>
         /// Searches the object with the given name in the Scene
@@ -722,7 +1029,7 @@ protected:
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::GameObjectPtr findFirstObjectGlobalRecursive(const std::string& name);
+        Objects::GameObjectPtr getFirstObjectGlobalRecursive(const std::string& name);
 
         /// <summary>
         /// Searches all objects with the given name in the Scene
@@ -730,7 +1037,7 @@ protected:
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObjectPtr> findAllObjectsGlobalRecusive(const std::string& name);
+        std::vector<Objects::GameObjectPtr> getAllObjectsGlobalRecusive(const std::string& name);
 
         /*
         template<typename T>
@@ -884,8 +1191,8 @@ protected:
     private:
 
         std::vector<std::string> toStringInternal(const std::string &preStr) const;
-        bool findAllChilds_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
-        bool findAllChildsRecursive_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
+        bool getAllChilds_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
+        bool getAllChildsRecursive_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
         
         void markTransformDirty();
         sf::Transform updateTransformInternal(sf::Transform parentTransform) const;
@@ -958,7 +1265,10 @@ protected:
         //std::vector<Components::Component*> m_componentsManagerData.toRemove;
 
         SceneSettings::UpdateControlls m_updateControlls;
+		std::vector< std::function<void(GameObject&, const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&)> > m_onEventCallbacks;
 		std::vector< std::function<void(GameObject&)> > m_onUpdateCallbacks;
+		std::vector< std::function<void(const GameObject&,sf::RenderTarget&,sf::RenderStates)> > m_onDrawCallbacks;
+
         RenderLayer m_renderLayer;
 
         // Scene Object Internal functions
@@ -985,6 +1295,7 @@ protected:
 
             std::vector<GameObjectPtr> toAdd;
             std::vector<GameObjectPtr> toRemove;
+            std::vector<GameObjectPtr> toDelete;
 
             bool objectsChanged;
         };
@@ -1024,12 +1335,229 @@ protected:
 
 
 
+template<typename T>
+void GameObject::removeChilds()
+{
+    m_childObjectManagerData.toRemove.reserve(m_childObjectManagerData.toRemove.size() + m_childObjectManagerData.objs.size());
+    for (auto& obj : m_childObjectManagerData.objs)
+    {
+        if (dynamic_cast<T>(obj))
+        {
+            m_childObjectManagerData.toRemove.push_back(obj);
+        }
+    }
+}
+
+template<typename T>
+T* GameObject::getFirstChild() const
+{
+    for (auto& obj : m_childObjectManagerData.objs)
+    {
+        if (T* child = dynamic_cast<T*>(obj))
+        {
+            return child;
+        }
+    }
+    return nullptr;
+}
+template<typename T>
+std::vector<T*> GameObject::getChilds() const
+{
+    std::vector<T*> childs;
+    for (auto& obj : m_childObjectManagerData.objs)
+    {
+        if (T* child = dynamic_cast<T*>(obj))
+        {
+            childs.push_back(child);
+        }
+    }
+    return childs;
+}
+
+template<typename T>
+std::vector<T*> GameObject::getChildsRecusrive() const
+{
+    std::vector<T*> childs;
+    for (auto& obj : m_childObjectManagerData.objs)
+    {
+        if (T* child = dynamic_cast<T*>(obj))
+        {
+            childs.push_back(child);
+        }
+        std::vector<T*> childChilds = obj->getChildsRecusrive<T>();
+        childs.insert(childs.end(), childChilds.begin(), childChilds.end());
+    }
+    return childs;
+}
 
 
+template <typename T>
+void GameObject::removeComponents()
+{
+    m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.all.size());
+    for (auto& comp : m_componentsManagerData.all)
+    {
+        if (dynamic_cast<T>(comp))
+        {
+            removeComponent(comp);
+        }
+    }
+}
+template <>
+void GameObject::removeComponents<Components::Collider>()
+{
+    m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.colliders.size());
+    for (size_t i = 0; i < m_componentsManagerData.colliders.size(); ++i)
+    {
+        Components::ComponentPtr component = static_cast<Components::Component*>(m_componentsManagerData.colliders[i]);
+        removeComponent(component);
+    }
+}
+template <>
+void GameObject::removeComponents<Utilities::Updatable>()
+{
+    m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.updatables.size());
+    for (auto& comp : m_componentsManagerData.updatables)
+    {
+        removeComponent(dynamic_cast<Components::Component*>(comp));
+    }
+}
+template <>
+void GameObject::removeComponents<Components::SfEventHandle>()
+{
+    m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.eventHandler.size());
+    for (size_t i = 0; i < m_componentsManagerData.eventHandler.size(); ++i)
+    {
+        removeComponent(dynamic_cast<Components::Component*>(m_componentsManagerData.eventHandler[i]));
+    }
+}
+template <>
+void GameObject::removeComponents<Components::Transform>()
+{
+    removeComponent(static_cast<Components::Component*>(m_componentsManagerData.transform));
+}
+
+template <typename T>
+T* GameObject::getFirstComponent() const
+{
+    for (auto& comp : m_componentsManagerData.all)
+    {
+        if (T* t = dynamic_cast<T*>(comp))
+        {
+            return t;
+        }
+    }
+    return nullptr;
+}
+
+template <>
+Components::Collider* GameObject::getFirstComponent<Components::Collider>() const
+{
+    if (m_componentsManagerData.colliders.size() > 0)
+        return m_componentsManagerData.colliders[0];
+    return nullptr;
+}
+template <>
+Utilities::Updatable* GameObject::getFirstComponent<Utilities::Updatable>() const
+{
+    if (m_componentsManagerData.updatables.size() > 0)
+        return m_componentsManagerData.updatables[0];
+    return nullptr;
+}
+template <>
+Components::SfEventHandle* GameObject::getFirstComponent<Components::SfEventHandle>() const
+{
+    if (m_componentsManagerData.eventHandler.size() > 0)
+        return m_componentsManagerData.eventHandler[0];
+    return nullptr;
+}
+template <>
+Components::Transform* GameObject::getFirstComponent<Components::Transform>() const
+{
+    return m_componentsManagerData.transform;
+}
 
 
+template <typename T>
+std::vector<T*> GameObject::getComponents() const
+{
+    std::vector<T*> components;
+    components.reserve(m_componentsManagerData.all.size());
+    for (auto& comp : m_componentsManagerData.all)
+    {
+        if (T* t = dynamic_cast<T*>(comp))
+        {
+            components.push_back(t);
+        }
+    }
+    return components;
+}
+template <>
+std::vector<Components::Collider*> GameObject::getComponents<Components::Collider>() const
+{
+    return m_componentsManagerData.colliders;
+}
+template <>
+std::vector<Utilities::Updatable*> GameObject::getComponents<Utilities::Updatable>() const
+{
+    return m_componentsManagerData.updatables;
+}
+template <>
+std::vector<Components::SfEventHandle*> GameObject::getComponents<Components::SfEventHandle>() const
+{
+    return m_componentsManagerData.eventHandler;
+}
+template <>
+std::vector<Components::Transform*> GameObject::getComponents<Components::Transform>() const
+{
+    return { m_componentsManagerData.transform };
+}
+
+template <typename T>
+std::vector<T*> GameObject::getComponentsRecursive() const
+{
+    std::vector<T*> comps = getComponents<T>();
+    for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
+    {
+        std::vector<T*> comps2 = m_childObjectManagerData.objs[i]->getComponentsRecursive<T>();
+        comps.insert(comps.end(), comps2.begin(), comps2.end());
+    }
+    return comps;
+}
 
 
+template<typename T>
+size_t GameObject::getComponentCount() const
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    size_t count = 0;
+    for (auto& comp : m_componentsManagerData.all)
+    {
+        if (T* t = dynamic_cast<T*>(comp))
+        {
+            ++count;
+        }
+    }
+    return count;
+}
+template<typename T>
+size_t GameObject::getComponentCountRecusrive() const
+{
+    QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+    size_t count = 0;
+    for (auto& comp : m_componentsManagerData.all)
+    {
+        if (T* t = dynamic_cast<T*>(comp))
+        {
+            ++count;
+        }
+    }
+    for (auto& obj : m_childObjectManagerData.objs)
+    {
+        count += obj->getComponentCountRecusrive<T>();
+    }
+    return count;
+}
 
 
 

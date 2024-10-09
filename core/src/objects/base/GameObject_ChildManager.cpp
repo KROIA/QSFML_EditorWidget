@@ -2,6 +2,7 @@
 #include "Scene/Scene.h"
 #include "components/base/Component.h"
 #include "components/Transform.h"
+#include "utilities/LifetimeChecker.h"
 
 namespace QSFML
 {
@@ -11,10 +12,17 @@ namespace QSFML
 		{
 			if (m_renderLayer == layer)
 				return;
-			RenderLayer oldLayer = m_renderLayer;
-			m_renderLayer = layer;
-			if (m_sceneParent)
-				m_sceneParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
+			if (m_parent)
+			{
+				m_parent->setRenderLayer(layer);
+			}
+			else if(this == m_rootParent)
+			{
+				RenderLayer oldLayer = m_renderLayer;
+				m_renderLayer = layer;
+				if (m_sceneParent)
+					m_sceneParent->renderLayerSwitch(this, oldLayer, m_renderLayer);
+			}
 		}
 		double GameObject::getAge() const
 		{
@@ -108,6 +116,11 @@ namespace QSFML
 			onObjectsChanged();
 		}
 
+		void GameObject::deleteChildLater(GameObjectPtr child)
+		{
+			m_childObjectManagerData.toDelete.push_back(child);
+			onObjectsChanged();
+		}
 
 		bool GameObject::hasChild(GameObjectPtr child) const
 		{
@@ -127,7 +140,7 @@ namespace QSFML
 		}
 	
 
-		GameObjectPtr GameObject::findFirstChild(const std::string& name)
+		GameObjectPtr GameObject::getFirstChild(const std::string& name)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			for (auto& obj : m_childObjectManagerData.objs)
@@ -137,7 +150,7 @@ namespace QSFML
 			}
 			return nullptr;
 		}
-		std::vector<GameObjectPtr> GameObject::findAllChilds(const std::string& name)
+		std::vector<GameObjectPtr> GameObject::getAllChilds(const std::string& name)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			std::vector<GameObjectPtr> result;
@@ -149,7 +162,7 @@ namespace QSFML
 			return result;
 		}
 
-		GameObjectPtr GameObject::findFirstChildRecursive(const std::string& name)
+		GameObjectPtr GameObject::getFirstChildRecursive(const std::string& name)
 		{
 			for (auto& obj : m_childObjectManagerData.objs)
 			{
@@ -159,7 +172,7 @@ namespace QSFML
 			// <! ToDo recursive
 			return nullptr;
 		}
-		std::vector<GameObjectPtr> GameObject::findAllChildsRecursive(const std::string& name)
+		std::vector<GameObjectPtr> GameObject::getAllChildsRecursive(const std::string& name)
 		{
 			std::vector<GameObjectPtr> result;
 			for (auto& obj : m_childObjectManagerData.objs)
@@ -170,7 +183,7 @@ namespace QSFML
 			// <! ToDo recursive
 			return result;
 		}
-		bool GameObject::findAllChilds_internal(const std::string& name, std::vector<GameObjectPtr>& foundList)
+		bool GameObject::getAllChilds_internal(const std::string& name, std::vector<GameObjectPtr>& foundList)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
 			size_t nameSize = name.size();
@@ -189,7 +202,7 @@ namespace QSFML
 			}
 			return found;
 		}
-		bool GameObject::findAllChildsRecursive_internal(const std::string& name, std::vector<GameObjectPtr>& foundList)
+		bool GameObject::getAllChildsRecursive_internal(const std::string& name, std::vector<GameObjectPtr>& foundList)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
 			size_t nameSize = name.size();
@@ -204,7 +217,7 @@ namespace QSFML
 					foundList.push_back(m_childObjectManagerData.objs[i]);
 					found = true;
 				}
-				found |= m_childObjectManagerData.objs[i]->findAllChilds_internal(name, foundList);
+				found |= m_childObjectManagerData.objs[i]->getAllChilds_internal(name, foundList);
 			}
 			return found;
 		}
@@ -215,14 +228,33 @@ namespace QSFML
 		void GameObject::updateChanges_childObjectManager()
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
+			if (m_childObjectManagerData.toAdd.size() == 0 &&
+				m_childObjectManagerData.toRemove.size() == 0 &&
+				m_childObjectManagerData.toDelete.size() == 0)
+				return;
+
 			std::vector<GameObjectPtr> toRemove = m_childObjectManagerData.toRemove;
+			std::vector<GameObjectPtr> toDelete = m_childObjectManagerData.toDelete;
 			std::vector<GameObjectPtr> toAdd = m_childObjectManagerData.toAdd;
 
 			m_childObjectManagerData.toRemove.clear();
+			m_childObjectManagerData.toDelete.clear();
 			m_childObjectManagerData.toAdd.clear();
 
 			size_t removeCount = 0;
 			size_t addCount = 0;
+
+			// Delete objects
+			for (auto& obj : toDelete)
+			{
+				auto it = std::find(m_childObjectManagerData.objs.begin(), m_childObjectManagerData.objs.end(), obj);
+				if (it != m_childObjectManagerData.objs.end())
+				{
+					m_childObjectManagerData.objs.erase(it);
+					++removeCount;
+					Internal::LifetimeChecker::deleteSecured(obj);
+				}
+			}
 
 			// Remove objects
 			for (auto& obj : toRemove)
@@ -230,10 +262,16 @@ namespace QSFML
 				auto it = std::find(m_childObjectManagerData.objs.begin(), m_childObjectManagerData.objs.end(), obj);
 				if (it != m_childObjectManagerData.objs.end())
 				{
+					if (Internal::LifetimeChecker::isAlive(obj))
+					{
+						obj->setParent_internal(nullptr, m_rootParent, m_sceneParent);
+					}
 					m_childObjectManagerData.objs.erase(it);
 					++removeCount;
 				}
 			}
+
+			
 
 			bool _needsDrawUpdate = false;
 			bool _needsEventUpdate = false;
@@ -294,29 +332,29 @@ namespace QSFML
 			QSFMLP_OBJECT_END_BLOCK;
 		}
 
-		Objects::GameObjectPtr GameObject::findFirstObjectGlobal(const std::string& name)
+		Objects::GameObjectPtr GameObject::getFirstObjectGlobal(const std::string& name)
 		{
 			if (!m_sceneParent) return nullptr;
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			return m_sceneParent->findFirstObject(name);
+			return m_sceneParent->getFirstObject(name);
 		}
-		std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobal(const std::string& name)
+		std::vector<Objects::GameObjectPtr> GameObject::getAllObjectsGlobal(const std::string& name)
 		{
 			if (!m_sceneParent) return std::vector<GameObjectPtr>();
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			return m_sceneParent->findAllObjects(name);
+			return m_sceneParent->getAllObjects(name);
 		}
-		Objects::GameObjectPtr GameObject::findFirstObjectGlobalRecursive(const std::string& name)
+		Objects::GameObjectPtr GameObject::getFirstObjectGlobalRecursive(const std::string& name)
 		{
 			if (!m_sceneParent) return nullptr;
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			return m_sceneParent->findFirstObjectRecursive(name);
+			return m_sceneParent->getFirstObjectRecursive(name);
 		}
-		std::vector<Objects::GameObjectPtr> GameObject::findAllObjectsGlobalRecusive(const std::string& name)
+		std::vector<Objects::GameObjectPtr> GameObject::getAllObjectsGlobalRecusive(const std::string& name)
 		{
 			if (!m_sceneParent) return std::vector<GameObjectPtr>();
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			return m_sceneParent->findAllObjectsRecursive(name);
+			return m_sceneParent->getAllObjectsRecursive(name);
 		}
 	}
 }

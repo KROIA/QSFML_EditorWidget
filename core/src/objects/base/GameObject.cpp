@@ -42,7 +42,8 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
 
     m_eventOrder = {
         EventSequenceElement::components,
-        EventSequenceElement::childs
+        EventSequenceElement::childs,
+		EventSequenceElement::customEventFunctions
     };
     m_updateOrder = { 
         UpdateSequenceElement::thisUpdate, 
@@ -52,7 +53,8 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     };
     m_drawOrder = {
         DrawSequenceElement::components,
-        DrawSequenceElement::childs
+        DrawSequenceElement::childs,
+		DrawSequenceElement::customDrawFunctions
     };
    
     m_sceneParent = nullptr;
@@ -268,7 +270,7 @@ float GameObject::getGlobalRotation() const
 
 RenderLayer GameObject::getRenderLayer() const
 {
-    return m_renderLayer;
+    return m_rootParent->m_renderLayer;
 }
 
 /*
@@ -1227,6 +1229,19 @@ void GameObject::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::v
                 }
                 break;
             }
+            case EventSequenceElement::customEventFunctions:
+            {
+                if (m_onEventCallbacks.size() > 0)
+                {
+                    QSFMLP_OBJECT_BLOCK("Custom event functions", QSFML_COLOR_STAGE_2);
+                    for (size_t i = 0; i < m_onEventCallbacks.size(); ++i)
+                    {
+                        m_onEventCallbacks[i](*this, events);
+                    }
+                    QSFMLP_OBJECT_END_BLOCK;
+                }
+                break;
+            }
         }
     }
 }
@@ -1342,12 +1357,25 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
                         if (!comp->isEnabled())
                             continue;
                         {
-                            window.draw(*comp, states);
+							comp->draw(window, states);
+                            //window.draw(*comp, states);
                         }
                     }
                     QSFMLP_OBJECT_END_BLOCK;
                 }
                 break;
+            }
+            case DrawSequenceElement::customDrawFunctions:
+            {
+                if (m_onDrawCallbacks.size() > 0)
+                {
+                    QSFMLP_OBJECT_BLOCK("Custom draw functions", QSFML_COLOR_STAGE_2);
+                    for (size_t i = 0; i < m_onDrawCallbacks.size(); ++i)
+                    {
+                        m_onDrawCallbacks[i](*this, window, states);
+                    }
+                    QSFMLP_OBJECT_END_BLOCK;
+                }
             }
         }
     }

@@ -33,6 +33,7 @@ namespace Components
 class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 {
     friend class Internal::LifetimeChecker;
+	friend class Objects::GameObject;
     protected:
         virtual ~Component();
     public:
@@ -49,22 +50,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 
         virtual CLONE_FUNC_DEC(Component);
 
-        /**
-         * \brief setParent
-         * \param parent
-         *        Assigns this Component to an GameObject.
-         *        This will be called by the GameObject::addChild(...),
-         *        So you don't have to call this manually.
-         */
-        virtual void setParent(Objects::GameObjectPtr parent)
-        {
-			m_parent = parent;
-		}
-
-        virtual void setSceneParent(Scene* parent)
-        {
-            m_sceneParent = parent;
-        }
+       
 
         /**
          * \brief getParent
@@ -119,6 +105,22 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 
         void deleteLater();
     protected:
+        /**
+        * \brief setParent
+        * \param parent
+        *        Assigns this Component to an GameObject.
+        *        This will be called by the GameObject::addChild(...),
+        *        So you don't have to call this manually.
+        */
+        virtual void setParent(Objects::GameObjectPtr parent)
+        {
+            m_parent = parent;
+        }
+
+        virtual void setSceneParent(Scene* parent)
+        {
+            m_sceneParent = parent;
+        }
         
 
         // Scene operations
@@ -162,6 +164,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         Scene* m_sceneParent;
 
     private:
+        
 
         bool m_enabled;
         std::string m_name;

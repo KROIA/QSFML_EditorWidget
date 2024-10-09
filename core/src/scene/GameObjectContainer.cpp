@@ -276,7 +276,7 @@ size_t GameObjectContainer::getObjectIndex(GameObjectPtr obj)
 
     return m_allObjects->getObjectIndex(obj);
 }
-Objects::GameObjectPtr GameObjectContainer::findFirstObject(const std::string& name)
+Objects::GameObjectPtr GameObjectContainer::getFirstObject(const std::string& name)
 {
     size_t nameSize = name.size();
     for (auto& obj : m_allObjects->getObjects())
@@ -289,7 +289,7 @@ Objects::GameObjectPtr GameObjectContainer::findFirstObject(const std::string& n
     }
     return nullptr;
 }
-std::vector<Objects::GameObjectPtr> GameObjectContainer::findAllObjects(const std::string& name)
+std::vector<Objects::GameObjectPtr> GameObjectContainer::getAllObjects(const std::string& name)
 {
     std::vector<Objects::GameObjectPtr> results;
     results.reserve(20);
@@ -304,7 +304,7 @@ std::vector<Objects::GameObjectPtr> GameObjectContainer::findAllObjects(const st
     }
     return results;
 }
-Objects::GameObjectPtr GameObjectContainer::findFirstObjectRecursive(const std::string& name)
+Objects::GameObjectPtr GameObjectContainer::getFirstObjectRecursive(const std::string& name)
 {
     size_t nameSize = name.size();
     for (auto& obj : m_allObjects->getObjects())
@@ -312,7 +312,7 @@ Objects::GameObjectPtr GameObjectContainer::findFirstObjectRecursive(const std::
         const std::string& objName = obj->getName();
         if (objName.size() != nameSize)
         {
-			Objects::GameObjectPtr child = obj->findFirstChildRecursive(name);
+			Objects::GameObjectPtr child = obj->getFirstChildRecursive(name);
 			if (child)
 				return child;
             continue;
@@ -322,7 +322,7 @@ Objects::GameObjectPtr GameObjectContainer::findFirstObjectRecursive(const std::
     }
     return nullptr;
 }
-std::vector<Objects::GameObjectPtr> GameObjectContainer::findAllObjectsRecursive(const std::string& name)
+std::vector<Objects::GameObjectPtr> GameObjectContainer::getAllObjectsRecursive(const std::string& name)
 {
     std::vector<Objects::GameObjectPtr> results;
     results.reserve(50);
@@ -332,7 +332,7 @@ std::vector<Objects::GameObjectPtr> GameObjectContainer::findAllObjectsRecursive
         const std::string& objName = obj->getName();
         if (objName.size() != nameSize)
         {
-            std::vector<GameObjectPtr> childs = obj->findAllChildsRecursive(name);
+            std::vector<GameObjectPtr> childs = obj->getAllChildsRecursive(name);
             if (childs.size())
                 results.insert(results.end(), childs.begin(), childs.end());
             continue;

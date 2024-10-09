@@ -1,6 +1,7 @@
 #include "objects/base/GameObject.h"
 #include "Scene/Scene.h"
 #include "utilities/ObjectQuadTree.h"
+#include "utilities/LifetimeChecker.h"
 
 
 namespace QSFML
@@ -53,7 +54,7 @@ namespace QSFML
 			onObjectsChanged();
 		}
 
-		Components::ComponentPtr GameObject::getComponent(const std::string& name) const
+		/*Components::ComponentPtr GameObject::getComponent(const std::string& name) const
 		{
 			for (auto& comp : m_componentsManagerData.all)
 			{
@@ -61,7 +62,7 @@ namespace QSFML
 					return comp;
 			}
 			return nullptr;
-		}
+		}*/
 		const std::vector<Components::ComponentPtr>& GameObject::getComponents() const
 		{
 			return m_componentsManagerData.all;
@@ -106,7 +107,7 @@ namespace QSFML
 		}
 
 
-		Components::ComponentPtr GameObject::findFirstComponent(const std::string& name)
+		Components::ComponentPtr GameObject::getFirstComponent(const std::string& name)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			for (auto& comp : m_componentsManagerData.all)
@@ -116,7 +117,7 @@ namespace QSFML
 			}
 			return nullptr;
 		}
-		std::vector<Components::ComponentPtr> GameObject::findAllComponents(const std::string& name)
+		std::vector<Components::ComponentPtr> GameObject::getAllComponents(const std::string& name)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			std::vector<Components::ComponentPtr> comps;
@@ -128,7 +129,7 @@ namespace QSFML
 			return comps;
 		}
 
-		Components::ComponentPtr GameObject::findFirstComponentRecursive(const std::string& name)
+		Components::ComponentPtr GameObject::getFirstComponentRecursive(const std::string& name)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			for (auto& comp : m_componentsManagerData.all)
@@ -138,13 +139,13 @@ namespace QSFML
 			}
 			for (auto& obj : m_childObjectManagerData.objs)
 			{
-				Components::ComponentPtr comp = obj->findFirstComponentRecursive(name);
+				Components::ComponentPtr comp = obj->getFirstComponentRecursive(name);
 				if (comp)
 					return comp;
 			}
 			return nullptr;
 		}
-		std::vector<Components::ComponentPtr> GameObject::findAllComponentsRecursive(const std::string& name)
+		std::vector<Components::ComponentPtr> GameObject::getAllComponentsRecursive(const std::string& name)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			std::vector<Components::ComponentPtr> comps;
@@ -155,7 +156,7 @@ namespace QSFML
 			}
 			for (auto& obj : m_childObjectManagerData.objs)
 			{
-				std::vector<Components::ComponentPtr> childComps = obj->findAllComponentsRecursive(name);
+				std::vector<Components::ComponentPtr> childComps = obj->getAllComponentsRecursive(name);
 				comps.insert(comps.end(), childComps.begin(), childComps.end());
 			}
 			return comps;
@@ -212,10 +213,27 @@ namespace QSFML
 		void GameObject::updateChanges_componentsManager()
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
+			if (m_componentsManagerData.toAdd.size() == 0 &&
+				m_componentsManagerData.toRemove.size() == 0 &&
+				m_componentsManagerData.toDelete.size() == 0)
+				return;
+
 			std::vector<Components::ComponentPtr> newComps = m_componentsManagerData.toAdd;
 			std::vector<Components::ComponentPtr> toRemoveComps = m_componentsManagerData.toRemove;
+			std::vector<Components::ComponentPtr> toDeleteComps = m_componentsManagerData.toDelete;
 			m_componentsManagerData.toAdd.clear();
 			m_componentsManagerData.toRemove.clear();
+			m_componentsManagerData.toDelete.clear();
+
+			toRemoveComps.insert(toRemoveComps.end(), toDeleteComps.begin(), toDeleteComps.end());
+
+
+			// Delete components
+			for (auto& comp : toDeleteComps)
+			{
+				if (std::find(m_componentsManagerData.all.begin(), m_componentsManagerData.all.end(), comp) != m_componentsManagerData.all.end())
+					Internal::LifetimeChecker::deleteSecured(comp);
+			}
 
 			// Remove components
 			size_t removedCount = 0;
@@ -226,10 +244,13 @@ namespace QSFML
 				if (it != m_componentsManagerData.all.end())
 				{
 					++removedCount;
-					if(comp->getParent())
+					if (Internal::LifetimeChecker::isAlive(comp))
 					{
-						comp->setParent(nullptr);
-						comp->setSceneParent(nullptr);
+						if (comp->getParent())
+						{
+							comp->setParent(nullptr);
+							comp->setSceneParent(nullptr);
+						}
 					}
 					m_componentsManagerData.all.erase(it);
 					if (m_componentsManagerData.transform == comp)
@@ -252,6 +273,7 @@ namespace QSFML
 				}
 			}
 
+			
 			// Add components
 			m_componentsManagerData.all.reserve(m_componentsManagerData.all.size() + newComps.size());
 			for (auto& comp : newComps)
@@ -441,22 +463,16 @@ namespace QSFML
 			bool onlyFirstCollision)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
-			for (auto& objStruct : objs)
-			{
-				GameObjectPtr obj = objStruct.obj;				
-				std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
-				tree.search(obj->getBoundingBox(), possibleColliders);
-				for (auto it : possibleColliders)
+			std::list<GameObjectPtr> objs;
+			tree.search(getBoundingBox(), objs);
+			for (auto& obj : objs)
+			{			
+				if (obj == this)
+					continue;
+				const std::vector<Components::Collider*>& otherColliders = obj->m_componentsManagerData.colliders;
+				for (auto objCollider : m_componentsManagerData.colliders)
 				{
-					if (obj == it)
-						continue;
-
-					const std::vector<Components::Collider*>& otherColliders = it->m_componentsManagerData.colliders;
-					for (auto objCollider : obj->m_componentsManagerData.colliders)
-					{
-						objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
-					}
+					objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
 				}
 			}
 		}

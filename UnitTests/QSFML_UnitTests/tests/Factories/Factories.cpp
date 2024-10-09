@@ -1,7 +1,8 @@
-#include "F_randomShape.h"
+#include "Factories.h"
 
 namespace Factories
 {
+
 	std::vector<sf::Vector2f> randomShapePoints(
 		float radius,
 		size_t vertecies)

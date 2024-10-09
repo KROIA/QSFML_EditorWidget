@@ -47,7 +47,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::GameObjectPtr findFirstObject(const std::string &name);
+        Objects::GameObjectPtr getFirstObject(const std::string &name);
 
         /// <summary>
         /// Searches all objects with the given name in the object list.
@@ -55,7 +55,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObjectPtr> findAllObjects(const std::string &name);
+        std::vector<Objects::GameObjectPtr> getAllObjects(const std::string &name);
 
         /// <summary>
         /// Searches the object with the given name in the object list.
@@ -63,7 +63,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>pointer to the object, or nullptr if not found</returns>
-        Objects::GameObjectPtr findFirstObjectRecursive(const std::string& name);
+        Objects::GameObjectPtr getFirstObjectRecursive(const std::string& name);
 
         /// <summary>
         /// Searches all objects with the given name in the object list.
@@ -71,7 +71,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObjectPtr> findAllObjectsRecursive(const std::string& name);
+        std::vector<Objects::GameObjectPtr> getAllObjectsRecursive(const std::string& name);
 
         template<typename T>
         T* findFirstObject()
