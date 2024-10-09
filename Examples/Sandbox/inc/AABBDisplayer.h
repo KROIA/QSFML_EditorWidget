@@ -27,7 +27,7 @@ class AABBDisplayer: public QSFML::Objects::GameObject
             addComponent(pathPainter);
 
             setCustomBoundingBoxFunction([this]() {
-                Components::VectorPainter* p = getComponent<Components::VectorPainter>();
+                Components::VectorPainter* p = getFirstComponent<Components::VectorPainter>();
                 if (!p)
                     return Utilities::AABB();
                 sf::Transform transform = getGlobalTransform();
@@ -42,12 +42,12 @@ class AABBDisplayer: public QSFML::Objects::GameObject
         {
             rotate(200 * getDeltaT());
 
-            Components::RectPainter* rectPainter = getComponent<RectPainterClone>();
+            Components::RectPainter* rectPainter = getFirstComponent<RectPainterClone>();
             rectPainter->setRect(getBoundingBox());
             
 
-            Components::PathPainter *pathPainter = getComponent<Components::PathPainter>();
-            Components::VectorPainter *vectorPainter = getComponent<Components::VectorPainter>();
+            Components::PathPainter *pathPainter = getFirstComponent<Components::PathPainter>();
+            Components::VectorPainter *vectorPainter = getFirstComponent<Components::VectorPainter>();
             sf::Transform transform = getGlobalTransform();
             pathPainter->appenPoint(transform.transformPoint(vectorPainter->getEnd()));
             if (pathPainter->getPointCount() > 1000)

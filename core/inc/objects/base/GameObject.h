@@ -179,7 +179,6 @@ namespace Objects
  * };
  * \endcode
  */
-
 class QSFML_EDITOR_WIDGET_EXPORT GameObject: 
     public Events::DestroyEvent
 {
@@ -191,12 +190,20 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObject:
 protected:
         virtual ~GameObject();
     public:
+        /**
+         * @brief 
+		 * The order in which events are processed by this object
+         */
         enum class EventSequenceElement
         {
             childs,
             components,
             customEventFunctions
         };
+        /**
+         * @brief 
+		 * The order in which the object is updated
+         */
         enum class UpdateSequenceElement
         {
             childs,
@@ -204,6 +211,10 @@ protected:
 			thisUpdate,
             customUpdateFunctions
         };
+        /**
+         * @brief 
+		 * The order in which the object is drawn
+         */
         enum class DrawSequenceElement
 		{
             childs,
@@ -215,6 +226,11 @@ protected:
                      GameObject* parent = nullptr);
         GameObject(const GameObject &other);
 
+        /**
+         * @brief 
+         * Safely deletes the given object
+         * @param obj 
+         */
         static void deleteObject(GameObjectPtr obj);
         
 
@@ -233,14 +249,16 @@ protected:
 		 * Gets the parent of the object
          * @return the parent object
          */
-        GameObjectPtr getParent() const;
+        GameObjectPtr getParent() const 
+        { return m_parent; }
         
         /**
          * @brief 
 		 * Gets the most top parent of the object
 		 * @return most top parent
          */
-        GameObjectPtr getRootParent() const;
+        GameObjectPtr getRootParent() const 
+        { return m_rootParent; }
 
         /**
          * @brief 
@@ -254,7 +272,8 @@ protected:
 		 * Gets the current enabled state of the object
          * @return true if the object is enabled
          */
-        bool isEnabled() const;
+        bool isEnabled() const
+        { return m_enabled; }
 
         /**
          * @brief 
@@ -268,7 +287,8 @@ protected:
 		 * Gets the name of the object
          * @return name of the object
          */
-        const std::string &getName() const;
+		const std::string& getName() const 
+        { return m_name; }
 
         /**
          * @brief 
@@ -284,7 +304,8 @@ protected:
 		 * Timedomain: Real simulation time
 		 * @return time of birth
          */
-        double getBirthTime() const;
+		double getBirthTime() const 
+        { return m_birthTime; }
 
         /**
          * @brief 
@@ -298,7 +319,8 @@ protected:
 		 * Gets the tick where the object was added to a Scene
 		 * @return the tick where the object was added to a Scene
          */
-        size_t getBirthTick() const;
+		size_t getBirthTick() const 
+        { return m_birthTick; }
 
         /**
          * @brief 
@@ -311,6 +333,7 @@ protected:
 		/**
 		 * @brief 
          * Sets the order in which events are processed by this object
+         * @warning Do not use this function from within a event handler
 		 * @param order 
 		 */
 		void setEventOrder(const std::vector<EventSequenceElement>& order) { m_eventOrder = order; }
@@ -325,6 +348,7 @@ protected:
 		/**
 		 * @brief
 		 * Sets the order in which the object is updated
+		 * @warning Do not use this function from within a update function
 		 * @param order
 		 */
 		void setUpdateOrder(const std::vector<UpdateSequenceElement>& order) { m_updateOrder = order; }
@@ -339,6 +363,7 @@ protected:
 		/**
 		 * @brief
 		 * Sets the order in which the object is drawn
+		 * @warning Do not use this function from within a draw function
 		 * @param order
 		 */
         void setDrawOrder(const std::vector<DrawSequenceElement>& order) { m_drawOrder = order; }
@@ -357,6 +382,7 @@ protected:
 		 * This function will be called when an event is received
          * The function gets the object.
          * The map contains all events that were received by a specific camera
+		 * @warning Do not use this function from within another custom event function
          * @param func 
          */
         void addEventFunction(const std::function<void(GameObject&, const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&)>& func) { m_onEventCallbacks.push_back(func); }
@@ -364,6 +390,7 @@ protected:
         /**
          * @brief 
 		 * Removes all custom event functions
+		 * @warning Do not use this function from within another custom event function
          */
         void clearEventFunctions() { m_onEventCallbacks.clear(); }
 
@@ -387,6 +414,7 @@ protected:
 		 * Adds a custom update function to the object
          * This function will be called on update.
 		 * The function gets the object as parameter
+		 * @warning Do not use this function from within another custom update function
 		 * @param func 
 		 */
 		void addUpdateFunction(const std::function<void(GameObject&)>& func) { m_onUpdateCallbacks.push_back(func); }
@@ -394,6 +422,7 @@ protected:
         /**
          * @brief 
 		 * Removes all custom update functions
+		 * @warning Do not use this function from within another custom update function
          */
         void clearUpdateFunctions() { m_onUpdateCallbacks.clear(); }
 
@@ -417,6 +446,7 @@ protected:
 		 * Adds a custom draw function to the object
 		 * This function will be called on draw.
 		 * The function gets the object, the render target and the render states as parameter
+		 * @warning Do not use this function from within another custom draw function
 		 * @param func 
 		 */
 		void addDrawFunction(const std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)>& func) { m_onDrawCallbacks.push_back(func); }
@@ -424,6 +454,7 @@ protected:
         /**
          * @brief 
 		 * Removes all custom draw functions
+		 * @warning Do not use this function from within another custom draw function
          */
         void clearDrawFunctions() { m_onDrawCallbacks.clear(); }
 
@@ -456,7 +487,8 @@ protected:
 		 * Gets the render layer of the root object
          * @return renderlayer of the root object
          */
-        RenderLayer getRenderLayer() const;
+        RenderLayer getRenderLayer() const
+        { return m_rootParent->m_renderLayer; }
 
         /**
          * @brief 
@@ -471,7 +503,8 @@ protected:
 		 * Gets the update controlls for this object
          * @return the update controlls for this object
          */
-        const SceneSettings::UpdateControlls& getUpdateControlls() const;
+		const SceneSettings::UpdateControlls& getUpdateControlls() const 
+        { return m_updateControlls; }
        
 		
         /**
@@ -496,8 +529,14 @@ protected:
          */
         std::string toString() const;
 
-        
-        // Childs operations
+//
+// 
+// 
+//      Child operations
+// 
+//
+//
+
 
         /**
          * @brief 
@@ -1003,115 +1042,74 @@ protected:
          */
         double getFixedElapsedTime() const; 
 
-        /// <summary>
-        /// Gets the Scene this object is contained in
-        /// </summary>
-        /// <returns>Parent Scene</returns>
+        /**
+         * @brief 
+		 * Gets the scene the object is in
+		 * @return the scene the object is in, or nullptr if the object is not in a scene
+         */
         Scene* getSceneParent() const;
-
-        /// <summary>
-        /// Searches the object with the given name in the Scene.
-        /// Searches only the top layer objects.
-        /// </summary>
-        /// <param name="name">name of the object</param>
-        /// <returns>pointer to the object, or nullptr if not found</returns>
+   
+        /**
+         * @brief 
+		 * Searches the object with the given name in the Scene
+		 * Searches only the top layer objects
+		 * @param name of the object
+		 * @return object with the given name or nullptr if not found
+         */
         Objects::GameObjectPtr getFirstObjectGlobal(const std::string& name);
 
-        /// <summary>
-        /// Searches all objects with the given name in the Scene
-        /// Searches only the top layer objects.
-        /// </summary>
-        /// <param name="name">name of the object</param>
-        /// <returns>a list of found objects</returns>
+        /**
+         * @brief 
+		 * Searches all objects with the given name in the Scene
+		 * Searches only the top layer objects
+		 * @param name of the object
+		 * @return list of found objects
+         */
         std::vector<Objects::GameObjectPtr> getAllObjectsGlobal(const std::string& name);
-
-        /// <summary>
-        /// Searches the object with the given name in the Scene
-        /// Searches all object tree hirarchies
-        /// </summary>
-        /// <param name="name">name of the object</param>
-        /// <returns>pointer to the object, or nullptr if not found</returns>
+        
+        /**
+         * @brief 
+		 * Searches the object with the given name in the Scene
+		 * Searches all object tree hirarchies
+		 * @param name of the object
+		 * @return first object with the given name or nullptr if not found
+         */
         Objects::GameObjectPtr getFirstObjectGlobalRecursive(const std::string& name);
 
-        /// <summary>
-        /// Searches all objects with the given name in the Scene
-        /// Searches all object tree hirarchies
-        /// </summary>
-        /// <param name="name">name of the object</param>
-        /// <returns>a list of found objects</returns>
+        /**
+         * @brief 
+		 * Searches all objects with the given name in the Scene
+		 * Searches all object tree hirarchies
+		 * @param name of the object
+		 * @return list of found objects
+         */
         std::vector<Objects::GameObjectPtr> getAllObjectsGlobalRecusive(const std::string& name);
 
-        /*
-        template<typename T>
-        T* findFirstObjectGlobal() const
-        {
-            Scene *scene = getSceneParent();
-            if (!scene) return nullptr;
-            return scene->findFirstObject<T>();
-        }
-        template<typename T>
-        std::vector<T*> findAllObjectGlobal() const
-        {
-            Scene* scene = getSceneParent();
-            if (!scene) return {};
-            return scene->findAllObject<T>();
-        }
-        template<typename T>
-        T* findFirstObjectGlobalRecursive() const
-        {
-            Scene* scene = getSceneParent();
-            if (!scene) return nullptr;
-            return scene->findFirstObjectRecursive<T>();
-        }
-        template<typename T>
-        std::vector<T*> findAllObjectsGlobalRecursive() const
-        {
-            Scene* scene = getSceneParent();
-            if (!scene) return {};
-            return scene->findAllObjectRecursive<T>();
-        }
-
-        template<typename T>
-        T* findFirstObjectGlobal(const std::string &objName) const
-        {
-            Scene* scene = getSceneParent();
-            if (!scene) return nullptr;
-            return scene->findFirstObject<T>(objName);
-        }
-        template<typename T>
-        std::vector<T*> findAllObjectGlobal(const std::string& objName) const
-        {
-            Scene* scene = getSceneParent();
-            if (!scene) return {};
-            return scene->findAllObject<T>(objName);
-        }
-        template<typename T>
-        T* findFirstObjectGlobalRecursive(const std::string& objName) const
-        {
-            Scene* scene = getSceneParent();
-            if (!scene) return nullptr;
-            return scene->findFirstObjectRecursive<T>(objName);
-        }
-        template<typename T>
-        std::vector<T*> findAllObjectsGlobalRecursive(const std::string& objName) const
-        {
-            Scene* scene = getSceneParent();
-            if (!scene) return {};
-            return scene->findAllObjectRecursive<T>(objName);
-        }
-        */
-
-
+        /**
+         * @brief 
+		 * Creates a screenshot of the current camera
+		 * @return A screenshot of the current camera
+         */
         sf::Image captureScreen();
 
         // ---------
 
         /// Logging
-        void createLogger(); // Creates a new logger for this object
-                             // You don't need to call this function unless you want to create a new logger
 
+        /**
+         * @brief 
+		 * Creates a new logger for this object
+         * You don't need to call this function before you want to use the logger
+         * If you call this function, every message will be logged in the context of this objects name
+         */
+        void createLogger(); 
+                             
+        /**
+         * @brief 
+		 * Logs a message to the console
+         * @param msg 
+         */
         void log(const Log::Message& msg) const;
-
         void log(const std::string& msg) const;
         void log(const std::string& msg, Log::Level level) const;
         void log(const std::string& msg, Log::Level level, const Log::Color& col) const;
@@ -1123,68 +1121,271 @@ protected:
 
         // ---------
 
-        /// Transform interface
+        // Transform interface
+
+        /**
+         * @brief 
+		 * Sets the position of the object
+		 * @param x coordinate in wolrd space
+		 * @param y coordinate in world space
+         */
         virtual void setPosition(float x, float y);
+
+        /**
+         * @brief 
+		 * Sets the position of the object
+		 * @param position in world space
+         */
         virtual void setPosition(const sf::Vector2f& position);
+
+        /**
+         * @brief 
+		 * Sets the rotation of the object
+		 * @param angle in degrees
+         */
         virtual void setRotation(float angle);
+
+        /**
+         * @brief 
+		 * Sets the scale of the object
+		 * @param factorX to scale in x direction
+		 * @param factorY to scale in y direction
+         */
         virtual void setScale(float factorX, float factorY);
+
+        /**
+         * @brief 
+		 * Sets the scale of the object
+         * @param factors 
+         */
         virtual void setScale(const sf::Vector2f& factors);
+
+        /**
+         * @brief 
+		 * Sets the origin of the object
+		 * @param x coordinates in world space
+		 * @param y coordinates in world space
+         */
         virtual void setOrigin(float x, float y);
+
+        /**
+         * @brief 
+		 * Sets the origin of the object
+		 * @param origin in world space
+         */
         virtual void setOrigin(const sf::Vector2f& origin);
+
+        /**
+         * @brief 
+		 * Moves the object by the given offset
+		 * @param offsetX in world space
+		 * @param offsetY in world space
+         */
         virtual void move(float offsetX, float offsetY);
+
+        /**
+         * @brief 
+		 * Moves the object by the given offset
+		 * @param offset in world space
+         */
         virtual void move(const sf::Vector2f& offset);
+
+        /**
+         * @brief 
+		 * Rotates the object by the given angle
+         * @param angle in degrees
+         */
         virtual void rotate(float angle);
+
+        /**
+         * @brief 
+		 * Scales the object by the given factors
+		 * @param factorX in x direction
+		 * @param factorY in y direction
+         */
         virtual void scale(float factorX, float factorY);
+
+        /**
+         * @brief 
+		 * Scales the object by the given factors
+         * @param factor 
+         */
         virtual void scale(const sf::Vector2f& factor);
+
+        /**
+         * @brief 
+		 * Gets the position of the object
+		 * @return object local position 
+         */
         const sf::Vector2f& getPosition() const;
-        sf::Vector2f getGlobalPosition() const; // Gets the position in absolute world coords
+
+        /**
+         * @brief 
+		 * Gets the position of the object in absolute world coords
+		 * @return object position in absolute world coords
+         */
+        sf::Vector2f getGlobalPosition() const;
+
+        /**
+         * @brief 
+		 * Gets the rotation of the object
+		 * @return local rotation of the object
+         */
         float getRotation() const;
-        float getGlobalRotation() const; // Gets the rotation in absolute world coords
+
+        /**
+         * @brief 
+		 * Gets the rotation of the object in absolute world coords
+		 * @return objects absolute rotation
+         */
+        float getGlobalRotation() const; 
+
+        /**
+         * @brief 
+		 * Gets the scale of the object
+		 * @return local scale of the object
+         */
         const sf::Vector2f& getScale() const;
+
+        /**
+         * @brief 
+		 * Gets the scale of the object in absolute world coords
+		 * @return objects absolute scale
+         */
         sf::Vector2f getGlobalScale() const;
+
+        /**
+         * @brief 
+		 * Gets the origin of the object
+		 * @return origin of the object
+         */
         const sf::Vector2f& getOrigin() const;
         
+        /**
+         * @brief 
+		 * Gets the transform of this object
+		 * @return transform of this object
+         */
         const sf::Transform& getTransform() const;
+
+        /**
+         * @brief 
+		 * Gets the inverse transform of this object
+		 * @return the inverse transform of this object
+         */
         const sf::Transform& getInverseTransform() const;
+
+        /**
+         * @brief 
+		 * Gets the global transform of this object
+		 * All transforamtions of the parent objects are applied
+		 * @return global transform of this object
+         */
         sf::Transform getGlobalTransform() const;
+
         // ---------
 
 
-        // A function can be defined that gets called when ever the bounding box is updated
-        // Return a custom bounding box in this function.
-        // This box will be added to the other bounding boxes to calculate the final bounding box
-        // All coordinates are in world space absolute coordinates
+
+        /**
+         * @brief 
+		 * Sets a custom bounding box function
+         * @details
+		 * A function can be defined that gets called when ever the bounding box is updated
+		 * Return a custom bounding box in this function.
+		 * This box will be added to the other bounding boxes to calculate the final bounding box
+		 * All coordinates are in world space absolute coordinates
+         * @param func 
+         */
         void setCustomBoundingBoxFunction(const std::function<Utilities::AABB()>& func);
-        void resetCustomBoundingBoxFunction();
+
+        /**
+         * @brief 
+		 * Removes the custom bounding box function
+         */
+        void removeCustomBoundingBoxFunction();
         
+        /**
+         * @brief 
+		 * Checks if any collider is not up to date
+		 * @return true if any collider is not up to date, otherwise false
+         */
         bool isColliderDirty() const;
 
-        // Called to update the collider geometry
+        /**
+         * @brief 
+         * If any collider is not up to date, this function must be called before 
+         * collisions can be checked
+         */
         void updateColliderData() const;
 
-        // Called when new components/childs are added or removed
+        /**
+         * @brief 
+         * Applys changes in components and childs of this object.
+		 * @details
+         * If a component or child was added or removed, this function must be called
+		 * When the scene is running, this function is called automatically
+		 * If you want to access components or childs by a function like getComponents() or getChilds(),
+		 * you should call this function before.
+		 * Without calling this function, the added or removed components or childs are not available
+         */
         void updateObjectChanges();
 
+        /**
+         * @brief 
+		 * Recalculates the bounding box of this object
+         */
         void updateBoundingBox() const;
 
-        const static size_t npos = -1;
+		const static size_t npos = -1; ///< Represents an invalid index
     protected:
         /**
-         * \brief update will be called once per frame
+         * \brief 
+         * Will be called once per frame
+		 * Override this function to implement custom update logic
          */
         virtual void update();
 
+        /**
+         * @brief 
+		 * Will be called once when the object is added to a scene
+		 * Override this function to implement custom initialization logic
+         */
         virtual void onAwake();
+
+        /**
+         * @brief 
+		 * Will be called when the object gets enabled
+		 * Override this function to implement custom logic
+         */
         virtual void onEnable();
+
+        /**
+         * @brief 
+		 * Will be called when the object gets disabled
+		 * Override this function to implement custom logic
+         */
         virtual void onDisable();
 
-     
-
+        /**
+         * @brief 
+         * Will be called when the object changes to another scene
+         * @param oldParent 
+         * @param newParent 
+         */
         virtual void onSceneParentChange(Scene *oldParent, Scene *newParent);
+
+		/**
+		 * @brief
+		 * Will be called when the object changes its parent
+		 * @param oldParent
+		 * @param newParent
+		 */
         virtual void onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
 
-        virtual void internalOnSceneParentChange(Scene *oldParent, Scene *newParent);
-        virtual void internalOnParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
+
+        //virtual void internalOnSceneParentChange(Scene *oldParent, Scene *newParent);
+        //virtual void internalOnParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
 
         
 

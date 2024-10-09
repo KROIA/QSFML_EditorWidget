@@ -84,7 +84,7 @@ namespace QSFML
 			for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
 				m_childObjectManagerData.objs[i]->setSceneParent(parent);
 
-			internalOnSceneParentChange(oldParent, m_sceneParent);
+			//internalOnSceneParentChange(oldParent, m_sceneParent);
 			onSceneParentChange(oldParent, m_sceneParent);
 		}
 

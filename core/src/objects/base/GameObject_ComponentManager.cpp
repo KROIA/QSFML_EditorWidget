@@ -408,10 +408,10 @@ namespace QSFML
 		}
 		void GameObject::setCustomBoundingBoxFunction(const std::function<Utilities::AABB()>& func)
 		{
-			resetCustomBoundingBoxFunction();
+			removeCustomBoundingBoxFunction();
 			m_getCustomBoundingBoxFunction = new std::function<Utilities::AABB()>(func);
 		}
-		void GameObject::resetCustomBoundingBoxFunction()
+		void GameObject::removeCustomBoundingBoxFunction()
 		{
 			std::function<Utilities::AABB()> *tmp = m_getCustomBoundingBoxFunction;
 			m_getCustomBoundingBoxFunction = nullptr;
