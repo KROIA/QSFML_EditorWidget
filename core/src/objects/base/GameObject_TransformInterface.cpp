@@ -188,7 +188,7 @@ namespace QSFML
         sf::Transform GameObject::updateTransformInternal(sf::Transform parentTransform) const
         {
             QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_3);
-            Components::Transform* transform = getComponent<Components::Transform>();
+            Components::Transform* transform = getFirstComponent<Components::Transform>();
             sf::Transform globalTransform = parentTransform;
             if (transform)
             {
