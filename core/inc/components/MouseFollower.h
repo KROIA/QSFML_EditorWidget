@@ -9,7 +9,10 @@ namespace QSFML
 {
 namespace Components
 {
-
+/**
+ * @class MouseFollower
+ * @brief The MouseFollower is a Component that will emit a signal when the mouse moves
+ */
 class QSFML_EDITOR_WIDGET_EXPORT MouseFollower : public QObject, public SfEventHandle
 {
         Q_OBJECT
@@ -18,10 +21,22 @@ class QSFML_EDITOR_WIDGET_EXPORT MouseFollower : public QObject, public SfEventH
     MouseFollower(const MouseFollower &other);
     COMPONENT_DECL(MouseFollower);
 
+    /**
+     * @brief 
+     * Gets called by the Scene to process the events for a specific camera.
+     * @param events 
+     */
     void sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>> &events) override;
 
 
     signals:
+
+	 /**
+     * @brief
+     * This signal is emitted when the mouse position changes
+     * @param worldPos
+     * @param pixelPos
+     */
     void mousePosChanged(const sf::Vector2f &worldPos,
                          const sf::Vector2i &pixelPos);
 };

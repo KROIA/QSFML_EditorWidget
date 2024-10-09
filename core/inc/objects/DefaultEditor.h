@@ -28,6 +28,8 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObjec
 
         void setToggleRuntimeInfoKey(const sf::Keyboard::Key& key);
 
+        void setColors(const sf::Color& darkColor, const sf::Color& lightColor);
+
     public slots:
         void onToggleRuntimeInfo();
         void onEnableRuntimeInfo();
@@ -43,6 +45,9 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObjec
         CameraController* m_cam;
         BackgroundGrid* m_grid;
         RuntimeInfo* m_runtimeInfo;
+
+		sf::Color m_darkColor;
+		sf::Color m_lightColor;
 
         QSFML::Components::KeyPressEvent* m_toggleRuntimeInfoEvent;
 };

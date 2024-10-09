@@ -63,11 +63,15 @@ namespace QSFML {
         */
         //m_updateTimer.onFinished(std::bind(&Scene::update, this));
         connect(&m_frameTimer, &QTimer::timeout, this, &Scene::firstUpdate);
-        setSettings(settings);
+        
 
 		m_cameras.defaultCamera = new Objects::CameraWindow(settings.contextSettings, "DefaultCamera", parent);
         m_cameras.defaultCamera->enableFrameTimer(false);
 		addObject(m_cameras.defaultCamera);
+
+		const auto geometry = m_cameras.defaultCamera->geometry();
+        m_cameras.defaultCamera->setGeometry(geometry.x(), geometry.y(), settings.layout.fixedSize.x, settings.layout.fixedSize.y);
+        setSettings(settings);
 
     }
     Scene::~Scene()

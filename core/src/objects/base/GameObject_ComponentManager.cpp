@@ -439,10 +439,10 @@ namespace QSFML
 			if (!other)
 				return false;
 
-			//if(isColliderDirty())
-			//	updateColliderData();
-			//if (other->isColliderDirty())
-			//	other->updateColliderData();
+			if(isColliderDirty())
+				updateColliderData();
+			if (other->isColliderDirty())
+				other->updateColliderData();
 			
 			// Check if bounding box intersects
 			const Utilities::AABB& otherBox = other->getBoundingBoxNoUpdate();

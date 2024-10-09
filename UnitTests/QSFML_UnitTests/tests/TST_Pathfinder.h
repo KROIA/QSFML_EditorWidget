@@ -343,6 +343,7 @@ private:
 	QSFML::Scene* createDefaultScene()
 	{
 		QSFML::SceneSettings settings;
+		settings.layout.fixedSize = sf::Vector2u(1000, 700);
 		settings.timing.frameTime = 0;
 		QSFML::Scene* scene = new QSFML::Scene(nullptr, settings);
 		scene->start();

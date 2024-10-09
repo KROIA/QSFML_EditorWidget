@@ -10,6 +10,11 @@ namespace QSFML
 {
 namespace Components
 {
+
+/**
+ * @class MousePressEvent
+ * @brief The MousePressEvent class is a Component that will trigger on a Mouse Button press
+ */
 class QSFML_EDITOR_WIDGET_EXPORT MousePressEvent : public AbstractPressEvent
 {
     public:
