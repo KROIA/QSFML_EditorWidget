@@ -27,6 +27,10 @@ The topmost GameObjects in the tree hirarchy are called the root objects. <br>
     <img src="Images/UpdateLoopSingle.png" alt="UpdateLoopSingle" width="200"/>
 </div>
 
-
-| A Scene is the engine of the library. It handles all the objects and updating stuff. The picture shows the Hirarchy of Objects inside a Scene. The topmost GameObjects in the tree hirarchy are called the root objects. | ![Image](Images/HirarchyDM.png#gh-dark-mode-only) ![Image](Images/HirarchyLM.png#gh-light-mode-only) |
+---
+|||
 |:-------------------------|-----------------------------------------|
+| A Scene is the engine of the library. It handles all the objects and updating stuff. The picture shows the Hirarchy of Objects inside a Scene. The topmost GameObjects in the tree hirarchy are called the root objects. | ![Image](Images/HirarchyDM.png#gh-dark-mode-only) ![Image](Images/HirarchyLM.png#gh-light-mode-only) |
+| The Scene is updaded using a QTimer, the update loop is shown in the picture above. | ![Image](Images/ObjectHirarchyDM.png#gh-dark-mode-only) ![Image](Images/ObjectHirarchyLM.png#gh-light-mode-only) |
+
+
