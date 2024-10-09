@@ -15,9 +15,9 @@
 
 ## Installation
 ### Dependencies
->:watch: [easy_profiler](https://github.com/yse/easy_profiler.git) to enable performace profiling
->:pencil2: [Logger](https://github.com/KROIA/Logger.git) to create log messages to the console
->:movie_camera: [SFML](https://github.com/SFML/SFML.git) as graphics library
+>:watch: [easy_profiler](https://github.com/yse/easy_profiler.git) to enable performace profiling<br>
+>:pencil2: [Logger](https://github.com/KROIA/Logger.git) to create log messages to the console<br>
+>:movie_camera: [SFML](https://github.com/SFML/SFML.git) as graphics library<br>
 
 
 
