@@ -50,6 +50,7 @@ namespace Objects
             void getMinMax(float &min, float &max);
 
             std::vector<float> m_dataPoints;
+			std::vector<sf::Vector2f> m_points;
             
            // sf::Vector2f m_origin;
             sf::Vector2f m_size;
@@ -58,7 +59,10 @@ namespace Objects
             bool m_autoScale;
             size_t m_maxDataPoints;
 
+            Components::Text* m_valueText = nullptr;
+
             LineChartPainter* m_painter;
+
 
             class LineChartPainter: public Components::Drawable
             {

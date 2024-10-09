@@ -1,5 +1,5 @@
 #include "objects/LineChart.h"
-
+#include "components/drawable/Text.h"
 
 namespace QSFML
 {
@@ -19,7 +19,12 @@ LineChart::LineChart(const std::string &name,
     m_painter->m_chart = this;
     m_maxDataPoints = -1;
 
+	m_valueText = new Components::Text("ValueText");
+	m_valueText->setEnabled(false);
+	m_valueText->setScale(0.1f);
+
     addComponent(m_painter);
+	addComponent(m_valueText);
 }
 LineChart::LineChart(const LineChart &other)
     : GameObject(other)
@@ -34,7 +39,12 @@ LineChart::LineChart(const LineChart &other)
 
     m_painter = new  LineChartPainter();
     m_painter->m_chart = this;
+
+    m_valueText = new Components::Text("ValueText");
+    m_valueText->setEnabled(false);
+
     addComponent(m_painter);
+    addComponent(m_valueText);
 }
 LineChart::~LineChart()
 {
@@ -135,6 +145,46 @@ void LineChart::update()
             m_yScale = m_size.y / (2*divisor);
         }
     }
+
+	m_points.clear();
+	m_points.reserve(m_dataPoints.size());
+    size_t count = m_dataPoints.size();
+    if (count < 2)
+        return;
+    float xSpacing = m_size.x / ((float)count - 1.f);
+
+    float currentX = 0;
+    float yOffset = 0;
+    for (size_t i = 0; i < count; ++i)
+    {
+        m_points[i]= { currentX, -m_dataPoints[i] * m_yScale + yOffset };
+        currentX += xSpacing;
+    }
+
+	sf::Vector2f mousePos = getMouseWorldPosition();
+	sf::Vector2f pos = getGlobalPosition();
+    if (mousePos.x >= pos.x && mousePos.x <= pos.x + currentX)
+    {
+		size_t index = (size_t)((mousePos.x - pos.x) / xSpacing);
+		float yPos = m_points[index].y;
+		if (mousePos.y >= yPos - 1 + pos.y && mousePos.y <= yPos + 1 + pos.y)
+        {
+            if (index < m_dataPoints.size())
+            {
+                m_valueText->setText(std::to_string(m_dataPoints[index]));
+                m_valueText->setPosition({ mousePos.x, yPos });
+                m_valueText->setEnabled(true);
+            }
+        }
+		else
+		{
+			m_valueText->setEnabled(false);
+		}
+	}
+    else
+    {
+        m_valueText->setEnabled(false);
+    }
 }
 void LineChart::getMinMax(float &min, float &max)
 {
@@ -178,17 +228,15 @@ void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
     size_t count = m_chart->m_dataPoints.size();
     if(count < 2)
         return;
-    float xSpacing = m_chart->m_size.x / ((float)count-1.f);
+//    float xSpacing = m_chart->m_size.x / ((float)count-1.f);
     sf::Vertex *vertecies = new sf::Vertex[count];
 
-    float currentX = origin.x;
-    float yOffset = origin.y;
+//    float currentX = origin.x;
+//    float yOffset = origin.y;
     for(size_t i=0; i<count; ++i)
     {
-        vertecies[i].position = {currentX,
-                                 -m_chart->m_dataPoints[i]*m_chart->m_yScale + yOffset};
+        vertecies[i].position = m_chart->m_points[i];
         vertecies[i].color = m_chart->m_color;
-        currentX += xSpacing;
     }
 
     target.draw(vertecies, count, sf::LineStrip, states);
