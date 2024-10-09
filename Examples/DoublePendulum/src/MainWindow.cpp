@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_Scene = nullptr;
+    m_scene = nullptr;
 
     setupScene();
     
@@ -26,38 +26,38 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete m_Scene;
+    delete m_scene;
 }
 void MainWindow::on_startStop_pushButton_clicked()
 {
-	if (m_Scene)
+	if (m_scene)
 	{
-        auto settings = m_Scene->getSettings();
+        auto settings = m_scene->getSettings();
         if(settings.timing.physicsFixedDeltaT > 0)
 			settings.timing.physicsFixedDeltaT = 0;
 		else
 			settings.timing.physicsFixedDeltaT = float(ui->speed_slider->value())/100000.f;
-        m_Scene->setSettings(settings);
+        m_scene->setSettings(settings);
 	}
 }
 void MainWindow::on_restart_pushButton_clicked()
 {
-	if (m_Scene)
+	if (m_scene)
 	{
         createPendulums();
 	}
 }
 void MainWindow::on_speed_slider_valueChanged(int value)
 {
-    auto settings = m_Scene->getSettings();
+    auto settings = m_scene->getSettings();
     if (settings.timing.physicsFixedDeltaT > 0)
         settings.timing.physicsFixedDeltaT = float(value) / 100000.f;
 	settings.timing.physicsDeltaTScale = (float)value / 1000.f;
-    m_Scene->setSettings(settings);
+    m_scene->setSettings(settings);
 }
 void MainWindow::on_L1_verticalSlider_valueChanged(int value)
 {
-    if (m_Scene)
+    if (m_scene)
     {
         for (int i = 0; i < m_pendulums.size(); ++i)
         {
@@ -67,7 +67,7 @@ void MainWindow::on_L1_verticalSlider_valueChanged(int value)
 }
 void MainWindow::on_L2_verticalSlider_valueChanged(int value)
 {
-    if (m_Scene)
+    if (m_scene)
     {
         for (int i = 0; i < m_pendulums.size(); ++i)
         {
@@ -77,7 +77,7 @@ void MainWindow::on_L2_verticalSlider_valueChanged(int value)
 }
 void MainWindow::on_damping_verticalSlider_valueChanged(int value)
 {
-	if (m_Scene)
+	if (m_scene)
 	{
         float damping = (float)value/ui->damping_verticalSlider->maximum();
         for (int i = 0; i < m_pendulums.size(); ++i)
@@ -88,7 +88,7 @@ void MainWindow::on_damping_verticalSlider_valueChanged(int value)
 }
 void MainWindow::on_enableLines_checkBox_stateChanged(int arg1)
 {
-	if (m_Scene)
+	if (m_scene)
 	{
 		for (int i = 0; i < m_pendulums.size(); ++i)
 		{
@@ -98,7 +98,7 @@ void MainWindow::on_enableLines_checkBox_stateChanged(int arg1)
 }
 void MainWindow::on_enablePath_checkBox_stateChanged(int arg1)
 {
-	if (m_Scene)
+	if (m_scene)
 	{
 		for (int i = 0; i < m_pendulums.size(); ++i)
 		{
@@ -108,7 +108,7 @@ void MainWindow::on_enablePath_checkBox_stateChanged(int arg1)
 }
 void MainWindow::on_enableEnergyLabel_checkBox_stateChanged(int arg1)
 {
-	if (m_Scene)
+	if (m_scene)
 	{
 		for (int i = 0; i < m_pendulums.size(); ++i)
 		{
@@ -134,24 +134,24 @@ void MainWindow::setupScene()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_Scene = new Scene(ui->SceneWidget, settings);
+    m_scene = new Scene(ui->SceneWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor("Editor",sf::Vector2f(1000, 1000));
     defaultEditor->getGrid()->setEnabled(false);
-    m_Scene->addObject(defaultEditor);
+    m_scene->addObject(defaultEditor);
     
     
 
     ui->pendulumCount_spinBox->setValue(2);
     createPendulums();
-    m_Scene->applyObjectChanges();
-    std::cout << m_Scene->getObjectsTreeString();
-    m_Scene->start();
+    m_scene->applyObjectChanges();
+    std::cout << m_scene->getObjectsTreeString();
+    m_scene->start();
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    if (m_Scene)
-        m_Scene->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 
@@ -159,7 +159,7 @@ void MainWindow::createPendulums()
 {
     for (size_t i = 0; i < m_pendulums.size(); ++i)
     {
-        m_Scene->deleteObject(m_pendulums[i]);
+        m_scene->deleteObject(m_pendulums[i]);
     }
     m_pendulums.clear();
     double angle1 = M_PI_2;
@@ -197,7 +197,7 @@ void MainWindow::createPendulums()
         }
         
         //angle2 += 0.01;
-        m_Scene->addObject(pendulum);
+        m_scene->addObject(pendulum);
 
         float length = ui->L1_verticalSlider->value();
         float damping = (float)ui->damping_verticalSlider->value() / ui->damping_verticalSlider->maximum();

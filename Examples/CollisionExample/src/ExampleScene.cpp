@@ -27,24 +27,24 @@ ExampleScene::ExampleScene(QWidget *parent)
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_Scene = new Scene(ui->SceneWidget,settings);
+    m_scene = new Scene(ui->SceneWidget,settings);
 
     DefaultEditor *defaultEditor = new DefaultEditor();
     // Create a Key button to toggle the RuntimeInfo Text on and off
     //QSFML::Components::KeyPressEvent* runtimeInfoKeyToggler = new QSFML::Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
     //connect(runtimeInfoKeyToggler, &Components::KeyPressEvent::fallingEdge, defaultEditor, &DefaultEditor::onToggleRuntimeInfo);
     //defaultEditor->addComponent(runtimeInfoKeyToggler);
-    m_Scene->addObject(defaultEditor);
+    m_scene->addObject(defaultEditor);
 
     
     
 
 
    m_collisionChecker = new CollisionChecker();
-   m_Scene->addObject(m_collisionChecker);
+   m_scene->addObject(m_collisionChecker);
 
 
-    m_Scene->applyObjectChanges();
+    m_scene->applyObjectChanges();
 
     qDebug() << defaultEditor->toString().c_str();
     if(m_collisionChecker)
@@ -60,7 +60,7 @@ ExampleScene::ExampleScene(QWidget *parent)
 ExampleScene::~ExampleScene()
 {
     delete ui;
-    delete m_Scene;
+    delete m_scene;
 }
 
 void ExampleScene::on_intersecting_radioButton_clicked()
@@ -79,10 +79,10 @@ void ExampleScene::onTimerFinished()
 {
     return;
     system("cls");
-    QSFML::Utilities::Stats stats = m_Scene->getLastStats();
-    //qDebug() << "  Tick:                  " << m_Scene->getTick();
-    //qDebug() << "  FPS:                   " << m_Scene->getFPS();
-    //qDebug() << "  Frametime:             " << m_Scene->getFrametime()*1000.f << " ms";
+    QSFML::Utilities::Stats stats = m_scene->getLastStats();
+    //qDebug() << "  Tick:                  " << m_scene->getTick();
+    //qDebug() << "  FPS:                   " << m_scene->getFPS();
+    //qDebug() << "  Frametime:             " << m_scene->getFrametime()*1000.f << " ms";
     
 
     //stats.print();

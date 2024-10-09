@@ -188,8 +188,8 @@ SandBox::SandBox(QWidget *parent)
 {
     ui->setupUi(this);
 
-    m_Scene_1 = nullptr;
-    m_Scene_2 = nullptr;
+    m_scene_1 = nullptr;
+    m_scene_2 = nullptr;
     
     if(true)
     {
@@ -202,7 +202,7 @@ SandBox::SandBox(QWidget *parent)
         //settings.updateControlls.enablePaintLoop = false;
         //settings.updateControlls.enableEventLoop = false;
         //settings.updateControlls.enableUpdateLoop = false;
-        m_Scene_1 = new Scene(ui->SceneWidget_1,settings);
+        m_scene_1 = new Scene(ui->SceneWidget_1,settings);
         //auto* cam2 = new Objects::CameraWindow("CustomCamera2", ui->secondCamera_frame);
         auto* cam3 = new Objects::CameraWindow(settings.contextSettings, "CustomCamera3", ui->thirtCamera_frame);
         DefaultEditor *defaultEditor = new DefaultEditor();
@@ -211,8 +211,8 @@ SandBox::SandBox(QWidget *parent)
 		Objects::CameraController* camController3 = new Objects::CameraController();
 		//cam2->addChild(camController2);
 		cam3->addChild(camController3);
-        //m_Scene_1->addObject(cam2);
-        m_Scene_1->addObject(cam3);
+        //m_scene_1->addObject(cam2);
+        m_scene_1->addObject(cam3);
 
 		Objects::GameObject* zeroPoint = new Objects::GameObject();
 		Components::PointPainter* pointPainter = new Components::PointPainter();
@@ -220,7 +220,7 @@ SandBox::SandBox(QWidget *parent)
 		pointPainter->setRadius(5);
 		zeroPoint->addComponent(pointPainter);
 		pointPainter->addPoint(sf::Vector2f(0, 0));
-		m_Scene_1->addObject(zeroPoint);
+		m_scene_1->addObject(zeroPoint);
 
 
         
@@ -234,28 +234,28 @@ SandBox::SandBox(QWidget *parent)
 
         //VectorDisplayer *m_vecDisplay = new VectorDisplayer();
 
-        m_Scene_1->addObject(defaultEditor);
-        //m_Scene_1->addObject(m_vecDisplay);
-        //m_Scene->addObject(grid);
+        m_scene_1->addObject(defaultEditor);
+        //m_scene_1->addObject(m_vecDisplay);
+        //m_scene->addObject(grid);
         //qDebug() << defaultEditor->toString().c_str();
         //qDebug() << m_vecDisplay->toString().c_str();
 
         //SandboxObject *sbObj = new SandboxObject();
-        //m_Scene_1->addObject(sbObj);
+        //m_scene_1->addObject(sbObj);
 
         m_pointPainter = new QSFML::Components::PointPainter();
         QSFML::Objects::GameObjectPtr GameObject = new QSFML::Objects::GameObject();
         GameObject->addComponent(m_pointPainter);
-        m_Scene_1->addObject(GameObject);
+        m_scene_1->addObject(GameObject);
         GameObject->setEnabled(false);
 
-		addNastedRotatingVector(m_Scene_1);
+		addNastedRotatingVector(m_scene_1);
 
         QTimer* timer = new QTimer(this);
 
         connect(timer, &QTimer::timeout, this, &SandBox::onTimerFinished);
         timer->start(1000);
-        m_Scene_1->start();
+        m_scene_1->start();
     }
     
     if(true)
@@ -270,7 +270,7 @@ SandBox::SandBox(QWidget *parent)
        //settings.updateControlls.enablePaintLoop = false;
        //settings.updateControlls.enableEventLoop = false;
        //settings.updateControlls.enableUpdateLoop = false;
-        m_Scene_2 = new Scene(ui->SceneWidget_2,settings);
+        m_scene_2 = new Scene(ui->SceneWidget_2,settings);
 
         DefaultEditor *defaultEditor = new DefaultEditor("Editor",sf::Vector2f(2000,2000));
         defaultEditor->setRenderLayer(RenderLayer::layer_0);
@@ -282,12 +282,12 @@ SandBox::SandBox(QWidget *parent)
         //auto* cam2 = new Objects::CameraWindow(settings.contextSettings, "CustomCamera2", ui->secondCamera_frame);
         //Objects::CameraController* camController2 = new Objects::CameraController();
         //cam2->addChild(camController2);
-        //m_Scene_2->addObject(cam2);
+        //m_scene_2->addObject(cam2);
 
 
-        //m_Scene_2->addObject(obj);
-        //m_Scene_2->addObject(m_vecDisplay);
-        m_Scene_2->addObject(defaultEditor);
+        //m_scene_2->addObject(obj);
+        //m_scene_2->addObject(m_vecDisplay);
+        m_scene_2->addObject(defaultEditor);
 
 
         GameObjectPtr obj = new GameObject("MyObject");
@@ -339,21 +339,21 @@ SandBox::SandBox(QWidget *parent)
 
         
 
-        m_Scene_2->addObject(obj);
+        m_scene_2->addObject(obj);
         
 
 
 
-        addLineChart(m_Scene_2);
-        addMouseCollider(m_Scene_2);
-        addShape(m_Scene_2);
-        addPerlinNoise(m_Scene_2);
-        addCar(m_Scene_2, settings.contextSettings, ui->secondCamera_frame);
+        addLineChart(m_scene_2);
+        addMouseCollider(m_scene_2);
+        addShape(m_scene_2);
+        addPerlinNoise(m_scene_2);
+        addCar(m_scene_2, settings.contextSettings, ui->secondCamera_frame);
 
-        m_Scene_2->applyObjectChanges();
+        m_scene_2->applyObjectChanges();
 
         std::cout << obj->toString() << "\n";
-        m_Scene_2->start();
+        m_scene_2->start();
     }
 
     QSFML::Utilities::Ray func1(sf::Vector2f(0, 0), sf::Vector2f(0, 1));
@@ -371,8 +371,8 @@ SandBox::SandBox(QWidget *parent)
 
 SandBox::~SandBox()
 {
-    delete m_Scene_1;
-    delete m_Scene_2;
+    delete m_scene_1;
+    delete m_scene_2;
     delete ui;
 }
 
@@ -389,10 +389,10 @@ void SandBox::onTimerFinished()
 
 void SandBox::closeEvent(QCloseEvent* event)
 {
-    if (m_Scene_1)
-        m_Scene_1->stop();
-    if (m_Scene_2)
-        m_Scene_2->stop();
+    if (m_scene_1)
+        m_scene_1->stop();
+    if (m_scene_2)
+        m_scene_2->stop();
     //Scene::stopEventLoop();
     event->accept();
 }

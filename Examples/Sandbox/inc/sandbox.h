@@ -24,8 +24,8 @@ private slots:
         void closeEvent(QCloseEvent* event) override;
         Ui::SandBox *ui;
 
-        QSFML::Scene *m_Scene_1;
-        QSFML::Scene *m_Scene_2;
+        QSFML::Scene *m_scene_1;
+        QSFML::Scene *m_scene_2;
 
         QSFML::Components::PointPainter* m_pointPainter;
 

@@ -22,7 +22,7 @@ ExampleScene::ExampleScene(QWidget *parent)
     , ui(new Ui::ExampleScene)
 {
     ui->setupUi(this);
-    m_Scene = nullptr;
+    m_scene = nullptr;
     setupScene();
     
 	GameObjectPtr obj = new GameObject();
@@ -38,16 +38,16 @@ ExampleScene::ExampleScene(QWidget *parent)
     //textComponent(obj);
 
 
-    obj->setPosition(m_Scene->getViewCenterPosition());
-    m_Scene->addObject(obj);    
-    m_Scene->applyObjectChanges();
+    obj->setPosition(m_scene->getViewCenterPosition());
+    m_scene->addObject(obj);    
+    m_scene->applyObjectChanges();
     qDebug() << obj->toString().c_str();
 }
 
 ExampleScene::~ExampleScene()
 {
     delete ui;
-    delete m_Scene;
+    delete m_scene;
 }
 
 void ExampleScene::setupScene()
@@ -61,17 +61,17 @@ void ExampleScene::setupScene()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_Scene = new Scene(ui->SceneWidget, settings);
+    m_scene = new Scene(ui->SceneWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor();
-    m_Scene->addObject(defaultEditor);
-    m_Scene->start();
+    m_scene->addObject(defaultEditor);
+    m_scene->start();
     qDebug() << defaultEditor->toString().c_str();
 }
 void ExampleScene::closeEvent(QCloseEvent* event)
 {
-    if (m_Scene)
-        m_Scene->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 

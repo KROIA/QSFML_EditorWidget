@@ -13,7 +13,7 @@ ExampleScene::ExampleScene(QWidget *parent)
     , ui(new Ui::ExampleScene)
 {
     ui->setupUi(this);
-    m_Scene = nullptr;
+    m_scene = nullptr;
     setupScene();
     
     
@@ -24,7 +24,7 @@ ExampleScene::ExampleScene(QWidget *parent)
 ExampleScene::~ExampleScene()
 {
     delete ui;
-    delete m_Scene;
+    delete m_scene;
 }
 
 void ExampleScene::setupScene()
@@ -40,7 +40,7 @@ void ExampleScene::setupScene()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_Scene = new Scene(ui->SceneWidget, settings);
+    m_scene = new Scene(ui->SceneWidget, settings);
 
     float worldSize = 2000;
 
@@ -48,12 +48,12 @@ void ExampleScene::setupScene()
     defaultEditor->setRenderLayer(RenderLayer::layer_0);
     defaultEditor->setPosition(-sf::Vector2f(worldSize*0.5f, worldSize*0.5f));
     defaultEditor->getCamera()->setMaxMovingBounds(sf::FloatRect(-worldSize * 0.5f, -worldSize * 0.5f, worldSize, worldSize));
-    m_Scene->addObject(defaultEditor);
-    sf::View view = m_Scene->getDefaultCamera()->getThisCameraView();
+    m_scene->addObject(defaultEditor);
+    sf::View view = m_scene->getDefaultCamera()->getThisCameraView();
     view.setSize(worldSize, worldSize);
     view.setCenter(worldSize * 0.5f, worldSize * 0.5f);
-    m_Scene->getDefaultCamera()->setThisCameraView(view);
-    m_Scene->getDefaultCamera()->setPosition(0, 1);
+    m_scene->getDefaultCamera()->setThisCameraView(view);
+    m_scene->getDefaultCamera()->setPosition(0, 1);
 
     GameObject* planetSystem = new GameObject("PlanetSystem");
     QSFML::Components::VectorFieldPainter *vectorField = new QSFML::Components::VectorFieldPainter();
@@ -123,16 +123,16 @@ void ExampleScene::setupScene()
 			fieldElement.direction = dir;
 		}
 	});
-    m_Scene->addObject(planetSystem);
+    m_scene->addObject(planetSystem);
 
 
     qDebug() << defaultEditor->toString().c_str();
-    m_Scene->start();
+    m_scene->start();
 }
 void ExampleScene::closeEvent(QCloseEvent* event)
 {
-    if (m_Scene)
-        m_Scene->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 

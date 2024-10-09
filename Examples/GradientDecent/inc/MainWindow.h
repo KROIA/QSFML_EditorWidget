@@ -22,5 +22,5 @@ private:
 
     Ui::MainWindow* ui;
 
-    QSFML::Scene* m_Scene;
+    QSFML::Scene* m_scene;
 };

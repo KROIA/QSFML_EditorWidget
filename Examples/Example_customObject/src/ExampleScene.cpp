@@ -13,12 +13,12 @@ ExampleScene::ExampleScene(QWidget *parent)
     , ui(new Ui::ExampleScene)
 {
     ui->setupUi(this);
-    m_Scene = nullptr;
+    m_scene = nullptr;
     setupScene();
 
 	// Create a custom object and add it to the Scene
 	CustomObject* customObject = new CustomObject();
-	m_Scene->addObject(customObject);
+	m_scene->addObject(customObject);
 
     
 }
@@ -26,7 +26,7 @@ ExampleScene::ExampleScene(QWidget *parent)
 ExampleScene::~ExampleScene()
 {
     delete ui;
-    delete m_Scene;
+    delete m_scene;
 }
 
 void ExampleScene::setupScene()
@@ -40,15 +40,15 @@ void ExampleScene::setupScene()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_Scene = new Scene(ui->SceneWidget, settings);
+    m_scene = new Scene(ui->SceneWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor();
-    m_Scene->addObject(defaultEditor);
+    m_scene->addObject(defaultEditor);
 }
 void ExampleScene::closeEvent(QCloseEvent* event)
 {
-    if (m_Scene)
-        m_Scene->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 

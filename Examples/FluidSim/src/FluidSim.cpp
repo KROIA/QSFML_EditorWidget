@@ -13,7 +13,7 @@ FluidSim::FluidSim(QWidget *parent)
     , ui(new Ui::FluidSim)
 {
     ui->setupUi(this);
-    m_Scene = nullptr;
+    m_scene = nullptr;
     setupScene();
     
     
@@ -24,7 +24,7 @@ FluidSim::FluidSim(QWidget *parent)
 FluidSim::~FluidSim()
 {
     delete ui;
-    delete m_Scene;
+    delete m_scene;
 }
 
 void FluidSim::setupScene()
@@ -38,10 +38,10 @@ void FluidSim::setupScene()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_Scene = new Scene(ui->SceneWidget, settings);
+    m_scene = new Scene(ui->SceneWidget, settings);
 
     //DefaultEditor* defaultEditor = new DefaultEditor();
-    //m_Scene->addObject(defaultEditor);
+    //m_scene->addObject(defaultEditor);
     
     
    // qDebug() << defaultEditor->toString().c_str();
@@ -51,18 +51,18 @@ void FluidSim::setupScene()
 
     VisibleCamera* camera = new VisibleCamera();
     camera->setMaxMovingBounds(sf::FloatRect({0,0}, { tiles.x * tileSize.x, tiles.y * tileSize.y }));
-    m_Scene->addObject(camera);
+    m_scene->addObject(camera);
 
     FluidGrid* fluidGrid = new FluidGrid(tiles, tileSize);
     fluidGrid->setRenderLayer(QSFML::RenderLayer::layer_1);
-    m_Scene->addObject(fluidGrid);
+    m_scene->addObject(fluidGrid);
 
 
 }
 void FluidSim::closeEvent(QCloseEvent* event)
 {
-    if (m_Scene)
-        m_Scene->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 

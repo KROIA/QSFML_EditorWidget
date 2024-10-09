@@ -33,7 +33,7 @@ private:
 
     Ui::LightSimScene* ui;
 
-    QSFML::Scene* m_Scene;
+    QSFML::Scene* m_scene;
 
     std::vector<Mirror*> m_mirrors;
     std::vector<Laser*> m_lasers;

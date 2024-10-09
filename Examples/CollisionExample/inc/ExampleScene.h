@@ -27,7 +27,7 @@ private slots:
         void closeEvent(QCloseEvent* event) override;
         Ui::ExampleScene *ui;
 
-        QSFML::Scene *m_Scene;
+        QSFML::Scene *m_scene;
         Log::UI::QConsoleView m_console;
         
 
