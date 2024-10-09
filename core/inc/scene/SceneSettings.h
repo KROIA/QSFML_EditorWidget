@@ -44,7 +44,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT SceneSettings
         Layout()
         {
             autoAjustSize = true;
-            fixedSize = sf::Vector2u(100,100);
+            fixedSize = sf::Vector2u(1000,700);
 
         }
     };

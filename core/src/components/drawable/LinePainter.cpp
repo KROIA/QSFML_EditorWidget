@@ -141,7 +141,7 @@ void LinePainter::drawComponent(sf::RenderTarget& target,
     for (auto& line : m_lines)
     {
         // Set the color for the line
-        sf::Color color = line.color;
+        const sf::Color& color = line.color;
 
         // Draw the quad using OpenGL immediate mode
         glBegin(GL_QUADS);

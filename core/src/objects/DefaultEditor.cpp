@@ -13,6 +13,8 @@ namespace QSFML
             , m_cam(new CameraController("Camera"))
             , m_grid(new BackgroundGrid("Grid"))
         {
+			m_lightColor = sf::Color(130, 130, 130);
+			m_darkColor = sf::Color(100, 100, 100);
             setup(size);
         }
         DefaultEditor::DefaultEditor(const DefaultEditor &other)
@@ -20,6 +22,8 @@ namespace QSFML
             , m_cam(new CameraController("Camera"))
             , m_grid(new BackgroundGrid("Grid"))
         {
+			m_darkColor = other.m_darkColor;
+			m_lightColor = other.m_lightColor;
             setup(sf::Vector2f(other.m_grid->getSize().width, other.m_grid->getSize().height));
         }
         DefaultEditor::~DefaultEditor()
@@ -29,11 +33,11 @@ namespace QSFML
         void DefaultEditor::setup(const sf::Vector2f& size)
         {
             m_grid->setSize(sf::IntRect(0, 0, size.x, size.y));
-            m_grid->setLineColor({ sf::Color(130,130,130),
-                                sf::Color(100,100,100),
-                                sf::Color(100,100,100),
-                                sf::Color(100,100,100),
-                                sf::Color(100,100,100) });
+            m_grid->setLineColor({ m_lightColor,
+                                m_darkColor,
+                                m_darkColor,
+                                m_darkColor,
+                                m_darkColor });
             m_cam->setMaxMovingBounds(sf::FloatRect(m_grid->getSize()));
 
             m_runtimeInfo = new RuntimeInfo();
@@ -76,6 +80,13 @@ namespace QSFML
         void DefaultEditor::setToggleRuntimeInfoKey(const sf::Keyboard::Key& key)
         {
             m_toggleRuntimeInfoEvent->setTriggerKey(key);
+        }
+
+        void DefaultEditor::setColors(const sf::Color& darkColor, const sf::Color& lightColor)
+        {
+			m_darkColor = darkColor;
+			m_lightColor = lightColor;
+            setup({ (float)m_grid->getSize().width, (float)m_grid->getSize().height });
         }
 
         void DefaultEditor::onToggleRuntimeInfo()

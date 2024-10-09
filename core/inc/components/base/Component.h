@@ -74,7 +74,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          * \brief getName
          * \param returns the name of this Component
          */
-        inline const std::string getName() const 
+        const std::string getName() const 
         { 
             return m_name; 
         }
@@ -93,7 +93,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          * \brief isEnabled
          * \param return true if this component is enabled, otherwise false
          */
-        inline bool isEnabled() const 
+        bool isEnabled() const 
         { 
             return m_enabled; 
         }

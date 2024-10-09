@@ -54,7 +54,7 @@ ExampleScene::ExampleScene(QWidget *parent)
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &ExampleScene::onTimerFinished);
     timer->start(1000);
-    
+    m_scene->start();
 }
 
 ExampleScene::~ExampleScene()

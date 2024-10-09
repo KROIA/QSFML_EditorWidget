@@ -19,8 +19,6 @@ private:
     void setupScene();
     void closeEvent(QCloseEvent* event) override;
 
-
     Ui::ExampleScene* ui;
-
-    QSFML::Scene* m_scene;
+    QSFML::Scene* m_scene = nullptr;
 };
