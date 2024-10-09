@@ -211,7 +211,7 @@ void ExampleScene::setupScene()
     m_scene->start();
 }
 ```
-Use any QWidget inside the window as a parent for the scene. In this case `ui->SceneWidget` is used as the parent widget.
+Use any QWidget inside the window as a parent for the scene. In this case `ui->SceneWidget` is used as the parent widget.<br>
 The Scene will automaticly create a layout inside that parent widget and inserts its main camera to that widget.
 
 ### Populate the Scene
@@ -234,6 +234,6 @@ void ExampleScene::setupScene()
     m_scene->start();
 }
 ```
-Create the GameObjects on the heap, the lifetime of the objects is handled by the Scene, as long as they belong to a Scene.
+Create the GameObjects on the heap, the lifetime of the objects is handled by the Scene, as long as they belong to a Scene.<br>
 Add all objects to the Scene using: `m_scene->addObject(obj);`
 
