@@ -39,11 +39,11 @@ Depending on what your Component should do, you can inherit one of the following
 * `QSFML::Utilities::Updatable` (Is not a Component, but can used in a Component)
 
 ### Drawable
-Drawing stuff to the screen is essential in a game/simulation. Use the Drawable Component as a base class to create a custom painter.
-Reimplement the `drawComponent` function to draw your stuff.
-The `state` parameter already contains the transformed transform for this Component.
-This enables a drawable Component to draw relative to its parent GameObject.
-For exampe, if you rotate the GameObject, the painters transform also gets rotated.
+Drawing stuff to the screen is essential in a game/simulation. Use the Drawable Component as a base class to create a custom painter.<br>
+Reimplement the `drawComponent` function to draw your stuff.<br>
+The `state` parameter already contains the transformed transform for this Component.<br>
+This enables a drawable Component to draw relative to its parent GameObject.<br>
+For exampe, if you rotate the GameObject, the painters transform also gets rotated.<br>
 If you don't want to draw relative to the parent. Just reset the transform:
 ``` C++
 states.transform = sf::Transform::Identity;
@@ -173,7 +173,7 @@ void LinePainter::drawComponent(sf::RenderTarget& target,
 ```
 
 ### SfEventHandle
-If your Component should catch sf::Events, use this base class to derive from.
+If your Component should catch sf::Events, use this base class to derive from.<br>
 Here is an example of a `MouseFollower` Component that inherits from the SfEventHandle
 <table>
 <tr>
