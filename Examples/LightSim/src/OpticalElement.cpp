@@ -3,7 +3,7 @@
 #define USE_DEBUG_DRAW
 std::vector<OpticalElement*> OpticalElement::s_opticalElements;
 OpticalElement::OpticalElement(const std::string& name)
-	: CanvasObject(name)
+	: GameObject(name)
 	, m_shape(nullptr)
 	, m_n1(1)
 	, m_n2(1.5)
@@ -18,7 +18,7 @@ OpticalElement::OpticalElement(const std::string& name)
 	addComponent(m_painter);
 }
 OpticalElement::OpticalElement(const OpticalElement& other)
-	: CanvasObject(other)
+	: GameObject(other)
 	, m_shape(nullptr)
 	, m_n1(other.m_n1)
 	, m_n2(other.m_n2)

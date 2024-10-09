@@ -1,76 +1,86 @@
-/*#pragma once
+#pragma once
 
 #include "QSFML_EditorWidget.h"
+using namespace QSFML;
 
-class AABBDisplayer: public QSFML::Objects::CanvasObject
+class AABBDisplayer: public QSFML::Objects::GameObject
 {
         class MouseFollower;
     public:
-        AABBDisplayer(const std::string &name = "AABBDisplayer",
-                        CanvasObject *parent = nullptr)
-            : CanvasObject(name, parent)
+        AABBDisplayer(float length, const std::string &name = "AABBDisplayer",
+                      Objects::GameObjectPtr parent = nullptr)
+            : GameObject(name, parent)
         {
-            m_box = new QSFML::Objects::DrawableBoxCollider("Box1",QSFML::Utilities::AABB(0,0,100,50));
-            m_clickable  = new QSFML::Objects::DrawableBoxCollider("Box2",QSFML::Utilities::AABB(200,200,100,200));
+			Components::VectorPainter* painter = new Components::VectorPainter();
+			painter->setStart(sf::Vector2f(0,0));
+			painter->setDirection(sf::Vector2f(length, 0));
+			addComponent(painter);
 
-            m_clickable->setColor(sf::Color::Red);
+			Components::RectPainter* rectPainter = new RectPainterClone();
+			rectPainter->setOutlineColor(sf::Color::Red);
+            rectPainter->setOutlineThickness(1);
+			addComponent(rectPainter);
 
-            addChild(m_box);
-            addChild(m_clickable);
+            Components::PathPainter *pathPainter = new Components::PathPainter();
+            pathPainter->setColor(sf::Color::Green);
+            pathPainter->ignoreTransform(true);
+            addComponent(pathPainter);
 
-            MouseFollower *follower = new MouseFollower("MouseFollower");
-            follower->m_AABB = this;
-            addComponent(follower);
+            setCustomBoundingBoxFunction([this]() {
+                Components::VectorPainter* p = getFirstComponent<Components::VectorPainter>();
+                if (!p)
+                    return Utilities::AABB();
+                sf::Transform transform = getGlobalTransform();
+                sf::Vector2f start = transform.transformPoint(p->getStart());
+                sf::Vector2f end = transform.transformPoint(p->getEnd());
+
+                return Utilities::AABB(start, end - start);
+                });
         }
 
         void update() override
-        {}
+        {
+            rotate(200 * getDeltaT());
 
-        friend MouseFollower;
+            Components::RectPainter* rectPainter = getFirstComponent<RectPainterClone>();
+            rectPainter->setRect(getBoundingBox());
+            
+
+            Components::PathPainter *pathPainter = getFirstComponent<Components::PathPainter>();
+            Components::VectorPainter *vectorPainter = getFirstComponent<Components::VectorPainter>();
+            sf::Transform transform = getGlobalTransform();
+            pathPainter->appenPoint(transform.transformPoint(vectorPainter->getEnd()));
+            if (pathPainter->getPointCount() > 1000)
+            {
+                pathPainter->popPointAtStart();
+            }
+
+        }
 
     private:
-        QSFML::Objects::DrawableBoxCollider *m_box, *m_clickable;
 
-        class MouseFollower : public QSFML::Components::SfEventHandle
+        
+
+
+    class QSFML_EDITOR_WIDGET_EXPORT RectPainterClone : public Components::RectPainter
+    {
+        public:
+        RectPainterClone(const std::string& name = "RectPainterClone")
+			: Components::RectPainter(name)
+		{
+		}
+        RectPainterClone(const RectPainterClone& other)
+			: Components::RectPainter(other)
+		{
+		}
+
+        void drawComponent(sf::RenderTarget& target,
+                           sf::RenderStates states) const override
         {
-            public:
-                MouseFollower(const std::string &name = "MouseFollower")
-                    : SfEventHandle(name)
-                {
+            target.draw(m_rectShape);
+        }
 
-                }
-                void sfEvent(const sf::Event &e) override
-                {
-                    switch(e.type)
-                    {
-                        case sf::Event::MouseMoved:
-                        {
-                            sf::Vector2f pos = m_AABB->getInWorldSpace(sf::Vector2i(e.mouseMove.x,e.mouseMove.y));
-                            QSFML::Components::BoxCollider *box = m_AABB->m_box->getBox();
-                            box->setCenterPos(pos);
-                            break;
-                        }
-                        case sf::Event::MouseButtonPressed:
-                        {
-                            sf::Vector2f pos = m_AABB->getInWorldSpace(sf::Vector2i(e.mouseButton.x,e.mouseButton.y));
-                            QSFML::Components::BoxCollider *box = m_AABB->m_clickable->getBox();
-                            //if(box->intersects(*(m_AABB->m_box->getBox())))
-                            if(box->contains(pos))
-                            {
-                                m_AABB->m_clickable->setColor(sf::Color::Green);
-
-                            }
-                            break;
-                        }
-                        case sf::Event::MouseButtonReleased:
-                        {
-                            m_AABB->m_clickable->setColor(sf::Color::Red);
-                            break;
-                        }
-                    }
-                }
-
-                AABBDisplayer *m_AABB;
-        };
+     
+    };
+       
 };
-*/

@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "QSFML_EditorWidget_base.h"
+#include "SFML/Graphics.hpp"
 
 
 namespace QSFML
@@ -10,10 +11,18 @@ namespace QSFML
 namespace VectorMath
 {
     typedef sf::Vector2<double> Vector2d;
-    QSFML_EDITOR_WIDGET_EXPORT extern float getLength(const sf::Vector2f &vec);
+
+    /// @brief 
+	/// Returns the length of the vector
+    QSFML_EDITOR_WIDGET_EXPORT extern float getLength(const sf::Vector2f &vec);                     
     QSFML_EDITOR_WIDGET_EXPORT extern double getLength(const Vector2d&vec);
+
+	/// @brief
+	/// Returns the squared length of the vector
     QSFML_EDITOR_WIDGET_EXPORT extern float getSquareLength(const sf::Vector2f &vec);
     QSFML_EDITOR_WIDGET_EXPORT extern double getSquareLength(const Vector2d&vec);
+
+
     QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f getRotatedUnitVector(float rad);
     QSFML_EDITOR_WIDGET_EXPORT extern Vector2d getRotatedUnitVector(double rad);
     QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f getRotated(const sf::Vector2f &vec, float rad);
@@ -43,6 +52,19 @@ namespace VectorMath
     QSFML_EDITOR_WIDGET_EXPORT extern double getNormalzedAngle(double angle);
     QSFML_EDITOR_WIDGET_EXPORT extern bool isAngleInRange(float angle, float minAngle, float maxAngle);
     QSFML_EDITOR_WIDGET_EXPORT extern bool isAngleInRange(double angle, double minAngle, double maxAngle);
+
+
+	QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+	QSFML_EDITOR_WIDGET_EXPORT extern Vector2d lerp(const Vector2d& start, const Vector2d& end, double t);
+	QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f lerp(const std::vector<sf::Vector2f> &path, float t);
+	QSFML_EDITOR_WIDGET_EXPORT extern Vector2d lerp(const std::vector<Vector2d> &path, double t);
+
+
+
+
+    QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f getScale(const sf::Transform &transform);
+    QSFML_EDITOR_WIDGET_EXPORT extern float getRotation(const sf::Transform &transform);
+
 }
 
 }

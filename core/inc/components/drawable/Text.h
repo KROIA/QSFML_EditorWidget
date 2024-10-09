@@ -23,6 +23,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
         Text(const std::string &name = "Text");
         Text(const Text &other);
         COMPONENT_DECL(Text);
+        ~Text();
 
         void setText(const std::string &text);
         std::string getText() const;
@@ -32,9 +33,6 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
 
         void setScale(float scale);
         float getScale() const;
-
-        //void setPosition(const sf::Vector2f &pos);
-        //const sf::Vector2f &getPosition() const;
 
         void setOrigin(const Utilities::Origin& origin)
         {
@@ -54,24 +52,26 @@ class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
 
 
 
-        void setParent(Objects::CanvasObject *parent) override;
+        void setParent(Objects::GameObjectPtr parent) override;
 
         /**
          * \brief draw
          * \details This function will be automaticlly called from the
-         *          Canvas once per frame if the Component is enabled
+         *          Scene once per frame if the Component is enabled
          * \param target to draw on
          * \param states
          */
         void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     protected:
-        void updateCenter(const sf::Vector2f &pos);
+        void updateCenter(const sf::Vector2f &pos) const;
+        void updateGeometry() const;
 
-        sf::Text m_text;
+        mutable bool m_needsGeometryUpdate = false;
+        mutable sf::Text m_text;
         //sf::Vector2f m_pos;
         Utilities::Origin m_origin;
-        const sf::Font* m_font;
+        const sf::Font* m_selfOwnedFont = nullptr;
 };
 }
 }

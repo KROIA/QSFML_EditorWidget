@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/base/Drawable.h"
 #include "QSFML_EditorWidget_base.h"
 
@@ -10,19 +10,19 @@ namespace QSFML
 {
 namespace Objects
 {
-    class QSFML_EDITOR_WIDGET_EXPORT LineChart: public CanvasObject
+    class QSFML_EDITOR_WIDGET_EXPORT LineChart: public GameObject
     {
             class LineChartPainter;
             friend LineChartPainter;
         public:
             LineChart(const std::string &name = "LineChart",
-                         CanvasObject *parent = nullptr);
+                         GameObjectPtr parent = nullptr);
             LineChart(const LineChart &other);
             ~LineChart();
             OBJECT_DECL(LineChart)
 
-            void setOrigin(const sf::Vector2f &pos);
-            const sf::Vector2f &getOrigin() const;
+            //void setOrigin(const sf::Vector2f &pos);
+            //const sf::Vector2f &getOrigin() const;
 
             void setSize(const sf::Vector2f &size);
             const sf::Vector2f &getSize() const;
@@ -30,10 +30,13 @@ namespace Objects
             void setColor(const sf::Color &color);
             const sf::Color &getColor() const;
 
+            void setMaxDataPoints(size_t maxDataPoints);
+            size_t getMaxDataPoints() const;
+
             void enableAutoScale(bool enable);
             bool autoScaleEnabled() const;
-            void setScale(float yScale);
-            float getScale() const;
+            void setPlotScale(float yScale);
+            float getPlotScale() const;
 
             void addDataPoint(float value);
             void removeFirstDataPoint();
@@ -47,14 +50,19 @@ namespace Objects
             void getMinMax(float &min, float &max);
 
             std::vector<float> m_dataPoints;
+			std::vector<sf::Vector2f> m_points;
             
-            sf::Vector2f m_origin;
+           // sf::Vector2f m_origin;
             sf::Vector2f m_size;
             sf::Color m_color;
             float m_yScale;
             bool m_autoScale;
+            size_t m_maxDataPoints;
 
-            LineChartPainter *m_painter;
+            Components::Text* m_valueText = nullptr;
+
+            LineChartPainter* m_painter;
+
 
             class LineChartPainter: public Components::Drawable
             {

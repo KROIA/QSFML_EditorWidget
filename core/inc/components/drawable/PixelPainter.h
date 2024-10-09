@@ -27,7 +27,7 @@ namespace QSFML
             //const sf::Vector2f& getPosition() const;
 
             void setPixel(const sf::Vector2u& pos, const sf::Color &c);
-            const sf::Color& getPixel(const sf::Vector2u& pos) const;
+            sf::Color getPixel(const sf::Vector2u& pos) const;
 
             void clear();
 

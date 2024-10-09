@@ -10,7 +10,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "canvas/Canvas.h"
+#include "Scene/Scene.h"
 
 #include "components/base/Component.h"
 #include "components/base/Drawable.h"
@@ -19,9 +19,12 @@
 #include "components/Physics/Collider.h"
 #include "components/drawable/Text.h"
 #include "components/drawable/LinePainter.h"
+#include "components/drawable/PathPainter.h"
 #include "components/drawable/PointPainter.h"
 #include "components/drawable/VectorPainter.h"
+#include "components/drawable/VectorFieldPainter.h"
 #include "components/drawable/PixelPainter.h"
+#include "components/drawable/RectPainter.h"
 #include "components/drawable/Image.h"
 #include "components/drawable/Shape.h"
 #include "components/Button.h"
@@ -30,16 +33,19 @@
 #include "components/MousePressEvent.h"
 
 
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "objects/DefaultEditor.h"
 #include "objects/BackgroundGrid.h"
 #include "objects/CameraController.h"
+#include "objects/VisibleCamera.h"
 #include "objects/LineChart.h"
 #include "objects/RuntimeInfo.h"
+#include "objects/CameraWindow.h"
 
 
 #include "utilities/AABB.h"
 #include "utilities/Ray.h"
+#include "utilities/PathFinder.h"
 #include "utilities/Updatable.h"
 #include "utilities/VectorOperations.h"
 #include "utilities/RandomEngine.h"
@@ -48,4 +54,5 @@
 #include "utilities/Origin.h"
 #include "utilities/PerlinNoise.h"
 #include "utilities/Color.h"
+#include "utilities/LifetimeChecker.h"
 /// USER_SECTION_END

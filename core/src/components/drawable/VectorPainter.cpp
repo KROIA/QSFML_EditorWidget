@@ -100,6 +100,7 @@ namespace QSFML
         {
             sf::Vector2f dir = getDirection();
             sf::Vector2f end = m_end;
+
             if (m_flipYaxis)
             {
                 dir.y = -dir.y;

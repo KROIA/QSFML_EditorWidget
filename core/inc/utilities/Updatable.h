@@ -12,18 +12,18 @@ namespace Utilities
         public:
             virtual ~Updatable()
             {
-				if (m_onUpdateExternalFunction)
-				{
-					delete m_onUpdateExternalFunction;
-				}
+				delete m_onUpdateExternalFunction;
             }
             void emitUpdate() 
             { 
-                update(); 
                 if (m_onUpdateExternalFunction)
                 {
                     (*m_onUpdateExternalFunction)();
                 }
+                else
+				{
+					update();
+				}
             }
 
             void setUpdateFunction(const std::function<void()> &function)

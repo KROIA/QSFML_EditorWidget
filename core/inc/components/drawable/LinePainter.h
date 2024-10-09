@@ -17,6 +17,10 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
             sf::Vector2f start, end;
             sf::Color color;
             float thickness;
+
+			// Baked data
+			sf::Vector2f points[4];
+			void updateGeometry();
         };
         LinePainter(const std::string &name = "LinePainter");
         LinePainter(const LinePainter &other);

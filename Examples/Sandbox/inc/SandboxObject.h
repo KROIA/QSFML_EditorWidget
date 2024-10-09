@@ -2,7 +2,7 @@
 
 #include "QSFML_EditorWidget.h"
 
-class SandboxObject: public QObject, public QSFML::Objects::CanvasObject
+class SandboxObject: public QObject, public QSFML::Objects::GameObject
 {
         Q_OBJECT
     public:

@@ -1,6 +1,6 @@
 #include "utilities/VectorOperations.h"
 #include "utilities/RandomEngine.h"
-
+#include <SFML/Graphics.hpp>
 
 #define M_2PI (2 * M_PI)
 
@@ -10,11 +10,11 @@ namespace VectorMath
 {
     float getLength(const sf::Vector2f &vec)
     {
-        return sqrt( vec.x * vec.x + vec.y * vec.y);
+        return (float)sqrt((double)(vec.x * vec.x + vec.y * vec.y));
     }
     double getLength(const Vector2d &vec)
     {
-        return sqrt( vec.x * vec.x + vec.y * vec.y);
+        return (float)sqrt((vec.x * vec.x + vec.y * vec.y));
     }
     float getSquareLength(const sf::Vector2f &vec)
     {
@@ -26,7 +26,7 @@ namespace VectorMath
     }
     sf::Vector2f getRotatedUnitVector(float rad)
     {
-        return sf::Vector2f(cos(rad), sin(rad));
+        return sf::Vector2f((float)cos((double)rad), (float)sin((double)rad));
     }
     Vector2d getRotatedUnitVector(double rad)
     {
@@ -36,7 +36,7 @@ namespace VectorMath
     {
         float angle = getAngle(vec);
         angle += rad;
-        return sf::Vector2f(cos(angle), sin(angle)) * getLength(vec);
+        return sf::Vector2f((float)cos((double)angle), (float)sin((double)angle)) * getLength(vec);
     }
     Vector2d getRotated(const Vector2d& vec, double rad)
     {
@@ -65,13 +65,13 @@ namespace VectorMath
         if(sqrL <= 0)
             return 0;
         float angle;
-        sqrL = sqrt(sqrL);
+        sqrL = (float)sqrt((double)sqrL);
 
         if (vec.y <= 0) {
-            angle = -acos(vec.x / sqrL);
+            angle = -(float)acos((double)(vec.x / sqrL));
         }
         else {
-            angle = acos(vec.x / sqrL);
+            angle = (float)acos((double)(vec.x / sqrL));
         }
         return getNormalzedAngle(angle);
 #endif
@@ -117,7 +117,7 @@ namespace VectorMath
         return (angle < 0) ? angle + M_PI : angle - M_PI;*/
 
         // Calculate the magnitudes of the vectors
-        float lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
+        float lengthProduct = (float)sqrt((double)((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y)));
 
         if(lengthProduct == 0)
 			return 0;
@@ -133,7 +133,7 @@ namespace VectorMath
             cosAngle = -1.0;
 
         // Calculate the angle in radians using the arc cosine function (acos)
-        float angle = acos(cosAngle);
+        float angle = (float)acos((double)cosAngle);
 
         // Determine the sign of the angle using the cross product
         float crossProduct = vec1.x * vec2.y - vec1.y * vec2.x;
@@ -224,7 +224,7 @@ namespace VectorMath
         float l = vec.x * vec.x + vec.y * vec.y;
         if(l <= 0)
             return vec;
-        return(vec / (float)sqrt(l));
+        return(vec / (float)sqrt((double)l));
     }
     Vector2d getNormalized(const Vector2d& vec)
     {
@@ -304,5 +304,96 @@ namespace VectorMath
         // Case where the angle does not wrap around
         return (angle >= minAngle && angle <= maxAngle);
     }
+
+	sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t)
+	{
+		return start + (end - start) * t;
+	}
+	Vector2d lerp(const Vector2d& start, const Vector2d& end, double t)
+	{
+		return start + (end - start) * t;
+	}
+    sf::Vector2f lerp(const std::vector<sf::Vector2f>& path, float t)
+    {
+        if (path.size() == 0)
+            return sf::Vector2f(0, 0);
+        if (path.size() == 1)
+            return path[0];
+        if (t <= 0)
+            return path[0];
+        if (t >= 1)
+            return path[path.size() - 1];
+
+        double pathLength = 0;
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            pathLength += getLength(path[i] - path[i - 1]);
+        }
+
+        double currentLength = 0;
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            double length = getLength(path[i] - path[i - 1]);
+            if (currentLength + length >= pathLength * t)
+            {
+                double t2 = (pathLength * t - currentLength) / length;
+                return lerp(path[i - 1], path[i], t2);
+            }
+            currentLength += length;
+        }
+        return path[path.size() - 1];
+    }
+
+    Vector2d lerp(const std::vector<Vector2d>& path, double t)
+    {
+        if (path.size() == 0)
+            return Vector2d(0, 0);
+        if (path.size() == 1)
+            return path[0];
+        if (t <= 0)
+            return path[0];
+        if (t >= 1)
+            return path[path.size() - 1];
+
+        double pathLength = 0;
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            pathLength += getLength(path[i] - path[i - 1]);
+        }
+
+        double currentLength = 0;
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            double length = getLength(path[i] - path[i - 1]);
+            if (currentLength + length >= pathLength * t)
+            {
+                double t2 = (pathLength * t - currentLength) / length;
+                return lerp(path[i - 1], path[i], t2);
+            }
+            currentLength += length;
+        }
+        return path[path.size() - 1];
+    }
+
+    sf::Vector2f getScale(const sf::Transform& transform)
+    {
+        // Extract the matrix values from sf::Transform
+        const float* matrix = transform.getMatrix();
+
+        // The scaling components are derived from the matrix values
+        float scaleX = std::sqrt(matrix[0] * matrix[0] + matrix[1] * matrix[1]);
+        float scaleY = std::sqrt(matrix[4] * matrix[4] + matrix[5] * matrix[5]);
+
+        return sf::Vector2f(scaleX, scaleY);
+    }
+
+    float getRotation(const sf::Transform& transform)
+	{
+		// Extract the matrix values from sf::Transform
+		const float* matrix = transform.getMatrix();
+
+		// The rotation components are derived from the matrix values
+		return std::atan2(matrix[1], matrix[0]) * 180 / M_PI;
+	}
 }
 }

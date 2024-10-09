@@ -27,16 +27,18 @@ private slots:
     void on_L2_verticalSlider_valueChanged(int value);
     void on_damping_verticalSlider_valueChanged(int value);
     void on_enableLines_checkBox_stateChanged(int arg1);
+	void on_enablePath_checkBox_stateChanged(int arg1);
+	void on_enableEnergyLabel_checkBox_stateChanged(int arg1);
 
 private:
-    void setupCanvas();
+    void setupScene();
     void closeEvent(QCloseEvent* event) override;
     void createPendulums();
 
 
     Ui::MainWindow* ui;
 
-    QSFML::Canvas* m_canvas;
+    QSFML::Scene* m_scene;
     std::vector<Pendulum*> m_pendulums;
 
     //Pendulum* m_pendulum;

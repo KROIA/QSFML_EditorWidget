@@ -1,7 +1,7 @@
 #pragma once
 
-#include "objects/base/CanvasObject.h"
-#include "objects/VisibleCamera.h"
+#include "objects/base/GameObject.h"
+#include "objects/CameraController.h"
 #include "objects/BackgroundGrid.h"
 #include "objects/RuntimeInfo.h"
 #include "QSFML_EditorWidget_base.h"
@@ -12,7 +12,7 @@ namespace QSFML
 {
 namespace Objects
 {
-class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObject
 {
     Q_OBJECT
     public:
@@ -22,8 +22,8 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObj
         ~DefaultEditor();
         OBJECT_DECL(DefaultEditor);
 
-        VisibleCamera *getCamera() const;
-        BackgroundGrid *getGrid() const;
+        CameraController* getCamera() const;
+        BackgroundGrid* getGrid() const;
         RuntimeInfo* getRuntimeInfo() const;
 
         void setToggleRuntimeInfoKey(const sf::Keyboard::Key& key);
@@ -36,9 +36,12 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public CanvasObj
     protected:
 
     private:
+        
         void setup(const sf::Vector2f& size);
-        VisibleCamera *m_cam;
-        BackgroundGrid *m_grid;
+        void onSceneParentChange(Scene* oldParent, Scene* newParent) override;
+
+        CameraController* m_cam;
+        BackgroundGrid* m_grid;
         RuntimeInfo* m_runtimeInfo;
 
         QSFML::Components::KeyPressEvent* m_toggleRuntimeInfoEvent;

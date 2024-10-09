@@ -12,23 +12,23 @@ AABB AABB::getFrame(const std::vector<AABB> &list)
     min.x = std::numeric_limits<float>::max();
     min.y = std::numeric_limits<float>::max();
 
-    max.x = std::numeric_limits<float>::min();
-    max.y = std::numeric_limits<float>::min();
+    max.x = -std::numeric_limits<float>::max();
+    max.y = -std::numeric_limits<float>::max();
     for(size_t i=0; i<list.size(); i++)
     {
-        sf::Vector2f pos = list[i].m_pos;
-        sf::Vector2f size = list[i].m_size;
-        if(min.x > pos.x)
-            min.x = pos.x;
-        if(min.y > pos.y)
-            min.y = pos.y;
+        const sf::Vector2f &pos1 = list[i].m_pos;
+        sf::Vector2f pos2 = list[i].m_size + pos1;
+        if(min.x > pos1.x)
+            min.x = pos1.x;
+        if(min.y > pos1.y)
+            min.y = pos1.y;
 
-        if(max.x < size.x + pos.x)
-            max.x = size.x + pos.x;
-        if(max.y < size.y + pos.y)
-            max.y = size.y + pos.y;
+        if(max.x < pos2.x)
+            max.x = pos2.x;
+        if(max.y < pos2.y)
+            max.y = pos2.y;
     }
-    return AABB(min,max - min);
+    return AABB(min, max - min);
 }
 AABB AABB::getFrame(const std::vector<sf::Vector2f>& points)
 {

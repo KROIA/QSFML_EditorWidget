@@ -98,7 +98,7 @@ namespace QSFML
 				m_pixels[index + 3] = c.a;
 			}
         }
-        const sf::Color& PixelPainter::getPixel(const sf::Vector2u& pos) const
+        sf::Color PixelPainter::getPixel(const sf::Vector2u& pos) const
         {
             if (pos.x < m_pixelCount.x && pos.y < m_pixelCount.y)
             {

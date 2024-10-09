@@ -14,9 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_canvas = nullptr;
+    m_scene = nullptr;
 
-    setupCanvas();
+    setupScene();
     
     
 
@@ -26,37 +26,38 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete m_canvas;
+    delete m_scene;
 }
 void MainWindow::on_startStop_pushButton_clicked()
 {
-	if (m_canvas)
+	if (m_scene)
 	{
-        auto settings = m_canvas->getSettings();
+        auto settings = m_scene->getSettings();
         if(settings.timing.physicsFixedDeltaT > 0)
 			settings.timing.physicsFixedDeltaT = 0;
 		else
 			settings.timing.physicsFixedDeltaT = float(ui->speed_slider->value())/100000.f;
-        m_canvas->setSettings(settings);
+        m_scene->setSettings(settings);
 	}
 }
 void MainWindow::on_restart_pushButton_clicked()
 {
-	if (m_canvas)
+	if (m_scene)
 	{
         createPendulums();
 	}
 }
 void MainWindow::on_speed_slider_valueChanged(int value)
 {
-    auto settings = m_canvas->getSettings();
+    auto settings = m_scene->getSettings();
     if (settings.timing.physicsFixedDeltaT > 0)
         settings.timing.physicsFixedDeltaT = float(value) / 100000.f;
-    m_canvas->setSettings(settings);
+	settings.timing.physicsDeltaTScale = (float)value / 1000.f;
+    m_scene->setSettings(settings);
 }
 void MainWindow::on_L1_verticalSlider_valueChanged(int value)
 {
-    if (m_canvas)
+    if (m_scene)
     {
         for (int i = 0; i < m_pendulums.size(); ++i)
         {
@@ -66,7 +67,7 @@ void MainWindow::on_L1_verticalSlider_valueChanged(int value)
 }
 void MainWindow::on_L2_verticalSlider_valueChanged(int value)
 {
-    if (m_canvas)
+    if (m_scene)
     {
         for (int i = 0; i < m_pendulums.size(); ++i)
         {
@@ -76,7 +77,7 @@ void MainWindow::on_L2_verticalSlider_valueChanged(int value)
 }
 void MainWindow::on_damping_verticalSlider_valueChanged(int value)
 {
-	if (m_canvas)
+	if (m_scene)
 	{
         float damping = (float)value/ui->damping_verticalSlider->maximum();
         for (int i = 0; i < m_pendulums.size(); ++i)
@@ -87,18 +88,37 @@ void MainWindow::on_damping_verticalSlider_valueChanged(int value)
 }
 void MainWindow::on_enableLines_checkBox_stateChanged(int arg1)
 {
-	if (m_canvas)
+	if (m_scene)
 	{
 		for (int i = 0; i < m_pendulums.size(); ++i)
 		{
 			m_pendulums[i]->setLinesEnabled(arg1);
 		}
 	}
-
 }
-void MainWindow::setupCanvas()
+void MainWindow::on_enablePath_checkBox_stateChanged(int arg1)
 {
-    CanvasSettings settings;
+	if (m_scene)
+	{
+		for (int i = 0; i < m_pendulums.size(); ++i)
+		{
+			m_pendulums[i]->enablePath(arg1);
+		}
+	}
+}
+void MainWindow::on_enableEnergyLabel_checkBox_stateChanged(int arg1)
+{
+	if (m_scene)
+	{
+		for (int i = 0; i < m_pendulums.size(); ++i)
+		{
+			m_pendulums[i]->enableText(arg1);
+		}
+	}
+}
+void MainWindow::setupScene()
+{
+    SceneSettings settings;
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
@@ -114,22 +134,24 @@ void MainWindow::setupCanvas()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_canvas = new Canvas(ui->canvasWidget, settings);
+    m_scene = new Scene(ui->SceneWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor("Editor",sf::Vector2f(1000, 1000));
     defaultEditor->getGrid()->setEnabled(false);
-    m_canvas->addObject(defaultEditor);
-
-    qDebug() << defaultEditor->toString().c_str();
+    m_scene->addObject(defaultEditor);
+    
+    
 
     ui->pendulumCount_spinBox->setValue(2);
     createPendulums();
-    
+    m_scene->applyObjectChanges();
+    std::cout << m_scene->getObjectsTreeString();
+    m_scene->start();
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    if (m_canvas)
-        m_canvas->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 
@@ -137,7 +159,7 @@ void MainWindow::createPendulums()
 {
     for (size_t i = 0; i < m_pendulums.size(); ++i)
     {
-        m_canvas->deleteObject(m_pendulums[i]);
+        m_scene->deleteObject(m_pendulums[i]);
     }
     m_pendulums.clear();
     double angle1 = M_PI_2;
@@ -145,8 +167,8 @@ void MainWindow::createPendulums()
     int count = ui->pendulumCount_spinBox->value();
     for (int i = 0; i < count; ++i)
     {
-        Pendulum* pendulum = nullptr;
-        if (i % 2 == 0)
+        Pendulum* pendulum = new Pendulum();
+        /*if (i % 2 == 0)
         {
             pendulum = new Pendulum();
             pendulum->setColor(sf::Color(255,0,0));
@@ -155,27 +177,27 @@ void MainWindow::createPendulums()
         {
             pendulum = new WikiPendulum();
             pendulum->setColor(sf::Color(0,255,0));
-		}
+		}*/
 
         m_pendulums.push_back(pendulum);
         pendulum->setPosition(sf::Vector2f(500, 500));
         pendulum->setStart(angle1, angle2);
         
-        /*
+        
         int r = (1 + sin(angle1)) * 127.5;
         int g = (1 + sin(angle1 + M_PI * 2 / 3.f)) * 127.5;
         int b = (1 + sin(angle1 + M_PI * 4 / 3.f)) * 127.5;
         pendulum->setColor(sf::Color(r, g, b));
-        */
+        
 
-        if (i % 2 != 0)
+       // if (i % 2 != 0)
         {
             angle1 += M_PI * 2 / (double)count;
             angle2 += M_PI * 2 / (double)count;
         }
         
         //angle2 += 0.01;
-        m_canvas->addObject(pendulum);
+        m_scene->addObject(pendulum);
 
         float length = ui->L1_verticalSlider->value();
         float damping = (float)ui->damping_verticalSlider->value() / ui->damping_verticalSlider->maximum();
@@ -183,5 +205,9 @@ void MainWindow::createPendulums()
         pendulum->setDamping(damping, damping);
 
     }
+
+    on_enableLines_checkBox_stateChanged(ui->enableLines_checkBox->isChecked());
+    on_enablePath_checkBox_stateChanged(ui->enablePath_checkBox->isChecked());
+    on_enableEnergyLabel_checkBox_stateChanged(ui->enableEnergyLabel_checkBox->isChecked());
 }
 

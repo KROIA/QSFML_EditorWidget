@@ -14,9 +14,9 @@ static double dfyy(sf::Vector2f p);
 static sf::Vector2f grad(sf::Vector2f p);
 
 Gradient::Gradient(const std::string& name,
-	CanvasObject* parent)
+	QSFML::Objects::GameObjectPtr parent)
 	: QObject()
-	, CanvasObject(name, parent)
+	, GameObject(name, parent)
 {
 	m_pixelPainter = new QSFML::Components::PixelPainter();
 	sf::Vector2u size(1000, 1000);

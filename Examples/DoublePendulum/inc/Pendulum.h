@@ -2,23 +2,28 @@
 
 #include "QSFML_EditorWidget.h"
 
-class Pendulum : public QObject, public QSFML::Objects::CanvasObject
+class Pendulum : public QObject, public QSFML::Objects::GameObject
 {
 	Q_OBJECT
 	
 public:
     Pendulum(const std::string& name = "Pendulum",
-             CanvasObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 
 	void setStart(double angle1, double angle2);
 	void setLength(double length1, double length2);
 	void setDamping(float damping1, float damping2);
 	void setLinesEnabled(bool enabled);
 	void setColor(const sf::Color& color);
-
+	
+	void setMaxPathLength(size_t length);
+	
 	void enableText(bool enabled);
+	void enablePath(bool enabled);
 	void enableEnergyCorrection(bool enabled);
     void update() override;
+
+	
 
 protected:
 	struct PendulumData
@@ -54,6 +59,7 @@ private:
 	QSFML::Components::MousePressEvent *m_mousePressEvent;
 	QSFML::Components::Text *m_text = nullptr;
 	QSFML::Objects::LineChart *m_chart = nullptr;
+	QSFML::Components::PathPainter* m_pathPainter;
 	std::vector<float> m_chartData;
     //QSFML::Components::LinePainter *m_linePainters[2];
 
@@ -67,4 +73,5 @@ private:
 
 	int m_dragingIndex = -1;
 	bool m_linesEnabled = true;
+	size_t m_maxPathLength = 10000;
 };

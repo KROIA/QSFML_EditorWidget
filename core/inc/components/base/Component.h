@@ -16,12 +16,11 @@ namespace Components
 
 #define COMPONENT_IMPL(className) \
     CLONE_FUNC_IMPL(className)
-
 /**
- * \brief Component class for CanvasObjects
- * \details Each CanvasObject can contain multiple Components.
+ * \brief Component class for GameObjects
+ * \details Each GameObject can contain multiple Components.
  *          A Component is a module which can do some work on an
- *          CanvasObject.
+ *          GameObject.
  *          Examples for modules are:
  *           - Drawing domething
  *           - Handle sf::Events
@@ -33,6 +32,10 @@ namespace Components
  */
 class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 {
+    friend class Internal::LifetimeChecker;
+	friend class Objects::GameObject;
+    protected:
+        virtual ~Component();
     public:
         /**
          * \brief Component constructor
@@ -41,32 +44,19 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          */
         Component(const std::string &name = "");
         Component(const Component &other);
-        virtual ~Component();
+
+        static void deleteObject(ComponentPtr comp);
+        
 
         virtual CLONE_FUNC_DEC(Component);
 
-        /**
-         * \brief setParent
-         * \param parent
-         *        Assigns this Component to an CanvasObject.
-         *        This will be called by the CanvasObject::addChild(...),
-         *        So you don't have to call this manually.
-         */
-        virtual void setParent(Objects::CanvasObject* parent)
-        {
-			m_parent = parent;
-		}
-
-        virtual void setCanvasParent(Canvas* parent)
-        {
-            m_canvasParent = parent;
-        }
+       
 
         /**
          * \brief getParent
-         * \return returns the parent CanvasObject, this component belongs to
+         * \return returns the parent GameObject, this component belongs to
          */
-        Objects::CanvasObject* getParent() const
+        Objects::GameObjectPtr getParent() const
         {
 			return m_parent;
         }
@@ -108,13 +98,32 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
             return m_enabled; 
         }
 
+
         
 
+        
 
+        void deleteLater();
     protected:
-        void deleteThis();
+        /**
+        * \brief setParent
+        * \param parent
+        *        Assigns this Component to an GameObject.
+        *        This will be called by the GameObject::addChild(...),
+        *        So you don't have to call this manually.
+        */
+        virtual void setParent(Objects::GameObjectPtr parent)
+        {
+            m_parent = parent;
+        }
 
-        // Canvas operations
+        virtual void setSceneParent(Scene* parent)
+        {
+            m_sceneParent = parent;
+        }
+        
+
+        // Scene operations
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;
         sf::Vector2f getInWorldSpace(const sf::Vector2i& pixelSpace) const;
@@ -124,8 +133,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         const sf::View getCameraView() const;
         const sf::View& getDefaultCameraView() const;
         Utilities::AABB getCameraViewRect() const;
-        sf::Vector2u getCanvasSize() const;
-        sf::Vector2u getOldCanvasSize() const;
+        sf::Vector2u getSceneSize() const;
+        sf::Vector2u getOldSceneSize() const;
 
         const sf::Font& getTextFont() const;
 
@@ -133,20 +142,34 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         double getDeltaT() const; // Returns delta Time since last update in seconds
 
         /**
-         * \brief getCanvasParent
-         * \return returns the Canvas, this component belongs to
+         * \brief getSceneParent
+         * \return returns the Scene, this component belongs to
          */
-        Canvas* getCanvasParent() const;
+        Scene* getSceneParent() const;
+
+        /// Logging
+        void log(const Log::Message& msg) const;
+
+        void log(const std::string& msg) const;
+        void log(const std::string& msg, Log::Level level) const;
+        void log(const std::string& msg, Log::Level level, const Log::Color& col) const;
+
+        void logDebug(const std::string& msg) const;
+        void logInfo(const std::string& msg) const;
+        void logWarning(const std::string& msg) const;
+        void logError(const std::string& msg) const;
         // ---------
 
-        Objects::CanvasObject* m_parent;
-        Canvas* m_canvasParent;
+        Objects::GameObjectPtr m_parent;
+        Scene* m_sceneParent;
 
     private:
+        
 
         bool m_enabled;
         std::string m_name;
         
 };
+
 }
 }

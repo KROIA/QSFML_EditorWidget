@@ -2,12 +2,12 @@
 
 #include "QSFML_EditorWidget.h"
 
-class Gradient : public QObject, public QSFML::Objects::CanvasObject
+class Gradient : public QObject, public QSFML::Objects::GameObject
 {
 	Q_OBJECT
 public:
 	Gradient(const std::string& name = "Gradient",
-		CanvasObject* parent = nullptr);
+        QSFML::Objects::GameObjectPtr parent = nullptr);
 
 	void setStart(const sf::Vector2f& start);
 	void update() override;

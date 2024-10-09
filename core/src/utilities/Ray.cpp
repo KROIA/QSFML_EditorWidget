@@ -2,6 +2,8 @@
 #include "utilities/VectorOperations.h"
 #include "components/drawable/Shape.h"
 
+#include <SFML/OpenGL.hpp>
+
 namespace QSFML
 {
 	namespace Utilities
@@ -341,7 +343,7 @@ namespace QSFML
 			if (!raycast_internal(aabb, dummy1, edge))
 				return false;
 
-			const std::vector<sf::Vector2f>& points = shape.getTransformedPoints();
+			std::vector<sf::Vector2f> points = shape.getTransformedPoints();
 
 			float minDistance = std::numeric_limits<float>::max();
 			for (size_t i = 0; i < points.size(); ++i)
@@ -438,11 +440,8 @@ namespace QSFML
 		void Ray::RayPainter::addLine(const sf::Vector2f& pointA, const sf::Vector2f& pointB)
 		{
 			LinePainter line;
-			line.m_line[0].position = pointA;
-			line.m_line[1].position = pointB;
-
-			line.m_line[0].color = m_lineColor;
-			line.m_line[1].color = m_lineColor;
+			line.line[0] = pointA;
+			line.line[1] = pointB;
 
 			m_lines.push_back(line);
 		}
@@ -450,10 +449,54 @@ namespace QSFML
 		void Ray::RayPainter::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			QSFML_UNUSED(states);
+#ifdef QSFML_USE_GL_DRAW
+			QSFML_UNUSED(target);
+			glBegin(GL_LINES);
+			glColor4ub(m_lineColor.r, m_lineColor.g, m_lineColor.b, m_lineColor.a);
 			for (size_t i = 0; i < m_lines.size(); ++i)
 			{
-				target.draw(m_lines[i].m_line, 2, sf::Lines);
+				const LinePainter& line = m_lines[i];
+				
+				glVertex2f(line.line[0].x, line.line[0].y);
+				//glColor4ub(line.m_line[1].color.r, line.m_line[1].color.g, line.m_line[1].color.b, line.m_line[1].color.a);
+				glVertex2f(line.line[1].x, line.line[1].y);
 			}
+			glEnd();
+
+			glBegin(GL_LINES);
+			glColor4ub(m_pointColor.r, m_pointColor.g, m_pointColor.b, m_pointColor.a);
+			for (size_t i = 0; i < m_points.size(); ++i)
+			{
+				const sf::Vector2f& point = m_points[i];
+				sf::Vector2f tl = point - sf::Vector2f(m_pointRadius, m_pointRadius);
+				sf::Vector2f tr = point + sf::Vector2f(m_pointRadius, -m_pointRadius);
+				sf::Vector2f bl = point + sf::Vector2f(-m_pointRadius, m_pointRadius);
+				sf::Vector2f br = point + sf::Vector2f(m_pointRadius, m_pointRadius);
+
+				// Draw cross on that point
+				glVertex2f(tl.x,tl.y);
+				glVertex2f(br.x,br.y);
+				glVertex2f(tr.x,tr.y);
+				glVertex2f(bl.x,bl.y);
+
+
+				//glVertex2f(point.x, point.y);
+			}
+			glEnd();
+			m_lines.clear();
+			m_points.clear();
+#else
+			//states.transform = m_ra();
+			for (size_t i = 0; i < m_lines.size(); ++i)
+			{
+				sf::Vertex line[2];
+				line[0].position = m_lines[i].line[0];
+				line[1].position = m_lines[i].line[1];
+				line[0].color = m_lineColor;
+				line[1].color = m_lineColor;
+				target.draw(line, 2, sf::Lines);
+			}
+			
 			sf::CircleShape point(m_pointRadius);
 			point.setFillColor(m_pointColor);
 			point.setOrigin(m_pointRadius, m_pointRadius);
@@ -464,6 +507,7 @@ namespace QSFML
 			}
 			m_lines.clear();
 			m_points.clear();
+#endif
 		}
 
 	}

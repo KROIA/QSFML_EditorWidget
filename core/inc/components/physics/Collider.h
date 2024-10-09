@@ -16,8 +16,6 @@ namespace QSFML
 {
 namespace Components
 {
-    class Collider;
-
     class QSFML_EDITOR_WIDGET_EXPORT Collider: public Component
     {
             
@@ -47,7 +45,7 @@ namespace Components
             void move(const sf::Vector2f& offset);
             const sf::Vector2f& getPos() const;
 
-            bool checkCollision(const std::vector<Objects::CanvasObject*>& objs,
+            bool checkCollision(const std::vector<Objects::GameObjectPtr>& objs,
                                 std::vector<Utilities::Collisioninfo>& collisions,
                                 bool onlyFirstCollisionPerObject = true) const;
             bool checkCollision(const std::vector<Components::Collider*> &other,
@@ -64,8 +62,8 @@ namespace Components
 
             Painter* createPainter();
 
-        
-        
+			bool isDirty() const { return m_dirty; }
+            void updateColliderData() const;
 
             class QSFML_EDITOR_WIDGET_EXPORT Painter : public Components::Drawable
             {
@@ -102,16 +100,20 @@ namespace Components
 
 
 
-            void calculateBoundingBox();
-            void calculateAbsPos();
+            void calculateBoundingBox()const;
+            void calculateAbsPos() const;
             void onPainterDeleted(Painter* p);
+			void markDirty() const { m_dirty = true; }
+			void markUndirty() const { m_dirty = false; }
+
 
             
     
-            std::vector<sf::Vector2f> m_absoluteVertices;
+            mutable std::vector<sf::Vector2f> m_absoluteVertices;
             std::vector<sf::Vector2f> m_relativeVertices;
             sf::Vector2f m_pos;
-            Utilities::AABB m_boundingBox;
+            mutable Utilities::AABB m_boundingBox;
+			mutable bool m_dirty = true;
 
             std::vector<Painter*> m_painters;
     };

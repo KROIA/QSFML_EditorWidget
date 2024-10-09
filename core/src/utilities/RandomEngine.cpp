@@ -37,12 +37,30 @@ namespace QSFML
 			float randomNumber = min + static_cast<float>(std::rand()) / (static_cast<float>(RAND_MAX / (max - min)));
 			return randomNumber;
 		}
+		int RandomEngine::getInt(int min, int max)
+		{
+			// Generate a random number within the given range
+			int randomNumber = min + std::rand() % (max - min + 1);
+			return randomNumber;
+		}
 
 		sf::Vector2f RandomEngine::getVector(const sf::Vector2f& minRange, const sf::Vector2f& maxRange)
 		{
-			sf::Vector2f randVec(Utilities::RandomEngine::getFloat(minRange.x, maxRange.x),
-								 Utilities::RandomEngine::getFloat(minRange.y, maxRange.y));
+			sf::Vector2f randVec(getFloat(minRange.x, maxRange.x),
+								 getFloat(minRange.y, maxRange.y));
 			return randVec;
+		}
+		sf::Color RandomEngine::getColor()
+		{
+			return sf::Color(getInt(0, 255), getInt(0, 255), getInt(0, 255));
+		}
+		sf::Color RandomEngine::getColor(const sf::Color& minRange, const sf::Color& maxRange)
+		{
+			sf::Color randColor(getInt(minRange.r, maxRange.r),
+								getInt(minRange.g, maxRange.g),
+								getInt(minRange.b, maxRange.b),
+								getInt(minRange.a, maxRange.a));
+			return randColor;
 		}
 		void RandomEngine::fillArray(float* array, unsigned int size, float min, float max)
 		{

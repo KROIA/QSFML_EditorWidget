@@ -47,13 +47,18 @@ project(${PROJECT_NAME})
 
 # QT settings
 if(QT_ENABLE)
-    find_package(Qt5Widgets REQUIRED)
+    message("Using QT modules: ${QT_MODULES} for Example: ${PROJECT_NAME}")
 
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-    #set(CMAKE_AUTOUIC ON)
+    list(LENGTH QT_MODULES list_length)
+    if(NOT list_length EQUAL 0)
+        find_package(${QT_PACKAGE_NAME} REQUIRED COMPONENTS ${QT_MODULES})
 
-    find_package(Qt5 REQUIRED COMPONENTS ${QT_MODULES})
+        set(CMAKE_AUTOMOC ON)
+        set(CMAKE_AUTORCC ON)
+        #set(CMAKE_AUTOUIC ON)
+    else()
+        message("ERROR: QT_MODULES is empty. Please specify the required modules or set the variable \"QT_ENABLE\" to OFF")
+    endif()
 endif()
 # end QT settings
 
@@ -74,9 +79,9 @@ if(QT_ENABLE)
     FILE_DIRECTORIES(UI_FILES *.ui)    
     FILE_DIRECTORIES(RES_FILES *.qrc)    
 
-    qt5_wrap_cpp(CPP_MOC_FILES ${H_FILES})
-    qt5_wrap_ui(UIS_HDRS ${UI_FILES})
-    qt5_add_resources(RESOURCE_FILES ${RES_FILES})
+    qt_wrap_internal_cpp(CPP_MOC_FILES ${H_FILES})
+    qt_wrap_internal_ui(UIS_HDRS ${UI_FILES})
+    qt_add_internal_resources(RESOURCE_FILES ${RES_FILES})
 
     list(APPEND DEFINES QT_ENABLED)
     # Check if QT_MODULES contains Widgets
@@ -92,7 +97,7 @@ if(QT_ENABLE)
 
     # Link the QT modules to your executable
     foreach(MODULE ${QT_MODULES})
-        set(QT_LIBS ${QT_LIBS} Qt5::${MODULE})
+        set(QT_LIBS ${QT_LIBS} ${QT_PACKAGE_NAME}::${MODULE})
     endforeach()
 
 endif()
@@ -106,18 +111,28 @@ if(${PROFILING_NAME})
         message("ERROR: Target: Make shure you have added the dependency: easy_profiler.cmake and set(EASY_PROFILER_IS_AVAILABLE ON)")
     endif()
     target_link_libraries(${PROJECT_NAME} ${PARENT_LIBRARY_STATIC_PROFILE} ${QT_LIBS} ${ADDITIONAL_LIBRARIES})
+    list(APPEND DEFINES ${LIB_PROFILE_DEFINE})
 else()
     target_link_libraries(${PROJECT_NAME} ${PARENT_LIBRARY_STATIC} ${QT_LIBS} ${ADDITIONAL_LIBRARIES})
 endif()
 
 list(APPEND DEFINES BUILD_STATIC)
+# Add the names of the dependencies as a define
+foreach(DEPENDENCY ${DEPENDENCY_NAME_MACRO})
+	list(APPEND DEFINES ${DEPENDENCY})
+endforeach()
+
+foreach(DEF ${USER_SPECIFIC_DEFINES})
+	list(APPEND DEFINES ${DEF})
+endforeach()
+
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${DEFINES})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION "${INSTALL_BIN_PATH}")
 
 if(QT_ENABLE AND QT_DEPLOY)
-   DEPLOY_QT(${PROJECT_NAME} "${INSTALL_BIN_PATH}")
-   DEPLOY_QT(${PROJECT_NAME} "$<TARGET_FILE_DIR:${PROJECT_NAME}>") # Also deploy on the compile output path
+   windeployqt(${PROJECT_NAME} "${INSTALL_BIN_PATH}")
+   windeployqt(${PROJECT_NAME} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}") # Also deploy on the compile output path
 endif()
 
 endfunction()

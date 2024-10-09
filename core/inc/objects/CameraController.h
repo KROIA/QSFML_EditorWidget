@@ -1,7 +1,7 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/base/SfEventHandle.h"
 
 #include <SFML/Graphics.hpp>
@@ -11,12 +11,12 @@ namespace QSFML
 namespace Objects
 {
 
-class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
 {
         class SfEventComponent;
     public:
         CameraController(const std::string &name = "",
-                         CanvasObject *parent = nullptr);
+                         GameObjectPtr parent = nullptr);
         CameraController(const CameraController &other);
         ~CameraController();
         COMPONENT_DECL(CameraController);
@@ -51,11 +51,18 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
 
         void update() override;
 
-
+        Objects::CameraWindow* getCamera() const;
 
     private:
-        //void internalOnCanvasParentChange(Canvas *oldParent, Canvas *newParent) override;
-        //void internalOnParentChange(CanvasObject *oldParent, CanvasObject *newParent) override;
+        sf::Vector2i getThisCameraMousePosition() const;
+        sf::Vector2f getInThisCameraWorldSpace(const sf::Vector2i& pixelSpace) const;
+        sf::Vector2u getThisCameraOldSize() const;
+        sf::Vector2u getThisCameraSize() const;
+		sf::View getThisCameraView() const;
+
+        void onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent) override;
+        //void internalOnSceneParentChange(Scene *oldParent, Scene *newParent) override;
+        //void internalOnParentChange(GameObjectPtr oldParent, GameObjectPtr newParent) override;
         void positionCheck(sf::View &view);
 
         float m_currentZoom;
@@ -63,8 +70,9 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
         float m_maxZoom;
         sf::FloatRect m_maxMovingBounds;
 
-        SfEventComponent *m_eventHandleComponent;
+        SfEventComponent* m_eventHandleComponent;
         sf::Mouse::Button m_dragButton;
+        Objects::CameraWindow* m_customCam = nullptr;
 
     // Defining component
     class SfEventComponent : public Components::SfEventHandle
@@ -82,7 +90,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public CanvasObject
             ~SfEventComponent(){}
 
             void setController(CameraController *controller);
-            void sfEvent(const sf::Event &e) override;
+            void sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>>& events) override;
 
         private:
             CameraController *m_controller;

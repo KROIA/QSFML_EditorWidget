@@ -1,5 +1,7 @@
 #include "components/base/Component.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
+#include "Scene/Scene.h"
+#include "utilities/LifetimeChecker.h"
 
 using namespace QSFML::Components;
 using namespace QSFML::Objects;
@@ -10,43 +12,42 @@ Component::Component(const std::string &name)
     : m_enabled(true)
     , m_name(name)
     , m_parent(nullptr)
-    , m_canvasParent(nullptr)
+    , m_sceneParent(nullptr)
 {
-
+    Internal::LifetimeChecker::add(this);
 }
 Component::Component(const Component &other)
     : m_enabled(other.m_enabled)
     , m_name(other.m_name)
     , m_parent(nullptr)
-    , m_canvasParent(nullptr)
+    , m_sceneParent(nullptr)
 {
-
+    Internal::LifetimeChecker::add(this);
 }
 Component::~Component()
 {
+    Internal::LifetimeChecker::setDead(this);
     if (m_parent)
     {
-        CanvasObject* parent = m_parent;
+        GameObjectPtr parent = m_parent;
         m_parent = nullptr;
-        parent->removeComponent(this);
+        if(Internal::LifetimeChecker::isAlive(parent))
+            parent->removeComponent(this);
     }
 }
 
+void Component::deleteObject(ComponentPtr comp)
+{
+    Internal::LifetimeChecker::deleteSecured(comp);
+}
 
 
-
-
-
-
-
-
-void Component::deleteThis()
+void Component::deleteLater()
 {
     if (m_parent)
     {
-        CanvasObject* parent = m_parent;
-        m_parent = nullptr;
-        parent->deleteComponent(this);
+        if (Internal::LifetimeChecker::isAlive(m_parent))
+            m_parent->deleteComponentLater(this);
     }
 }
 
@@ -89,22 +90,22 @@ QSFML::Utilities::AABB Component::getCameraViewRect() const
     if (!m_parent) return Utilities::AABB();
     return m_parent->getCameraViewRect();
 }
-sf::Vector2u Component::getCanvasSize() const
+sf::Vector2u Component::getSceneSize() const
 {
     if (!m_parent) return sf::Vector2u(0, 0);
-    return m_parent->getCanvasSize();
+    return m_parent->getCameraSize();
 }
-sf::Vector2u Component::getOldCanvasSize() const
+sf::Vector2u Component::getOldSceneSize() const
 {
     if (!m_parent) return sf::Vector2u(0, 0);
-    return m_parent->getOldCanvasSize();
+    return m_parent->getOldCameraSize();
 }
 
 const sf::Font& Component::getTextFont() const
 {
     const static sf::Font dummy;
     if (!m_parent) return dummy;
-    return m_parent->getTextFont();
+    return m_parent->getDefaultTextFont();
 }
 size_t Component::getTick() const
 {
@@ -117,7 +118,51 @@ double Component::getDeltaT() const
     return m_parent->getDeltaT();
 }
 
-QSFML::Canvas* Component::getCanvasParent() const
+QSFML::Scene* Component::getSceneParent() const
 {
-    return m_canvasParent;
+    return m_sceneParent;
 }
+
+void Component::log(const Log::Message & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().log(msg); 
+}
+
+void Component::log(const std::string & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().log(msg);
+}
+void Component::log(const std::string & msg, Log::Level level) const
+{
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().log(msg, level); 
+}
+void Component::log(const std::string & msg, Log::Level level, const Log::Color & col) const
+{
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().log(msg, level, col); 
+}
+
+void Component::logDebug(const std::string & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().logDebug(msg); 
+}
+void Component::logInfo(const std::string & msg) const
+{
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().logInfo(msg); 
+}
+void Component::logWarning(const std::string & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().logWarning(msg); 
+}
+void Component::logError(const std::string & msg) const
+{ 
+    if (m_sceneParent) 
+        m_sceneParent->getComponentLogger().logError(msg); 
+}
+

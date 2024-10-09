@@ -4,18 +4,18 @@ namespace QSFML
 namespace Objects
 {
 DrawableBoxCollider::DrawableBoxCollider(const std::string &name)
-    : CanvasObject(name)
+    : GameObject(name)
 {
     setup(Utilities::AABB(0,0,100,50));
 }
 DrawableBoxCollider::DrawableBoxCollider(const std::string &name,
                                          const Utilities::AABB &box)
-    : CanvasObject(name)
+    : GameObject(name)
 {
     setup(box);
 }
 DrawableBoxCollider::DrawableBoxCollider(const DrawableBoxCollider &other)
-    : CanvasObject(other)
+    : GameObject(other)
 {
     m_pos    = new QSFML::Components::DrawableVector(*other.m_pos   );
     m_left   = new QSFML::Components::DrawableVector(*other.m_left  );

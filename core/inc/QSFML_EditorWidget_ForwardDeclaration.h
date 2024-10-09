@@ -2,24 +2,30 @@
 
 namespace QSFML
 {
-    class Canvas;
-    class CanvasObjectContainer;
-    class CanvasObjectGroup;
-    class CanvasObjectLayerGroup;
-    class CanvasThreadWorker;
-    struct CanvasSettings;
-    class CanvasThreadWorker;
-
+    class Scene;
     
+    class GameObjectContainer;
+    class GameObjectGroup;
+    class GameObjectLayerGroup;
+    class SceneThreadWorker;
+    struct SceneSettings;
+    class SceneThreadWorker;
+
+
     
     namespace Objects
     {
-        class CanvasObject;
+        class GameObject;
+        class CameraWindow;
         class BackgroundGrid;
         class CameraController;
         class DefaultEditor;
         class LineChart;
         class VisibleCamera;
+
+        //typedef std::shared_ptr<GameObject> GameObjectPtr;
+        typedef GameObject* GameObjectPtr;
+
     }
     namespace Components
     {
@@ -37,6 +43,10 @@ namespace QSFML
         class SfEventHandle;
         class Text;
         class Image;
+        class Transform;
+
+        //typedef std::shared_ptr<Component> ComponentPtr;
+        typedef Component* ComponentPtr;
     }
     namespace Utilities
     {
@@ -46,14 +56,22 @@ namespace QSFML
         class Ray;
         class Singelton;
         class Updatable;
-        class VectorOperations;
         class ObjectQuadTree;
         class Timer;
         struct Collisioninfo;
 
+        
+        class Transformable;
+
+        
         class Stats;
         class StatsManager;
-        class Transformable;
+    }
+
+    namespace Internal
+    {
+        class SceneLogger;
+        class LifetimeChecker;
     }
     
 

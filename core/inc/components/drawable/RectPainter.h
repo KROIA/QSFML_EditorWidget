@@ -18,13 +18,19 @@ namespace QSFML
             void setRect(const Utilities::AABB& aabb);
             const Utilities::AABB& getRect() const;
 
-            void setColor(const sf::Color& color);
-            const sf::Color& getColor() const;
+            void setOutlineThickness(float t);
+            float getOutlineThickness() const;
+
+            void setOutlineColor(const sf::Color& color);
+            const sf::Color& getOutlineColor() const;
+
+			void setFillColor(const sf::Color& color);
+			const sf::Color& getFillColor() const;
 
             void drawComponent(sf::RenderTarget& target,
                 sf::RenderStates states) const override;
 
-        private:
+        protected:
             Utilities::AABB m_box;
 
             sf::RectangleShape m_rectShape;

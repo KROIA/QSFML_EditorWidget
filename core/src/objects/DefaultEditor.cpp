@@ -1,5 +1,6 @@
 #include "objects/DefaultEditor.h"
 #include "Components/KeyPressEvent.h"
+#include "Scene/Scene.h"
 
 namespace QSFML
 {
@@ -8,15 +9,15 @@ namespace QSFML
         OBJECT_IMPL(DefaultEditor)
         DefaultEditor::DefaultEditor(const std::string &name,
                                      const sf::Vector2f &size)
-            : CanvasObject(name)
-            , m_cam(new VisibleCamera("Camera"))
+            : GameObject(name)
+            , m_cam(new CameraController("Camera"))
             , m_grid(new BackgroundGrid("Grid"))
         {
             setup(size);
         }
         DefaultEditor::DefaultEditor(const DefaultEditor &other)
-            : CanvasObject(other)
-            , m_cam(new VisibleCamera("Camera"))
+            : GameObject(other)
+            , m_cam(new CameraController("Camera"))
             , m_grid(new BackgroundGrid("Grid"))
         {
             setup(sf::Vector2f(other.m_grid->getSize().width, other.m_grid->getSize().height));
@@ -38,21 +39,32 @@ namespace QSFML
             m_runtimeInfo = new RuntimeInfo();
             m_runtimeInfo->setEnabled(false);
 
-            m_toggleRuntimeInfoEvent = new Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::I);
+            m_toggleRuntimeInfoEvent = new Components::KeyPressEvent("RuntimeInfoToggler", sf::Keyboard::F3);
             connect(m_toggleRuntimeInfoEvent, &Components::KeyPressEvent::fallingEdge, this, &DefaultEditor::onToggleRuntimeInfo);
             addComponent(m_toggleRuntimeInfoEvent);
 
 
             addChild(m_grid);
             addChild(m_cam);
-            addChild(m_runtimeInfo);
+            m_runtimeInfo->setRenderLayer(RenderLayer::layer_5);
+            //addChild(m_runtimeInfo);
+
 
         }
-        VisibleCamera *DefaultEditor::getCamera() const
+        void DefaultEditor::onSceneParentChange(Scene* oldParent, Scene* newParent)
+        {            
+            //QSFML_UNUSED(oldParent);
+            //QSFML_UNUSED(newParent);
+            if (oldParent)
+				oldParent->removeObject(m_runtimeInfo);
+            if (newParent)
+                newParent->addObject(m_runtimeInfo);
+        }
+        CameraController* DefaultEditor::getCamera() const
         {
             return m_cam;
         }
-        BackgroundGrid *DefaultEditor::getGrid() const
+        BackgroundGrid* DefaultEditor::getGrid() const
         {
             return m_grid;
         }

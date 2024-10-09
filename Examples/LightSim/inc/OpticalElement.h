@@ -21,7 +21,7 @@ private:
 
 };
 
-class OpticalElement : public QSFML::Objects::CanvasObject
+class OpticalElement : public QSFML::Objects::GameObject
 {
 public:
     struct ReflectionAndRefractionData

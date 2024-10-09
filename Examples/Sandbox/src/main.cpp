@@ -23,16 +23,20 @@ int main(int argc, char *argv[])
 #endif
     QApplication a(argc, argv);
 
+    Log::UI::NativeConsoleView console;
+    console.show();
    // thread_pool.Schedule(f4);
 
 
    // EASY_PROFILER_ENABLE;
-    SandBox w;
-    w.show();
+    SandBox* w = new SandBox();
+    w->show();
     //benchmark();
     int ret = a.exec();
+    delete w;
+    qDebug() << "Objects that are not deleted: " << QSFML::Internal::LifetimeChecker::getAliveCount() << " of total: " << QSFML::Internal::LifetimeChecker::getTotalCount();
  //   profiler::dumpBlocksToFile("test_profile.prof");
-    //QSFML::Canvas::startEventLoop();
+    //QSFML::Scene::startEventLoop();
     return ret;
 }
 

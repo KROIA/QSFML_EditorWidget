@@ -4,14 +4,14 @@
 #include "LightRay.h"
 
 class OpticalElement;
-class Laser: public QSFML::Objects::CanvasObject
+class Laser: public QSFML::Objects::GameObject
 {
 	class LaserPainter;
 	
 	friend LaserPainter;
 public:
 	Laser(const std::string& name = "Laser",
-		CanvasObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	Laser(const Laser& other);
 	~Laser();
 

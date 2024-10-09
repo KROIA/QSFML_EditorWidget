@@ -1,6 +1,15 @@
 #pragma once
 #include "QSFML_EditorWidget_global.h"
 
+/// USER_SECTION_START 14
+
+/// USER_SECTION_END
+
+// The Logger library is automaticly included if the logger dependency .cmake file is available
+#if defined(LOGGER)
+	#include "Logger.h"
+#endif
+
 /// USER_SECTION_START 1
 
 /// USER_SECTION_END
@@ -77,14 +86,88 @@
 
 namespace QSFML
 {
+/// USER_SECTION_START 4
+
+/// USER_SECTION_END
 	class QSFML_EDITOR_WIDGET_EXPORT Profiler
 	{
 	public:
+		/// USER_SECTION_START 5
+
+		/// USER_SECTION_END
+
 		// Implementation defined in LibraryName_info.cpp to save files.
 		static void start();
 		static void stop();
 		static void stop(const char* profilerOutputFile);
+
+		/// USER_SECTION_START 6
+
+		/// USER_SECTION_END
 	};
+
+/// USER_SECTION_START 7
+
+/// USER_SECTION_END
+
+
+#if defined(LOGGER)
+	class QSFML_EDITOR_WIDGET_EXPORT Logger 
+	{
+		/// USER_SECTION_START 8
+
+		/// USER_SECTION_END
+		Logger();
+		static Logger& instance();
+		public:
+		/// USER_SECTION_START 9
+
+		/// USER_SECTION_END
+
+		static void setEnabled(bool enable);
+		static bool isEnabled();
+		static void setName(const std::string& name);
+		static std::string getName();
+		static void setColor(const Log::Color& col);
+		static Log::Color getColor();
+		static Log::DateTime getCreationDateTime();
+		static Log::LoggerID getID();
+		static void setParentID(Log::LoggerID parentID);
+		static Log::LoggerID getParentID();
+
+
+
+		static void log(const Log::Message& msg);
+
+		static void log(const std::string& msg);
+		static void log(const std::string& msg, Log::Level level);
+		static void log(const std::string& msg, Log::Level level, const Log::Color& col);
+
+		static void logTrace(const std::string& msg);
+		static void logDebug(const std::string& msg);
+		static void logInfo(const std::string& msg);
+		static void logWarning(const std::string& msg);
+		static void logError(const std::string& msg);
+		static void logCustom(const std::string& msg);
+
+		/// USER_SECTION_START 10
+
+		/// USER_SECTION_END
+
+		private:
+		Log::LogObject m_logObject;
+
+		/// USER_SECTION_START 11
+
+		/// USER_SECTION_END
+	};
+/// USER_SECTION_START 12
+
+/// USER_SECTION_END
+#endif
+/// USER_SECTION_START 13
+
+/// USER_SECTION_END
 }
 
 
@@ -114,17 +197,17 @@ namespace QSFML
 #define QSFMLP_GENERAL_VALUE(name, value) QSFML_PROFILING_VALUE(name, value)
 #define QSFMLP_GENERAL_TEXT(name, value) QSFML_PROFILING_TEXT(name, value)
 
-// Canvas
-#define QSFML_PROFILING_CANVAS_COLORBASE Green
-#define QSFMLP_CANVAS_BLOCK_C(text, color) QSFML_PROFILING_BLOCK_C(text, color)
-#define QSFMLP_CANVAS_NONSCOPED_BLOCK_C(text, color) QSFML_PROFILING_NONSCOPED_BLOCK_C(text, color)
-#define QSFMLP_CANVAS_END_BLOCK QSFML_PROFILING_END_BLOCK;
-#define QSFMLP_CANVAS_FUNCTION_C(color) QSFML_PROFILING_FUNCTION_C(color)
-#define QSFMLP_CANVAS_BLOCK(text, colorStage) QSFML_PROFILING_BLOCK(text, CONCAT_SYMBOLS(QSFML_PROFILING_CANVAS_COLORBASE, colorStage))
-#define QSFMLP_CANVAS_NONSCOPED_BLOCK(text, colorStage) QSFML_PROFILING_NONSCOPED_BLOCK(text, CONCAT_SYMBOLS(QSFML_PROFILING_CANVAS_COLORBASE, colorStage))
-#define QSFMLP_CANVAS_FUNCTION(colorStage) QSFML_PROFILING_FUNCTION(CONCAT_SYMBOLS(QSFML_PROFILING_CANVAS_COLORBASE, colorStage))
-#define QSFMLP_CANVAS_VALUE(name, value) QSFML_PROFILING_VALUE(name, value)
-#define QSFMLP_CANVAS_TEXT(name, value) QSFML_PROFILING_TEXT(name, value)
+// Scene
+#define QSFML_PROFILING_Scene_COLORBASE Green
+#define QSFMLP_SCENE_BLOCK_C(text, color) QSFML_PROFILING_BLOCK_C(text, color)
+#define QSFMLP_SCENE_NONSCOPED_BLOCK_C(text, color) QSFML_PROFILING_NONSCOPED_BLOCK_C(text, color)
+#define QSFMLP_SCENE_END_BLOCK QSFML_PROFILING_END_BLOCK;
+#define QSFMLP_SCENE_FUNCTION_C(color) QSFML_PROFILING_FUNCTION_C(color)
+#define QSFMLP_SCENE_BLOCK(text, colorStage) QSFML_PROFILING_BLOCK(text, CONCAT_SYMBOLS(QSFML_PROFILING_Scene_COLORBASE, colorStage))
+#define QSFMLP_SCENE_NONSCOPED_BLOCK(text, colorStage) QSFML_PROFILING_NONSCOPED_BLOCK(text, CONCAT_SYMBOLS(QSFML_PROFILING_Scene_COLORBASE, colorStage))
+#define QSFMLP_SCENE_FUNCTION(colorStage) QSFML_PROFILING_FUNCTION(CONCAT_SYMBOLS(QSFML_PROFILING_Scene_COLORBASE, colorStage))
+#define QSFMLP_SCENE_VALUE(name, value) QSFML_PROFILING_VALUE(name, value)
+#define QSFMLP_SCENE_TEXT(name, value) QSFML_PROFILING_TEXT(name, value)
 
 // Objects
 #define QSFML_PROFILING_OBJECT_COLORBASE Orange

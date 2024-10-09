@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    QSFML::Canvas::setProfilerOutputFileName("Pendelum.prof");
+    QSFML::Scene::setProfilerOutputFileName("Pendelum.prof");
     int ret = a.exec();
     
     return ret;

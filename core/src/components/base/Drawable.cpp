@@ -1,6 +1,6 @@
 #include "components/base/Drawable.h"
-#include "objects/base/CanvasObject.h"
-#include "canvas/Canvas.h"
+#include "objects/base/GameObject.h"
+#include "Scene/Scene.h"
 
 namespace QSFML
 {
@@ -8,13 +8,13 @@ namespace QSFML
     {
         Drawable::Drawable(const std::string& name)
             : Component(name)
-            , Utilities::Transformable()
+            , sf::Transformable()
         {
 
         }
         Drawable::Drawable(const Drawable& other)
             : Component(other)
-            , Utilities::Transformable()
+            , sf::Transformable(other)
         {
 
         }

@@ -16,11 +16,11 @@ public:
     ~FluidSim();
 
 private:
-    void setupCanvas();
+    void setupScene();
     void closeEvent(QCloseEvent* event) override;
 
 
     Ui::FluidSim* ui;
 
-    QSFML::Canvas* m_canvas;
+    QSFML::Scene* m_scene;
 };

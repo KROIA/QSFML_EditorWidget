@@ -4,8 +4,13 @@
 
 /// USER_SECTION_END
 
-#include "QSFML_EditorWidget_base.h"
+#include "QSFML_EditorWidget_global.h"
+#include "QSFML_EditorWidget_debug.h"
+
 #include <sstream>
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 /// USER_SECTION_START 2
 
@@ -29,10 +34,31 @@ namespace QSFML
 		LibraryInfo() = delete;
 		LibraryInfo(const LibraryInfo&) = delete;
 	public:
+
+		struct Version
+		{
+			int major;
+			int minor;
+			int patch;
+
+			// compare two versions
+			bool operator<(const Version& other) const;
+
+			bool operator==(const Version& other) const;
+			bool operator!=(const Version& other) const;
+			bool operator>(const Version& other) const;
+			bool operator<=(const Version& other) const;
+			bool operator>=(const Version& other) const;
+			std::string toString() const;
+		};
+
+
 		// Current version of the library
 		static constexpr int versionMajor				= 1;
 		static constexpr int versionMinor				= 0;
 		static constexpr int versionPatch				= 0;
+
+		static constexpr Version version{ versionMajor, versionMinor, versionPatch };
 
 		// Library name
 		static constexpr const char* name				= "QSFML_EditorWidget";
@@ -46,17 +72,17 @@ namespace QSFML
 		// Compiler information
 #ifdef _MSC_VER
 		static constexpr const char* compiler			= "MSVC";
-		static constexpr const long compilerVersion		= _MSC_VER;
+		static constexpr const char* compilerVersion	= TOSTRING(_MSC_VER);
 #elif defined(__GNUC__)
 		static constexpr const char* compiler			= "GCC";
-		static constexpr const long compilerVersion		= __VERSION__;
+		static constexpr const char* compilerVersion	= __VERSION__;
 #elif defined(__clang__)
 
 		static constexpr const char* compiler			= "Clang";
-		static constexpr const long compilerVersion		= __clang_version__;
+		static constexpr const char* compilerVersion	= __clang_version__;
 #else
 		static constexpr const char* compiler			= "Unknown";
-		static constexpr const long compilerVersion		= "Unknown";
+		static constexpr const char* compilerVersion	= "Unknown";
 #endif
 
 		// Build type
@@ -73,23 +99,9 @@ namespace QSFML
 		static constexpr const BuildType buildType		= BuildType::debug;
 #endif
 
-		static const std::string& versionStr()
-		{
-			static const std::string str = {
-				'0' + versionMajor / 10,
-				'0' + versionMajor % 10,
-				'.',
-				'0' + versionMinor / 10,
-				'0' + versionMinor % 10,
-				'.',
-				'0' + versionPatch / 10,
-				'0' + versionPatch % 10
-			};
-			return str;
-		}
-
 		static void printInfo();
 		static void printInfo(std::ostream& stream);
+		static std::string getInfoStr();
 
 		// This function is only available when QT_ENABLE was set to ON in the CMakeLists.txt and
 		// QT_MODULES contains the value "Widgets"

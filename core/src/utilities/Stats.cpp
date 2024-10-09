@@ -1,5 +1,5 @@
 #include "utilities/Stats.h"
-#include "canvas/Canvas.h"
+#include "Scene/Scene.h"
 
 #include <QDebug>
 
@@ -83,80 +83,10 @@ namespace QSFML
 			s.m_drawTime = diff * m_drawTime + smothness * oldStats.m_drawTime;
 
 			s.m_deltaT = diff * m_deltaT + smothness * oldStats.m_deltaT;
-			//s.m_elapsedTime = diff * m_elapsedTime + smothness * oldStats.m_elapsedTime;
 			return s;
 		}
 
-		unsigned int Stats::getRootObjectCount() const
-		{
-			return m_rootObjectsCount;
-		}
-		unsigned int Stats::getObjectCount() const
-		{
-			return m_objectsCount;
-		}
-		unsigned int Stats::getComponentCount() const
-		{
-			return m_componentsCount;
-		}
-		unsigned int Stats::getCollisionCheckCount() const
-		{
-			return m_collisionChecks;
-		}
-		unsigned int Stats::getBoundingBoxCollisionCheckCount() const
-		{
-			return m_boundingBoxCollisionChecks;
-		}
-		unsigned int Stats::getCollisionCount() const
-		{
-			return m_collisions;
-		}
-		double Stats::getFPS() const
-		{
-			return m_fps;
-		}
-		double Stats::getTPS() const
-		{
-			return m_tps;
-		}
-		double Stats::getFrameTime() const
-		{
-			return m_frameTime;
-		}
-		double Stats::getEventTime() const
-		{
-			return m_eventTime;
-		}
-		double Stats::getUpdateTime() const
-		{
-			return m_updateTime;
-		}
-		double Stats::getDrawTime() const
-		{
-			return m_drawTime;
-		}
-
-		double Stats::getDeltaT() const
-		{
-			return m_deltaT;
-		}
-		double Stats::getFixedDeltaT() const
-		{
-			return m_fixedDeltaT;
-		}
-		double Stats::getElapsedTime() const
-		{
-			return m_elapsedTime;
-		}
-		double Stats::getFiexedElapsedTime() const
-		{
-			return m_fixedDeltaT * m_tick;
-		}
-
-		size_t Stats::getTick() const
-		{
-			return m_tick;
-		}
+		
 
 		std::string Stats::toString() const
 		{
@@ -189,10 +119,6 @@ namespace QSFML
 		{
 			copyTo.m_frameTime = m_frameTime;
 			m_frameTime = 0;
-			//resetFrame_eventloop(copyTo);
-			//resetFrame_updateLoop(copyTo);
-			//resetFrame_paintLoop(copyTo);
-			//copyTo.copyObjectCounts(*this);
 		}
 		void Stats::resetFrame_eventloop(Stats& copyTo)
 		{
@@ -240,129 +166,6 @@ namespace QSFML
 
 			m_deltaT = 0;
 			m_elapsedTime = 0;
-		}
-
-
-		//Stats StatsManager::m_currentStats;
-		//Stats StatsManager::m_lastStats;
-		/*
-		const Stats& StatsManager::getCurrentStats() const
-		{
-			return m_currentStats;
-		}
-		const Stats& StatsManager::getLastStats() const
-		{
-			return m_lastStats;
-		}
-		Stats& StatsManager::getCurrentStats_internal()
-		{
-			return m_currentStats;
-		}
-		Stats& StatsManager::getLastStats_internal()
-		{
-			return m_lastStats;
-		}
-
-		void StatsManager::setRootCanvesObject(unsigned int count)
-		{
-			m_currentStats.m_rootObjectsCount = count;
-		}
-		void StatsManager::addRootCanvesObject(unsigned int count)
-		{
-			m_currentStats.m_rootObjectsCount += count;
-		}
-		void StatsManager::addCanvesObject(unsigned int count)
-		{
-			m_currentStats.m_objectsCount += count;
-		}
-
-		void StatsManager::removeRootCanvasObject(unsigned int count)
-		{
-			m_currentStats.m_rootObjectsCount -= count;
-		}
-		void StatsManager::removeCanvasObject(unsigned int count)
-		{
-			m_currentStats.m_objectsCount -= count;
-		}
-
-		void StatsManager::addComponent(unsigned int count)
-		{
-			m_currentStats.m_componentsCount += count;
-		}
-		void StatsManager::removeComponent(unsigned int count)
-		{
-			m_currentStats.m_componentsCount -= count;
-		}
-		void StatsManager::addCollisionCheck(unsigned int count)
-		{
-			m_currentStats.m_collisionChecks += count;
-		}
-		void StatsManager::addBoundingBoxCollisionCheck(unsigned int count)
-		{
-			m_currentStats.m_boundingBoxCollisionChecks += count;
-		}
-		void StatsManager::addCollision(unsigned int count)
-		{
-			m_currentStats.m_collisions += count;
-		}
-
-		void StatsManager::setFPS(double fps)
-		{
-			m_currentStats.m_fps = fps;
-		}
-		void StatsManager::setFrameTime(double t)
-		{
-			m_currentStats.m_frameTime = t;
-		}
-		void StatsManager::setEventTime(double t)
-		{
-			m_currentStats.m_eventTime = t;
-		}
-		void StatsManager::setUpdateTime(double t)
-		{
-			m_currentStats.m_updateTime = t;
-		}
-		void StatsManager::setDrawTime(double t)
-		{
-			m_currentStats.m_drawTime = t;
-		}
-
-		void StatsManager::setDeltaT(double t)
-		{
-			m_currentStats.m_deltaT = t;
-		}
-
-		void StatsManager::addTick()
-		{
-			m_currentStats.m_tick++;
-		}*/
-
-		void StatsManager::resetFrame_synced()
-		{
-			
-			//m_lastStats = m_currentStats;
-			m_currentStats.resetFrame_synced(m_lastStats);
-		}
-		void StatsManager::resetFrame_eventloop()
-		{
-			m_currentStats.resetFrame_eventloop(m_lastStats);
-		}
-		void StatsManager::resetFrame_updateLoop()
-		{
-			m_currentStats.m_elapsedTime += m_currentStats.m_deltaT;
-			m_currentStats.resetFrame_updateLoop(m_lastStats);
-		}
-		void StatsManager::resetFrame_paintLoop()
-		{
-			m_currentStats.resetFrame_paintLoop(m_lastStats);
-		}
-		void StatsManager::copyObjectCounts()
-		{
-			m_lastStats.copyObjectCounts(m_currentStats);
-		}
-		void StatsManager::resetTiming()
-		{
-			m_currentStats.resetTiming();
 		}
 	}
 }

@@ -16,11 +16,11 @@ public:
     ~MainWindow();
 
 private:
-    void setupCanvas();
+    void setupScene();
     void closeEvent(QCloseEvent* event) override;
 
 
     Ui::MainWindow* ui;
 
-    QSFML::Canvas* m_canvas;
+    QSFML::Scene* m_scene;
 };

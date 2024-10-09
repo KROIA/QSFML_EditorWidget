@@ -4,9 +4,9 @@
 #define USE_QUADTREE
 
 CLONE_FUNC_IMPL(CollisionChecker);
-CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent)
+CollisionChecker::CollisionChecker(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: QObject()
-	, CanvasObject(name)
+	, GameObject(name)
 	, m_mode(Mode::intersecting)
 	, m_tree(nullptr,QSFML::Utilities::AABB({ 0,0 }, { 800,600 }), 4)
 {
@@ -15,12 +15,13 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	//m_collisionObject = new CollisionObject();
 
 	
-	m_colliderContainer = new QSFML::Objects::CanvasObject();
+	m_colliderContainer = new QSFML::Objects::GameObject();
 	for (size_t i = 0; i < 10; ++i)
 	{
 		CollisionObject* obj = new CollisionObject();
 		sf::Vector2f pos = QSFML::Utilities::RandomEngine::getVector() * 100.f;
 		obj->setPosition(pos);
+		sf::Vector2f pos2 = obj->getGlobalPosition();
 		m_collisionObjs.push_back(obj);
 		
 	}
@@ -34,7 +35,7 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 
 	QSFML::Utilities::AABB range(0, 0, 800, 600);
 	//QSFML::Utilities::AABB range(0, 0, 80, 60);
-	m_performanceContainer = new QSFML::Objects::CanvasObject();
+	m_performanceContainer = new QSFML::Objects::GameObject();
 	for (size_t i = 0; i <1000; ++i)
 	{
 		PerformanceObject* obj = new PerformanceObject(/*{
@@ -73,11 +74,13 @@ CollisionChecker::CollisionChecker(const std::string& name, CanvasObject* parent
 	m_tree.enableCollisionThreads(true);
 	setMode(Mode::performanceTest);
 
+	//createLogger();
+
 }
 CollisionChecker::CollisionChecker(const CollisionChecker& other)
 	: QObject()
-	, CanvasObject(other)
-	, m_tree(other.getCanvasParent(), other.m_tree.getArea(), other.m_tree.getMaxDepth())
+	, GameObject(other)
+	, m_tree(other.getSceneParent(), other.m_tree.getArea(), other.m_tree.getMaxDepth())
 {
 
 }
@@ -138,11 +141,11 @@ void CollisionChecker::onMousePosChanged(const sf::Vector2f& worldPos,
 {
 	m_mousePos = worldPos;
 }
-void CollisionChecker::onCanvasParentChange(QSFML::Canvas* oldParent, QSFML::Canvas* newParent)
+void CollisionChecker::onSceneParentChange(QSFML::Scene* oldParent, QSFML::Scene* newParent)
 {
 	m_tree.setStatsManager(newParent);
 }
-void CollisionChecker::inCanvasAdded()
+void CollisionChecker::onAwake()
 {
 	m_tree.insert(m_performanceObjs);
 }
@@ -190,7 +193,7 @@ void CollisionChecker::update_contains()
 	m_pointPainter->clear();
 	for (size_t i = 0; i < m_collisionObjs.size(); ++i)
 	{
-		std::vector<QSFML::Components::Collider*> colliders = m_collisionObjs[i]->getCollider();
+		std::vector<QSFML::Components::Collider*> colliders = m_collisionObjs[i]->getComponents<QSFML::Components::Collider>();
 		for (size_t j = 0; j < colliders.size(); ++j)
 		{
 			if (colliders[j]->contains(m_mousePos))
@@ -210,6 +213,7 @@ void CollisionChecker::update_performanceTest()
 	for (auto el : m_performanceObjs)
 		el->setEnabled(true);
 	m_tree.insert(m_performanceObjs);
+	//logInfo("Insertion took: " + std::to_string(std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t1).count()));
 	/*std::list<QSFML::Utilities::ObjectQuadTree::TreeItem> objs = m_tree.getAllItems();
 	for (auto &it : objs)
 	{
@@ -218,7 +222,7 @@ void CollisionChecker::update_performanceTest()
 	
 	/*for (size_t i = 0; i < m_performanceObjs.size(); ++i)
 	{
-		std::list< QSFML::Objects::CanvasObject*> possibleColliders;
+		std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
 		m_tree.search(m_performanceObjs[i]->getBoundingBox(), possibleColliders);
 		for (auto it : possibleColliders)
 		{
@@ -234,7 +238,7 @@ void CollisionChecker::update_performanceTest()
 	//collisions.reserve(9999);
 
 	TimePoint t11 = std::chrono::high_resolution_clock::now();
-	//CanvasObject::checkCollision(m_tree, collisions, false);	
+	//GameObject::checkCollision(m_tree, collisions, false);	
 	m_tree.checkCollisions(collisions, false);
 	TimePoint t22 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> diff2 = t22 - t11;
@@ -314,10 +318,10 @@ CollisionChecker::Painter::~Painter()
 void CollisionChecker::Painter::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates states) const
 {
-	std::list< QSFML::Objects::CanvasObject*> possibleColliders;
+	std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
 	m_ckecker->m_tree.search(getCameraViewRect(), possibleColliders);
 
-	sf::RenderWindow& window = getCanvasParent()->
+	sf::RenderWindow& window = getSceneParent()->
 	for (auto el : possibleColliders)
 	{
 		el->draw();

@@ -1,7 +1,8 @@
 #include "components/drawable/Text.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "utilities/AABB.h"
 #include "utilities/Origin.h"
+#include "Scene/Scene.h"
 
 namespace QSFML
 {
@@ -10,26 +11,27 @@ namespace QSFML
         COMPONENT_IMPL(Text);
         Text::Text(const std::string& name)
             : Drawable(name)
-           // , m_pos(0, 0)
             , m_origin(Utilities::Origin::Type::TopLeft)
-            , m_font(nullptr)
         {
-            m_text.setScale(0.1f,0.1f);
+            setFont(Scene::getDefaultTextFont());
             setText(name);
         }
         Text::Text(const Text &other)
             : Drawable(other)
-           // , m_pos(other.m_pos)
             , m_origin(other.m_origin)
-            , m_font(other.m_font)
         {
             m_text = other.m_text;
             updateCenter(other.getPosition());
         }
+        Text::~Text()
+        {
+            delete m_selfOwnedFont;
+        }
         void Text::setText(const std::string &text)
         {
             m_text.setString(text);
-            updateCenter(getPosition());
+            m_needsGeometryUpdate = true;
+            //updateCenter(getPosition());
         }
         std::string Text::getText() const
         {
@@ -39,7 +41,8 @@ namespace QSFML
         void Text::setCharacterSize(unsigned int size)
         {
             m_text.setCharacterSize(size);
-            updateCenter(getPosition());
+            m_needsGeometryUpdate = true;
+            //updateCenter(getPosition());
         }
         unsigned int Text::getCharacterSize() const
         {
@@ -49,31 +52,25 @@ namespace QSFML
         void Text::setScale(float scale)
         {
             m_text.setScale(sf::Vector2f(scale, scale));
-            updateCenter(getPosition());
+            m_needsGeometryUpdate = true;
+           // updateCenter(getPosition());
         }
         float Text::getScale() const
         {
             return m_text.getScale().x;
-        }
-
-        //void Text::setPosition(const sf::Vector2f &pos)
-        //{
-        //    m_pos = pos;
-        //    updateCenter(m_pos);
-        //}
-        //const sf::Vector2f &Text::getPosition() const
-        //{
-        //    return m_pos;
-        //}
-
-        
+        }       
        
 
         void Text::setFont(const sf::Font& font)
         {
+            if (m_selfOwnedFont != &font)
+            {
+                delete m_selfOwnedFont;
+                m_selfOwnedFont = nullptr;
+            }
             m_text.setFont(font);
-            m_font = m_text.getFont();
-            updateCenter(getPosition());
+            m_needsGeometryUpdate = true;
+           // updateCenter(getPosition());
         }
         bool Text::setFont(const std::string& path)
         {
@@ -81,6 +78,7 @@ namespace QSFML
             if (f->loadFromFile(path))
             {
                 setFont(*f);
+                m_selfOwnedFont = f;
                 return true;
             }
             delete f;
@@ -91,30 +89,38 @@ namespace QSFML
             return *m_text.getFont();
         }
 
-        void Text::setParent(Objects::CanvasObject *parent)
+        void Text::setParent(Objects::GameObjectPtr parent)
         {
             Component::setParent(parent);
-            if(!m_font)
+            /*if (!m_font)
             if(getParent())
             {
                 setFont(getParent()->getTextFont());
-            }
+            }*/
         }
 
         void Text::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
         {
+            updateGeometry();
             target.draw(m_text, states);
         }
 
-        void Text::updateCenter(const sf::Vector2f &pos)
+        void Text::updateCenter(const sf::Vector2f &pos) const
         {
             QSFML_UNUSED(pos);
+            
             sf::FloatRect bounds = m_text.getLocalBounds();
             Utilities::AABB box(bounds.left, bounds.top, bounds.width, bounds.height);
     
             sf::Vector2f originPos = m_origin.getOrigin(box);
             m_text.setOrigin(originPos);
-            //m_text.setPosition(pos);
+        }
+        void Text::updateGeometry() const
+        {
+            updateCenter(getPosition());
+            float angle = getRotation() * 180.f / M_PI;
+            m_text.setRotation(angle);
+            m_needsGeometryUpdate = false;
         }
 
     }

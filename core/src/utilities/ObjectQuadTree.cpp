@@ -1,6 +1,6 @@
 #include "utilities/ObjectQuadTree.h"
 #include "utilities/Stats.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/physics/Collider.h"
 #include "utilities/Stats.h"
 
@@ -9,7 +9,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		ObjectQuadTree::ObjectQuadTree(StatsManager *statsManager, const Utilities::AABB& area, size_t maxDepth)
+		ObjectQuadTree::ObjectQuadTree(Utilities::StatsManager *statsManager, const Utilities::AABB& area, size_t maxDepth)
 			: m_tree(statsManager, area, 0, maxDepth)
 			, m_threadWorker(nullptr)
 			, m_statsManager(statsManager)
@@ -22,16 +22,15 @@ namespace QSFML
 			for (size_t i = 0; i < m_painters.size(); ++i)
 			{
 				m_painters[i]->m_tree = nullptr;
-				m_painters[i]->destroy();
+				m_painters[i]->deleteLater();
 			}
-				
 		}
-		void ObjectQuadTree::setStatsManager(StatsManager* manager)
+		void ObjectQuadTree::setStatsManager(Utilities::StatsManager* manager)
 		{
 			m_statsManager = manager;
 			m_tree.setStatsManager(manager);
 		}
-		bool ObjectQuadTree::insert(Objects::CanvasObject* obj)
+		bool ObjectQuadTree::insert(Objects::GameObjectPtr obj)
 		{
 			if (m_allObjMap.find(obj) != m_allObjMap.end())
 				return false; // Object already in container
@@ -39,7 +38,7 @@ namespace QSFML
 			return insert_internal(item);
 		}
 
-		bool ObjectQuadTree::insert(const std::vector<Objects::CanvasObject*> &objs)
+		bool ObjectQuadTree::insert(const std::vector<Objects::GameObjectPtr> &objs)
 		{
 			bool success = true;
 			for (auto obj : objs)
@@ -59,7 +58,7 @@ namespace QSFML
 			m_allObjs.push_back(item);
 			return true;
 		}
-		void ObjectQuadTree::search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const
+		void ObjectQuadTree::search(const Utilities::AABB& area, std::list< Objects::GameObjectPtr>& container) const
 		{
 			m_tree.search(area, container);
 		}
@@ -67,7 +66,7 @@ namespace QSFML
 		{
 			return m_allObjs;
 		}
-		void ObjectQuadTree::remove(Objects::CanvasObject* obj)
+		void ObjectQuadTree::remove(Objects::GameObjectPtr obj)
 		{
 			auto mapIt = m_allObjMap.find(obj);
 			if (mapIt == m_allObjMap.end())
@@ -216,7 +215,7 @@ namespace QSFML
 		// TREE
 		//
 
-		ObjectQuadTree::Tree::Tree(StatsManager* statsManager, const Utilities::AABB& area, size_t depth, size_t maxDepth)
+		ObjectQuadTree::Tree::Tree(Utilities::StatsManager* statsManager, const Utilities::AABB& area, size_t depth, size_t maxDepth)
 			: m_area(area)
 			, m_depth(depth)
 			, m_maxDepth(maxDepth)
@@ -239,7 +238,7 @@ namespace QSFML
 			if (m_childTrees)
 				delete[] m_childTrees;
 		}
-		void ObjectQuadTree::Tree::setStatsManager(StatsManager* manager)
+		void ObjectQuadTree::Tree::setStatsManager(Utilities::StatsManager* manager)
 		{
 			m_statsManager = manager;
 			if (m_childTrees)
@@ -275,7 +274,7 @@ namespace QSFML
 
 		void ObjectQuadTree::Tree::insert(TreeItem& item)
 		{
-			AABB objBB = item.obj->getBoundingBox();
+			const AABB &objBB = item.obj->getBoundingBox();
 			if (m_enableChilds)
 			{
 				if (m_childAreas[0].contains(objBB))
@@ -312,11 +311,11 @@ namespace QSFML
 			item.containter = &m_objects;
 			item.iterator = m_objects.end();
 		}
-		void ObjectQuadTree::Tree::search(const Utilities::AABB& area, std::list< Objects::CanvasObject*>& container) const
+		void ObjectQuadTree::Tree::search(const Utilities::AABB& area, std::list< Objects::GameObjectPtr>& container) const
 		{
 			for (auto obj : m_objects)
 			{
-				if (obj->getBoundingBox().intersects(area))
+				if (obj->getBoundingBoxNoUpdate().intersects(area))
 					container.push_back(obj);
 			}
 			if (m_childTrees)
@@ -385,6 +384,7 @@ namespace QSFML
 		void ObjectQuadTree::Tree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
 												   bool onlyFirstCollision)
 		{
+			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);
 			checkCollisionsSingleLayerSelf(collisions, onlyFirstCollision);
 			if (!m_childTrees)
 				return;
@@ -419,25 +419,27 @@ namespace QSFML
 		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(std::vector<Utilities::Collisioninfo>& collisions,
 																	  bool onlyFirstCollision)
 		{
+			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
 			Tree& tree0 = m_childTrees[0];
 			Tree& tree1 = m_childTrees[1];
 			Tree& tree2 = m_childTrees[2];
 			Tree& tree3 = m_childTrees[3];
 			for (auto objA : m_objects)
 			{
-				if (objA->getBoundingBox().intersects(m_childAreas[0]))
+				const AABB& bb = objA->getBoundingBoxNoUpdate();
+				if (bb.intersects(m_childAreas[0]))
 				{
 					tree0.checkCollision(objA, collisions, onlyFirstCollision);
 				}
-				if (objA->getBoundingBox().intersects(m_childAreas[1]))
+				if (bb.intersects(m_childAreas[1]))
 				{
 					tree1.checkCollision(objA, collisions, onlyFirstCollision);
 				}
-				if (objA->getBoundingBox().intersects(m_childAreas[2]))
+				if (bb.intersects(m_childAreas[2]))
 				{
 					tree2.checkCollision(objA, collisions, onlyFirstCollision);
 				}
-				if (objA->getBoundingBox().intersects(m_childAreas[3]))
+				if (bb.intersects(m_childAreas[3]))
 				{
 					tree3.checkCollision(objA, collisions, onlyFirstCollision);
 				}
@@ -448,20 +450,22 @@ namespace QSFML
 		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(size_t index, std::vector<Utilities::Collisioninfo>& collisions,
 															          bool onlyFirstCollision)
 		{
+			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
 			Tree& tree = m_childTrees[index];
 			AABB& box = m_childAreas[index];
 			for (auto objA : m_objects)
 			{
-				if (objA->getBoundingBox().intersects(box))
+				if (objA->getBoundingBoxNoUpdate().intersects(box))
 				{
 					tree.checkCollision(objA, collisions, onlyFirstCollision);
 				}
 			}
 		}
-		void ObjectQuadTree::Tree::checkCollision(Objects::CanvasObject* other,
+		void ObjectQuadTree::Tree::checkCollision(Objects::GameObjectPtr other,
 			std::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision)
 		{
+			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_4);
 			for (auto obj : m_objects)
 			{
 				other->checkCollision(obj, collisions, onlyFirstCollision);
@@ -491,6 +495,7 @@ namespace QSFML
 		void ObjectQuadTree::Tree::draw(sf::Text& text, sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,
 			sf::RenderStates states) const
 		{
+			
 			rect.setPosition(m_area.TL());
 			rect.setSize(m_area.getSize());
 
@@ -507,10 +512,22 @@ namespace QSFML
 				sf::Color col = color;
 				col.a *= fade;
 				rect.setOutlineColor(col);
-				m_childTrees[0].draw(text, rect, col, target, states);
-				m_childTrees[1].draw(text, rect, col, target, states);
-				m_childTrees[2].draw(text, rect, col, target, states);
-				m_childTrees[3].draw(text, rect, col, target, states);
+				{
+					QSFMLP_COMPONENT_BLOCK("leaf 0", QSFML_COLOR_STAGE_1);
+					m_childTrees[0].draw(text, rect, col, target, states);
+				}
+				{
+					QSFMLP_COMPONENT_BLOCK("leaf 1", QSFML_COLOR_STAGE_2);
+					m_childTrees[1].draw(text, rect, col, target, states);
+				}
+				{
+					QSFMLP_COMPONENT_BLOCK("leaf 2", QSFML_COLOR_STAGE_3);
+					m_childTrees[2].draw(text, rect, col, target, states);
+				}
+				{
+					QSFMLP_COMPONENT_BLOCK("leaf 3", QSFML_COLOR_STAGE_4);
+					m_childTrees[3].draw(text, rect, col, target, states);
+				}
 			}
 		}
 		void ObjectQuadTree::Tree::draw(sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,
@@ -614,9 +631,5 @@ namespace QSFML
 			if (m_tree)
 				m_tree->m_tree.draw(getTextFont(), m_color, target, states);
 		}*/
-		void ObjectQuadTree::ObjectQuadTreePainter::destroy()
-		{
-			deleteThis();
-		}
 	}
 }

@@ -12,11 +12,34 @@ namespace QSFML
         class QSFML_EDITOR_WIDGET_EXPORT PointPainter : public Drawable
         {
         public:
-            struct PointData
+            class PointData
             {
-                sf::Vector2f position;
-                sf::Color color;
-                float radius;
+				friend PointPainter;
+                public:
+				PointData(const sf::Vector2f& pos = sf::Vector2f(0, 0),
+						  float radius = 1.0f,
+						  const sf::Color& color = sf::Color::White)
+					: m_position(pos), m_radius(radius), m_color(color) { }
+
+                void setPosition(const sf::Vector2f& pos) { m_position = pos; m_isDirty = true; }
+				const sf::Vector2f& getPosition() const { return m_position; }
+				void setColor(const sf::Color& color) { m_color = color; m_isDirty = true; }
+				const sf::Color& getColor() const { return m_color; }
+				void setRadius(float radius) { m_radius = radius; m_isDirty = true; }
+				float getRadius() const { return m_radius; }
+
+                private:
+                sf::Vector2f m_position;
+                sf::Color m_color;
+                float m_radius;
+
+                void updateVertecies(size_t vertexCount) const;
+				mutable bool m_isDirty = true;
+#ifdef QSFML_USE_GL_DRAW
+				mutable std::vector<sf::Vector2f> m_vertecies;
+#else
+                mutable sf::VertexArray m_vertecies;
+#endif
             };
 
             PointPainter(const std::string& name = "PointPainter");
@@ -72,27 +95,8 @@ namespace QSFML
            
 
         private: 
-            void drawComponent(sf::RenderTarget& target,
-            sf::RenderStates states) const override
-            {
-                std::vector<sf::Vertex> shape(m_verteciesCount);
-                float dAngle = (float)(2 * M_PI / m_verteciesCount);
-                if(m_useGlobalPosition)
-                    states = sf::RenderStates();
-                for (auto& point : m_points)
-                {
-                    float angle = 0;
-                    for (sf::Vertex& vertex : shape)
-                    {
-                        vertex.color = point.color;
-                        sf::Vector2f& pos = vertex.position;
-                        pos.x = cos(angle) * point.radius + point.position.x;
-                        pos.y = sin(angle) * point.radius + point.position.y;
-                        angle += dAngle;
-                    }
-                    target.draw(&shape[0], shape.size(), sf::TriangleFan, states);
-                }
-            }
+        void drawComponent(sf::RenderTarget& target,
+                           sf::RenderStates states) const override;
 
             float m_defaultRadius;
             size_t m_verteciesCount;

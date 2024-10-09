@@ -6,7 +6,7 @@ class WikiPendulum : public Pendulum
 {
 public:
     WikiPendulum(const std::string& name = "WikiPendulum",
-        CanvasObject* parent = nullptr)
+        QSFML::Objects::GameObjectPtr parent = nullptr)
         : Pendulum(name, parent)
     {
         enableText(true);

@@ -18,7 +18,7 @@ class QSFML_EDITOR_WIDGET_EXPORT MouseFollower : public QObject, public SfEventH
     MouseFollower(const MouseFollower &other);
     COMPONENT_DECL(MouseFollower);
 
-    void sfEvent(const sf::Event &e) override;
+    void sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>> &events) override;
 
 
     signals:

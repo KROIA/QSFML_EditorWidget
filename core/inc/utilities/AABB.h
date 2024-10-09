@@ -267,8 +267,22 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
         }
         bool intersects(const AABB& b) const
         {
-            return (m_pos.x <= b.m_pos.x + b.m_size.x && m_pos.x + m_size.x >= b.m_pos.x) &&
-                (m_pos.y <= b.m_pos.y + b.m_size.y && m_pos.y + m_size.y >= b.m_pos.y);
+            float minX1 = m_pos.x, maxX1 = m_pos.x + m_size.x;
+            float minY1 = m_pos.y, maxY1 = m_pos.y + m_size.y;
+            float minX2 = b.m_pos.x, maxX2 = b.m_pos.x + b.m_size.x;
+            float minY2 = b.m_pos.y, maxY2 = b.m_pos.y + b.m_size.y;
+
+            return !(minX1 > maxX2 || maxX1 < minX2 || minY1 > maxY2 || maxY1 < minY2);
+
+            //if (!(m_pos.x <= b.m_pos.x + b.m_size.x && m_pos.x + m_size.x >= b.m_pos.x))
+            //    return false;
+            //
+            //if (!(m_pos.y <= b.m_pos.y + b.m_size.y && m_pos.y + m_size.y >= b.m_pos.y))
+            //    return false;
+            //return true;
+            
+            //return (m_pos.x <= b.m_pos.x + b.m_size.x && m_pos.x + m_size.x >= b.m_pos.x) &&
+            //       (m_pos.y <= b.m_pos.y + b.m_size.y && m_pos.y + m_size.y >= b.m_pos.y);
         }
         bool intersectsInverseOf(const AABB& b) const
         {
@@ -373,6 +387,16 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
                                                                            //!<        Its a frame around all rects from the list.
         static AABB getFrame(const std::vector<sf::Vector2f>& points);     //!<\return a AABB with the position and size, so that all points in the list would fit in it.
                                                                            //!<        Its a frame around all points from the list.
+                                                                           
+        static AABB lerp(const AABB& start, const AABB& end, float t)
+        {
+            // lerp: start + (end - start) * t;
+			sf::Vector2f TL = start.m_pos + (end.m_pos - start.m_pos) * t;
+			sf::Vector2f SIZE = start.m_size + (end.m_size - start.m_size) * t;
+
+
+			return AABB(TL, SIZE);
+        }
     private:
         sf::Vector2f m_pos;
         sf::Vector2f m_size;

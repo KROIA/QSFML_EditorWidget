@@ -1,5 +1,4 @@
 #include "QSFML_EditorWidget_info.h"
-#include "QSFML_EditorWidget_debug.h"
 
 /// USER_SECTION_START 1
 
@@ -25,6 +24,61 @@ namespace QSFML
 
 /// USER_SECTION_END
 
+	// compare two versions
+	bool LibraryInfo::Version::operator<(const Version& other) const
+	{
+		if (major < other.major)
+			return true;
+		if (major > other.major)
+			return false;
+		if (minor < other.minor)
+			return true;
+		if (minor > other.minor)
+			return false;
+		if (patch < other.patch)
+			return true;
+		return false;
+	}
+
+	bool LibraryInfo::Version::operator==(const Version& other) const
+	{
+		return major == other.major && minor == other.minor && patch == other.patch;
+	}
+	bool LibraryInfo::Version::operator!=(const Version& other) const
+	{
+		return !(*this == other);
+	}
+	bool LibraryInfo::Version::operator>(const Version& other) const
+	{
+		return !(*this < other) && !(*this == other);
+	}
+	bool LibraryInfo::Version::operator<=(const Version& other) const
+	{
+		return *this < other || *this == other;
+	}
+	bool LibraryInfo::Version::operator>=(const Version& other) const
+	{
+		return *this > other || *this == other;
+	}
+	std::string LibraryInfo::Version::toString() const
+	{
+		// fornmat: XX.YY.ZZZZ
+		// Add leading digits if needed
+		std::string majorStr = std::to_string(major);
+		std::string minorStr = std::to_string(minor);
+		std::string patchStr = std::to_string(patch);
+		if (majorStr.size() < 2)
+			majorStr = "0" + majorStr;
+		if (minorStr.size() < 2)
+			minorStr = "0" + minorStr;
+		if (patchStr.size() < 4)
+		{
+			while (patchStr.size() < 4)
+				patchStr = "0" + patchStr;
+		}
+		return majorStr + "." + minorStr + "." + patchStr;
+	}
+
 	void LibraryInfo::printInfo()
 	{
 		printInfo(std::cout);
@@ -37,11 +91,17 @@ namespace QSFML
 			<< "Email: " << email << "\n"
 			<< "Website: " << website << "\n"
 			<< "License: " << license << "\n"
-			<< "Version: " << versionStr() << "\n"
+			<< "Version: " << version.toString() << "\n"
 			<< "Compilation Date: " << compilationDate << "\n"
 			<< "Compilation Time: " << compilationTime << "\n";
 
 		stream << ss.str();
+	}
+	std::string LibraryInfo::getInfoStr()
+	{
+		std::stringstream ss;
+		LibraryInfo::printInfo(ss);
+		return ss.str();
 	}
 
 #ifdef QT_WIDGETS_AVAILABLE
@@ -69,7 +129,7 @@ namespace QSFML
 			{"Email:", email},
 			{"Website:", website},
 			{"License:", license},
-			{"Version:", versionStr()},
+			{"Version:", version.toString()},
 			{"Compilation Date:", compilationDate},
 			{"Compilation Time:", compilationTime},
 			{"Build Type:", buildTypeStr},
@@ -90,25 +150,7 @@ namespace QSFML
 	}
 #endif
 
-	// Implementation of the Profiler start/stop functions
-	void Profiler::start()
-	{
-#ifdef QSFML_PROFILING
-		EASY_PROFILER_ENABLE;
-#endif
-	}
-	void Profiler::stop()
-	{
-		stop("profile.prof");
-	}
-	void Profiler::stop(const char* profilerOutputFile)
-	{
-#ifdef QSFML_PROFILING
-		profiler::dumpBlocksToFile(profilerOutputFile);
-#else
-		(void)profilerOutputFile;
-#endif
-	}
+
 
 
 /// USER_SECTION_START 4

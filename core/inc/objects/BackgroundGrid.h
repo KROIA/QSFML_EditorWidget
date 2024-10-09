@@ -1,7 +1,7 @@
 #pragma once
 
 #include "QSFML_EditorWidget_base.h"
-#include "objects/base/CanvasObject.h"
+#include "objects/base/GameObject.h"
 #include "components/base/Drawable.h"
 
 
@@ -9,12 +9,12 @@ namespace QSFML
 {
 namespace Objects
 {
-class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public CanvasObject
+class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
 {
         class DrawableComp;
     public:
         BackgroundGrid(const std::string &name = "",
-                       CanvasObject *parent = nullptr);
+                       GameObjectPtr parent = nullptr);
         BackgroundGrid(const BackgroundGrid &other);
         ~BackgroundGrid();
         COMPONENT_DECL(BackgroundGrid);
@@ -35,21 +35,22 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public CanvasObject
         unsigned int m_gridSpacing;
         std::vector<sf::Color> m_alternatingColors;
 
-        DrawableComp *m_draw;
+        DrawableComp* m_draw;
 
         friend DrawableComp;
 
         class QSFML_EDITOR_WIDGET_EXPORT DrawableComp : public Components::Drawable
         {
         public:
-            DrawableComp(const std::string& name = "DrawableComp");
+            DrawableComp(const std::string& name = "GridPainter");
             DrawableComp(const Drawable& other);
             void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const final;
 
             void drawGrid(sf::RenderTarget& target,
                 const sf::IntRect& area,
                 unsigned int spacing,
-                const std::vector<sf::Color>& alternatingColors) const;
+                const std::vector<sf::Color>& alternatingColors,
+                sf::RenderStates states) const;
 
             BackgroundGrid* m_grid;
         };

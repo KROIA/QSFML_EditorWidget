@@ -13,8 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_canvas = nullptr;
-    setupCanvas();
+    m_scene = nullptr;
+    setupScene();
     
     
 
@@ -24,12 +24,12 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete m_canvas;
+    delete m_scene;
 }
 
-void MainWindow::setupCanvas()
+void MainWindow::setupScene()
 {
-    CanvasSettings settings;
+    SceneSettings settings;
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
@@ -38,20 +38,20 @@ void MainWindow::setupCanvas()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_canvas = new Canvas(ui->canvasWidget, settings);
+    m_scene = new Scene(ui->SceneWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor();
-    m_canvas->addObject(defaultEditor);
+    m_scene->addObject(defaultEditor);
     qDebug() << defaultEditor->toString().c_str();
 
     Gradient *gradient = new Gradient();
-    m_canvas->addObject(gradient);
+    m_scene->addObject(gradient);
     gradient->setStart(sf::Vector2f(0, -1));
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    if (m_canvas)
-        m_canvas->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 

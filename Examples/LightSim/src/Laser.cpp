@@ -3,8 +3,8 @@
 
 CLONE_FUNC_IMPL(Laser);
 
-Laser::Laser(const std::string& name, CanvasObject* parent)
-	: CanvasObject(name)
+Laser::Laser(const std::string& name, QSFML::Objects::GameObjectPtr parent)
+	: GameObject(name)
 	, m_opticalElements(OpticalElement::getOpticalElements())
 {
 	m_painter = new LaserPainter(m_lasers);
@@ -17,7 +17,7 @@ Laser::Laser(const std::string& name, CanvasObject* parent)
 	addComponent(m_painter);
 }
 Laser::Laser(const Laser& other)
-	: CanvasObject(other)
+	: GameObject(other)
 	, m_opticalElements(OpticalElement::getOpticalElements())
 {
 	m_painter = new LaserPainter(m_lasers);

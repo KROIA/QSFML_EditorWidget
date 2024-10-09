@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UnitTest.h"
+#include "QSFML_EditorWidget.h"
 #include <QObject>
 #include <QCoreapplication>
 

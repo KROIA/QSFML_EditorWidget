@@ -2,14 +2,14 @@
 #include "QSFML_EditorWidget.h"
 
 
-class CollisionObject : public QSFML::Objects::CanvasObject
+class CollisionObject : public QSFML::Objects::GameObject
 {
 public:
 	CollisionObject(const std::string& name = "MyObject",
-					CanvasObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
 	CollisionObject(const std::vector<sf::Vector2f>& vertecies,
 					const std::string& name = "MyObject",
-					CanvasObject* parent = nullptr);
+		QSFML::Objects::GameObjectPtr parent = nullptr);
     ~CollisionObject();
 
 	virtual CLONE_FUNC_DEC(CollisionObject);
@@ -17,5 +17,7 @@ public:
 	//QSFML::Components::Collider* getCollider() const;
 
 private:
+	void setup(const std::vector<sf::Vector2f>& vertecies);
+	void onAwake() override;
 	QSFML::Components::Collider* m_collider;
 };

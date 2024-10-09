@@ -2,13 +2,16 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
+Pendulum::Pendulum(const std::string& name, QSFML::Objects::GameObjectPtr parent)
     : QObject()
-    , CanvasObject(name, parent)
+    , GameObject(name, parent)
 {
     m_pointPainter = new QSFML::Components::PointPainter();
     m_pointPainter->setRadius(m_pendulumRadius);
+	m_pathPainter = new QSFML::Components::PathPainter();
+	
 
+	
     
 
     for (size_t i = 0; i < m_count; ++i)
@@ -39,6 +42,7 @@ Pendulum::Pendulum(const std::string& name, CanvasObject* parent)
     m_text->setOrigin(QSFML::Utilities::Origin::Center);
 	
 	addComponent(m_text);
+    addComponent(m_pathPainter);
     enableText(false);
     
     //m_chart = new QSFML::Objects::LineChart();
@@ -95,10 +99,23 @@ void Pendulum::setColor(const sf::Color& color)
         m_pendulumData[i].line->setColor(color);
     }
     m_pointPainter->setColor(color);
+	m_pathPainter->setColor(color);
 }
+
+void Pendulum::setMaxPathLength(size_t length)
+{
+    m_maxPathLength = length;
+    if (m_pathPainter->getPointCount() > length)
+		m_pathPainter->popPointAtStart(m_pathPainter->getPointCount() - length);
+}
+
 void Pendulum::enableText(bool enabled)
 {
     m_text->setEnabled(enabled);
+}
+void Pendulum::enablePath(bool enabled)
+{
+	m_pathPainter->setEnabled(enabled);
 }
 void Pendulum::enableEnergyCorrection(bool enabled)
 {
@@ -107,6 +124,7 @@ void Pendulum::enableEnergyCorrection(bool enabled)
 void Pendulum::update() 
 {
     double dt = getFixedDeltaT();
+    //double dt = getDeltaT();
     std::vector<sf::Vector2f> points{
        // m_origin
     };
@@ -139,7 +157,7 @@ void Pendulum::update()
             if (i == m_dragingIndex)
             {
                 //m_pendulumData[i].endPos = getMouseWorldPosition();
-                sf::Vector2f dir = getMouseWorldPosition() - sf::Vector2f(startPos.x, startPos.y);
+                sf::Vector2f dir = getMouseWorldPosition() - (sf::Vector2f(startPos.x, startPos.y) + getPosition());
                 m_pendulumData[i].angle = QSFML::VectorMath::getAngle(dir) - (float)M_PI_2;
                 m_pendulumData[i].angleVelocity = 0;
                 m_pendulumData[i].angleAcceleration = 0;
@@ -155,8 +173,14 @@ void Pendulum::update()
 
             text += "E_Pot" + std::to_string(i) + ": " + std::to_string(ePot) + "\n";
             text += "E_Kin" + std::to_string(i) + ": " + std::to_string(eKin) + "\n";
-            
+
+			
         }
+
+        if (m_pathPainter->getPointCount() > m_maxPathLength)
+            m_pathPainter->popPointAtStart(m_pathPainter->getPointCount() - m_maxPathLength);
+        m_pathPainter->appenPoint(sf::Vector2f(m_pendulumData[1].endPos.x, m_pendulumData[1].endPos.y));
+
    // }
 
     text += "SUM E: " + std::to_string(sumEnergy) + "\n";
@@ -314,8 +338,9 @@ double Pendulum::getEnergy(const PendulumData& p, double dt)
 void Pendulum::onMouseFalling()
 {
     QSFML::VectorMath::Vector2d mousePos = QSFML::VectorMath::Vector2d(getMouseWorldPosition().x, getMouseWorldPosition().y);
-    double distance0 = QSFML::VectorMath::getLength(mousePos - m_pendulumData[0].endPos);
-    double distance1 = QSFML::VectorMath::getLength(mousePos - m_pendulumData[1].endPos);
+    QSFML::VectorMath::Vector2d objPos(getPosition());
+    double distance0 = QSFML::VectorMath::getLength(mousePos - (m_pendulumData[0].endPos+objPos));
+    double distance1 = QSFML::VectorMath::getLength(mousePos - (m_pendulumData[1].endPos+objPos));
 
     if (distance0 < m_pendulumRadius*2)
     {

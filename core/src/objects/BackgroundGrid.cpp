@@ -1,4 +1,5 @@
 #include "objects/BackgroundGrid.h"
+#include <SFML/OpenGL.hpp>
 
 using namespace QSFML::Objects;
 
@@ -7,8 +8,8 @@ namespace QSFML
     namespace Objects
     {
         OBJECT_IMPL(BackgroundGrid)
-        BackgroundGrid::BackgroundGrid(const std::string& name, CanvasObject* parent)
-            : CanvasObject(name, parent)
+        BackgroundGrid::BackgroundGrid(const std::string& name, GameObjectPtr parent)
+            : GameObject(name, parent)
         {
             m_draw = new DrawableComp();
             m_draw->m_grid = this;
@@ -18,7 +19,7 @@ namespace QSFML
             addComponent(m_draw);
         }
         BackgroundGrid::BackgroundGrid(const BackgroundGrid& other)
-            : CanvasObject(other)
+            : GameObject(other)
         {
             m_gridArea = other.m_gridArea;
             m_gridSpacing = other.m_gridSpacing;
@@ -73,15 +74,56 @@ namespace QSFML
         void BackgroundGrid::DrawableComp::drawComponent(sf::RenderTarget& target,
             sf::RenderStates states) const
         {
-            QSFML_UNUSED(states);
             drawGrid(target, m_grid->m_gridArea, m_grid->m_gridSpacing,
-                m_grid->m_alternatingColors);
+                m_grid->m_alternatingColors, states);
         }
         void BackgroundGrid::DrawableComp::drawGrid(sf::RenderTarget& target,
             const sf::IntRect& area,
             unsigned int spacing,
-            const std::vector<sf::Color>& alternatingColors) const
+            const std::vector<sf::Color>& alternatingColors,
+            sf::RenderStates states) const
         {
+#ifdef QSFML_USE_GL_DRAW
+            QSFML_UNUSED(target);
+            QSFML_UNUSED(alternatingColors);
+
+            glLoadMatrixf(states.transform.getMatrix());
+			glBegin(GL_LINES);
+
+			
+            size_t colorIndex = 0;
+            size_t colorCount = alternatingColors.size();
+            
+
+			
+			for (int x = area.left; x <= area.left + area.width; x += spacing)
+			{
+                
+                glColor4ub(alternatingColors[colorIndex].r,
+                           alternatingColors[colorIndex].g,
+                           alternatingColors[colorIndex].b,
+                           alternatingColors[colorIndex].a);
+
+				glVertex2i(x, area.top);
+				glVertex2i(x, area.top + area.height);
+                colorIndex = (colorIndex + 1) % colorCount;
+			}
+			colorIndex = 0;
+			for (int y = area.top; y <= area.top + area.height; y += spacing)
+			{
+                
+                glColor4ub(alternatingColors[colorIndex].r,
+                          alternatingColors[colorIndex].g,
+                          alternatingColors[colorIndex].b,
+                          alternatingColors[colorIndex].a);
+				glVertex2i(area.left, y);
+				glVertex2i(area.left + area.width, y);
+                colorIndex = (colorIndex + 1) % colorCount;
+			}
+            
+            glEnd();
+            
+#else
             sf::Vector2f start((float)area.left, (float)area.top);
             sf::Vector2f end((float)area.left,
                 (float)(area.top + area.height));
@@ -112,7 +154,7 @@ namespace QSFML
                 VcurrentStart.x += spacing;
                 VcurrentEnd.x += spacing;
 
-                target.draw(line, 2, sf::Lines);
+                target.draw(line, 2, sf::Lines, states);
 
             }
             colorIndex = 0;
@@ -128,9 +170,12 @@ namespace QSFML
                 HcurrentStart.y += spacing;
                 HcurrentEnd.y += spacing;
 
-                target.draw(line, 2, sf::Lines);
+                target.draw(line, 2, sf::Lines, states);
 
             }
+
+#endif
+            
         }
     }
 }

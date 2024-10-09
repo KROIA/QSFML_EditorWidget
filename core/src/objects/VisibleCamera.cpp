@@ -6,7 +6,7 @@ namespace QSFML
 	{
 		OBJECT_IMPL(VisibleCamera)
         VisibleCamera::VisibleCamera(const std::string& name,
-                CanvasObject* parent)
+                GameObjectPtr parent)
             : CameraController(name, parent)
         {
             m_draw = new DrawableComp();
