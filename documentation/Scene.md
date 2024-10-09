@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 }
 ```
 <div align="center">
-    <img src="Images/EmptyScene.png" > 
+    <img src="Images/EmptyScene.gif" > 
 </div>
 
 
