@@ -1,5 +1,10 @@
 # Scene
 
+- [Scene](#scene)
+  - [Hirarchy](#hirarchy)
+  - [Update loop](#update-loop)
+
+
 ## Hirarchy
 
 <div style="display: inline-block; vertical-align: middle;">
@@ -21,3 +26,7 @@ The topmost GameObjects in the tree hirarchy are called the root objects. <br>
 <div style="display: inline-block; vertical-align: middle;">
     <img src="Images/UpdateLoopSingle.png" alt="UpdateLoopSingle" width="200"/>
 </div>
+
+
+| A Scene is the engine of the library. It handles all the objects and updating stuff. The picture shows the Hirarchy of Objects inside a Scene. The topmost GameObjects in the tree hirarchy are called the root objects. | ![Image](Images/HirarchyDM.png#gh-dark-mode-only) ![Image](Images/HirarchyLM.png#gh-light-mode-only) |
+|:-------------------------|-----------------------------------------|
