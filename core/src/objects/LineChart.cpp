@@ -157,7 +157,7 @@ void LineChart::update()
     float yOffset = 0;
     for (size_t i = 0; i < count; ++i)
     {
-        m_points[i]= { currentX, -m_dataPoints[i] * m_yScale + yOffset };
+        m_points.push_back({ currentX, -m_dataPoints[i] * m_yScale + yOffset });
         currentX += xSpacing;
     }
 
@@ -210,6 +210,32 @@ void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
     QSFML_UNUSED(states);
     if(!m_chart)
         return;
+#ifdef QSFML_USE_GL_DRAW
+    QSFML_UNUSED(target);
+    glLoadMatrixf(states.transform.getMatrix());
+
+    glLineWidth(5);
+    glBegin(GL_LINES);
+	glColor3f(1,1,1);
+	glVertex2f(0, -m_chart->m_size.y / 2.f);
+	glVertex2f(0, m_chart->m_size.y / 2.f);
+	glVertex2f(0, 0);
+	glVertex2f(m_chart->m_size.x, 0);
+	glEnd();
+
+
+    glLineWidth(m_chart->m_chatThickness);
+    glColor4ub(m_chart->m_color.r, m_chart->m_color.g, m_chart->m_color.b, m_chart->m_color.a);
+    // Start drawing the line strip
+    glBegin(GL_LINE_STRIP);
+	for (size_t i = 0; i < m_chart->m_points.size(); ++i)
+	{
+		glVertex2f(m_chart->m_points[i].x, m_chart->m_points[i].y);
+	}
+	glEnd();
+
+
+#else
 
     // Draw axis
     sf::Vector2f origin;// = m_chart->m_origin;
@@ -241,6 +267,7 @@ void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
 
     target.draw(vertecies, count, sf::LineStrip, states);
     delete[] vertecies;
+#endif
 }
 }
 }

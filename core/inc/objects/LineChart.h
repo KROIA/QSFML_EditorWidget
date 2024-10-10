@@ -30,6 +30,9 @@ namespace Objects
             void setColor(const sf::Color &color);
             const sf::Color &getColor() const;
 
+			void setChatThickness(float thickness) { m_chatThickness = thickness; }
+			float getChatThickness() const { return m_chatThickness; }
+
             void setMaxDataPoints(size_t maxDataPoints);
             size_t getMaxDataPoints() const;
 
@@ -58,6 +61,7 @@ namespace Objects
             float m_yScale;
             bool m_autoScale;
             size_t m_maxDataPoints;
+			float m_chatThickness = 2;
 
             Components::Text* m_valueText = nullptr;
 

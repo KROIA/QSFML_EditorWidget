@@ -78,7 +78,7 @@ void addShape(Scene* scene)
             size_t d2;
             testRay->raycast(*shape, d1, d2);
 
-            GameObjectPtr mouseFollowerObj = obj->findFirstObjectGlobal("MOUSE_COLLIDER");
+            GameObjectPtr mouseFollowerObj = obj->getFirstObjectGlobal("MOUSE_COLLIDER");
             if (mouseFollowerObj)
             {
                 sf::Vector2f pos = mouseFollowerObj->getPosition();

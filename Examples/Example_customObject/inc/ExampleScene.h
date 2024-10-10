@@ -19,6 +19,8 @@ private:
     void setupScene();
     void closeEvent(QCloseEvent* event) override;
 
+	QSFML::Objects::GameObject* customizedObjectFactory(const std::string& name);
+
 
     Ui::ExampleScene* ui;
 

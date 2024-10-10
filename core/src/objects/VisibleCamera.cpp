@@ -11,6 +11,7 @@ namespace QSFML
         {
             m_draw = new DrawableComp();
             m_draw->setCam(this);
+
             addComponent(m_draw);
         }
         VisibleCamera::VisibleCamera(const VisibleCamera& other)

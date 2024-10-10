@@ -22,6 +22,9 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
         void setSize(const sf::IntRect &size);
         const sf::IntRect &getSize() const;
 
+		void setLineWidth(float thickness) { m_lineThickness = thickness; }
+		float getLineWidth() const { return m_lineThickness; }
+
         void setLineColor(const std::vector<sf::Color> &alternatingColors);
         const std::vector<sf::Color> &getLineColor() const;
 
@@ -33,6 +36,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
     private:
         sf::IntRect m_gridArea;
         unsigned int m_gridSpacing;
+		float m_lineThickness = 1;
         std::vector<sf::Color> m_alternatingColors;
 
         DrawableComp* m_draw;

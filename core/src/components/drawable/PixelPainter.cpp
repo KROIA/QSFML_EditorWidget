@@ -120,7 +120,7 @@ namespace QSFML
             sf::RenderStates states) const
         {
 			m_texture.update(m_pixels);
-            sf::Sprite sprite;
+            static sf::Sprite sprite;
             sprite.setTexture(m_texture);
             sprite.setPosition(getPosition());
             sprite.setScale(m_pixelSize, m_pixelSize);

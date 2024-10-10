@@ -15,6 +15,8 @@ public:
     ExampleScene(QWidget* parent = nullptr);
     ~ExampleScene();
 
+private slots:
+	void onTimer();
 private:
     void setupScene();
     void closeEvent(QCloseEvent* event) override;

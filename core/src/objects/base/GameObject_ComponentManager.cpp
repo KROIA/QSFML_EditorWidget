@@ -301,14 +301,10 @@ namespace QSFML
 				if (Components::SfEventHandle* eventHandler = dynamic_cast<Components::SfEventHandle*>(comp))
 				{
 					m_componentsManagerData.eventHandler.push_back(eventHandler);
-					//if (!m_componentsManagerData.thisNeedsEventUpdate)
-					needsEventUpdate(true);
 				}
 				if (Components::Drawable* drawable = dynamic_cast<Components::Drawable*>(comp))
 				{
 					m_componentsManagerData.drawable.push_back(drawable);
-					//if(!m_componentsManagerData.thisNeedsDrawUpdate)
-					needsDrawUpdate(true);
 				}
 			}
 
@@ -317,6 +313,8 @@ namespace QSFML
 				m_sceneParent->removeComponent(removedCount);
 				m_sceneParent->addComponent(addedCount);
 			}
+			needsEventUpdate(m_componentsManagerData.eventHandler.size() > 0 || m_onEventCallbacks.size() > 0);
+			needsDrawUpdate(m_componentsManagerData.drawable.size() > 0 || m_onDrawCallbacks.size() > 0);
 		}
 
 
@@ -393,6 +391,17 @@ namespace QSFML
 			m_componentsManagerData.thisNeedsDrawUpdate = needsDrawUpdate;
 			if (m_parent)
 				m_parent->needsDrawUpdateChanged(m_componentsManagerData.thisNeedsDrawUpdate);
+		}
+
+		void GameObject::addUpdateFunction(const std::function<void(GameObject&)>& func) 
+		{ 
+			needsEventUpdate(true); 
+			m_onUpdateCallbacks.push_back(func); 
+		}
+		void GameObject::addDrawFunction(const std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)>& func)
+		{ 
+			needsDrawUpdate(true); 
+			m_onDrawCallbacks.push_back(func);
 		}
 
 		bool GameObject::isColliderDirty() const

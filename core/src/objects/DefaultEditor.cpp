@@ -88,6 +88,10 @@ namespace QSFML
 			m_lightColor = lightColor;
             setup({ (float)m_grid->getSize().width, (float)m_grid->getSize().height });
         }
+        void DefaultEditor::setLineThickness(float thickness)
+        {
+			m_grid->setLineWidth(thickness);
+        }
 
         void DefaultEditor::onToggleRuntimeInfo()
         {

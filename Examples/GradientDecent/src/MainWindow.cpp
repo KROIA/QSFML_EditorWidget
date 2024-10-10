@@ -33,7 +33,7 @@ void MainWindow::setupScene()
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 0.1;
+    settings.timing.frameTime = 0.02;
     //settings.updateControlls.enableMultithreading = false;
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
@@ -47,6 +47,7 @@ void MainWindow::setupScene()
     Gradient *gradient = new Gradient();
     m_scene->addObject(gradient);
     gradient->setStart(sf::Vector2f(0, -1));
+	m_scene->start();
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {

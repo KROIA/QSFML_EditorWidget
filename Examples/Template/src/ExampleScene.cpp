@@ -3,6 +3,7 @@
 #include <iostream>
 #include <QCloseEvent>
 #include <QDebug>
+#include <QTimer>
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -13,6 +14,10 @@ ExampleScene::ExampleScene(QWidget *parent)
 {
     ui->setupUi(this);
     setupScene();
+
+	// QTimer* timer = new QTimer(this);
+	// connect(timer, &QTimer::timeout, this, &ExampleScene::onTimer);
+	// timer->start(30);
 }
 
 ExampleScene::~ExampleScene()
@@ -25,7 +30,7 @@ void ExampleScene::setupScene()
 {
     SceneSettings settings;
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 0.02;
+    settings.timing.frameTime = 0.00;
     m_scene = new Scene(ui->SceneWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor();
@@ -37,5 +42,13 @@ void ExampleScene::closeEvent(QCloseEvent* event)
     if (m_scene)
         m_scene->stop();
     event->accept();
+}
+
+void ExampleScene::onTimer()
+{
+    static int counter = 0;
+	sf::Image image = m_scene->captureScreen();
+	image.saveToFile("screenshots/screenshot" + std::to_string(counter) + ".png");
+	++counter;
 }
 

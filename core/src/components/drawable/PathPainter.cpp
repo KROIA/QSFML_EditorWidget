@@ -11,14 +11,14 @@ namespace QSFML
         COMPONENT_IMPL(PathPainter)
             PathPainter::PathPainter(const std::string& name)
             : Drawable(name)
-           // , m_thickness(1)
+            , m_thickness(2)
             , m_color(sf::Color::Green)
         {
 
         }
         PathPainter::PathPainter(const PathPainter& other)
             : Drawable(other)
-            //, m_thickness(other.m_thickness)
+            , m_thickness(other.m_thickness)
             , m_color(other.m_color)
             , m_vertecies(other.m_vertecies)
         {
@@ -91,6 +91,7 @@ namespace QSFML
 
             glLoadMatrixf(states.transform.getMatrix());
 
+            glLineWidth(m_thickness);
             // Start drawing the line strip
             glBegin(GL_LINE_STRIP);
 

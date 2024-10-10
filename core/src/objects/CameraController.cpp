@@ -17,7 +17,7 @@ namespace QSFML
             m_currentZoom = 1;
             setMinZoom(0.1);
             setMaxZoom(3);
-            setMaxMovingBounds(sf::FloatRect(-200, -200, 900, 900));
+            setMaxMovingBounds(sf::FloatRect(0, 0, 1000, 1000));
 
             m_eventHandleComponent = new SfEventComponent();
             m_eventHandleComponent->setController(this);

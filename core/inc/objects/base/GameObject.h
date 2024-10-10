@@ -417,7 +417,7 @@ protected:
 		 * @warning Do not use this function from within another custom update function
 		 * @param func 
 		 */
-		void addUpdateFunction(const std::function<void(GameObject&)>& func) { m_onUpdateCallbacks.push_back(func); }
+        void addUpdateFunction(const std::function<void(GameObject&)>& func);
 		
         /**
          * @brief 
@@ -449,7 +449,7 @@ protected:
 		 * @warning Do not use this function from within another custom draw function
 		 * @param func 
 		 */
-		void addDrawFunction(const std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)>& func) { m_onDrawCallbacks.push_back(func); }
+        void addDrawFunction(const std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)>& func);
 		
         /**
          * @brief 

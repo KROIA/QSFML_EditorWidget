@@ -36,9 +36,9 @@ namespace QSFML
 				m_vertecies.reserve(size);
 			}
 
-           // void setThickness(float thickness);
+			void setThickness(float thickness) { m_thickness = thickness; }
            // void setThickness(size_t index, float thickness);
-           // float getThickness() const;
+		   float getThickness() const { return m_thickness; }
            // float getThickness(size_t index) const;
 
             void setColor(const sf::Color& color);
@@ -50,7 +50,7 @@ namespace QSFML
             void drawComponent(sf::RenderTarget& target,
                                sf::RenderStates states) const override;
 
-          //  float m_thickness;
+            float m_thickness;
             sf::Color m_color;
 
             std::vector<sf::Vertex> m_vertecies;

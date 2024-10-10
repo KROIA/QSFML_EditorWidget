@@ -24,6 +24,7 @@ namespace QSFML
             m_gridArea = other.m_gridArea;
             m_gridSpacing = other.m_gridSpacing;
             m_alternatingColors = other.m_alternatingColors;
+			m_lineThickness = other.m_lineThickness;
 
             m_draw = new DrawableComp(*other.m_draw);
             m_draw->m_grid = this;
@@ -87,6 +88,7 @@ namespace QSFML
             QSFML_UNUSED(target);
             QSFML_UNUSED(alternatingColors);
 
+            glLineWidth(m_grid->m_lineThickness);
             glLoadMatrixf(states.transform.getMatrix());
 			glBegin(GL_LINES);
 

@@ -109,6 +109,9 @@ namespace QSFML
 						 sf::RenderStates states) const
 		{
 			target.draw(*m_sprite, states);
+			
+			// We have to reset the texture matrix because otherwise other painters can't draw using gl calls
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
 

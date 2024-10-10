@@ -138,20 +138,37 @@ void LinePainter::drawComponent(sf::RenderTarget& target,
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Iterate through the lines and draw each one using OpenGL
+    
+	sf::Color lastColor = sf::Color::Transparent;
+    
+    glBegin(GL_QUADS);
     for (auto& line : m_lines)
     {
         // Set the color for the line
         const sf::Color& color = line.color;
+		if (lastColor != color)
+		{
+			glColor4ub(color.r, color.g, color.b, color.a); // Set color with RGBA
+			lastColor = color;
+		}
+        //glColor4ub(color.r, color.g, color.b, color.a); // Set color with RGBA
 
         // Draw the quad using OpenGL immediate mode
-        glBegin(GL_QUADS);
-        glColor4ub(color.r, color.g, color.b, color.a); // Set color with RGBA
+        //glLineWidth(line.thickness);
+        
+        
+       // glColor4ub(color.r, color.g, color.b, color.a); // Set color with RGBA
+		//glVertex2f(line.start.x, line.start.y);
+		//glVertex2f(line.end.x, line.end.y);
+        
         glVertex2f(line.points[0].x, line.points[0].y);
         glVertex2f(line.points[1].x, line.points[1].y);
         glVertex2f(line.points[2].x, line.points[2].y);
         glVertex2f(line.points[3].x, line.points[3].y);
-        glEnd();
+       
     }
+    glEnd();
+    
 #else    
     for (auto& line : m_lines)
     {

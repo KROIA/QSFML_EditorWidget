@@ -29,6 +29,7 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObjec
         void setToggleRuntimeInfoKey(const sf::Keyboard::Key& key);
 
         void setColors(const sf::Color& darkColor, const sf::Color& lightColor);
+		void setLineThickness(float thickness);
 
     public slots:
         void onToggleRuntimeInfo();

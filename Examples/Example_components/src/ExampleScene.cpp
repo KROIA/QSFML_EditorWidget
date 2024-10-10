@@ -7,14 +7,6 @@
 using namespace QSFML;
 using namespace QSFML::Objects;
 
-void imageComponent(GameObjectPtr obj);
-void linePainterComponent(GameObjectPtr obj);
-void pathPainterComponent(GameObjectPtr obj);
-void pixelPainterComponent(GameObjectPtr obj);
-void pointPainterComponent(GameObjectPtr obj);
-void rectPainterComponent(GameObjectPtr obj);
-void shapeComponent(GameObjectPtr obj);
-void textComponent(GameObjectPtr obj);
 
 
 ExampleScene::ExampleScene(QWidget *parent)
@@ -24,24 +16,13 @@ ExampleScene::ExampleScene(QWidget *parent)
     ui->setupUi(this);
     m_scene = nullptr;
     setupScene();
-    
-	GameObjectPtr obj = new GameObject();
-
-    // Drawable components
-    imageComponent(obj);
-    //linePainterComponent(obj);
-    //pathPainterComponent(obj);
-    //pixelPainterComponent(obj);
-    //pointPainterComponent(obj);
-    //rectPainterComponent(obj);
-    //shapeComponent(obj);
-    //textComponent(obj);
 
 
-    obj->setPosition(m_scene->getViewCenterPosition());
-    m_scene->addObject(obj);    
-    m_scene->applyObjectChanges();
-    qDebug() << obj->toString().c_str();
+    if (m_objects.size() > 0)
+        m_objects[0].checkBox->setChecked(true);
+    // Add a vertical spacer to the list view
+    QSpacerItem* verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    ui->scrollAreaWidgetContents->layout()->addItem(verticalSpacer);
 }
 
 ExampleScene::~ExampleScene()
@@ -53,20 +34,25 @@ ExampleScene::~ExampleScene()
 void ExampleScene::setupScene()
 {
     SceneSettings settings;
-    //settings.layout.autoAjustSize = false;
-    settings.layout.fixedSize = sf::Vector2u(300, 100);
+    settings.layout.fixedSize = sf::Vector2u(800, 500);
     settings.contextSettings.antialiasingLevel = 8;
     settings.timing.frameTime = 0.02;
-    //settings.updateControlls.enableMultithreading = false;
-    //settings.updateControlls.enablePaintLoop = false;
-    //settings.updateControlls.enableEventLoop = false;
-    //settings.updateControlls.enableUpdateLoop = false;
     m_scene = new Scene(ui->SceneWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor();
     m_scene->addObject(defaultEditor);
     m_scene->start();
     qDebug() << defaultEditor->toString().c_str();
+
+    // Create Objects
+    imageComponent();
+    linePainterComponent();
+    pathPainterComponent();
+    pixelPainterComponent();
+    pointPainterComponent();
+    rectPainterComponent();
+    shapeComponent();
+    textComponent();
 }
 void ExampleScene::closeEvent(QCloseEvent* event)
 {
@@ -75,25 +61,54 @@ void ExampleScene::closeEvent(QCloseEvent* event)
     event->accept();
 }
 
-void imageComponent(GameObjectPtr obj)
+void ExampleScene::addNewObjectToScene(QSFML::Objects::GameObjectPtr obj)
 {
+	ObjectData data;
+	data.obj = obj;
+	data.checkBox = new QCheckBox(obj->getName().c_str());
+	ui->scrollAreaWidgetContents->layout()->addWidget(data.checkBox);
+
+	connect(data.checkBox, &QCheckBox::stateChanged, [this, data](int state)
+		{
+			if (state == Qt::Checked)
+			{
+				data.obj->setEnabled(true);
+			}
+			else
+			{
+                data.obj->setEnabled(false);
+			}
+		});
+	data.checkBox->setChecked(false);
+	obj->setEnabled(false);
+	m_scene->addObject(obj);
+	m_objects.push_back(data);
+}
+
+void ExampleScene::imageComponent()
+{
+    GameObjectPtr obj = new GameObject("Image Component Obj");
 	QSFML::Components::Image* image = new QSFML::Components::Image();
     image->loadFromFile("../Examples/Example_components/resources/player.png");
     image->setScale(2,2);
     obj->addComponent(image);
+    addNewObjectToScene(obj);
 }
-void linePainterComponent(GameObjectPtr obj)
+void ExampleScene::linePainterComponent()
 {
+	GameObjectPtr obj = new GameObject("Line Painter Component Obj");
     QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
-	linePainter->addLine(sf::Vector2f(0, 0), sf::Vector2f(100, 100));
-    linePainter->addLine(sf::Vector2f(50, 100), sf::Vector2f(200, 0));
+	linePainter->addLine(sf::Vector2f(0, 0), sf::Vector2f(50, 50));
+    linePainter->addLine(sf::Vector2f(20, 80), sf::Vector2f(100, 0));
 
 	linePainter->setThickness(5);
 	linePainter->setColor(sf::Color::Red);
 	obj->addComponent(linePainter);
+    addNewObjectToScene(obj);
 }
-void pathPainterComponent(GameObjectPtr obj)
+void ExampleScene::pathPainterComponent()
 {
+	GameObjectPtr obj = new GameObject("Path Painter Component Obj");
     QSFML::Components::PathPainter* pathPainter = new QSFML::Components::PathPainter();
 
 	pathPainter->setColor(sf::Color::Red);
@@ -116,9 +131,11 @@ void pathPainterComponent(GameObjectPtr obj)
                 pathPainter->popPointAtStart(1);
 
         });
+    addNewObjectToScene(obj);
 }
-void pixelPainterComponent(GameObjectPtr obj)
+void ExampleScene::pixelPainterComponent()
 {
+	GameObjectPtr obj = new GameObject("Pixel Painter Component Obj");
     QSFML::Components::PixelPainter* pixelPainter = new QSFML::Components::PixelPainter();
     pixelPainter->setPixelCount(sf::Vector2u(10, 10));
     pixelPainter->setPixelSize(10);
@@ -130,10 +147,11 @@ void pixelPainterComponent(GameObjectPtr obj)
             sf::Vector2u pos = sf::Vector2u(rand() % pixelPainter->getPixelCount().x, rand() % pixelPainter->getPixelCount().y);
 			pixelPainter->setPixel(pos, sf::Color(rand() % 255, rand() % 255, rand() % 255));
 		});
-
+    addNewObjectToScene(obj);
 }
-void pointPainterComponent(GameObjectPtr obj)
+void ExampleScene::pointPainterComponent()
 {
+	GameObjectPtr obj = new GameObject("Point Painter Component Obj");
     QSFML::Components::PointPainter* pointPainter = new QSFML::Components::PointPainter();
     pointPainter->setRadius(5);
     pointPainter->setColor(sf::Color::Red);
@@ -142,10 +160,11 @@ void pointPainterComponent(GameObjectPtr obj)
         {
             pointPainter->addPoint(sf::Vector2f(rand() % 1000, rand() % 1000)- sf::Vector2f(500,500));
         });
-
+    addNewObjectToScene(obj);
 }
-void rectPainterComponent(GameObjectPtr obj)
+void ExampleScene::rectPainterComponent()
 {
+	GameObjectPtr obj = new GameObject("Rect Painter Component Obj");
 	QSFML::Components::RectPainter* rectPainter = new QSFML::Components::RectPainter();
 	rectPainter->setRect(QSFML::Utilities::AABB(0, 0, 100, 100));
 	rectPainter->setFillColor(sf::Color::Red);
@@ -172,10 +191,11 @@ void rectPainterComponent(GameObjectPtr obj)
 							   rectPainter->setRect(newRect);
 							   rectPainter->setFillColor(newColor);
 						   });
-
+    addNewObjectToScene(obj);
 }
-void shapeComponent(GameObjectPtr obj)
+void ExampleScene::shapeComponent()
 {
+	GameObjectPtr obj = new GameObject("Shape Component Obj");
     QSFML::Components::Shape* shape = new QSFML::Components::Shape();
     shape->setFillColor(sf::Color::Green);
     shape->setOutlineColor(sf::Color::Blue);
@@ -218,11 +238,12 @@ void shapeComponent(GameObjectPtr obj)
                                boundingBox->setRect(aabb);
 
                            });
-
+    addNewObjectToScene(obj);
 }
 
-void textComponent(GameObjectPtr obj)
+void ExampleScene::textComponent()
 {
+	GameObjectPtr obj = new GameObject("Text Component Obj");
     QSFML::Components::Text* text = new QSFML::Components::Text();
     text->setText("Hello");
     text->setScale(1);
@@ -234,4 +255,5 @@ void textComponent(GameObjectPtr obj)
                                rotation += 0.01;
                                text->setRotation(rotation);
                            });
+    addNewObjectToScene(obj);
 }
