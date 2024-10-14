@@ -15,6 +15,35 @@
 
 This library is used to create simulations or simple games. It doesn't have all the advanced features that a modern game engine supports, but it is designed to be simple and easy. The idea behind this project is to have a tool that can be used to create simulation environments for AI-based simulations.
 
+
+<table>
+<tr>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Gravity.gif" > 
+</div>
+</td>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Lightsim.gif" > 
+</div>
+</td>
+</tr>
+<tr>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Pendulum.gif" > 
+</div>
+</td>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/CollisionExample.gif" > 
+</div>
+</td>
+</tr>
+</table>
+
+
 ## Features
 * Easy integration into a QT widget
 * GameObjects organized in a tree structure
