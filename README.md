@@ -64,7 +64,7 @@ This library is used to create simulations or simple games. It doesn't have all 
 * <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/sfml-icon-small.png" alt="SFML"  width="40" style="vertical-align:middle;"> [SFML](https://github.com/SFML/SFML.git) as graphics library<br>
 * <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/QT.png" alt="QT Framework"  width="40" style="vertical-align:middle;"> [Qt Framework](https://www.qt.io/download-dev) and [Qt VisualStudio Tools](https://marketplace.visualstudio.com/items?itemName=TheQtCompany.QtVisualStudioTools2022)<br>
 
-Download this repository and open the CMake Project with Visual Studio.<br>
+Download this repository and open the root CMakeLists.txt Project with Visual Studio.<br>
 After CMake has configured the Project, press **build->install**.<br>
 This will build all targets and copies the nessesarry QT dll's to the build directory. 
 
