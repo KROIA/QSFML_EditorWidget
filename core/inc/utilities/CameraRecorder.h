@@ -20,6 +20,9 @@ namespace QSFML
 			~CameraRecorder();
 
 			bool startCapture(size_t frameCount, float timerInterval, const std::string &outputFolder);
+			bool startCaptureBuffered(size_t frameCount, float timerInterval, const std::string &outputFolder);
+
+
 
 			private slots:
 			void onTimer();
@@ -27,6 +30,7 @@ namespace QSFML
 
 			private:
 			void setup();
+			void saveBufferedImages();
 
 			struct ThreadData
 			{
@@ -52,11 +56,14 @@ namespace QSFML
 			std::vector<ThreadData> m_threadData;
 			std::string m_outputFolder;
 			bool m_isCapturing = false;
+			bool m_bufferMode = false;
 			size_t m_threadCount = 0;
 			size_t m_frameCounter = 0;
 			size_t m_targetFrameCount = 0;
 			Objects::CameraWindow* m_cameraWindow = nullptr;
 			QTimer* m_timer = nullptr;
+
+			std::vector<ThreadData::ImageData> m_bufferedImages;
 		};
 	}
 }

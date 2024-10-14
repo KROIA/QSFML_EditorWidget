@@ -151,7 +151,18 @@ GameObject::~GameObject()
 
 void GameObject::deleteObject(GameObjectPtr obj)
 {
-    Internal::LifetimeChecker::deleteSecured(obj);
+    if(!obj)
+		return;
+    if (obj->m_parent)
+    {
+        obj->m_parent->removeChild(obj);
+    }
+    else if (obj->m_sceneParent)
+        obj->m_sceneParent->GameObjectContainer::deleteLater(obj);
+    else
+    {
+        Internal::LifetimeChecker::deleteSecured(obj);
+    }
 }
 
 
@@ -168,7 +179,7 @@ void GameObject::onDisable()
 
 }
 
-void GameObject::setParent(GameObjectPtr parent)
+/*void GameObject::setParent(GameObjectPtr parent)
 {
     if(parent == m_parent)
         return;
@@ -181,7 +192,7 @@ void GameObject::setParent(GameObjectPtr parent)
         parent->addChild(this);
         return;
     }
-}
+}*/
 void GameObject::setEnabled(bool enable)
 {
     m_enabled = enable;
@@ -199,12 +210,12 @@ void GameObject::setName(const std::string &name)
 
 void GameObject::setParent_internal(GameObjectPtr parent,
                                       GameObjectPtr rootParent,
-                                      Scene *SceneParent)
+                                      Scene *sceneParent)
 {
 	QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_TEXT("Name", getName());
 	//QSFMLP_OBJECT_BLOCK("GameObject::setParent_internal: " + getName(), QSFML_COLOR_STAGE_1);
-    if(m_parent != nullptr && m_parent == this)
+    if(m_parent == this)
         return;
     if(m_parent)
     {
@@ -212,10 +223,18 @@ void GameObject::setParent_internal(GameObjectPtr parent,
         if(index == npos) return;
         m_parent->m_childObjectManagerData.objs.erase(m_parent->m_childObjectManagerData.objs.begin() + index);
     }
+
     GameObjectPtr oldParent = m_parent;
     m_parent = parent;
     m_rootParent = rootParent;
-    setSceneParent(SceneParent);
+    setSceneParent(sceneParent);
+    if (parent, parent->m_logObject)
+        setLogParent_internal(parent->m_logObject);
+    //else if (sceneParent)
+    //    setLogParent_internal(&sceneParent->getObjectLogger());
+    else
+        setLogParent_internal(nullptr);
+
     for (size_t i = 0; i < m_componentsManagerData.all.size(); ++i)
     {
         Component* comp = m_componentsManagerData.all[i];
@@ -224,6 +243,20 @@ void GameObject::setParent_internal(GameObjectPtr parent,
 
     //internalOnParentChange(oldParent, m_parent);
     onParentChange(oldParent, m_parent);
+}
+void GameObject::setLogParent_internal(Log::LogObject* parent)
+{
+    if (m_selfOwnedLogObject)
+    {
+        Log::LoggerID parentID = 0;
+        if(parent)
+			parentID = parent->getID();
+		m_selfOwnedLogObject->setParentID(parentID);
+	}
+    else
+    {
+        m_logObject = parent;
+    }
 }
 /*
 void GameObject::addComponent_internal()
@@ -645,14 +678,7 @@ void GameObject::onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent
 
 void GameObject::deleteLater()
 {
-    if(m_parent)
-    {
-       // m_parent->deleteChild(this);
-        m_parent->removeChild(this);
-    }
-    else if(m_sceneParent)
-        m_sceneParent->GameObjectContainer::deleteLater(this);
-
+	deleteObject(this);
 }
 
 //void GameObject::positionChanged(const sf::Vector2f& oldPosition, const sf::Vector2f& newPosition)

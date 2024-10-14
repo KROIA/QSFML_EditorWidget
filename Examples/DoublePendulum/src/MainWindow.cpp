@@ -4,7 +4,7 @@
 #include <QCloseEvent>
 #include <QDebug>
 
-
+//#define ENABLE_SCREEN_CAPTURE
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -19,7 +19,18 @@ MainWindow::MainWindow(QWidget *parent)
     setupScene();
     
     
+#ifdef ENABLE_SCREEN_CAPTURE
 
+    Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(),4);
+
+	connect(ui->startScreenCapture_pushButton, &QPushButton::clicked, [recorder]()
+        {
+            recorder->startCapture(500, 0.02, "screenshots/pendulum");
+        });
+
+#else
+    ui->startScreenCapture_pushButton->hide();
+#endif
     
 }
 

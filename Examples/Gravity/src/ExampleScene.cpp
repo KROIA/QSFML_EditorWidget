@@ -11,7 +11,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Image.hpp>
 
-#define ENABLE_SCREEN_CAPTURE
+//#define ENABLE_SCREEN_CAPTURE
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -33,8 +33,17 @@ ExampleScene::ExampleScene(QWidget *parent)
     //QDir().mkdir("screenshots");
 	//connect(timer, &QTimer::timeout, this, &ExampleScene::onScreenCapture, Qt::DirectConnection);
     //timer->start(50);
-	Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(),6);
-	recorder->startCapture(100, 0.01, "screenshots");
+	Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(),4);
+	QTimer* timer = new QTimer(this);
+	timer->singleShot(1000, [recorder]()
+		{
+			recorder->startCapture(1000, 0.01, "screenshots/gravity");
+			//recorder->startCapture(100, 0.01, "screenshots");
+		});
+	timer->start();
+
+
+	
 #endif
 
     

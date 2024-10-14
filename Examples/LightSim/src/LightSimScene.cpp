@@ -3,6 +3,7 @@
 #include <iostream>
 #include <QCloseEvent>
 
+//#define ENABLE_SCREEN_CAPTURE
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -15,6 +16,16 @@ LightSimScene::LightSimScene(QWidget *parent)
     m_scene = nullptr;
 
     setupScene();    
+
+#ifdef ENABLE_SCREEN_CAPTURE
+    Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(), 4);
+    QTimer* singleShotTimer = new QTimer(this);
+    singleShotTimer->singleShot(1000, [recorder]()
+        {
+            recorder->startCapture(500, 0.03, "screenshots/LightSim");
+        });
+    singleShotTimer->start();
+#endif
 }
 
 LightSimScene::~LightSimScene()
@@ -98,6 +109,7 @@ void LightSimScene::setupScene()
         m_scene->addObject(lense);
         m_convexLenss.push_back(lense);
         brennweite = lense->getFocusLength();
+        
     }
     {
         ConcaveLens* lense = new ConcaveLens();
@@ -112,6 +124,7 @@ void LightSimScene::setupScene()
         m_scene->addObject(lense);
         //m_convexLenss.push_back(lense);
         brennweite = lense->getFocusLength();
+
     }
     /* {
         SimpleLens* lense = new SimpleLens();
@@ -147,8 +160,10 @@ void LightSimScene::setupScene()
         lense->setColor(sf::Color(200, 200, 200));
         lense->setDiameter(200);
         lense->setRefractionIndexInside(refraction);
+        
         m_scene->addObject(lense);
         m_convexLenss.push_back(lense);
+        
     }
     
         {
@@ -160,8 +175,14 @@ void LightSimScene::setupScene()
              lense->setColor(sf::Color(200, 200, 200));
              lense->setDiameter(100);
              lense->setRotation(M_PI / 10);
+			 
              m_scene->addObject(lense);
              m_convexLenss.push_back(lense);
+             //lense->addUpdateFunction([lense](GameObject& obj)
+             //    {
+             //        lense->setRotation(lense->getRotation() + 3 * obj.getDeltaT());
+             //    });
+             
          }
          
     sf::Vector2f laserPos(0, 180);
@@ -241,7 +262,7 @@ void LightSimScene::setupScene()
         m_lasers.push_back(laser);
     }*/
   {
-        sf::Vector2f offset(0, 10);
+        /*sf::Vector2f offset(0, 10);
         sf::Vector2f startPos(10, 100);
         for (int i = 0; i < 20; ++i)
         {
@@ -251,7 +272,7 @@ void LightSimScene::setupScene()
             laser->setColor(sf::Color::Green);
             m_scene->addObject(laser);
             m_lasers.push_back(laser);
-        }
+        }*/
     }
 
       {
@@ -267,6 +288,14 @@ void LightSimScene::setupScene()
                 laser->setColor(sf::Color::Yellow);
                 m_scene->addObject(laser);
                 m_lasers.push_back(laser);
+
+                laser->addUpdateFunction([laser, dir](GameObject& obj)
+                    {
+                        sf::Vector2f _dir = dir;
+                        float angle = std::sin(laser->getAge()*10)*0.5;
+						_dir = VectorMath::getRotated(_dir, angle);
+                        laser->setDirection(_dir);
+                    });
             }
     }
 

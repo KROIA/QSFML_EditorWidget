@@ -50,10 +50,10 @@ namespace QSFML
 				oldParent->removeGameObject();
 				oldParent->removeComponent(m_componentsManagerData.all.size());
 			}
-			if (!m_selfOwnedLogObject)
-			{
-				m_logObject = nullptr;
-			}
+			//if (!m_selfOwnedLogObject)
+			//{
+			//	m_logObject = nullptr;
+			//}
 			if (m_sceneParent != nullptr)
 			{
 				m_sceneParent->addGameObject();
@@ -62,14 +62,17 @@ namespace QSFML
 				// Set the birth time and tick
 				m_birthTick = m_sceneParent->getTick();
 				m_birthTime = m_sceneParent->getElapsedTime();
-				if (m_selfOwnedLogObject)
-				{
-					m_selfOwnedLogObject->setParentID(m_sceneParent->getObjectLogger().getID());
-				}
-				else
-				{
-					m_logObject = &m_sceneParent->getObjectLogger();
-				}
+
+				
+			    setLogParent_internal(&m_sceneParent->getObjectLogger());
+				//if (m_selfOwnedLogObject)
+				//{
+				//	m_selfOwnedLogObject->setParentID(m_sceneParent->getObjectLogger().getID());
+				//}
+				//else
+				//{
+				//	m_logObject = &m_sceneParent->getObjectLogger();
+				//}
 			}
 
 			for (size_t i = 0; i < m_componentsManagerData.all.size(); ++i)
@@ -264,7 +267,7 @@ namespace QSFML
 				{
 					if (Internal::LifetimeChecker::isAlive(obj))
 					{
-						obj->setParent_internal(nullptr, m_rootParent, m_sceneParent);
+						obj->setParent_internal(nullptr, nullptr, nullptr);
 					}
 					m_childObjectManagerData.objs.erase(it);
 					++removeCount;

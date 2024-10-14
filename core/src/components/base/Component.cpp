@@ -36,19 +36,25 @@ Component::~Component()
     }
 }
 
-void Component::deleteObject(ComponentPtr comp)
+void Component::deleteComponent(ComponentPtr comp)
 {
-    Internal::LifetimeChecker::deleteSecured(comp);
+    if(!comp)
+		return;
+    if (comp->m_parent)
+    {
+        if (Internal::LifetimeChecker::isAlive(comp->m_parent))
+            comp->m_parent->deleteComponentLater(comp);
+    }
+    else
+    {
+        Internal::LifetimeChecker::deleteSecured(comp);
+    }    
 }
 
 
 void Component::deleteLater()
 {
-    if (m_parent)
-    {
-        if (Internal::LifetimeChecker::isAlive(m_parent))
-            m_parent->deleteComponentLater(this);
-    }
+	deleteComponent(this);
 }
 
 

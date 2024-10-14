@@ -45,7 +45,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         Component(const std::string &name = "");
         Component(const Component &other);
 
-        static void deleteObject(ComponentPtr comp);
+        static void deleteComponent(ComponentPtr comp);
         
 
         virtual CLONE_FUNC_DEC(Component);

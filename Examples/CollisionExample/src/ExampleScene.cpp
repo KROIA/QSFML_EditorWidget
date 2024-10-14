@@ -5,6 +5,9 @@
 #include <QCloseEvent>
 #include <QDebug>
 
+
+//#define ENABLE_SCREEN_CAPTURE
+
 using namespace QSFML;
 using namespace QSFML::Objects;
 
@@ -55,6 +58,27 @@ ExampleScene::ExampleScene(QWidget *parent)
     connect(timer, &QTimer::timeout, this, &ExampleScene::onTimerFinished);
     timer->start(1000);
     m_scene->start();
+
+
+#ifdef ENABLE_SCREEN_CAPTURE
+    // Create a timer to capture the screen
+    //QTimer* timer = new QTimer(this);
+    // Create the directory for the screenshots
+    //QDir().mkdir("screenshots");
+    //connect(timer, &QTimer::timeout, this, &ExampleScene::onScreenCapture, Qt::DirectConnection);
+    //timer->start(50);
+    Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(), 4);
+    QTimer* singleShotTimer = new QTimer(this);
+    singleShotTimer->singleShot(1000, [recorder]()
+        {
+            recorder->startCapture(500, 0.03, "screenshots/CollisionExample");
+            //recorder->startCapture(100, 0.01, "screenshots");
+        });
+    singleShotTimer->start();
+
+
+
+#endif
 }
 
 ExampleScene::~ExampleScene()

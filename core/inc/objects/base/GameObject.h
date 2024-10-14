@@ -242,7 +242,7 @@ protected:
 		 * This removes the object from the old parent
          * @param parent 
          */
-        void setParent(GameObjectPtr parent);
+        //void setParent(GameObjectPtr parent);
         
         /**
          * @brief 
@@ -1415,6 +1415,7 @@ protected:
         void setParent_internal(GameObjectPtr parent,
                                 GameObjectPtr rootParent,
                                 Scene *SceneParent);
+		void setLogParent_internal(Log::LogObject* parent);
         //void addComponent_internal();
         void onObjectsChanged();
         bool objectsChanged() const { return m_childObjectManagerData.objectsChanged; }

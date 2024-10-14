@@ -33,6 +33,7 @@ namespace QSFML
 		}
 
 
+
 		void CameraRecorder::setup()
 		{
 			if (m_threadCount > 0)
@@ -45,11 +46,14 @@ namespace QSFML
 				for (size_t i = 0; i < m_threadCount; ++i)
 				{
 					m_threadData[i].thread = new std::thread(threadFunction, std::ref(m_threadData[i]), std::ref(*this));
-					//m_threadData[i].log.setParentID(0);
-					//m_threadData[i].log.setName("Thread " + std::to_string(i));
+					HANDLE threadHandle = m_threadData[i].thread->native_handle();
+					SetThreadDescription(threadHandle, L"CameraRecorder Thread");
+					SetThreadPriority(threadHandle, THREAD_PRIORITY_LOWEST);
 				}
 			}
 		}
+
+		
 
 		bool CameraRecorder::startCapture(size_t frameCount, float timerInterval, const std::string& outputFolder)
 		{
@@ -76,6 +80,14 @@ namespace QSFML
 
 			return true;
 		}
+		bool CameraRecorder::startCaptureBuffered(size_t frameCount, float timerInterval, const std::string& outputFolder)
+		{
+			if (m_isCapturing)
+				return false;
+			m_bufferMode = true;
+			m_bufferedImages.reserve(frameCount);
+			return startCapture(frameCount, timerInterval, outputFolder);
+		}
 
 
 		void CameraRecorder::onTimer()
@@ -84,6 +96,10 @@ namespace QSFML
 			{
 				m_timer->stop();
 				m_isCapturing = false;
+				if (m_bufferMode)
+				{
+					saveBufferedImages();
+				}
 				return;
 			}
 			captureInternal();
@@ -91,43 +107,79 @@ namespace QSFML
 		void CameraRecorder::captureInternal()
 		{
 			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
-			if (m_threadCount > 0)
-			{
-				size_t currentIndex = m_frameCounter % m_threadCount;
-				ThreadData& data = m_threadData[currentIndex];
 
-				sf::Image* image = new sf::Image();
-				{
-					QSFMLP_GENERAL_BLOCK("Capture Image", QSFML_COLOR_STAGE_2);
-					m_cameraWindow->captureThisCameraScreen(*image);
-				}
-				//m_scene->captureScreen(*image);
-				//delete image;
-				//return;
-				{
-					std::lock_guard<std::mutex> lock(data.mutex);
-					data.images.push_back({ image, m_frameCounter });
-					data.condition.notify_one();
-				}
-				++m_frameCounter;
+			ThreadData::ImageData newImage;
+			newImage.image = new sf::Image();
+			newImage.index = m_frameCounter;
+			{
+				QSFMLP_GENERAL_BLOCK("Capture Image", QSFML_COLOR_STAGE_2);
+				m_cameraWindow->captureThisCameraScreen(*newImage.image);
+			}
+			++m_frameCounter;
+
+			if (m_bufferMode)
+			{
+				m_bufferedImages.push_back(newImage);
 			}
 			else
 			{
-				sf::Image image;
+				if (m_threadCount > 0)
 				{
-					QSFMLP_GENERAL_BLOCK("Capture Image", QSFML_COLOR_STAGE_2);
-					m_cameraWindow->captureThisCameraScreen(image);
+					size_t currentIndex = m_frameCounter % m_threadCount;
+					ThreadData& data = m_threadData[currentIndex];
+
+					{
+						std::lock_guard<std::mutex> lock(data.mutex);
+						data.images.push_back(newImage);
+						data.condition.notify_one();
+					}
 				}
+				else
 				{
 					QSFMLP_GENERAL_BLOCK("Saving Image", QSFML_COLOR_STAGE_2);
 					QSFMLP_GENERAL_TEXT("ImageIndex", std::to_string(m_frameCounter));
-					image.saveToFile(m_outputFolder + "/" + std::to_string(m_frameCounter) + ".jpg");
-					++m_frameCounter;
+					newImage.image->saveToFile(m_outputFolder + "/" + std::to_string(newImage.index) + ".jpg");
+					delete newImage.image;
 				}
-			}
+			}			
 		}
 
-
+		void CameraRecorder::saveBufferedImages()
+		{
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
+			size_t threadCount = m_threadData.size();
+			if (threadCount > 0)
+			{
+				// Split the images and give them to the threads
+				for (size_t i = 0; i < threadCount; ++i)
+				{
+					ThreadData& data = m_threadData[i];
+					size_t start = i * m_bufferedImages.size() / threadCount;
+					size_t end = (i + 1) * m_bufferedImages.size() / threadCount;
+					if (i == threadCount - 1)
+					{
+						end = m_bufferedImages.size();
+					}
+					{
+						std::lock_guard<std::mutex> lock(data.mutex);
+						data.images.insert(data.images.end(), m_bufferedImages.begin() + start, m_bufferedImages.begin() + end);
+						data.condition.notify_one();
+					}
+				}
+			}
+			else
+			{
+				QSFMLP_GENERAL_BLOCK("Saving Images", QSFML_COLOR_STAGE_2);
+				for (auto image : m_bufferedImages)
+				{
+					QSFMLP_GENERAL_TEXT("ImageIndex", std::to_string(image.index));
+					image.image->saveToFile(m_outputFolder + "/" + std::to_string(image.index) + ".jpg");
+					delete image.image;
+				}
+			}
+			m_bufferedImages.clear();
+			m_bufferMode = false;
+		}
 		void CameraRecorder::threadFunction(ThreadData& data, CameraRecorder& recorder)
 		{
 			QSFML_PROFILING_THREAD("CameraRecorder Thread");

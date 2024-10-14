@@ -23,9 +23,15 @@ int main(int argc, char *argv[])
 #endif
     QApplication a(argc, argv);
 
-    Log::UI::NativeConsoleView console;
-    console.show();
-   // thread_pool.Schedule(f4);
+    Log::UI::NativeConsoleView::createStaticInstance();
+	Log::UI::NativeConsoleView::getStaticInstance()->show();
+
+    Log::UI::QTreeConsoleView::createStaticInstance();
+    Log::UI::QTreeConsoleView::getStaticInstance()->show();
+
+	//Log::FilePlotter plotter("test.log");
+
+
 
 
    // EASY_PROFILER_ENABLE;
