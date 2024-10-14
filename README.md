@@ -13,7 +13,36 @@
 ## About
 > <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/bookshelf.png" alt="QT_cmake_library_template"  width="40" style="vertical-align:middle;"> This library was created using the [library template](https://github.com/KROIA/QT_cmake_library_template)
 
-This library is used to create simulations or simple games. It doesn't have all the advanced features that a modern game engine supports, but it is designed to be simple and easy. The idea behind this project is to have a tool that can be used to create simulation environments for AI-based simulations.
+This library is used to create simulations or simple games. It doesn't have all the advanced features that a modern game engine supports, but it is designed to be simple and easy. The idea behind this project is to have a tool that can be used to create simulation environments for AI-based or physics simulations.
+
+
+<table>
+<tr>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Gravity.gif" > 
+</div>
+</td>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Lightsim.gif" > 
+</div>
+</td>
+</tr>
+<tr>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Pendulum.gif" > 
+</div>
+</td>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/CollisionExample.gif" > 
+</div>
+</td>
+</tr>
+</table>
+
 
 ## Features
 * Easy integration into a QT widget
@@ -35,7 +64,7 @@ This library is used to create simulations or simple games. It doesn't have all 
 * <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/sfml-icon-small.png" alt="SFML"  width="40" style="vertical-align:middle;"> [SFML](https://github.com/SFML/SFML.git) as graphics library<br>
 * <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/QT.png" alt="QT Framework"  width="40" style="vertical-align:middle;"> [Qt Framework](https://www.qt.io/download-dev) and [Qt VisualStudio Tools](https://marketplace.visualstudio.com/items?itemName=TheQtCompany.QtVisualStudioTools2022)<br>
 
-Download this repository and open the CMake Project with Visual Studio.<br>
+Download this repository and open the root CMakeLists.txt Project with Visual Studio.<br>
 After CMake has configured the Project, press **build->install**.<br>
 This will build all targets and copies the nessesarry QT dll's to the build directory. 
 
