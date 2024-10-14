@@ -33,8 +33,8 @@ ExampleScene::ExampleScene(QWidget *parent)
     //QDir().mkdir("screenshots");
 	//connect(timer, &QTimer::timeout, this, &ExampleScene::onScreenCapture, Qt::DirectConnection);
     //timer->start(50);
-	Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(), 6);
-	recorder->startCapture(100, 50, "screenshots");
+	Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(),6);
+	recorder->startCapture(100, 0.01, "screenshots");
 #endif
 
     
@@ -52,7 +52,7 @@ void ExampleScene::setupScene()
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(400, 100);
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 0.01;
+    settings.timing.frameTime = 0.00;
     settings.timing.physicsFixedDeltaT = 1;
 	settings.timing.physicsDeltaTScale = 2;
 

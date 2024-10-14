@@ -70,7 +70,7 @@ namespace QSFML
 					return false;
 				}
 			}
-			m_timer->start(timerInterval);
+			m_timer->start(timerInterval*1000);
 			m_isCapturing = true;
 			m_frameCounter = 0;
 
@@ -90,13 +90,17 @@ namespace QSFML
 		}
 		void CameraRecorder::captureInternal()
 		{
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 			if (m_threadCount > 0)
 			{
 				size_t currentIndex = m_frameCounter % m_threadCount;
 				ThreadData& data = m_threadData[currentIndex];
 
 				sf::Image* image = new sf::Image();
-				m_cameraWindow->captureThisCameraScreen(*image);
+				{
+					QSFMLP_GENERAL_BLOCK("Capture Image", QSFML_COLOR_STAGE_2);
+					m_cameraWindow->captureThisCameraScreen(*image);
+				}
 				//m_scene->captureScreen(*image);
 				//delete image;
 				//return;
@@ -110,34 +114,50 @@ namespace QSFML
 			else
 			{
 				sf::Image image;
-				m_cameraWindow->captureThisCameraScreen(image);
-				//m_scene->captureScreen(image);
-				image.saveToFile(m_outputFolder + "/" + std::to_string(m_frameCounter) + ".jpg");
-				++m_frameCounter;
+				{
+					QSFMLP_GENERAL_BLOCK("Capture Image", QSFML_COLOR_STAGE_2);
+					m_cameraWindow->captureThisCameraScreen(image);
+				}
+				{
+					QSFMLP_GENERAL_BLOCK("Saving Image", QSFML_COLOR_STAGE_2);
+					QSFMLP_GENERAL_TEXT("ImageIndex", std::to_string(m_frameCounter));
+					image.saveToFile(m_outputFolder + "/" + std::to_string(m_frameCounter) + ".jpg");
+					++m_frameCounter;
+				}
 			}
 		}
 
 
 		void CameraRecorder::threadFunction(ThreadData& data, CameraRecorder& recorder)
 		{
+			QSFML_PROFILING_THREAD("CameraRecorder Thread");
 			while (true)
 			{
-				std::unique_lock<std::mutex> lock(data.mutex);
-				data.condition.wait(lock, [&data] { return !data.images.empty() || !data.running; });
+				bool isRunning = false;
+				std::vector<ThreadData::ImageData> images;
+				{
+					QSFMLP_GENERAL_BLOCK("Waiting for image", QSFML_COLOR_STAGE_1);
+					std::unique_lock<std::mutex> lock(data.mutex);
+					data.condition.wait(lock, [&data] { return !data.images.empty() || !data.running; });
 
-				std::vector<ThreadData::ImageData> images = data.images;
-				data.images.clear();
-				data.images.reserve(10);
-				bool isRunning = data.running;
-				lock.unlock();
-				if (!isRunning)
-				{
-					break;
+					images.swap(data.images);
+					data.images.reserve(10);
+					isRunning = data.running;
+					lock.unlock();
 				}
-				for (auto image : images)
 				{
-					image.image->saveToFile(recorder.m_outputFolder + "/" + std::to_string(image.index) + ".jpg");
-					delete image.image;
+					QSFMLP_GENERAL_BLOCK("Saving Images", QSFML_COLOR_STAGE_1);
+					if (!isRunning)
+					{
+						break;
+					}
+					for (auto image : images)
+					{
+						QSFMLP_GENERAL_BLOCK("Saving Image", QSFML_COLOR_STAGE_2);
+						QSFMLP_GENERAL_TEXT("ImageIndex", std::to_string(image.index));
+						image.image->saveToFile(recorder.m_outputFolder + "/" + std::to_string(image.index) + ".jpg");
+						delete image.image;
+					}
 				}
 				// data.log.logInfo("Saved " + std::to_string(images.size()) + " images");
 			}
