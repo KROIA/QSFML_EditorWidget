@@ -90,6 +90,19 @@ GameObject::GameObject(const GameObject &other)
     m_renderLayer = other.m_renderLayer;
 	m_updateOrder = other.m_updateOrder;
 
+	m_onDrawCallbacks = other.m_onDrawCallbacks;
+	m_onEventCallbacks = other.m_onEventCallbacks;
+	m_onUpdateCallbacks = other.m_onUpdateCallbacks;
+
+    m_eventOrder = other.m_eventOrder;
+    m_updateOrder = other.m_updateOrder;
+	m_drawOrder = other.m_drawOrder;
+
+	m_boundingBox = other.m_boundingBox;
+
+	m_getCustomBoundingBoxFunction = other.m_getCustomBoundingBoxFunction;
+	
+
     //m_childs.reserve(other.m_childs.size());
     for(size_t i=0; i<other.m_childObjectManagerData.objs.size(); ++i)
     {

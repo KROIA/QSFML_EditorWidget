@@ -11,6 +11,7 @@ namespace QSFML
 		class QSFML_EDITOR_WIDGET_EXPORT Transform : public Component
 		{
 		public:
+        COMPONENT_IMPL(Transform);
         Transform()
 			: Component("Transform")
         {
@@ -21,6 +22,12 @@ namespace QSFML
         {
 			setRotation(rot);
 			setPosition(pos);
+        }
+        Transform(const Transform& other)
+            : m_transformable(other.m_transformable)
+            , m_needsTransformUpdate(other.m_needsTransformUpdate)
+        {
+            m_globalTransform = other.m_globalTransform;
         }
 
         bool operator==(const Transform& other) const
@@ -183,5 +190,7 @@ namespace QSFML
 			mutable bool m_needsTransformUpdate = false;
 			mutable sf::Transform m_globalTransform;
 		};
+
+        
 	}
 }

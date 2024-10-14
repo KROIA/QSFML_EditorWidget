@@ -68,6 +68,7 @@ void ExampleScene::setupScene()
     // m_scene->addObject(new CustomObject());
 
     m_scene->addObject(customizedObjectFactory("Customized Object"));
+    //m_scene->addObject(nastedObjectFactory("Customized Object"));
 
 
 	// Apply the changes to the scene to be able to print the objects tree now
@@ -149,5 +150,15 @@ QSFML::Objects::GameObject* ExampleScene::customizedObjectFactory(const std::str
         QSFML::Objects::GameObject::DrawSequenceElement::childs
         });
 
+	return object;
+}
+QSFML::Objects::GameObject* ExampleScene::nastedObjectFactory(const std::string& name)
+{
+	QSFML::Objects::GameObject* object = customizedObjectFactory(name);
+    object->updateObjectChanges();
+    //QSFML::Objects::GameObject* child = object->clone();
+	QSFML::Objects::GameObject* child = customizedObjectFactory("Child");
+	child->setPosition(100, 0);
+	object->addChild(child);
 	return object;
 }

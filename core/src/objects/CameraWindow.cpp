@@ -53,7 +53,7 @@ namespace QSFML
             setFocusPolicy(Qt::StrongFocus);
 
             //m_updateTimer.onFinished(std::bind(&Scene::update, this));
-            connect(&m_frameTimer, &QTimer::timeout, this, &CameraWindow::onFrame);
+            connect(&m_frameTimer, &QTimer::timeout, this, &CameraWindow::onFrame, Qt::DirectConnection);
             m_frameTimer.setInterval(1000 / 30.f);
             //setSettings(settings);
 
@@ -67,6 +67,7 @@ namespace QSFML
                 m_window->close();
                 delete m_window;
             }
+            delete m_screenCaptureTexture;
         }
 
         void CameraWindow::setThisCameraView(const sf::View& view)
@@ -160,16 +161,27 @@ namespace QSFML
 
         sf::Image CameraWindow::captureThisCameraScreen() const
         {
-            if (!m_window)
-                return sf::Image();
-
-            sf::Vector2u windowSize = m_window->getSize();
-            sf::Texture texture;
-            texture.create(windowSize.x, windowSize.y);
-            texture.update(*m_window);
-            sf::Image screenshot = texture.copyToImage();
-
+			sf::Image screenshot;
+			captureThisCameraScreen(screenshot);
             return screenshot;
+        }
+        void CameraWindow::captureThisCameraScreen(sf::Image& image) const
+        {
+			if (!m_window)
+				return;
+
+			sf::Vector2u windowSize = m_window->getSize();
+            if (!m_screenCaptureTexture)
+            {
+				m_screenCaptureTexture = new sf::Texture();
+				m_screenCaptureTexture->create(windowSize.x, windowSize.y);
+            }else if (m_screenCaptureTexture->getSize() != m_window->getSize())
+            {
+				//windowSize = m_window->getSize();
+                m_screenCaptureTexture->create(windowSize.x, windowSize.y);
+            }
+            m_screenCaptureTexture->update(*m_window);
+			image = m_screenCaptureTexture->copyToImage();
         }
         void CameraWindow::enableFrameTimer(bool enable)
         {
@@ -272,7 +284,11 @@ namespace QSFML
                 if (event.type == sf::Event::Closed)
                 {
                     wasClosed = true;
-					
+                }
+                if (event.type == sf::Event::Resized)
+                {
+					sf::Vector2u windowSize = m_window->getSize();
+					resizeEvent(m_currentViewSize, windowSize);
                 }
                 m_events.push_back(event);
             }
@@ -345,6 +361,7 @@ namespace QSFML
                // m_update_t1 = m_syncedUpdateT_t1;
                // m_paint_t1 = m_syncedUpdateT_t1;
                 m_oldViewSize = m_window->getSize();
+				m_currentViewSize = m_oldViewSize;
 
                 // Calculate the dpi scale
                 QRect geometry = QWidget::geometry();
@@ -390,15 +407,22 @@ namespace QSFML
 
             QSize size = event->size();
             QSize oldSize = event->oldSize();
-            m_oldViewSize.x = oldSize.width();
-            m_oldViewSize.y = oldSize.height();
+            resizeEvent(sf::Vector2u(oldSize.width(), oldSize.height()), 
+                        sf::Vector2u(size.width(), size.height()));
+        }
+        void CameraWindow::resizeEvent(const sf::Vector2u& oldSize, const sf::Vector2u& newSize)
+        {
+            if (!m_window) return;
+            m_oldViewSize = oldSize;
+			m_currentViewSize = newSize;
+
 
             sf::View oldView = getThisCameraView();
-			sf::View view = getThisCameraDefaultView();
+            sf::View view = getThisCameraDefaultView();
 
 
             // resize the view such that it shows the same area as before by respecting the aspect ratio
-            float aspectRatio = (float)size.height() / (float)size.width();
+            float aspectRatio = (float)newSize.y / (float)newSize.x;
             float newWidth = oldView.getSize().x;
             float newHeight = newWidth * aspectRatio;
 
@@ -408,7 +432,11 @@ namespace QSFML
 
             // Update the view
             setThisCameraView(view);
-            
+
+            if (m_screenCaptureTexture)
+            {
+				m_screenCaptureTexture->create(newSize.x, newSize.y);
+            }
         }
     }
 }

@@ -33,6 +33,8 @@ namespace QSFML
 
 		}
 
+		COMPONENT_IMPL(Shape);
+
 		/*void Shape::setTransform(const sf::Transform& transform)
 		{
 			m_transform = transform;

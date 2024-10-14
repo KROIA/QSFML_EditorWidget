@@ -16,6 +16,7 @@ namespace QSFML
 			Shape(const std::string& name = "Shape");
 			Shape(const Shape& other);
 			~Shape();
+			COMPONENT_DECL(Shape);
 
 			//void setTransform(const sf::Transform& transform);
 			//const sf::Transform& getTransform() const;

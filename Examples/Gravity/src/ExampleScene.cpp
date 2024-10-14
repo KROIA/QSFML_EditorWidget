@@ -4,6 +4,14 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include "Planet.h"
+#include <QDir>
+#include <fstream>
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include "stb_image_write.h"
+#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Image.hpp>
+
+#define ENABLE_SCREEN_CAPTURE
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -15,8 +23,17 @@ ExampleScene::ExampleScene(QWidget *parent)
     ui->setupUi(this);
     m_scene = nullptr;
     setupScene();
+	Log::UI::NativeConsoleView::createStaticInstance();
+	Log::UI::NativeConsoleView::getStaticInstance()->show();
     
-    
+#ifdef ENABLE_SCREEN_CAPTURE
+    // Create a timer to capture the screen
+    QTimer* timer = new QTimer(this);
+    // Create the directory for the screenshots
+    QDir().mkdir("screenshots");
+	connect(timer, &QTimer::timeout, this, &ExampleScene::onScreenCapture, Qt::DirectConnection);
+    timer->start(50);
+#endif
 
     
 }
@@ -31,10 +48,11 @@ void ExampleScene::setupScene()
 {
     SceneSettings settings;
     //settings.layout.autoAjustSize = false;
-    settings.layout.fixedSize = sf::Vector2u(300, 100);
+    settings.layout.fixedSize = sf::Vector2u(400, 100);
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 0.02;
+    settings.timing.frameTime = 0.01;
     settings.timing.physicsFixedDeltaT = 1;
+	settings.timing.physicsDeltaTScale = 2;
 
     //settings.updateControlls.enableMultithreading = false;
     //settings.updateControlls.enablePaintLoop = false;
@@ -73,7 +91,7 @@ void ExampleScene::setupScene()
         {
             QSFML::Components::VectorFieldPainter::Element element;
             element.position = sf::Vector2f(x, y);
-            element.direction = sf::Vector2f(0, 0);
+            element.direction = sf::Vector2f(10, 5);
             field.push_back(element);
         }
     }
@@ -93,12 +111,12 @@ void ExampleScene::setupScene()
     }
     planetSystem->addUpdateFunction([planetSystem, vectorField](GameObject &)
 	{
-        static bool first = true;
+        /*static bool first = true;
         if (first)
         {
             first = false;
             return;
-        }
+        }*/
 		const std::vector<Planet*> &planets = Planet::getPlanets();
         for (auto planet : planets)
 		{
@@ -124,11 +142,75 @@ void ExampleScene::setupScene()
 		}
 	});
     m_scene->addObject(planetSystem);
+    planetSystem->setUpdateOrder(
+        {
+            QSFML::Objects::GameObject::UpdateSequenceElement::childs,
+            QSFML::Objects::GameObject::UpdateSequenceElement::components,
+			QSFML::Objects::GameObject::UpdateSequenceElement::customUpdateFunctions
+        });
 
 
     qDebug() << defaultEditor->toString().c_str();
     m_scene->start();
 }
+
+
+
+void ExampleScene::onScreenCapture()
+{
+    static size_t counter = 0;
+
+	if (counter >= 100)
+	{
+		return;
+	}
+    
+	if (m_threadData.size() == 0)
+	{
+        size_t threadCount = 6;
+		m_threadData.resize(threadCount);
+        for (size_t i = 0; i < threadCount; ++i)
+        {
+			m_threadData[i].thread = new std::thread([this, i]()
+			{
+				 ThreadData& data = m_threadData[i];
+				 while (true)
+				 {
+					 std::unique_lock<std::mutex> lock(data.mutex);
+					 data.condition.wait(lock, [this, &data] {return !data.images.empty(); });
+
+					 std::vector<ThreadData::ImageData> images = data.images;
+					 data.images.clear();
+                     data.images.reserve(10);
+					 lock.unlock();
+					 for (auto image : images)
+					 {
+						 image.image->saveToFile("screenshots/" + std::to_string(image.index) + ".jpg");
+                         delete image.image;
+					 }
+					// data.log.logInfo("Saved " + std::to_string(images.size()) + " images");
+				 }
+			});
+            m_threadData[i].log.setParentID(m_scene->getSceneLogger().getID());
+			m_threadData[i].log.setName("Thread " + std::to_string(i));
+        }
+	}
+
+	size_t currentIndex = counter % m_threadData.size();
+	ThreadData& data = m_threadData[currentIndex];
+
+	sf::Image* image = new sf::Image();
+	m_scene->captureScreen(*image);
+    //delete image;
+    //return;
+    {
+		std::lock_guard<std::mutex> lock(data.mutex);
+		data.images.push_back({ image, counter });
+        data.condition.notify_one();
+    }
+    ++counter;
+}
+
 void ExampleScene::closeEvent(QCloseEvent* event)
 {
     if (m_scene)

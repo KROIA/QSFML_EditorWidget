@@ -1521,7 +1521,7 @@ protected:
 
 			// Container to hold which are created by this object
 			// This is needed to delete the components when the object is deleted
-            std::vector<Components::ComponentPtr> selfCreatedComponents;
+            //std::vector<Components::ComponentPtr> selfCreatedComponents;
         };
 
 		ChildObjectManagerData m_childObjectManagerData;

@@ -274,6 +274,11 @@ namespace QSFML {
         if (!m_cameras.defaultCamera) return sf::Image();
         return m_cameras.defaultCamera->captureThisCameraScreen();
     }
+    void Scene::captureScreen(sf::Image& image)
+    {
+		if (!m_cameras.defaultCamera) return;
+		m_cameras.defaultCamera->captureThisCameraScreen(image);
+    }
 
 
     void Scene::OnInit()

@@ -5,8 +5,8 @@
 class CustomObject : public QObject, public QSFML::Objects::GameObject
 {
 	Q_OBJECT
-	OBJECT_DECL(CustomObject);
 	public:
+	OBJECT_DECL(CustomObject);
 	CustomObject();
 	CustomObject(const CustomObject &other);
 

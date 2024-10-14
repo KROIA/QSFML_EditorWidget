@@ -35,6 +35,7 @@ namespace QSFML
 			sf::Vector2f getInThisCameraWorldSpace(sf::Vector2i pixelSpace) const;
 			sf::Vector2i getInThisCameraScreenSpace(const sf::Vector2f& worldSpace) const;
 			sf::Image captureThisCameraScreen() const;
+			void captureThisCameraScreen(sf::Image& image) const;
 
 			sf::Vector2u getThisCameraSize() const;
 			const sf::Vector2u &getThisCameraOldSize() const { return m_oldViewSize; }
@@ -87,6 +88,7 @@ namespace QSFML
 			sf::RenderWindow* getRenderWindow() { return m_window; }
 			private:
 
+			void resizeEvent(const sf::Vector2u& oldSize, const sf::Vector2u& newSize);
 
 
 			sf::RenderWindow* m_window = nullptr;
@@ -94,10 +96,13 @@ namespace QSFML
 			//sf::View m_view;
 			sf::Vector2f m_dpiScale;
 			sf::Vector2u m_oldViewSize;
+			sf::Vector2u m_currentViewSize;
 			QTimer m_frameTimer;
 			bool m_enableFrameTimer = true;
 			std::vector<sf::Event> m_events;
 			sf::Transform m_lastTransform;
+
+			mutable sf::Texture* m_screenCaptureTexture = nullptr;
 
 			//Scene* m_scene = nullptr;
 		};

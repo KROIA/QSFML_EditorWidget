@@ -65,6 +65,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
 
         
 		sf::Image captureScreen();
+        void captureScreen(sf::Image& image);
         //void sfEvent(const std::vector<sf::Event> &events);
 
         static const sf::Font& getDefaultTextFont();
