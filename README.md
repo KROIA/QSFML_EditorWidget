@@ -76,3 +76,8 @@ This will build all targets and copies the nessesarry QT dll's to the build dire
 > <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/car.png" alt="Icon"  width="30" style="vertical-align:middle;"> **[GameObject](https://github.com/KROIA/QSFML_EditorWidget/wiki/GameObject)**<br>
 
 > <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/Components.png" alt="Icon"  width="30" style="vertical-align:middle;"> **[Component](https://github.com/KROIA/QSFML_EditorWidget/wiki/Component)**<br>
+
+> <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/chat.png" alt="Logger"  width="30" style="vertical-align:middle;"> **[Logging to console](https://github.com/KROIA/QSFML_EditorWidget/wiki/Logging)**<br>
+
+> <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/arrows.png" alt="Profiler"  width="40" style="vertical-align:middle;"> **[Profiling the application](https://github.com/KROIA/QSFML_EditorWidget/wiki/Profiling)**<br>
+
