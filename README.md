@@ -13,7 +13,7 @@
 ## About
 > <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/bookshelf.png" alt="QT_cmake_library_template"  width="40" style="vertical-align:middle;"> This library was created using the [library template](https://github.com/KROIA/QT_cmake_library_template)
 
-This library is used to create simulations or simple games. It doesn't have all the advanced features that a modern game engine supports, but it is designed to be simple and easy. The idea behind this project is to have a tool that can be used to create simulation environments for AI-based simulations.
+This library is used to create simulations or simple games. It doesn't have all the advanced features that a modern game engine supports, but it is designed to be simple and easy. The idea behind this project is to have a tool that can be used to create simulation environments for AI-based or physics simulations.
 
 
 <table>
