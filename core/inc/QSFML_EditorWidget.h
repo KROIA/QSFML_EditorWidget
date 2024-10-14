@@ -55,4 +55,5 @@
 #include "utilities/PerlinNoise.h"
 #include "utilities/Color.h"
 #include "utilities/LifetimeChecker.h"
+#include "utilities/CameraRecorder.h"
 /// USER_SECTION_END

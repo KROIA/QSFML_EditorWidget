@@ -28,11 +28,13 @@ ExampleScene::ExampleScene(QWidget *parent)
     
 #ifdef ENABLE_SCREEN_CAPTURE
     // Create a timer to capture the screen
-    QTimer* timer = new QTimer(this);
+    //QTimer* timer = new QTimer(this);
     // Create the directory for the screenshots
-    QDir().mkdir("screenshots");
-	connect(timer, &QTimer::timeout, this, &ExampleScene::onScreenCapture, Qt::DirectConnection);
-    timer->start(50);
+    //QDir().mkdir("screenshots");
+	//connect(timer, &QTimer::timeout, this, &ExampleScene::onScreenCapture, Qt::DirectConnection);
+    //timer->start(50);
+	Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(), 6);
+	recorder->startCapture(100, 50, "screenshots");
 #endif
 
     
@@ -155,7 +157,7 @@ void ExampleScene::setupScene()
 }
 
 
-
+/*
 void ExampleScene::onScreenCapture()
 {
     static size_t counter = 0;
@@ -210,7 +212,7 @@ void ExampleScene::onScreenCapture()
     }
     ++counter;
 }
-
+*/
 void ExampleScene::closeEvent(QCloseEvent* event)
 {
     if (m_scene)

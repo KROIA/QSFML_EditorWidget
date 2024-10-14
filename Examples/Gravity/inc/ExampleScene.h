@@ -16,14 +16,14 @@ public:
     ~ExampleScene();
 
     private slots:
-    void onScreenCapture();
+   // void onScreenCapture();
 private:
     void setupScene();
     void closeEvent(QCloseEvent* event) override;
 
 
     Ui::ExampleScene* ui;
-	
+	/*
     struct ThreadData
     {
 		struct ImageData
@@ -46,6 +46,6 @@ private:
         Log::LogObject log;
     };
 	std::vector<ThreadData> m_threadData;
-
+    */
     QSFML::Scene* m_scene;
 };
