@@ -3,25 +3,38 @@
 using namespace QSFML;
 using namespace QSFML::Objects;
 
+/*
+   This tutorial creates a green quare shape that can be moved by the mouse.
+   It automatically rotates around its center.
+
+   What you will learn:
+   - How to create a GameObject
+   - How to create a Shape component
+   - How to create a MouseFollower component
+   - How to add an update function to a GameObject
+
+*/
 void ExampleScene::setupTutorial_1(QSFML::Scene* scene)
 {
 	scene->getSceneLogger().logInfo("Tutorial 1 started");
 
 
-    // Instantiate a GameObject with the given name
+	// Instantiate a GameObject with the name "MyObject"
     QSFML::Objects::GameObject* object = new QSFML::Objects::GameObject("MyObject");
 
     // Create Components
     //   Create a square shape
     QSFML::Components::Shape* shape = new QSFML::Components::Shape();
+
+	// Define the vertices of the square shape
     shape->setPoints({
         {-50, -50},
         {50, -50},
         {50, 50},
         {-50, 50}
                      });
-    shape->setFillColor(sf::Color::Green);
-    shape->setFill(true);
+	shape->setFillColor(sf::Color::Green);  // Set the fill color to green
+	shape->setFill(true);  // Fill the shape
 
     //   Create a mouse follower component
     QSFML::Components::MouseFollower* mouseFollower = new QSFML::Components::MouseFollower();
@@ -45,25 +58,6 @@ void ExampleScene::setupTutorial_1(QSFML::Scene* scene)
                                   // param obj is a reference to the object (replacement for the this pointer)
                                   obj.rotate(1);
                               });
-
-    // Add an event function to the object
-    object->addEventFunction([](GameObject& obj, const std::unordered_map<CameraWindow*, std::vector<sf::Event>>& events)
-                             {
-                                 // Custom event handler
-                                 //obj.logInfo("Events: " + std::to_string(events.size()));
-                             });
-
-    // Add a draw function to the object
-    object->addDrawFunction([](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
-                            {
-                                // Custom draw function
-                                sf::CircleShape circle(25);
-                                circle.setFillColor(sf::Color::Red);
-                                circle.setOrigin(25, 25);
-                                circle.setPosition(50, 0);
-                                target.draw(circle, states);
-                            });
-
 
 	scene->addObject(object);
 }

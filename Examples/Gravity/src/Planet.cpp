@@ -110,7 +110,7 @@ sf::Vector2f Planet::calculateForce(Planet* other)
 		if (distance < m_radius + other->m_radius)
 		{
 			sf::Vector2f normal = VectorMath::getNormalized(direction);
-			sf::Vector2f tangent = VectorMath::getRotated(normal, M_PI_2);
+			sf::Vector2f tangent = VectorMath::getRotatedRAD(normal, M_PI_2);
 			sf::Vector2f relativeVelocity = m_velocity - other->m_velocity;
 			float normalVelocity = VectorMath::dotProduct(relativeVelocity, normal);
 			float tangentVelocity = VectorMath::dotProduct(relativeVelocity, tangent);

@@ -105,14 +105,14 @@ void CurvedMirror::updateLine()
 {
 	float dAlpha = m_shape.m_openingAngle / m_shape.m_resolution;
 	float alpha = -m_shape.m_openingAngle/2;
-	sf::Vector2f start = QSFML::VectorMath::getRotatedUnitVector(alpha) * m_shape.m_radius;
+	sf::Vector2f start = QSFML::VectorMath::getRotatedUnitVectorRAD(alpha) * m_shape.m_radius;
 	sf::Vector2f rotationPoint = QSFML::VectorMath::getUnitVector() * m_shape.m_radius;
-	start = QSFML::VectorMath::getRotated(start, rotationPoint, m_shape.m_angle) + m_shape.m_pos;
+	start = QSFML::VectorMath::getRotatedRAD(start, rotationPoint, m_shape.m_angle) + m_shape.m_pos;
 	for (unsigned int i = 0; i < m_shape.m_resolution; ++i)
 	{
 		alpha += dAlpha;
-		sf::Vector2f end = QSFML::VectorMath::getRotatedUnitVector(alpha) * m_shape.m_radius;
-		end = QSFML::VectorMath::getRotated(end, rotationPoint, m_shape.m_angle) + m_shape.m_pos;
+		sf::Vector2f end = QSFML::VectorMath::getRotatedUnitVectorRAD(alpha) * m_shape.m_radius;
+		end = QSFML::VectorMath::getRotatedRAD(end, rotationPoint, m_shape.m_angle) + m_shape.m_pos;
 		m_mirrorLines[i]->setPoints(start, end);
 		m_shape.m_mirrorRays[i].setPosition(start);
 		m_shape.m_mirrorRays[i].setDirection(end - start);
@@ -136,15 +136,15 @@ bool CurvedMirror::processLaser(const LightRay& ray,
 	if (getShortestDistanceAndIndex(ray, factorA, factorB, i))
 	{
 		sf::Vector2f collisionPoint = m_mirrorRays[i].getPoint(factorA);
-		float subshapeAngle = QSFML::VectorMath::getAngle(m_mirrorRays[i].getDirection());
+		float subshapeAngle = QSFML::VectorMath::getAngleRAD(m_mirrorRays[i].getDirection());
 
-		float rayAngle = QSFML::VectorMath::getAngle(ray.getDirection());
+		float rayAngle = QSFML::VectorMath::getAngleRAD(ray.getDirection());
 		float newAngle = 2 * subshapeAngle - rayAngle;
 
 
 		//qDebug() << "new Angle: " << newAngle*180/M_PI << " " << rayAngle;
 
-		QSFML::Utilities::Ray reflected(collisionPoint, QSFML::VectorMath::getRotatedUnitVector(newAngle));
+		QSFML::Utilities::Ray reflected(collisionPoint, QSFML::VectorMath::getRotatedUnitVectorRAD(newAngle));
 		reflectedOut.push_back(reflected);
 		return true;
 	}
@@ -202,7 +202,7 @@ bool CurvedMirror::MirrorShape::getCollisionData(const LightRay& ray,
 	{
 		outCollisionFactor = factorB;
 		sf::Vector2f collisionPoint = m_mirrorRays[i].getPoint(factorA);
-		float subshapeAngle = QSFML::VectorMath::getAngle(m_mirrorRays[i].getDirection());
+		float subshapeAngle = QSFML::VectorMath::getAngleRAD(m_mirrorRays[i].getDirection());
 
 		outNormalAngle = subshapeAngle + M_PI_2;
 		return true;

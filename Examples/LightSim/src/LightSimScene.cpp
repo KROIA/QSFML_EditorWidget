@@ -293,7 +293,7 @@ void LightSimScene::setupScene()
                     {
                         sf::Vector2f _dir = dir;
                         float angle = std::sin(laser->getAge()*10)*0.5;
-						_dir = VectorMath::getRotated(_dir, angle);
+						_dir = VectorMath::getRotatedRAD(_dir, angle);
                         laser->setDirection(_dir);
                     });
             }

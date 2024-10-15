@@ -32,7 +32,7 @@ SandboxObject::~SandboxObject()
 
 void SandboxObject::update()
 {
-    m_vec->setDirection(VectorMath::getRotated(m_vec->getDirection(), 0.1));
+    m_vec->setDirection(VectorMath::getRotatedRAD(m_vec->getDirection(), 0.1));
 }
 
 void SandboxObject::onButtonPress()

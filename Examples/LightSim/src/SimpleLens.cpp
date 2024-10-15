@@ -113,7 +113,7 @@ bool SimpleLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
 	if (getLensCollisionFactor(ray, outgoingRay, fac, normalAngle))
 	{
 		collisionPointOut = ray.getPoint(fac);
-		float rayAngle = QSFML::VectorMath::getAngle(ray.getDirection());
+		float rayAngle = QSFML::VectorMath::getAngleRAD(ray.getDirection());
 
 
 		// {
@@ -147,7 +147,7 @@ bool SimpleLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
 		if (!outgoingRay && !data.doesRefract)
 		{
 			QSFML::Utilities::Ray reflected(ray);
-			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(data.reflectAngle);
+			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVectorRAD(data.reflectAngle);
 			reflected.setPos(collisionPointOut + 0.001f * dir);
 			reflected.setDirection(dir);
 
@@ -160,7 +160,7 @@ bool SimpleLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
 		if (data.doesRefract)
 		{
 			QSFML::Utilities::Ray refracted(ray);
-			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(data.refractAngle);
+			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVectorRAD(data.refractAngle);
 
 			refracted.setDirection(dir);
 
@@ -206,8 +206,8 @@ void SimpleLens::update()
 void SimpleLens::reflectAndRefract(float rayAngle, float normalAngle, float n1, float n2,
 	ReflectionAndRefractionData& outData) const
 {
-	rayAngle = QSFML::VectorMath::getNormalzedAngle(rayAngle);
-	normalAngle = QSFML::VectorMath::getNormalzedAngle(normalAngle);
+	rayAngle = QSFML::VectorMath::getNormalzedAngleRAD(rayAngle);
+	normalAngle = QSFML::VectorMath::getNormalzedAngleRAD(normalAngle);
 
 	// Berechne reflexion
 	outData.reflectAngle = normalAngle;
@@ -264,8 +264,8 @@ void SimpleLens::LensShape::getPainterVertecies(std::vector < sf::Vertex>& point
 {
 	points = std::vector < sf::Vertex>
 	{
-		sf::Vertex(m_pos + QSFML::VectorMath::getRotatedUnitVector(m_angle)*m_diameter / 2.f),
-		sf::Vertex(m_pos - QSFML::VectorMath::getRotatedUnitVector(m_angle)*m_diameter / 2.f)
+		sf::Vertex(m_pos + QSFML::VectorMath::getRotatedUnitVectorRAD(m_angle)*m_diameter / 2.f),
+		sf::Vertex(m_pos - QSFML::VectorMath::getRotatedUnitVectorRAD(m_angle)*m_diameter / 2.f)
 	};
 }
 
@@ -275,7 +275,7 @@ bool SimpleLens::LensShape::getCollisionData(const LightRay& ray,
 	float& outCollisionFactor, float& outNormalAngle, bool& rayStartsInsideShape) const
 {
 
-	QSFML::Utilities::Ray shapeRay(m_pos, QSFML::VectorMath::getRotatedUnitVector(m_angle) * m_diameter / 2.f);
+	QSFML::Utilities::Ray shapeRay(m_pos, QSFML::VectorMath::getRotatedUnitVectorRAD(m_angle) * m_diameter / 2.f);
 
 	float fac1 = 99999999;
 	float fac2 = 99999999;
@@ -287,17 +287,17 @@ bool SimpleLens::LensShape::getCollisionData(const LightRay& ray,
 	rayStartsInsideShape = false;
 
 	sf::Vector2f collisionPoint = ray.ray.getPoint(fac2);
-	float rayAngle = QSFML::VectorMath::getAngle(ray.ray.getDirection());
+	float rayAngle = QSFML::VectorMath::getAngleRAD(ray.ray.getDirection());
 	if (rayAngle - m_angle < M_PI_2)
 	{
-		sf::Vector2f focusPoint = m_pos + (QSFML::VectorMath::getRotatedUnitVector((float)(m_angle-M_PI_2)) * m_focusLength);
-		float focusAngle = QSFML::VectorMath::getAngle(focusPoint - collisionPoint);
+		sf::Vector2f focusPoint = m_pos + (QSFML::VectorMath::getRotatedUnitVectorRAD((float)(m_angle-M_PI_2)) * m_focusLength);
+		float focusAngle = QSFML::VectorMath::getAngleRAD(focusPoint - collisionPoint);
 		outNormalAngle = focusAngle;
 	}
 	else
 	{
-		sf::Vector2f focusPoint = m_pos + (QSFML::VectorMath::getRotatedUnitVector((float)(m_angle + M_PI_2)) * m_focusLength);
-		float focusAngle = QSFML::VectorMath::getAngle(focusPoint - collisionPoint);
+		sf::Vector2f focusPoint = m_pos + (QSFML::VectorMath::getRotatedUnitVectorRAD((float)(m_angle + M_PI_2)) * m_focusLength);
+		float focusAngle = QSFML::VectorMath::getAngleRAD(focusPoint - collisionPoint);
 		outNormalAngle = focusAngle;
 	}
 

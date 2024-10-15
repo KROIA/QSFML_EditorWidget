@@ -81,7 +81,7 @@ class VectorDisplayer: public QSFML::Objects::GameObject
 
                             m_vec->m_ray2.setPosition(m_vec->m_vec2->getStart());
                             m_vec->m_ray2.setDirection(m_vec->m_vec2->getDirection());
-                            m_vec->m_vec3->setAngle(m_vec->m_ray1.getAngle(m_vec->m_ray2));
+                            m_vec->m_vec3->setAngle(m_vec->m_ray1.getAngleRAD(m_vec->m_ray2));
 
                         }
                         }

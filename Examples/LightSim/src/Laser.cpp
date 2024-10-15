@@ -75,7 +75,7 @@ void Laser::update()
 	/*static float rotSpeed = 0.001;
 	float range = 5 * M_PI /360;
 
-	float angle = QSFML::VectorMath::getAngle(getDirection());
+	float angle = QSFML::VectorMath::getAngleRAD(getDirection());
 	if (angle < range - M_PI_2)
 	{
 		angle += rotSpeed;
@@ -84,7 +84,7 @@ void Laser::update()
 	{
 		angle = -M_PI_2 - range;
 	}
-	setDirection(QSFML::VectorMath::getRotatedUnitVector(angle));*/
+	setDirection(QSFML::VectorMath::getRotatedUnitVectorRAD(angle));*/
 
 	updateRay(m_rootRay, m_rootLaserInfo, 0);
 	

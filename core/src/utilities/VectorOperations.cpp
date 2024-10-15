@@ -24,35 +24,67 @@ namespace VectorMath
     {
         return vec.x * vec.x + vec.y * vec.y;
     }
-    sf::Vector2f getRotatedUnitVector(float rad)
+    sf::Vector2f getRotatedUnitVectorRAD(float rad)
     {
         return sf::Vector2f((float)cos((double)rad), (float)sin((double)rad));
     }
-    Vector2d getRotatedUnitVector(double rad)
+    Vector2d getRotatedUnitVectorRAD(double rad)
     {
         return Vector2d(cos(rad), sin(rad));
     }
-    sf::Vector2f getRotated(const sf::Vector2f &vec, float rad)
+    sf::Vector2f getRotatedUnitVector(float deg)
     {
-        float angle = getAngle(vec);
+		float rad = deg * M_PI / 180;
+        return sf::Vector2f((float)cos((double)rad), (float)sin((double)rad));
+    }
+    Vector2d getRotatedUnitVector(double deg)
+    {
+        double rad = deg * M_PI / 180;
+        return Vector2d(cos(rad), sin(rad));
+    }
+    sf::Vector2f getRotatedRAD(const sf::Vector2f &vec, float rad)
+    {
+        float angle = getAngleRAD(vec);
         angle += rad;
         return sf::Vector2f((float)cos((double)angle), (float)sin((double)angle)) * getLength(vec);
     }
-    Vector2d getRotated(const Vector2d& vec, double rad)
+    Vector2d getRotatedRAD(const Vector2d& vec, double rad)
     {
-        double angle = getAngle(vec);
+        double angle = getAngleRAD(vec);
         angle += rad;
         return Vector2d(cos(angle), sin(angle)) * getLength(vec);
     }
-    sf::Vector2f getRotated(const sf::Vector2f &vec, const sf::Vector2f &origin, float rad)
+    sf::Vector2f getRotated(const sf::Vector2f& vec, float deg)
     {
-        return getRotated(vec - origin, rad) + origin;
+        float angle = getAngleRAD(vec);
+        float rad = deg * M_PI / 180;
+        angle += rad;
+        return sf::Vector2f((float)cos((double)angle), (float)sin((double)angle)) * getLength(vec);
     }
-    Vector2d getRotated(const Vector2d& vec, const Vector2d& origin, double rad)
+    Vector2d getRotated(const Vector2d& vec, double deg)
     {
-        return getRotated(vec - origin, rad) + origin;
+        double angle = getAngleRAD(vec);
+        double rad = deg * M_PI / 180;
+        angle += rad;
+        return Vector2d(cos(angle), sin(angle)) * getLength(vec);
     }
-    float getAngle(const sf::Vector2f& vec)
+    sf::Vector2f getRotatedRAD(const sf::Vector2f &vec, const sf::Vector2f &origin, float rad)
+    {
+        return getRotatedRAD(vec - origin, rad) + origin;
+    }
+    Vector2d getRotatedRAD(const Vector2d& vec, const Vector2d& origin, double rad)
+    {
+        return getRotatedRAD(vec - origin, rad) + origin;
+    }
+    sf::Vector2f getRotated(const sf::Vector2f& vec, const sf::Vector2f& origin, float deg)
+    {
+        return getRotated(vec - origin, deg) + origin;
+    }
+    Vector2d getRotated(const Vector2d& vec, const Vector2d& origin, double deg)
+    {
+        return getRotated(vec - origin, deg) + origin;
+    }
+    float getAngleRAD(const sf::Vector2f& vec)
     {
 #ifdef QSFML_OPTIMIZED
         float angle = atan2(vec.y, vec.x);
@@ -73,11 +105,11 @@ namespace VectorMath
         else {
             angle = (float)acos((double)(vec.x / sqrL));
         }
-        return getNormalzedAngle(angle);
+        return getNormalzedAngleRAD(angle);
 #endif
         return 0;
     }
-    double getAngle(const Vector2d& vec)
+    double getAngleRAD(const Vector2d& vec)
     {
 #ifdef QSFML_OPTIMIZED
         double sqrL = vec.x * vec.x + vec.y * vec.y;
@@ -103,11 +135,23 @@ namespace VectorMath
         else {
             angle = acos(vec.x / sqrL);
         }
-        return getNormalzedAngle(angle);
+        return getNormalzedAngleRAD(angle);
 #endif
         return 0;
     }
-    float getAngle(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
+
+    float getAngle(const sf::Vector2f& vec)
+    {
+		return getAngleRAD(vec) * 180 / M_PI;
+    }
+    double getAngle(const Vector2d& vec)
+    {
+		return getAngleRAD(vec) * 180 / M_PI;
+    }
+
+
+
+    float getAngleRAD(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
         /*float angle1 = atan2(vec1.y, vec1.x);
         float angle2 = atan2(vec2.y, vec2.x);
@@ -144,7 +188,8 @@ namespace VectorMath
 
         
     }
-    double getAngle(const Vector2d& vec1, const Vector2d& vec2)
+    
+    double getAngleRAD(const Vector2d& vec1, const Vector2d& vec2)
     {
         // Calculate the magnitudes of the vectors
         double lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
@@ -175,7 +220,7 @@ namespace VectorMath
         double dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
         double lengthProduct = sqrt((vec1.x * vec1.x + vec1.y * vec1.y) * (vec2.x * vec2.x + vec2.y * vec2.y));
         double angle = acos(dotProduct / lengthProduct);
-        return getNormalzedAngle(angle);
+        return getNormalzedAngleRAD(angle);
         */
         
         /*double dotProduct = vec1.x * vec2.x + vec1.y * vec2.y;
@@ -191,7 +236,15 @@ namespace VectorMath
             angle = 2 * M_PI - acos(dotProduct / length);
         }
 
-        return getNormalzedAngle(angle);*/
+        return getNormalzedAngleRAD(angle);*/
+    }
+    float getAngle(const sf::Vector2f& vec1, const sf::Vector2f& vec2)
+    {
+		return getAngleRAD(vec1, vec2) * 180 / M_PI;
+    }
+    double getAngle(const Vector2d& vec1, const Vector2d& vec2)
+    {
+		return getAngleRAD(vec1, vec2) * 180 / M_PI;
     }
     float dotProduct(const sf::Vector2f &vec1, const sf::Vector2f &vec2)
     {
@@ -234,77 +287,136 @@ namespace VectorMath
         return(vec / sqrt(l));
     }
 
-    float getNormalzedAngle(float angle)
+    float getNormalzedAngleRAD(float rad)
     {
 #ifdef QSFML_OPTIMIZED
-        angle = fmod(angle + M_PI, 2 * M_PI);
-        return (angle < 0) ? angle + M_PI : angle - M_PI;
+        rad = fmod(rad + M_PI, 2 * M_PI);
+        return (rad < 0) ? rad + M_PI : rad - M_PI;
 #else
-        angle = (float)fmod((double)angle + M_PI, 2 * M_PI);
-        if (angle < 0)
-            angle += 2 * M_PI;
-        return angle - (float)M_PI;
+        rad = (float)fmod((double)rad + M_PI, 2 * M_PI);
+        if (rad < 0)
+            rad += 2 * M_PI;
+        return rad - (float)M_PI;
 #endif
     }
-    double getNormalzedAngle(double angle)
+    double getNormalzedAngleRAD(double rad)
     {
 #ifdef QSFML_OPTIMIZED
-        angle = fmod(angle + M_PI, 2 * M_PI);
-        return (angle < 0) ? angle + M_PI : angle - M_PI;
+        rad = fmod(rad + M_PI, 2 * M_PI);
+        return (rad < 0) ? rad + M_PI : rad - M_PI;
 #else
-        angle = fmod(angle + M_PI, 2 * M_PI);
-        if (angle < 0)
-            angle += 2 * M_PI;
-        return angle - M_PI;
+        rad = fmod(rad + M_PI, 2 * M_PI);
+        if (rad < 0)
+            rad += 2 * M_PI;
+        return rad - M_PI;
 #endif
     }
-    bool isAngleInRange(float angle, float minAngle, float maxAngle)
+    float getNormalzedAngle(float deg)
+    {
+		deg = fmod(deg, 360);
+		if (deg < 0)
+			deg += 360;
+		return deg - 180;
+    }
+    double getNormalzedAngle(double deg)
+    {
+		deg = fmod(deg, 360);
+		if (deg < 0)
+			deg += 360;
+		return deg - 180;
+    }
+    bool isAngleInRangeRAD(float rad, float minRad, float maxRad)
     {
         // Normalize angles to be in the range [0, 2*pi)
-        angle = (float)fmod((double)angle, M_2PI);
-        if (angle < 0)
-            angle += M_2PI;
+        rad = (float)fmod((double)rad, M_2PI);
+        if (rad < 0)
+            rad += M_2PI;
 
-        minAngle = (float)fmod((double)minAngle, M_2PI);
-        if (minAngle < 0)
-            minAngle += M_2PI;
+        minRad = (float)fmod((double)minRad, M_2PI);
+        if (minRad < 0)
+            minRad += M_2PI;
 
-        maxAngle = (float)fmod((double)maxAngle, M_2PI);
-        if (maxAngle < 0)
-            maxAngle += M_2PI;
+        maxRad = (float)fmod((double)maxRad, M_2PI);
+        if (maxRad < 0)
+            maxRad += M_2PI;
 
-        // Case where the angle wraps around
-        if (minAngle > maxAngle) {
-            return (angle >= minAngle || angle <= maxAngle);
+        // Case where the rad wraps around
+        if (minRad > maxRad) {
+            return (rad >= minRad || rad <= maxRad);
         }
 
-        // Case where the angle does not wrap around
-        return (angle >= minAngle && angle <= maxAngle);
+        // Case where the rad does not wrap around
+        return (rad >= minRad && rad <= maxRad);
     }
-    bool isAngleInRange(double angle, double minAngle, double maxAngle)
+    bool isAngleInRangeRAD(double rad, double minRad, double maxRad)
     {
         // Normalize angles to be in the range [0, 2*pi)
-        angle = fmod(angle, M_2PI);
-        if (angle < 0)
-            angle += M_2PI;
+        rad = fmod(rad, M_2PI);
+        if (rad < 0)
+            rad += M_2PI;
 
-        minAngle = fmod(minAngle, M_2PI);
-        if (minAngle < 0)
-            minAngle += M_2PI;
+        minRad = fmod(minRad, M_2PI);
+        if (minRad < 0)
+            minRad += M_2PI;
 
-        maxAngle = fmod(maxAngle, M_2PI);
-        if (maxAngle < 0)
-            maxAngle += M_2PI;
+        maxRad = fmod(maxRad, M_2PI);
+        if (maxRad < 0)
+            maxRad += M_2PI;
 
-        // Case where the angle wraps around
-        if (minAngle > maxAngle) {
-            return (angle >= minAngle || angle <= maxAngle);
+        // Case where the rad wraps around
+        if (minRad > maxRad) {
+            return (rad >= minRad || rad <= maxRad);
         }
 
-        // Case where the angle does not wrap around
-        return (angle >= minAngle && angle <= maxAngle);
+        // Case where the rad does not wrap around
+        return (rad >= minRad && rad <= maxRad);
     }
+    bool isAngleInRange(float deg, float minDeg, float maxDeg)
+    {
+        // Normalize angles to be in the range [0, 360)
+        deg = (float)fmod((double)deg, 360);
+        if (deg < 0)
+            deg += 360;
 
+        minDeg = (float)fmod((double)minDeg, 360);
+        if (minDeg < 0)
+            minDeg += 360;
+
+        maxDeg = (float)fmod((double)maxDeg, 360);
+        if (maxDeg < 0)
+            maxDeg += 360;
+
+        // Case where the rad wraps around
+        if (minDeg > maxDeg) {
+            return (deg >= minDeg || deg <= maxDeg);
+        }
+
+        // Case where the rad does not wrap around
+        return (deg >= minDeg && deg <= maxDeg);
+    }
+    bool isAngleInRange(double deg, double minDeg, double maxDeg)
+    {
+        // Normalize angles to be in the range [0, 360)
+        deg = fmod(deg, 360);
+        if (deg < 0)
+            deg += 360;
+
+        minDeg = fmod(minDeg, 360);
+        if (minDeg < 0)
+            minDeg += 360;
+
+        maxDeg = fmod(maxDeg, 360);
+        if (maxDeg < 0)
+            maxDeg += 360;
+
+        // Case where the rad wraps around
+        if (minDeg > maxDeg) {
+            return (deg >= minDeg || deg <= maxDeg);
+        }
+
+        // Case where the rad does not wrap around
+        return (deg >= minDeg && deg <= maxDeg);
+    }
 	sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t)
 	{
 		return start + (end - start) * t;

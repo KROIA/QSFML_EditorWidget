@@ -9,7 +9,7 @@ namespace QSFML
 	namespace Utilities
 	{
 		Ray::Ray()
-			: Transformable()
+			: m_pos(0,0)
 			, m_dir(1,0)
 			, m_dirLength(1)
 			, m_rayPainter(nullptr)
@@ -17,7 +17,7 @@ namespace QSFML
 
 		}
 		Ray::Ray(const Ray& other)
-			: Transformable(other)
+			: m_pos(other.m_pos)
 			, m_dir(other.m_dir)
 			, m_dirLength(other.m_dirLength)
 			, m_rayPainter(nullptr)
@@ -25,7 +25,7 @@ namespace QSFML
 			
 		}
 		Ray::Ray(const sf::Vector2f& position, const sf::Vector2f& direction)
-			: Transformable(position, 0)
+			: m_pos(position)
 			, m_dir(direction)
 			, m_dirLength(sqrt(direction.x * direction.x + direction.y * direction.y))
 			, m_rayPainter(nullptr)
@@ -33,7 +33,7 @@ namespace QSFML
 
 		}
 		Ray::Ray(float posX, float posY, float dirX, float dirY)
-			: Transformable({ posX, posY }, 0)
+			: m_pos(posX, posY)
 			, m_dir(dirX, dirY)
 			, m_dirLength(sqrt(dirX * dirX + dirY * dirY))
 			, m_rayPainter(nullptr)
@@ -52,16 +52,14 @@ namespace QSFML
 
 		Ray& Ray::operator=(const Ray& other)
 		{
+			m_pos = other.m_pos;
 			m_dir = other.m_dir;
 			m_dirLength = other.m_dirLength;
-			Transformable::operator=(other);
 			return *this;
 		}
 		bool Ray::operator==(const Ray& other) const
 		{
 			if (m_dirLength != other.m_dirLength)
-				return false;
-			if (Transformable::operator==(other) == false)
 				return false;
 			if (m_dir.x - other.m_dir.x != 0)
 				return false;
@@ -73,8 +71,6 @@ namespace QSFML
 		{
 			if (m_dirLength != other.m_dirLength)
 				return true;
-			if (Transformable::operator!=(other) == false)
-				return true;
 			if (m_dir.x - other.m_dir.x != 0)
 				return true;
 			if (m_dir.y - other.m_dir.y != 0)
@@ -84,29 +80,29 @@ namespace QSFML
 
 		Ray Ray::operator+(const sf::Vector2f& offset) const
 		{
-			return Ray(getPosition() + offset, m_dir);
+			return Ray(m_pos + offset, m_dir);
 		}
 		Ray Ray::operator-(const sf::Vector2f & offset) const
 		{
-			return Ray(getPosition() - offset, m_dir);
+			return Ray(m_pos - offset, m_dir);
 		}
 		Ray& Ray::operator+=(const sf::Vector2f& offset)
 		{
-			move(offset);
+			m_pos += offset;
 			return *this;
 		}
 		Ray& Ray::operator-=(const sf::Vector2f& offset)
 		{
-			move(-offset);
+			m_pos -= offset;
 			return *this;
 		}
 		Ray Ray::operator*(float factor) const
 		{
-			return Ray(getPosition(), m_dir * factor);
+			return Ray(m_pos, m_dir * factor);
 		}
 		Ray Ray::operator/(float divisor) const
 		{
-			return Ray(getPosition(), m_dir / divisor);
+			return Ray(m_pos, m_dir / divisor);
 		}
 		Ray& Ray::operator*=(float factor)
 		{
@@ -125,7 +121,7 @@ namespace QSFML
 		{
 			if (m_dirLength == 0)
 				return Ray();
-			return Ray(getPosition(), m_dir / m_dirLength);
+			return Ray(m_pos, m_dir / m_dirLength);
 		}
 		void Ray::normalize()
 		{
@@ -136,19 +132,19 @@ namespace QSFML
 			m_dirLength = 1;
 		}
 
-		/*void Ray::setPos(const sf::Vector2f& pos)
+		void Ray::setPosition(const sf::Vector2f& pos)
 		{
-			getPosition() = pos;
+			m_pos = pos;
 		}
-		void Ray::setPos(float posX, float posY)
+		void Ray::setPosition(float posX, float posY)
 		{
-			getPosition().x = posX;
-			getPosition().y = posY;
+			m_pos.x = posX;
+			m_pos.y = posY;
 		}
-		const sf::Vector2f& Ray::getPos() const
+		const sf::Vector2f& Ray::getPosition() const
 		{
-			return getPosition();
-		}*/
+			return m_pos;
+		}
 
 		void Ray::setDirection(const sf::Vector2f& dir)
 		{
@@ -165,18 +161,18 @@ namespace QSFML
 		{
 			return m_dir;
 		}
-		float Ray::getAngle() const
+		float Ray::getAngleRAD() const
 		{
-			return VectorMath::getAngle(m_dir);
+			return VectorMath::getAngleRAD(m_dir);
 		}
-		float Ray::getAngle(const Ray& ray) const
+		float Ray::getAngleRAD(const Ray& ray) const
 		{
-			return VectorMath::getAngle(m_dir, ray.m_dir);
+			return VectorMath::getAngleRAD(m_dir, ray.m_dir);
 		}
 
 		sf::Vector2f Ray::getPoint(float scalar) const
 		{
-			return getPosition() + scalar * m_dir;
+			return m_pos + scalar * m_dir;
 		}
 		float Ray::getShortestDistanceFactor(const sf::Vector2f& point, bool* failed) const
 		{
@@ -189,7 +185,7 @@ namespace QSFML
 			float divisor = m_dir.x * m_dir.x + m_dir.y * m_dir.y;
 			if (failed)
 				*failed = false;
-			return -(getPosition().x * m_dir.x + getPosition().y * m_dir.y - m_dir.x * point.x - m_dir.y * point.y) / divisor;
+			return -(m_pos.x * m_dir.x + m_pos.y * m_dir.y - m_dir.x * point.x - m_dir.y * point.y) / divisor;
 		}
 		float Ray::getShortestDistance(const sf::Vector2f& point, bool* failed) const
 		{
@@ -201,7 +197,7 @@ namespace QSFML
 			}
 			if (failed)
 				*failed = false;
-			return abs(getPosition().x * m_dir.y - getPosition().y * m_dir.x + m_dir.x * point.y - m_dir.y * point.x) / m_dirLength;
+			return abs(m_pos.x * m_dir.y - m_pos.y * m_dir.x + m_dir.x * point.y - m_dir.y * point.x) / m_dirLength;
 		}
 
 		bool Ray::raycast(const sf::Vector2f& pointA,
@@ -233,15 +229,15 @@ namespace QSFML
 						  float& outDistanceFactorA,
 						  float& outDistanceFactorB) const
 		{
-			bool ret = raycast(getPosition(), m_dir, other.getPosition(), other.m_dir, outDistanceFactorA, outDistanceFactorB);
+			bool ret = raycast(m_pos, m_dir, other.m_pos, other.m_dir, outDistanceFactorA, outDistanceFactorB);
 			if(ret && m_rayPainter)
 			{
 				sf::Vector2f pointA = getPoint(outDistanceFactorA);
 				sf::Vector2f pointB = other.getPoint(outDistanceFactorB);
 				m_rayPainter->addPoint(pointA);
 				m_rayPainter->addPoint(pointB);
-				m_rayPainter->addLine(getPosition(), pointA);
-				m_rayPainter->addLine(other.getPosition(), pointB);
+				m_rayPainter->addLine(m_pos, pointA);
+				m_rayPainter->addLine(other.m_pos, pointB);
 			}
 			return ret;
 		}
@@ -258,18 +254,18 @@ namespace QSFML
 			float m_dirx2 = m_dir.x * m_dir.x;
 			float m_diry2 = m_dir.y * m_dir.y;
 
-			float m_posy2 = getPosition().y * getPosition().y;
-			float m_posx2 = getPosition().x * getPosition().x;
+			float m_posy2 = m_pos.y * m_pos.y;
+			float m_posx2 = m_pos.x * m_pos.x;
 
 			float xp2 = circlePos.x * circlePos.x;
 			float yp2 = circlePos.y * circlePos.y;
 			float r2 = circleRadius * circleRadius;
 
-			float m_posx_xp = getPosition().x - circlePos.x;
-			float m_posy_yp = getPosition().y - circlePos.y;
+			float m_posx_xp = m_pos.x - circlePos.x;
+			float m_posy_yp = m_pos.y - circlePos.y;
 
 			float divisor = (m_dirx2 + m_diry2);
-			float diskrim = divisor * r2 - m_dirx2 * (m_posy2 - 2 * getPosition().y * circlePos.y + yp2) + 2 * m_dir.x * m_dir.y * m_posx_xp * m_posy_yp-m_diry2 * (m_posx2 - 2 * getPosition().x * circlePos.x + xp2);
+			float diskrim = divisor * r2 - m_dirx2 * (m_posy2 - 2 * m_pos.y * circlePos.y + yp2) + 2 * m_dir.x * m_dir.y * m_posx_xp * m_posy_yp-m_diry2 * (m_posx2 - 2 * m_pos.x * circlePos.x + xp2);
 			
 			float tmp1 = m_dir.x * (m_posx_xp)+m_dir.y * (m_posy_yp);
 			float root = sqrt(diskrim);
@@ -290,7 +286,7 @@ namespace QSFML
 			{
 				sf::Vector2f point = getPoint(outDistanceFactor);
 				m_rayPainter->addPoint(point);
-				m_rayPainter->addLine(getPosition(), point);
+				m_rayPainter->addLine(m_pos, point);
 			}
 			return ret;
 		}
@@ -299,17 +295,17 @@ namespace QSFML
 			size_t& outShapeIndex, 
 			size_t& outEdge) const
 		{
-			float minDistance = std::numeric_limits<float>::max();
+			outDistanceFactor = std::numeric_limits<float>::max();
 			bool ret = false;
 			for (size_t i = 0; i < shapes.size(); ++i)
 			{
 				float distanceFactor;
 				size_t edge;
-				if (raycast(shapes[i], distanceFactor, edge))
+				if (raycast_internal(shapes[i], distanceFactor, edge))
 				{
-					if (distanceFactor < minDistance)
+					if (distanceFactor < outDistanceFactor)
 					{
-						minDistance = distanceFactor;
+						outDistanceFactor = distanceFactor;
 						outShapeIndex = i;
 						outEdge = edge;
 						ret = true;
@@ -320,7 +316,37 @@ namespace QSFML
 			{
 				sf::Vector2f point = getPoint(outDistanceFactor);
 				m_rayPainter->addPoint(point);
-				m_rayPainter->addLine(getPosition(), point);
+				m_rayPainter->addLine(m_pos, point);
+			}
+			return ret;
+		}
+		bool Ray::raycast(const std::vector<Components::Shape*>& shapes,
+			float& outDistanceFactor,
+			size_t& outShapeIndex,
+			size_t& outEdge) const
+		{
+			outDistanceFactor = std::numeric_limits<float>::max();
+			bool ret = false;
+			for (size_t i = 0; i < shapes.size(); ++i)
+			{
+				float distanceFactor;
+				size_t edge;
+				if (raycast_internal(*shapes[i], distanceFactor, edge))
+				{
+					if (distanceFactor < outDistanceFactor)
+					{
+						outDistanceFactor = distanceFactor;
+						outShapeIndex = i;
+						outEdge = edge;
+						ret = true;
+					}
+				}
+			}
+			if (ret && m_rayPainter)
+			{
+				sf::Vector2f point = getPoint(outDistanceFactor);
+				m_rayPainter->addPoint(point);
+				m_rayPainter->addLine(m_pos, point);
 			}
 			return ret;
 		}
@@ -331,7 +357,7 @@ namespace QSFML
 			{
 				sf::Vector2f point = getPoint(outDistanceFactor);
 				m_rayPainter->addPoint(point);
-				m_rayPainter->addLine(getPosition(), point);
+				m_rayPainter->addLine(m_pos, point);
 			}
 			return ret;
 		}
@@ -353,7 +379,7 @@ namespace QSFML
 				sf::Vector2f direction = pointB - pointA;
 				float distanceFactor;
 				float dummy;
-				if (raycast(getPosition(), m_dir, pointA, direction, distanceFactor, dummy))
+				if (raycast(m_pos, m_dir, pointA, direction, distanceFactor, dummy))
 				{
 					if (distanceFactor < 0 || dummy < 0 || dummy > 1)
 						continue;
@@ -385,7 +411,7 @@ namespace QSFML
 				sf::Vector2f direction = pointB - pointA;
 				float distanceFactor;
 				float dummy;
-				if (raycast(getPosition(), m_dir, pointA, direction, distanceFactor, dummy))
+				if (raycast(m_pos, m_dir, pointA, direction, distanceFactor, dummy))
 				{
 					if (distanceFactor < 0 || dummy < 0 || dummy > 1)
 						continue;

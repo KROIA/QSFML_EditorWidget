@@ -59,7 +59,7 @@ namespace QSFML
         void VectorPainter::setAngle(float angle)
         {
             float length = VectorMath::getLength(m_end - m_start);
-            m_end = m_start + VectorMath::getRotatedUnitVector(angle) * length;
+            m_end = m_start + VectorMath::getRotatedUnitVectorRAD(angle) * length;
             updateArrow();
         }
         void VectorPainter::setColor(const sf::Color& color)
@@ -107,7 +107,7 @@ namespace QSFML
                 end.y = m_start.y + dir.y;
             }
             float length = sqrt(dir.x * dir.x + dir.y * dir.y);
-            float angle = VectorMath::getAngle(dir);
+            float angle = VectorMath::getAngleRAD(dir);
 
             static const float arrowTipAngle = M_PI * 4.f / 5.f;
 
@@ -116,8 +116,8 @@ namespace QSFML
             else if (length > 200)
                 length = 200;
             sf::Vector2f arrowTip(0.1f * length, 0);
-            sf::Vector2f arrowLeft = VectorMath::getRotated(arrowTip, angle - arrowTipAngle);
-            sf::Vector2f arrowRight = VectorMath::getRotated(arrowTip, angle + arrowTipAngle);
+            sf::Vector2f arrowLeft = VectorMath::getRotatedRAD(arrowTip, angle - arrowTipAngle);
+            sf::Vector2f arrowRight = VectorMath::getRotatedRAD(arrowTip, angle + arrowTipAngle);
 
             m_lines[0].position = m_start;
             m_lines[1].position = end;

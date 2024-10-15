@@ -98,7 +98,7 @@ void Tractor::update()
 	m_d += dDt * deltaT;
 
 	setRotation(-m_alpha);
-	sf::Vector2f v = QSFML::VectorMath::getRotatedUnitVector((float)((getRotation()-90) * M_PI / 180.f)) * m_velocity;
+	sf::Vector2f v = QSFML::VectorMath::getRotatedUnitVectorRAD((float)((getRotation()-90) * M_PI / 180.f)) * m_velocity;
 	sf::Vector2f deltaPos = v * deltaT;
 	move(deltaPos);
 	logInfo("d=" + std::to_string(m_d));

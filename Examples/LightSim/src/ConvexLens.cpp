@@ -129,7 +129,7 @@ bool ConvexLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
 	if (getLensCollisionFactor(ray, outgoingRay, fac, normalAngle))
 	{
 		collisionPointOut = ray.getPoint(fac);
-		float rayAngle = QSFML::VectorMath::getAngle(ray.getDirection());
+		float rayAngle = QSFML::VectorMath::getAngleRAD(ray.getDirection());
 		
 
 		// {
@@ -163,7 +163,7 @@ bool ConvexLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
 		if (!outgoingRay && !data.doesRefract)
 		{
 			QSFML::Utilities::Ray reflected(ray);
-			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(data.reflectAngle);
+			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVectorRAD(data.reflectAngle);
 			reflected.setPos(collisionPointOut + 0.001f * dir);
 			reflected.setDirection(dir);
 
@@ -176,7 +176,7 @@ bool ConvexLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
 		if (data.doesRefract)
 		{
 			QSFML::Utilities::Ray refracted(ray);
-			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVector(data.refractAngle);
+			sf::Vector2f dir = QSFML::VectorMath::getRotatedUnitVectorRAD(data.refractAngle);
 			
 			refracted.setDirection(dir);
 
@@ -283,8 +283,8 @@ void ConvexLens::LensShape::LensPainter::drawComponent(sf::RenderTarget& target,
 		line1[i].color = m_color;
 		line2[i].color = m_color;
 
-		line1[i].position = QSFML::VectorMath::getRotatedUnitVector(currentAngle1) * r + c2Pos;
-		line2[i].position = QSFML::VectorMath::getRotatedUnitVector(currentAngle2) * r + c1Pos;
+		line1[i].position = QSFML::VectorMath::getRotatedUnitVectorRAD(currentAngle1) * r + c2Pos;
+		line2[i].position = QSFML::VectorMath::getRotatedUnitVectorRAD(currentAngle2) * r + c1Pos;
 
 		
 	}
@@ -304,7 +304,7 @@ void ConvexLens::LensShape::LensPainter::drawComponent(sf::RenderTarget& target,
 	
 	float brennweite = m_lens->getFocusLength();
 
-	sf::Vector2f brennDir = QSFML::VectorMath::getRotatedUnitVector(m_lens->m_angle) * brennweite;
+	sf::Vector2f brennDir = QSFML::VectorMath::getRotatedUnitVectorRAD(m_lens->m_angle) * brennweite;
 	circle.setFillColor(sf::Color::Red);
 	circle.setPosition(pos + brennDir);
 	target.draw(circle);
@@ -341,7 +341,7 @@ void ConvexLens::LensShape::updateShape()
 {
 	m_openingAngle = asin(m_diameter / (2 * m_lensRadius)) * 2;
 	float centerOffset = sqrt(m_lensRadius * m_lensRadius - m_diameter * m_diameter / 4);
-	m_circlePos1 = QSFML::VectorMath::getRotatedUnitVector(m_angle) * centerOffset;
+	m_circlePos1 = QSFML::VectorMath::getRotatedUnitVectorRAD(m_angle) * centerOffset;
 	m_circlePos2 = m_pos - m_circlePos1;
 	m_circlePos1 += m_pos;
 
@@ -351,7 +351,7 @@ void ConvexLens::LensShape::updateShape()
 	m_parableParamA = m_lensThickness / (2 * d2 * d2);
 
 
-	/*sf::Vector2f direction = QSFML::VectorMath::getRotatedUnitVector(m_angle);
+	/*sf::Vector2f direction = QSFML::VectorMath::getRotatedUnitVectorRAD(m_angle);
 	sf::Vector2f start = m_pos - direction * m_width / 2.f;
 	sf::Vector2f end = m_pos + direction * m_width / 2.f;
 
@@ -408,13 +408,13 @@ bool ConvexLens::LensShape::getLensCollisionFactor(const LightRay& ray, bool out
 	{
 		smalestFactor = fac1;
 		sf::Vector2f normal = m_circlePos1 - ray.ray.getPoint(smalestFactor);
-		collisionNormal = QSFML::VectorMath::getAngle(normal);
+		collisionNormal = QSFML::VectorMath::getAngleRAD(normal);
 	}
 	else if (fac2 > 0)
 	{
 		smalestFactor = fac2;
 		sf::Vector2f normal = m_circlePos2 - ray.ray.getPoint(smalestFactor);
-		collisionNormal = QSFML::VectorMath::getAngle(normal);
+		collisionNormal = QSFML::VectorMath::getAngleRAD(normal);
 	}
 	else
 		return false;
@@ -453,9 +453,9 @@ bool ConvexLens::LensShape::getCircleElementCollisionFactor(const LightRay& ray,
 	rayInsideSegment = QSFML::VectorMath::getLength(ray.ray.getPosition() - center) < radius;
 	if (minFac > 0)
 	{
-		angle1 = QSFML::VectorMath::getAngle(ray.ray.getPoint(minFac) - center);
+		angle1 = QSFML::VectorMath::getAngleRAD(ray.ray.getPoint(minFac) - center);
 
-		if (QSFML::VectorMath::isAngleInRange(angle1, minAngle, maxAngle))
+		if (QSFML::VectorMath::isAngleInRangeRAD(angle1, minAngle, maxAngle))
 		{
 			smalestFactor = minFac;
 			return true;
@@ -465,9 +465,9 @@ bool ConvexLens::LensShape::getCircleElementCollisionFactor(const LightRay& ray,
 	
 	if (maxFac > 0)
 	{
-		angle2 = QSFML::VectorMath::getAngle(ray.ray.getPoint(maxFac) - center);
+		angle2 = QSFML::VectorMath::getAngleRAD(ray.ray.getPoint(maxFac) - center);
 
-		if (QSFML::VectorMath::isAngleInRange(angle2, minAngle, maxAngle))
+		if (QSFML::VectorMath::isAngleInRangeRAD(angle2, minAngle, maxAngle))
 		{
 			smalestFactor = maxFac;
 			return true;
@@ -533,7 +533,7 @@ bool ConvexLens::LensShape::getRaycastData(const LightRay& ray,
 		return false;
 
 	sf::Vector2f shortestDistancePoint = ray.ray.getPoint(shortestDistanceFactor);
-	float gamma = QSFML::VectorMath::getAngle(ray.ray.getDirection());
+	float gamma = QSFML::VectorMath::getAngleRAD(ray.ray.getDirection());
 	float minDistanceToCenter = QSFML::VectorMath::getLength(shortestDistancePoint - circleOrigin);
 	float beta = acos(minDistanceToCenter / m_lensRadius);
 	float gamma2 = gamma - M_PI_2;
@@ -569,7 +569,7 @@ bool ConvexLens::LensShape::getParableData(const LightRay& ray, float& outCollis
 	double parabel1Normal2 = nan;
 
 	double parable1Rotation = m_angle - M_PI_2;
-	sf::Vector2f originDir = QSFML::VectorMath::getRotatedUnitVector(m_angle) * m_parableParamB;
+	sf::Vector2f originDir = QSFML::VectorMath::getRotatedUnitVectorRAD(m_angle) * m_parableParamB;
 	sf::Vector2f parable1Pos = m_pos;// -originDir;
 
 	double parable2Fac1 = nan;
@@ -665,11 +665,11 @@ bool ConvexLens::LensShape::getParableCollisionFactor(const QSFML::Utilities::Ra
 	QSFML::VectorMath::Vector2d rayDirRaw(ray.getDirection().x, ray.getDirection().y);
 
 
-	QSFML::VectorMath::Vector2d rayPos = QSFML::VectorMath::getRotated(rayPosRaw, -parableRotation);
-	QSFML::VectorMath::Vector2d rayDir = QSFML::VectorMath::getRotated(rayDirRaw, -parableRotation);
+	QSFML::VectorMath::Vector2d rayPos = QSFML::VectorMath::getRotatedRAD(rayPosRaw, -parableRotation);
+	QSFML::VectorMath::Vector2d rayDir = QSFML::VectorMath::getRotatedRAD(rayDirRaw, -parableRotation);
 
-	//sf::Vector2f rayPos = QSFML::VectorMath::getRotated(ray.getPosition()() - parablePos, -parableRotation);
-	//sf::Vector2f rayDir = QSFML::VectorMath::getRotated(ray.getDirection(), -parableRotation);
+	//sf::Vector2f rayPos = QSFML::VectorMath::getRotatedRAD(ray.getPosition()() - parablePos, -parableRotation);
+	//sf::Vector2f rayDir = QSFML::VectorMath::getRotatedRAD(ray.getDirection(), -parableRotation);
 
 	// Calculations in double precission because when the ray is vertical. it is high volatile
 	double bpx = rayPos.x;
@@ -708,8 +708,8 @@ bool ConvexLens::LensShape::getParableCollisionFactor(const QSFML::Utilities::Ra
 		
 		outNormal1 = M_PI_2 + parableRotation;
 		outNormal2 = M_PI_2 + parableRotation;
-		outNormal1 = QSFML::VectorMath::getAngle(QSFML::VectorMath::Vector2d(1, (2 * a * x1))) + M_PI_2 + parableRotation;
-		outNormal2 = QSFML::VectorMath::getAngle(QSFML::VectorMath::Vector2d(1, (2 * a * x2))) + M_PI_2 + parableRotation;
+		outNormal1 = QSFML::VectorMath::getAngleRAD(QSFML::VectorMath::Vector2d(1, (2 * a * x1))) + M_PI_2 + parableRotation;
+		outNormal2 = QSFML::VectorMath::getAngleRAD(QSFML::VectorMath::Vector2d(1, (2 * a * x2))) + M_PI_2 + parableRotation;
 	}
 	else
 	{
@@ -724,9 +724,9 @@ bool ConvexLens::LensShape::getParableCollisionFactor(const QSFML::Utilities::Ra
 		x1 = bpx + outFac1 * bdx;
 		x2 = bpx + outFac2 * bdx;
 
-		//outNormal1 = QSFML::VectorMath::getAngle(sf::Vector2f(x1, 2 * a * x1)) - M_PI_2 + parableRotation;
-		outNormal1 = QSFML::VectorMath::getAngle(QSFML::VectorMath::Vector2d(1, (2 * a * x1))) + M_PI_2 + parableRotation;
-		outNormal2 = QSFML::VectorMath::getAngle(QSFML::VectorMath::Vector2d(1, (2 * a * x2))) + M_PI_2 + parableRotation;
+		//outNormal1 = QSFML::VectorMath::getAngleRAD(sf::Vector2f(x1, 2 * a * x1)) - M_PI_2 + parableRotation;
+		outNormal1 = QSFML::VectorMath::getAngleRAD(QSFML::VectorMath::Vector2d(1, (2 * a * x1))) + M_PI_2 + parableRotation;
+		outNormal2 = QSFML::VectorMath::getAngleRAD(QSFML::VectorMath::Vector2d(1, (2 * a * x2))) + M_PI_2 + parableRotation;
 	}
 	
 	
@@ -773,8 +773,8 @@ void ConvexLens::LensShape::getPainterVertecies(std::vector < sf::Vertex>& left,
 	{
 		x = start + i * dx;
 		float y = m_parableParamA * x * x;
-		sf::Vector2f pLeft = QSFML::VectorMath::getRotated(sf::Vector2f(x, y + m_parableParamB), m_angle + M_PI_2) + m_pos;
-		sf::Vector2f pRight = QSFML::VectorMath::getRotated(sf::Vector2f(x, y + m_parableParamB), m_angle - M_PI_2) + m_pos;
+		sf::Vector2f pLeft = QSFML::VectorMath::getRotatedRAD(sf::Vector2f(x, y + m_parableParamB), m_angle + M_PI_2) + m_pos;
+		sf::Vector2f pRight = QSFML::VectorMath::getRotatedRAD(sf::Vector2f(x, y + m_parableParamB), m_angle - M_PI_2) + m_pos;
 
 		left.push_back(pLeft);
 		right.push_back(pRight);

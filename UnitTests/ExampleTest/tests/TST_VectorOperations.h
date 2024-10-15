@@ -193,25 +193,25 @@ private:
 		{
 			float rotation = (float)(rand() % 1000) / 1000.0f * 2 * M_PI;
 			sf::Vector2f correctRotated1 = sf::Vector2f(std::cos(data.angle + rotation), std::sin(data.angle + rotation)) * data.length;
-			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotated(data.vec, rotation), correctRotated1), "getRotated");
+			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotatedRAD(data.vec, rotation), correctRotated1), "getRotated");
 		}
 		for (auto& data : m_singleVectorOperationData)
 		{
 			float rotation = (float)(rand() % 1000) / 1000.0f * 2 * M_PI;
 			sf::Vector2f correctRotated2 = sf::Vector2f(std::cos(rotation), std::sin(rotation));
-			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotatedUnitVector(rotation), correctRotated2), "getRotatedUnitVector");
+			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotatedUnitVectorRAD(rotation), correctRotated2), "getRotatedUnitVector");
 		}
 		for (auto& data : m_D_singleVectorOperationData)
 		{
 			double rotation = (double)(rand() % 1000) / 1000.0f * 2 * M_PI;
 			sf::Vector2<double> correctRotated1 = sf::Vector2<double>(std::cos(data.angle + rotation), std::sin(data.angle + rotation)) * data.length;
-			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotated(data.vec, rotation), correctRotated1), "getRotated");
+			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotatedRAD(data.vec, rotation), correctRotated1), "getRotated");
 		}
 		for (auto& data : m_D_singleVectorOperationData)
 		{
 			double rotation = (double)(rand() % 1000) / 1000.0f * 2 * M_PI;
 			sf::Vector2<double> correctRotated2 = sf::Vector2<double>(std::cos(rotation), std::sin(rotation));
-			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotatedUnitVector(rotation), correctRotated2), "getRotatedUnitVector");
+			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getRotatedUnitVectorRAD(rotation), correctRotated2), "getRotatedUnitVector");
 		}
 	}
 
@@ -246,11 +246,11 @@ private:
 		TEST_START(results);
 		for (auto& data : m_doubleVectorOperationData)
 		{
-			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getAngle(data.vec1, data.vec2), data.angle), "getAngle");
+			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getAngleRAD(data.vec1, data.vec2), data.angle), "getAngle");
 		}
 		for (auto& data : m_D_doubleVectorOperationData)
 		{
-			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getAngle(data.vec1, data.vec2), data.angle), "getAngle");
+			TEST_ASSERT_M(isEqual(QSFML::VectorMath::getAngleRAD(data.vec1, data.vec2), data.angle), "getAngle");
 		}
 	}
 
@@ -270,7 +270,7 @@ private:
 				auto startTime = std::chrono::high_resolution_clock::now();
 				clock_t startCpuTime = std::clock();
 
-				float angle = QSFML::VectorMath::getAngle(sf::Vector2f(x, y));
+				float angle = QSFML::VectorMath::getAngleRAD(sf::Vector2f(x, y));
 
 				auto endTime = std::chrono::high_resolution_clock::now();
 				cpuTime += std::clock() - startCpuTime;
@@ -287,7 +287,7 @@ private:
 			{
 				float x = (float)(rand() % 1000) / 1000.0f;
 				float y = (float)(rand() % 1000) / 1000.0f;
-				float angle = QSFML::VectorMath::getAngle(sf::Vector2f(x, y));
+				float angle = QSFML::VectorMath::getAngleRAD(sf::Vector2f(x, y));
 			}
 			TimePoint end = std::chrono::high_resolution_clock::now();
 			clock_t cpuTimeMs = (clock() - cpuTime) / (CLOCKS_PER_SEC / 1000);
@@ -303,7 +303,7 @@ private:
 			{
 				float x = (float)(rand() % 1000) / 1000.0f;
 				float y = (float)(rand() % 1000) / 1000.0f;
-				float angle = QSFML::VectorMath::getAngle(sf::Vector2f(x, y), sf::Vector2f(y,x+5));
+				float angle = QSFML::VectorMath::getAngleRAD(sf::Vector2f(x, y), sf::Vector2f(y,x+5));
 			}
 			TimePoint end = std::chrono::high_resolution_clock::now();
 			clock_t cpuTimeMs = (clock() - cpuTime) / (CLOCKS_PER_SEC / 1000);
@@ -317,7 +317,7 @@ private:
 			{
 				double x = (double)(rand() % 1000) / 1000.0f;
 				double y = (double)(rand() % 1000) / 1000.0f;
-				double angle = QSFML::VectorMath::getAngle(sf::Vector2<double>(x, y), sf::Vector2<double>(y, x + 5));
+				double angle = QSFML::VectorMath::getAngleRAD(sf::Vector2<double>(x, y), sf::Vector2<double>(y, x + 5));
 			}
 			TimePoint end = std::chrono::high_resolution_clock::now();
 			clock_t cpuTimeMs = (clock() - cpuTime) / (CLOCKS_PER_SEC / 1000);

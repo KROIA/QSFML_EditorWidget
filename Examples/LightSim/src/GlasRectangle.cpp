@@ -130,10 +130,10 @@ void GlasRectangle::RectShape::set(const sf::Vector2f& pos, const sf::Vector2f& 
     m_size = size;
     m_angle = rotation;
 
-    m_TL = QSFML::VectorMath::getRotated(m_TL, m_angle) + m_pos;
-    m_TR = QSFML::VectorMath::getRotated(m_TR, m_angle) + m_pos;
-    m_BR = QSFML::VectorMath::getRotated(m_BR, m_angle) + m_pos;
-    m_BL = QSFML::VectorMath::getRotated(m_BL, m_angle) + m_pos;
+    m_TL = QSFML::VectorMath::getRotatedRAD(m_TL, m_angle) + m_pos;
+    m_TR = QSFML::VectorMath::getRotatedRAD(m_TR, m_angle) + m_pos;
+    m_BR = QSFML::VectorMath::getRotatedRAD(m_BR, m_angle) + m_pos;
+    m_BL = QSFML::VectorMath::getRotatedRAD(m_BL, m_angle) + m_pos;
 }
 
 GlasRectangle::RectShape::Painter::Painter(RectShape* rect, const std::string& name)

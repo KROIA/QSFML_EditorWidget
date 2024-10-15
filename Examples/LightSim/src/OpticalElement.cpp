@@ -117,13 +117,13 @@ bool OpticalElement::getRaycastDistance(const LightRay& ray, float& outDistance)
 void OpticalElement::reflectAndRefract(float rayAngle, float normalAngle, float n1, float n2,
 	ReflectionAndRefractionData &outData) const
 {
-	rayAngle = QSFML::VectorMath::getNormalzedAngle(rayAngle);
-	normalAngle = QSFML::VectorMath::getNormalzedAngle(normalAngle);
+	rayAngle = QSFML::VectorMath::getNormalzedAngleRAD(rayAngle);
+	normalAngle = QSFML::VectorMath::getNormalzedAngleRAD(normalAngle);
 
 	// Winkel vom Lichtsrahl gegenüber der Normalen
 	float epsilon1 = (normalAngle - rayAngle);
 	
-	epsilon1 = QSFML::VectorMath::getNormalzedAngle(epsilon1);
+	epsilon1 = QSFML::VectorMath::getNormalzedAngleRAD(epsilon1);
 
 	// Berechne reflexion
 	outData.reflectAngle = M_PI + epsilon1 + normalAngle;
@@ -181,7 +181,7 @@ bool OpticalElement::reflectAndRefract(const LightRay& ray, const Shape& shape, 
 	}*/
 	if (rayInsideShape)
 		std::swap(n1, n2);
-	reflectAndRefract(QSFML::VectorMath::getAngle(ray.ray.getDirection()), normalAngle, n1, n2, outData);
+	reflectAndRefract(QSFML::VectorMath::getAngleRAD(ray.ray.getDirection()), normalAngle, n1, n2, outData);
 	return true;
 }
 
@@ -202,7 +202,7 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 
 	LightRay bounced = ray;
 	
-	sf::Vector2f dirRefract = QSFML::VectorMath::getRotatedUnitVector(data1.refractAngle);
+	sf::Vector2f dirRefract = QSFML::VectorMath::getRotatedUnitVectorRAD(data1.refractAngle);
 	bounced.ray.setPosition(outNextCollisionPoint + newPointOffset * dirRefract);
 	bounced.ray.setDirection(dirRefract);
 
@@ -245,7 +245,7 @@ void OpticalElement::processLaser_intern(const LightRay& ray,
 	{
 		if (doReflectBounce)
 		{
-			sf::Vector2f dirReflect = QSFML::VectorMath::getRotatedUnitVector(data1.reflectAngle);
+			sf::Vector2f dirReflect = QSFML::VectorMath::getRotatedUnitVectorRAD(data1.reflectAngle);
 			bounced.ray.setPosition(outNextCollisionPoint + newPointOffset * dirReflect);
 			bounced.ray.setDirection(dirReflect);
 			if (getRaycastDistance(bounced, distance))
@@ -291,7 +291,7 @@ COMPONENT_IMPL(OpticalElement::Painter);
 
 void OpticalElement::Painter::drawNormalVec(float normalAngle, const sf::Vector2f& pos)
 {
-	m_normalList.push_back(QSFML::Utilities::Ray(pos, QSFML::VectorMath::getRotatedUnitVector(normalAngle)));
+	m_normalList.push_back(QSFML::Utilities::Ray(pos, QSFML::VectorMath::getRotatedUnitVectorRAD(normalAngle)));
 }
 void OpticalElement::Painter::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates states) const

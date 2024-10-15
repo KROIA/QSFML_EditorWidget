@@ -158,7 +158,7 @@ void Pendulum::update()
             {
                 //m_pendulumData[i].endPos = getMouseWorldPosition();
                 sf::Vector2f dir = getMouseWorldPosition() - (sf::Vector2f(startPos.x, startPos.y) + getPosition());
-                m_pendulumData[i].angle = QSFML::VectorMath::getAngle(dir) - (float)M_PI_2;
+                m_pendulumData[i].angle = QSFML::VectorMath::getAngleRAD(dir) - (float)M_PI_2;
                 m_pendulumData[i].angleVelocity = 0;
                 m_pendulumData[i].angleAcceleration = 0;
             }
@@ -221,7 +221,7 @@ void Pendulum::updatePendulum(PendulumData& pendulumData, PendulumData *prev, do
     QSFML::VectorMath::Vector2d startPos = m_origin;
     if (prev)
         startPos = prev->endPos;
-    pendulumData.endPos = startPos + (double)pendulumData.length * QSFML::VectorMath::getRotatedUnitVector((double)pendulumData.angle + (float)M_PI_2);
+    pendulumData.endPos = startPos + (double)pendulumData.length * QSFML::VectorMath::getRotatedUnitVectorRAD((double)pendulumData.angle + (float)M_PI_2);
 }
 void Pendulum::applyEnergyCorrection(PendulumData& p1, PendulumData& p2, double targetEnergy, double dt)
 {

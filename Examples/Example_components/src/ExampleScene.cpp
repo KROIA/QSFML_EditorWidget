@@ -122,11 +122,11 @@ void ExampleScene::pathPainterComponent()
                 lastPoint = pathPainter->getPoint(pathPainter->getPointCount() - 1);
                 sf::Vector2f dir = lastPoint - pathPainter->getPoint(pathPainter->getPointCount() - 2);
 
-                lastDirAngle = QSFML::VectorMath::getAngle(dir);
+                lastDirAngle = QSFML::VectorMath::getAngleRAD(dir);
             }
 
             lastDirAngle += (rand() % (int)(M_PI * 25)-(M_PI * 12.5)) / 100.f;
-            pathPainter->appenPoint(lastPoint + QSFML::VectorMath::getRotatedUnitVector(lastDirAngle)*10.f);
+            pathPainter->appenPoint(lastPoint + QSFML::VectorMath::getRotatedUnitVectorRAD(lastDirAngle)*10.f);
             if (pathPainter->getPointCount() > 1000)
                 pathPainter->popPointAtStart(1);
 

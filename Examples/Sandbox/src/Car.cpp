@@ -69,7 +69,7 @@ void Car::update()
 	if(m_acceleration < 0)
 		m_painter->m_stearingAngle = -m_painter->m_stearingAngle;
 	
-	sf::Vector2f deltaPos = QSFML::VectorMath::getRotated(sf::Vector2f(0, m_acceleration * deltaT), getRotation()*M_PI/180.f);
+	sf::Vector2f deltaPos = QSFML::VectorMath::getRotatedRAD(sf::Vector2f(0, m_acceleration * deltaT), getRotation()*M_PI/180.f);
 	GameObject::move(deltaPos);
 	sf::Vector2f pos = getPosition();
 	//logInfo("Position: " + std::to_string(pos.x) + " " + std::to_string(pos.y));

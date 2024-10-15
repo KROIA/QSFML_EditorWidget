@@ -114,7 +114,7 @@ void ExampleScene::setupScene()
     {
         Planet* planet = new Planet();
         sf::Vector2f randPos = sf::Vector2f(rand() % positions, rand() % positions)-sf::Vector2f(positions *0.5, positions *0.5);
-        sf::Vector2f randVel = VectorMath::getNormalized(VectorMath::getRotated(randPos, M_PI_2))*(float)(1);
+        sf::Vector2f randVel = VectorMath::getNormalized(VectorMath::getRotatedRAD(randPos, M_PI_2))*(float)(1);
 		planet->setPosition(randPos);
         planet->setVelocity(randVel);
         planet->setMass((rand() % 100)+1);

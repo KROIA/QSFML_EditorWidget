@@ -63,7 +63,7 @@ void PerformanceObject::update()
 	float deltaDir = QSFML::Utilities::RandomEngine::getFloat(-0.1, 0.1);
 	m_currentDirection += deltaDir;
 	//sf::Vector2f deltaV = m_acceletation * deltaT;
-	sf::Vector2f deltaV = QSFML::VectorMath::getRotated(sf::Vector2f(1,0), sf::Vector2f(0,0), m_currentDirection);
+	sf::Vector2f deltaV = QSFML::VectorMath::getRotatedRAD(sf::Vector2f(1,0), sf::Vector2f(0,0), m_currentDirection);
 
 	m_velocity += deltaV;
 	if (QSFML::VectorMath::getLength(m_velocity) > maxVelocity)

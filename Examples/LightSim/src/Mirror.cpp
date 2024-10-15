@@ -72,7 +72,7 @@ float Mirror::getWidth()
 
 void Mirror::updateLine()
 {
-	sf::Vector2f direction = QSFML::VectorMath::getRotatedUnitVector(m_shape.m_angle);
+	sf::Vector2f direction = QSFML::VectorMath::getRotatedUnitVectorRAD(m_shape.m_angle);
 	sf::Vector2f start = m_shape.m_pos - direction * m_shape.m_width / 2.f;
 	sf::Vector2f end = m_shape.m_pos + direction * m_shape.m_width / 2.f;
 
@@ -97,11 +97,11 @@ bool Mirror::MirrorShape::getCollisionData(const LightRay& ray,
 		if (factorA >= 0 && factorA <= 1 && fac > 0.01)
 		{
 			outCollisionFactor = fac;
-			//float rayAngle = ray.getAngle();
-			//float mirrorAngle = m_mirrorRay.getAngle();
+			//float rayAngle = ray.getAngleRAD();
+			//float mirrorAngle = m_mirrorRay.getAngleRAD();
 
 			//float angle 
-			outNormalAngle = m_mirrorRay.getAngle() + M_PI_2;
+			outNormalAngle = m_mirrorRay.getAngleRAD() + M_PI_2;
 			rayStartsInsideShape = false;
 			return true;
 		}

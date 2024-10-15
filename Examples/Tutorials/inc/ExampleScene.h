@@ -13,7 +13,8 @@ class ExampleScene : public QMainWindow
     enum class Tutorial
     {
         tutorial_1,
-        tutorial_2
+        tutorial_2,
+        tutorial_3
     };
 
 public:
@@ -25,6 +26,7 @@ private slots:
 private:
     void setupTutorial_1(QSFML::Scene* scene);
     void setupTutorial_2(QSFML::Scene* scene);
+    void setupTutorial_3(QSFML::Scene* scene);
 
     void setupScene(Tutorial t);
     void closeEvent(QCloseEvent* event) override;
