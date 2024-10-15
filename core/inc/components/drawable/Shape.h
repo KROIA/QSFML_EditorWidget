@@ -54,6 +54,13 @@ namespace QSFML
 			Utilities::AABB getLocalBounds() const;
 			Utilities::AABB getGlobalBounds() const;
 
+			void setOutlineThickness(float thickness) {
+				m_outlineThickness = thickness;
+			}
+
+			float getOutlineThickness() const {
+				return m_outlineThickness;
+			}
 			//void drawComponent(sf::RenderTarget& target,
 			//	sf::RenderStates states) const override;
 
@@ -68,6 +75,7 @@ namespace QSFML
 			sf::Color m_fillColor;
 			sf::Color m_outlineColor;
 			//float m_outlineThickness;
+			float m_outlineThickness = 1;
 			bool m_fill;
 			bool m_outline;
 

@@ -114,9 +114,7 @@ namespace QSFML
 		}
 		sf::Vector2f Shape::getTransformedPoint(std::size_t index) const
 		{
-			sf::Transform transform;
-			transform.translate(getGlobalPosition());
-			transform.rotate(getRotation());
+			sf::Transform transform = getGlobalTransform();
 			return transform.transformPoint(m_points[index]);
 			//return m_transformedPoints[index];
 
@@ -204,21 +202,26 @@ namespace QSFML
 				for (const auto& point : m_points)
 				{
 					glVertex2f(point.x, point.y);
-				}
-				
+				}				
 				glEnd();
 			}
 			// use gl calls. Draw the outline if outline is true
 			if (m_outline)
 			{
+				
+				glLineWidth(m_outlineThickness);
 				glBegin(GL_LINE_STRIP);
+				
 				glColor4ub(m_outlineColor.r, m_outlineColor.g, m_outlineColor.b, m_outlineColor.a);
 				for (const auto& point : m_points)
 				{
 					glVertex2f(point.x, point.y);
 				}
 				glVertex2f(m_points[0].x, m_points[0].y);
+				//glLineWidth(1);
 				glEnd();
+				glLineWidth(1);
+				
 			}
 #else
 			if (m_points.size() == 0)

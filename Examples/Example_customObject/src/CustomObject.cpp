@@ -12,8 +12,7 @@ CustomObject::CustomObject()
 		{-50, -50},
 		{50, -50},
 		{50, 50},
-		{-50, 50},
-		{-50, -50}
+		{-50, 50}
 					  });
 	m_shape->setFillColor(sf::Color::Green);
 	m_shape->setFill(true);

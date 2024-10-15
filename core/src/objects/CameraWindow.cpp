@@ -72,6 +72,7 @@ namespace QSFML
 
         void CameraWindow::setThisCameraView(const sf::View& view)
         {
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
             if (m_window)
             {
                 m_window->setView(view);
@@ -121,6 +122,7 @@ namespace QSFML
 
         sf::Vector2i CameraWindow::getThisCameraMousePosition() const
         {
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
             if (m_window)
             {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
@@ -135,6 +137,7 @@ namespace QSFML
         }
         sf::Vector2f CameraWindow::getThisCameraMouseWorldPosition() const
         {
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
             if (!m_window)
                 return sf::Vector2f(0, 0);
             sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
@@ -142,6 +145,7 @@ namespace QSFML
         }
         sf::Vector2f CameraWindow::getInThisCameraWorldSpace(sf::Vector2i pixelSpace) const
         {
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
             if (!m_window) 
                 return sf::Vector2f(0, 0);
             pixelSpace.x *= m_dpiScale.x;
@@ -150,6 +154,7 @@ namespace QSFML
         }
         sf::Vector2i CameraWindow::getInThisCameraScreenSpace(const sf::Vector2f& worldSpace) const
         {
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
             sf::Vector2i pos(0, 0);
             if (!m_window) return pos;
 
@@ -167,6 +172,7 @@ namespace QSFML
         }
         void CameraWindow::captureThisCameraScreen(sf::Image& image) const
         {
+            QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			if (!m_window)
 				return;
 

@@ -786,7 +786,6 @@ void GameObject::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::v
 void GameObject::update_internal()
 {
     if (!m_enabled || !m_updateControlls.enableUpdateLoop) return;
-    //QSFMLP_OBJECT_BLOCK("GameObject::update_internal:"+getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_TEXT("Name", getName());
     for (const auto& seq : m_updateOrder)

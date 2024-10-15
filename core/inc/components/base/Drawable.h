@@ -88,6 +88,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
 		/// @return the global rotation of the object
         float getGlobalRotation() const;
 
+        sf::Transform getGlobalTransform() const;
+
 		/// @brief Enables or disables the transform of the drawable
         /// @param ignore 
         void ignoreTransform(bool ignore) { m_ignoreTransform = ignore; }

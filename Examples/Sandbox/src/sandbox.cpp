@@ -6,6 +6,7 @@
 #include "SandboxObject.h"
 #include "MouseCollider.h"
 #include "Car.h"
+#include "Tractor.h"
 #include <iostream>
 
 #include <QTimer>
@@ -45,7 +46,7 @@ void addShape(Scene* scene)
     QSFML::Components::Shape* shape = new QSFML::Components::Shape("TestShape");
     QSFML::Utilities::Ray* testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
     QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
-    linePainter->useGlobalPosition(true);
+    linePainter->ignoreTransform(true);
     obj->setPosition(sf::Vector2f(0,0));
     //delete testRay->createRayPainter();
 
@@ -174,10 +175,12 @@ void addCar(Scene* scene,
     const sf::ContextSettings& settings,
     QWidget* qparent)
 {
+	//Tractor* tractor = new Tractor(settings, qparent);
+	//scene->addObject(tractor);
     Car* car = new Car(settings, qparent);
     scene->addObject(car);
 
-    std::vector< Objects::CameraWindow*> cams = car->getChildsRecusrive<Objects::CameraWindow>();
+    //std::vector< Objects::CameraWindow*> cams = car->getChildsRecusrive<Objects::CameraWindow>();
 
 }
 

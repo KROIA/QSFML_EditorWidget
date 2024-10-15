@@ -451,6 +451,7 @@ namespace QSFML
 			QSFML_UNUSED(states);
 #ifdef QSFML_USE_GL_DRAW
 			QSFML_UNUSED(target);
+			glLoadMatrixf(sf::Transform::Identity.getMatrix());
 			glBegin(GL_LINES);
 			glColor4ub(m_lineColor.r, m_lineColor.g, m_lineColor.b, m_lineColor.a);
 			for (size_t i = 0; i < m_lines.size(); ++i)

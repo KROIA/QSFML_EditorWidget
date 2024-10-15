@@ -41,29 +41,8 @@ namespace QSFML {
             EASY_PROFILER_ENABLE;
 #endif
         }
-        //m_window = nullptr;
-        // Setup layout of this widget
-        /*if (parentWidget())
-        {
-            if (!parentWidget()->layout())
-            {
-                QHBoxLayout* layout = new QHBoxLayout(parentWidget());
-                parentWidget()->setLayout(layout);
-            }
-            parentWidget()->layout()->addWidget(this);
-        }
 
-        // Setup some states to allow direct rendering into the widget
-        setAttribute(Qt::WA_PaintOnScreen);
-        setAttribute(Qt::WA_OpaquePaintEvent);
-        setAttribute(Qt::WA_NoSystemBackground);
-
-        // Set strong focus to enable keyboard events to be received
-        setFocusPolicy(Qt::StrongFocus);
-        */
-        //m_updateTimer.onFinished(std::bind(&Scene::update, this));
-        connect(&m_frameTimer, &QTimer::timeout, this, &Scene::firstUpdate);
-        
+        connect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
 
 		m_cameras.defaultCamera = new Objects::CameraWindow(settings.contextSettings, "DefaultCamera", parent);
         m_cameras.defaultCamera->enableFrameTimer(false);
@@ -146,7 +125,6 @@ namespace QSFML {
         // Setup the timer
         m_frameTimer.setInterval(m_settings.timing.frameTime * 1000);
         StatsManager::setFixedDeltaT(m_settings.timing.physicsFixedDeltaT);
-        //m_updateTimer.setInterval(m_settings.timing.frameTime);
     }
     const SceneSettings::Timing& Scene::getTiming() const
     {
@@ -184,12 +162,15 @@ namespace QSFML {
     void Scene::start()
     {
         m_frameTimer.start();
+        m_syncedUpdateT_t1 = std::chrono::high_resolution_clock::now();
+        m_update_t1 = m_syncedUpdateT_t1;
+        m_paint_t1 = m_syncedUpdateT_t1;
     }
     void Scene::stop()
     {
         m_frameTimer.stop();
-        connect(&m_frameTimer, &QTimer::timeout, this, &Scene::firstUpdate);
-        disconnect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
+        //connect(&m_frameTimer, &QTimer::timeout, this, &Scene::firstUpdate);
+        //disconnect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
     }
 
     void Scene::setCameraView(const sf::View& view)
@@ -354,7 +335,7 @@ namespace QSFML {
         }
     }*/
 
-    void Scene::firstUpdate()
+   /* void Scene::firstUpdate()
     {
         disconnect(&m_frameTimer, &QTimer::timeout, this, &Scene::firstUpdate);
         connect(&m_frameTimer, &QTimer::timeout, this, &Scene::update);
@@ -362,7 +343,7 @@ namespace QSFML {
         m_update_t1 = m_syncedUpdateT_t1;
         m_paint_t1 = m_syncedUpdateT_t1;
         update();
-    }
+    }*/
     void Scene::update()
     {
         if (!m_cameras.defaultCamera)

@@ -47,6 +47,7 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
         const sf::Color &getColor() const;
         const sf::Color &getColor(size_t index) const;
 
+        /*
         /// <summary>
         /// Setting to switch from relative to global position
         /// </summary>
@@ -67,7 +68,7 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
         bool isUsingGlobalPosition() const
         {
             return m_useGlobalPosition;
-        }
+        }*/
 
     private:
         void drawComponent(sf::RenderTarget& target,
@@ -75,7 +76,7 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
 
         float m_thickness;
         sf::Color m_color;
-        bool m_useGlobalPosition = false;
+        //bool m_useGlobalPosition = false;
 
         std::vector<LineData> m_lines;
 };

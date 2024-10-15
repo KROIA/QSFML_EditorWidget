@@ -37,6 +37,13 @@ namespace QSFML
             return getRotation();
         }
 
+        sf::Transform Drawable::getGlobalTransform() const
+        {
+			if (m_parent)
+				return m_parent->getGlobalTransform() * getTransform();
+			return getTransform();
+        }
+
     }
 }
 

@@ -96,8 +96,7 @@ QSFML::Objects::GameObject* ExampleScene::customizedObjectFactory(const std::str
         {-50, -50},
         {50, -50},
         {50, 50},
-        {-50, 50},
-        {-50, -50}
+        {-50, 50}
         });
     shape->setFillColor(sf::Color::Green);
     shape->setFill(true);

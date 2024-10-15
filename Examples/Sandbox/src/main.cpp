@@ -26,8 +26,8 @@ int main(int argc, char *argv[])
     Log::UI::NativeConsoleView::createStaticInstance();
 	Log::UI::NativeConsoleView::getStaticInstance()->show();
 
-    Log::UI::QTreeConsoleView::createStaticInstance();
-    Log::UI::QTreeConsoleView::getStaticInstance()->show();
+    //Log::UI::QTreeConsoleView::createStaticInstance();
+    //Log::UI::QTreeConsoleView::getStaticInstance()->show();
 
 	//Log::FilePlotter plotter("test.log");
 

@@ -57,15 +57,6 @@ void Car::onAwake()
 void Car::update()
 {
 	float deltaT = getDeltaT();
-	//sf::Vector2f deltaV = m_acceleration * deltaT;
-	/*sf::Vector2f deltaV = QSFML::VectorMath::getRotated(sf::Vector2f(m_acceleration * deltaT, 0), m_stearingAngle * M_PI / 180.f);
-	m_velocity += deltaV;
-	if (QSFML::VectorMath::getLength(m_velocity) > m_maxSpeed)
-	{
-		m_velocity = QSFML::VectorMath::getNormalized(m_velocity) * m_maxSpeed;
-	}
-	sf::Vector2f deltaPos = m_velocity * deltaT;
-	move(deltaPos);*/
 
 	m_acceleration = std::min(m_acceleration, m_maxAcceleration);
 	m_acceleration = std::max(m_acceleration, -m_maxAcceleration);
@@ -82,6 +73,8 @@ void Car::update()
 	GameObject::move(deltaPos);
 	sf::Vector2f pos = getPosition();
 	//logInfo("Position: " + std::to_string(pos.x) + " " + std::to_string(pos.y));
+	//logInfo("Rotation: " + std::to_string(getRotation()));
+	//logInfo("Stearing: " + std::to_string(m_stearingAngle));
 
 	if (pos.x > 1000)
 	{

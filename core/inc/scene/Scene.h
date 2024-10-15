@@ -106,7 +106,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
 
     //private slots:
         
-        void firstUpdate();
+        //void firstUpdate();
         void update();
         void checkEvents();
         void updateObjects();
