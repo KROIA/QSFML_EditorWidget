@@ -73,16 +73,10 @@ void ExampleScene::setupScene()
 
     float worldSize = 2000;
 
-    DefaultEditor* defaultEditor = new DefaultEditor("Editor", sf::Vector2f(worldSize, worldSize));
+    DefaultEditor* defaultEditor = new DefaultEditor("Editor", sf::FloatRect(-worldSize/2, -worldSize/2, worldSize, worldSize));
     defaultEditor->setRenderLayer(RenderLayer::layer_0);
-    defaultEditor->setPosition(-sf::Vector2f(worldSize*0.5f, worldSize*0.5f));
-    defaultEditor->getCamera()->setMaxMovingBounds(sf::FloatRect(-worldSize * 0.5f, -worldSize * 0.5f, worldSize, worldSize));
+    //defaultEditor->getCamera()->setMaxMovingBounds(sf::FloatRect(-worldSize * 0.5f, -worldSize * 0.5f, worldSize, worldSize));
     m_scene->addObject(defaultEditor);
-    sf::View view = m_scene->getDefaultCamera()->getThisCameraView();
-    view.setSize(worldSize, worldSize);
-    view.setCenter(worldSize * 0.5f, worldSize * 0.5f);
-    m_scene->getDefaultCamera()->setThisCameraView(view);
-    m_scene->getDefaultCamera()->setPosition(0, 1);
 
     GameObject* planetSystem = new GameObject("PlanetSystem");
     QSFML::Components::VectorFieldPainter *vectorField = new QSFML::Components::VectorFieldPainter();

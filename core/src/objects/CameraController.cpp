@@ -188,6 +188,15 @@ namespace QSFML
             if (cam)
 				cam->setThisCameraView(view);
         }
+        void CameraController::setCameraView(const sf::FloatRect& area)
+        {
+            Objects::CameraWindow* cam = getCamera();
+            if (cam)
+            {
+                sf::View v(area);
+                cam->setThisCameraView(v);
+            }
+        }
         void CameraController::update()
         {
 

@@ -93,7 +93,7 @@ namespace QSFML
 
 			sf::RenderWindow* m_window = nullptr;
 			sf::ContextSettings m_settings;
-			//sf::View m_view;
+			sf::View m_view;
 			sf::Vector2f m_dpiScale;
 			sf::Vector2u m_oldViewSize;
 			sf::Vector2u m_currentViewSize;

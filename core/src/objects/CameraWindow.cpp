@@ -73,6 +73,7 @@ namespace QSFML
         void CameraWindow::setThisCameraView(const sf::View& view)
         {
             QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+            m_view = view;
             if (m_window)
             {
                 m_window->setView(view);
@@ -323,7 +324,7 @@ namespace QSFML
             //    std::sqrt(transform.getMatrix()[4] * transform.getMatrix()[4] + transform.getMatrix()[5] * transform.getMatrix()[5])));
             //view.setSize(transform.transformRect(sf::FloatRect(sf::Vector2f(0, 0), getScale())).getSize());
             
-
+            m_view = view;
             m_window->setView(view);
         }
         //void CameraWindow::updateView()
