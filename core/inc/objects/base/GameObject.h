@@ -998,6 +998,20 @@ protected:
          */
         sf::Vector2u getOldCameraSize() const;
 
+		/**
+		 * @brief
+		 * Gets the default camera of the scene
+		 * @return default camera or nullptr if object is not in a scene
+         */
+        CameraWindow* getDefaultCamera() const;
+
+        /**
+         * @brief 
+		 * Gets the camera that is currently used for rendering
+		 * @return current render camera, or nullptr if object is not in rendering step
+         */
+        CameraWindow* getCurrentRenderCamera() const;
+
         /**
          * @brief 
 		 * Gets the default font for text rendering

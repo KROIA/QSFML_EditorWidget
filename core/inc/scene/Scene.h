@@ -89,8 +89,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         Log::LogObject& getPhysicsLogger() { return m_logger.getPhysicsLogger(); }
 
         Objects::CameraWindow* getDefaultCamera() { return m_cameras.defaultCamera; }
+        Objects::CameraWindow* getCurrentRenderCamera() { return m_cameras.currentRenderingCamera; }
     
-        void paint(sf::RenderWindow& target);
+        void paint(Objects::CameraWindow* currentCamera);
     protected:
         //QPaintEngine* paintEngine() const override;
         //void showEvent(QShowEvent*) override;
@@ -139,6 +140,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         struct Cameras
 		{
             Objects::CameraWindow* defaultCamera = nullptr;
+            Objects::CameraWindow* currentRenderingCamera = nullptr;
 			QSFML::vector<Objects::CameraWindow*> cameras;
 			QSFML::unordered_map<Objects::CameraWindow*, Objects::CameraWindow*> cameraMap;
 		

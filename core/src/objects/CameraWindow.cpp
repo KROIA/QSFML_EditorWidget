@@ -276,7 +276,7 @@ namespace QSFML
         {
             if (!getSceneParent() || !m_window)
                 return;
-            getSceneParent()->paint(*m_window);
+            getSceneParent()->paint(this);
         }
         void CameraWindow::pollEvents()
         {

@@ -58,6 +58,16 @@ namespace QSFML
             if (!m_sceneParent) return sf::Vector2u(0, 0);
             return m_sceneParent->getOldCameraSize();
         }
+        CameraWindow* GameObject::getDefaultCamera() const
+        {
+            if (!m_sceneParent) return nullptr;
+            return m_sceneParent->getDefaultCamera();
+        }
+        CameraWindow* GameObject::getCurrentRenderCamera() const
+        {
+			if (!m_sceneParent) return nullptr;
+			return m_sceneParent->getCurrentRenderCamera();
+        }
 
         const sf::Font& GameObject::getDefaultTextFont() const
         {

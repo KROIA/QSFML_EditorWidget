@@ -16,173 +16,16 @@
 using namespace QSFML;
 using namespace QSFML::Objects;
 
-void addLineChart(Scene* scene)
-{
-    LineChart* m_chart = new LineChart();
-    
-    m_chart->setOrigin(sf::Vector2f(0, 0));
-    m_chart->setMaxDataPoints(100);
-    m_chart->setSize(sf::Vector2f(200, 100));
-    m_chart->setPosition(sf::Vector2f(300, 100));
-    m_chart->setRotation(20);
-    m_chart->addUpdateFunction([m_chart](GameObject&) {
-        static float t = 0;
-        t += 0.1;
-        m_chart->addDataPoint(std::sin(t) * 50);
-        m_chart->setScale(std::sin(t) * 0.5 + 1, std::sin(t) * 0.5 + 1);
-
-        });
-    scene->addObject(m_chart);
-}
-void addMouseCollider(Scene* scene)
-{
-	MouseCollider* mouseCollider = new MouseCollider("MOUSE_COLLIDER");
-	scene->addObject(mouseCollider);
-}
-void addShape(Scene* scene)
-{
-
-    QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject();
-    QSFML::Components::Shape* shape = new QSFML::Components::Shape("TestShape");
-    QSFML::Utilities::Ray* testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
-    QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
-    linePainter->ignoreTransform(true);
-    obj->setPosition(sf::Vector2f(0,0));
-    //delete testRay->createRayPainter();
-
-    
-
-
-    shape->setPoints(
-        {
-            sf::Vector2f(0,0),
-            sf::Vector2f(100,0),
-            sf::Vector2f(100,100),
-            sf::Vector2f(0,100)
-        });
-	shape->setPosition(sf::Vector2f(200, 200));
-
-    //sf::Transform t = shape->getTransform();
-   // t.translate(obj->getPosition());
-    //shape->setTransform(t);
-    obj->addUpdateFunction([shape, testRay, obj, linePainter](GameObject&)
-        {
-            //sf::Transform t = shape->getTransform();
-            //t.rotate(obj->getDeltaT()*300);
-            //shape->setTransform(t);
-            //shape->rotate(obj->getDeltaT() * 300);
-
-            testRay->setDirection(obj->getMouseWorldPosition() - testRay->getPosition());
-            //testRay->setDirection(sf::Vector2f(1,1));
-            testRay->normalize();
-            float d1;
-            size_t d2;
-            testRay->raycast(*shape, d1, d2);
-
-            GameObjectPtr mouseFollowerObj = obj->getFirstObjectGlobal("MOUSE_COLLIDER");
-            if (mouseFollowerObj)
-            {
-                sf::Vector2f pos = mouseFollowerObj->getPosition();
-                linePainter->setPoints(obj->getPosition(), pos);
-                linePainter->setColor(sf::Color::Green);
-            }
-            else
-            {
-				linePainter->setPoints(obj->getPosition(), obj->getMouseWorldPosition());
-                linePainter->setColor(sf::Color::Red);
-			}
-        });
-    obj->setRenderLayer(RenderLayer::layer_2);
-    shape->setFillColor(sf::Color::Red);
-    shape->setOutlineColor(sf::Color::Blue);
-    //shape->setOutlineThickness(5);
-
-    shape->setFill(true);
-    obj->addComponent(linePainter);
-    //
-    
-    
-    obj->addComponent(testRay->createRayPainter());
-    obj->addComponent(shape);
-    
-    scene->addObject(obj);
-}
-void addPerlinNoise(Scene* scene)
-{
-    GameObjectPtr obj = new GameObject();
-
-    sf::Vector2u size(100, 100);
-    QSFML::Utilities::PerlinNoise* perlinNoise = new QSFML::Utilities::PerlinNoise(0);
-    QSFML::Components::PixelPainter* pixelPainter = new QSFML::Components::PixelPainter();
-    pixelPainter->setPixelCount(size);
-    pixelPainter->setPixelSize(2);
-    pixelPainter->setPosition(sf::Vector2f(0, 0));
-
-
-    for (size_t x = 0; x < size.x; ++x)
-    {
-        for (size_t y = 0; y < size.y; ++y)
-        {
-			float value = perlinNoise->noise((float)x, (float)y, 2, sf::Vector2u(20,20));
-			value += perlinNoise->noise((float)x, (float)y, 8, sf::Vector2u(10,10));
-            if (value < -1)
-                value = -1;
-			else if(value > 1)
-				value = 1;
-
-            value = (value+1)/2;
-
-            
-            sf::Color color = QSFML::Color::lerpCubic({ sf::Color::Red, sf::Color::Green, sf::Color::Blue}, value);
-			pixelPainter->setPixel(sf::Vector2u(x, y), color);
-		}
-	}
-
-    //obj->setUpdateFunction([obj, perlinNoise, pixelPainter]()
-    //    {
-    //
-	//	});
-    obj->setRenderLayer(RenderLayer::layer_2);
-    obj->addComponent(pixelPainter);
-    //obj->setPosition(sf::Vector2f(300, 100));
-    pixelPainter->setPosition(sf::Vector2f(300, 100));
-    scene->addObject(obj);
-}
-void addNastedRotatingVector(Scene* scene)
-{
-    GameObjectPtr root = new GameObject("RotatingVector");
-
-    GameObjectPtr _root = root;
-
-    float length = 500;
-    for (int i = 0; i < 30; ++i)
-    {
-		GameObjectPtr child = new AABBDisplayer(length / (i + 1), "RotatingVector");
-        //root->addChild(child);
-        if (i > 0)
-        {
-			child->setPosition(sf::Vector2f(length /i, 0));
-        }
-		_root->addChild(child);
-		_root = child;
-	}
-	root->setPosition(sf::Vector2f(400, 300));
-	scene->addObject(root);
-    root->updateObjectChanges();
-    qDebug() << root->toString().c_str();
-}
+void addLineChart(Scene* scene);
+void addMouseCollider(Scene* scene);
+void addShape(Scene* scene);
+void addPerlinNoise(Scene* scene);
+void addNastedRotatingVector(Scene* scene);
 void addCar(Scene* scene,
     const sf::ContextSettings& settings,
-    QWidget* qparent)
-{
-	//Tractor* tractor = new Tractor(settings, qparent);
-	//scene->addObject(tractor);
-    Car* car = new Car(settings, qparent);
-    scene->addObject(car);
+    QWidget* qparent);
 
-    //QSFML::vector< Objects::CameraWindow*> cams = car->getChildsRecusrive<Objects::CameraWindow>();
-
-}
+void shaderTest(Scene* scene);
 
 
 SandBox::SandBox(QWidget *parent)
@@ -258,6 +101,8 @@ SandBox::SandBox(QWidget *parent)
 
         connect(timer, &QTimer::timeout, this, &SandBox::onTimerFinished);
         timer->start(1000);
+
+		shaderTest(m_scene_1);
         m_scene_1->start();
     }
     
@@ -399,3 +244,226 @@ void SandBox::closeEvent(QCloseEvent* event)
     //Scene::stopEventLoop();
     event->accept();
 }
+
+
+void addLineChart(Scene* scene)
+{
+    LineChart* m_chart = new LineChart();
+
+    m_chart->setOrigin(sf::Vector2f(0, 0));
+    m_chart->setMaxDataPoints(100);
+    m_chart->setSize(sf::Vector2f(200, 100));
+    m_chart->setPosition(sf::Vector2f(300, 100));
+    m_chart->setRotation(20);
+    m_chart->addUpdateFunction([m_chart](GameObject&) {
+        static float t = 0;
+        t += 0.1;
+        m_chart->addDataPoint(std::sin(t) * 50);
+        m_chart->setScale(std::sin(t) * 0.5 + 1, std::sin(t) * 0.5 + 1);
+
+        });
+    scene->addObject(m_chart);
+}
+void addMouseCollider(Scene* scene)
+{
+    MouseCollider* mouseCollider = new MouseCollider("MOUSE_COLLIDER");
+    scene->addObject(mouseCollider);
+}
+void addShape(Scene* scene)
+{
+
+    QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject();
+    QSFML::Components::Shape* shape = new QSFML::Components::Shape("TestShape");
+    QSFML::Utilities::Ray* testRay = new QSFML::Utilities::Ray(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
+    QSFML::Components::LinePainter* linePainter = new QSFML::Components::LinePainter();
+    linePainter->ignoreTransform(true);
+    obj->setPosition(sf::Vector2f(0, 0));
+    //delete testRay->createRayPainter();
+
+
+
+
+    shape->setPoints(
+        {
+            sf::Vector2f(0,0),
+            sf::Vector2f(100,0),
+            sf::Vector2f(100,100),
+            sf::Vector2f(0,100)
+        });
+    shape->setPosition(sf::Vector2f(200, 200));
+
+    //sf::Transform t = shape->getTransform();
+   // t.translate(obj->getPosition());
+    //shape->setTransform(t);
+    obj->addUpdateFunction([shape, testRay, obj, linePainter](GameObject&)
+        {
+            //sf::Transform t = shape->getTransform();
+            //t.rotate(obj->getDeltaT()*300);
+            //shape->setTransform(t);
+            //shape->rotate(obj->getDeltaT() * 300);
+
+            testRay->setDirection(obj->getMouseWorldPosition() - testRay->getPosition());
+            //testRay->setDirection(sf::Vector2f(1,1));
+            testRay->normalize();
+            float d1;
+            size_t d2;
+            testRay->raycast(*shape, d1, d2);
+
+            GameObjectPtr mouseFollowerObj = obj->getFirstObjectGlobal("MOUSE_COLLIDER");
+            if (mouseFollowerObj)
+            {
+                sf::Vector2f pos = mouseFollowerObj->getPosition();
+                linePainter->setPoints(obj->getPosition(), pos);
+                linePainter->setColor(sf::Color::Green);
+            }
+            else
+            {
+                linePainter->setPoints(obj->getPosition(), obj->getMouseWorldPosition());
+                linePainter->setColor(sf::Color::Red);
+            }
+        });
+    obj->setRenderLayer(RenderLayer::layer_2);
+    shape->setFillColor(sf::Color::Red);
+    shape->setOutlineColor(sf::Color::Blue);
+    //shape->setOutlineThickness(5);
+
+    shape->setFill(true);
+    obj->addComponent(linePainter);
+    //
+
+
+    obj->addComponent(testRay->createRayPainter());
+    obj->addComponent(shape);
+
+    scene->addObject(obj);
+}
+void addPerlinNoise(Scene* scene)
+{
+    GameObjectPtr obj = new GameObject();
+
+    sf::Vector2u size(100, 100);
+    QSFML::Utilities::PerlinNoise* perlinNoise = new QSFML::Utilities::PerlinNoise(0);
+    QSFML::Components::PixelPainter* pixelPainter = new QSFML::Components::PixelPainter();
+    pixelPainter->setPixelCount(size);
+    pixelPainter->setPixelSize(2);
+    pixelPainter->setPosition(sf::Vector2f(0, 0));
+
+
+    for (size_t x = 0; x < size.x; ++x)
+    {
+        for (size_t y = 0; y < size.y; ++y)
+        {
+            float value = perlinNoise->noise((float)x, (float)y, 2, sf::Vector2u(20, 20));
+            value += perlinNoise->noise((float)x, (float)y, 8, sf::Vector2u(10, 10));
+            if (value < -1)
+                value = -1;
+            else if (value > 1)
+                value = 1;
+
+            value = (value + 1) / 2;
+
+
+            sf::Color color = QSFML::Color::lerpCubic({ sf::Color::Red, sf::Color::Green, sf::Color::Blue }, value);
+            pixelPainter->setPixel(sf::Vector2u(x, y), color);
+        }
+    }
+
+    //obj->setUpdateFunction([obj, perlinNoise, pixelPainter]()
+    //    {
+    //
+    //	});
+    obj->setRenderLayer(RenderLayer::layer_2);
+    obj->addComponent(pixelPainter);
+    //obj->setPosition(sf::Vector2f(300, 100));
+    pixelPainter->setPosition(sf::Vector2f(300, 100));
+    scene->addObject(obj);
+}
+void addNastedRotatingVector(Scene* scene)
+{
+    GameObjectPtr root = new GameObject("RotatingVector");
+
+    GameObjectPtr _root = root;
+
+    float length = 500;
+    for (int i = 0; i < 30; ++i)
+    {
+        GameObjectPtr child = new AABBDisplayer(length / (i + 1), "RotatingVector");
+        //root->addChild(child);
+        if (i > 0)
+        {
+            child->setPosition(sf::Vector2f(length / i, 0));
+        }
+        _root->addChild(child);
+        _root = child;
+    }
+    root->setPosition(sf::Vector2f(400, 300));
+    scene->addObject(root);
+    root->updateObjectChanges();
+    qDebug() << root->toString().c_str();
+}
+void addCar(Scene* scene,
+    const sf::ContextSettings& settings,
+    QWidget* qparent)
+{
+    //Tractor* tractor = new Tractor(settings, qparent);
+    //scene->addObject(tractor);
+    Car* car = new Car(settings, qparent);
+    scene->addObject(car);
+
+    //QSFML::vector< Objects::CameraWindow*> cams = car->getChildsRecusrive<Objects::CameraWindow>();
+
+}
+void shaderTest(Scene* scene)
+{
+    std::string shaderStr =
+        "uniform vec2 u_resolution; // The resolution of the screen           \n"
+        "//uniform vec2 u_offset;     // Offset for panning                   \n"
+        "//uniform float u_zoom;      // Zoom level                           \n"
+        "//uniform int u_maxIterations; // Maximum number of iterations       \n"
+        "                                                                     \n"
+        "                                                                     \n"
+        "                                                                     \n"
+        "void main() {                                                        \n"
+        "    //vec2 u_resolution = vec2(500,500);                             \n"
+        "                                                                     \n"
+        "    vec2 st = gl_FragCoord.xy / u_resolution.xy;                     \n"
+        "    vec3 color = vec3(0.0);                                          \n"
+        "                                                                     \n"
+        "    // bottom-left                                                   \n"
+        "    vec2 bl = smoothstep(0.0, 0.05, st);                              \n"
+        "    float pct = bl.x * bl.y;                                         \n"
+        "                                                                     \n"
+        "    // top-right                                                     \n"
+        "    vec2 tr = smoothstep(0., 0.05, 1.0 - st);                         \n"
+        "    pct *= tr.x * tr.y;                                              \n"
+        "                                                                     \n"
+        "    color = mix(vec3(0,1,0), vec3(0,0,1), pct);                                               \n"
+        "                                                                     \n"
+        "    gl_FragColor = vec4(color, 1-pct);                                 \n"
+        "}                                                                    \n";
+
+	GameObjectPtr obj = new GameObject();
+	sf::Shader* shader = new sf::Shader();
+	shader->loadFromMemory(shaderStr, sf::Shader::Fragment);
+
+	obj->addDrawFunction([shader](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
+		{
+			QSFML::Utilities::AABB viewRect(obj.getCurrentRenderCamera()->getThisCameraViewRect());
+ 
+            sf::RectangleShape rectangle(viewRect.getSize());
+			rectangle.setPosition(viewRect.getPos());
+			rectangle.setFillColor(sf::Color::White);
+            // Pass uniforms to the shader
+            shader->setUniform("u_resolution", sf::Vector2f(target.getSize())); // Window size as resolution
+            //shader->setUniform("rectPosition", sf::Vector2f(0,0)); // Position of the rectangle
+            //shader->setUniform("rectSize", sf::Vector2f(viewRect.getSize())); // Size of the rectangle
+            //shader->setUniform("position", sf::Vector2f(obj.getMousePosition())); // Size of the rectangle
+			
+			
+			target.draw(rectangle, shader);
+		});
+
+	scene->addObject(obj);
+}
+
+

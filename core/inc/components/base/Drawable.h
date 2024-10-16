@@ -98,6 +98,20 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
 		/// @return true if the transform is ignored for this drawable
         bool ignoresTransform() const { return m_ignoreTransform; }
 
+        /**
+         * @brief
+         * Gets the default camera of the scene
+         * @return default camera or nullptr if object is not in a scene
+         */
+        Objects::CameraWindow* getDefaultCamera() const;
+
+        /**
+         * @brief
+         * Gets the camera that is currently used for rendering
+         * @return current render camera, or nullptr if object is not in rendering step
+         */
+        Objects::CameraWindow* getCurrentRenderCamera() const;
+
 
 		/// @brief
 		/// Check if the object is visible in the target

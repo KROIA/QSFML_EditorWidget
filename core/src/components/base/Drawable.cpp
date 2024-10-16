@@ -44,6 +44,18 @@ namespace QSFML
 			return getTransform();
         }
 
+        Objects::CameraWindow* Drawable::getDefaultCamera() const
+        {
+            if (!m_sceneParent) return nullptr;
+            return m_sceneParent->getDefaultCamera();
+        }
+
+        Objects::CameraWindow* Drawable::getCurrentRenderCamera() const
+        {
+            if (!m_sceneParent) return nullptr;
+            return m_sceneParent->getCurrentRenderCamera();
+        }
+
     }
 }
 

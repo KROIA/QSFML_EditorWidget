@@ -440,7 +440,7 @@ namespace QSFML {
         m_paint_t1 = t1;
 
 		if (m_cameras.defaultCamera->isOpen())
-		    paint(*m_cameras.defaultCamera->getRenderWindow());
+		    paint(m_cameras.defaultCamera);
 		/*for (auto camera : m_cameras)
 		{
 			QSFMLP_SCENE_BLOCK("Repaint camera", QSFML_COLOR_STAGE_5);
@@ -470,11 +470,13 @@ namespace QSFML {
         StatsManager::setDrawTime(elapsed);
         QSFMLP_SCENE_END_BLOCK;
     }
-    void Scene::paint(sf::RenderWindow& target)
+    void Scene::paint(Objects::CameraWindow* currentCamera)
     {
         QSFMLP_SCENE_BLOCK("Repaint camera", QSFML_COLOR_STAGE_5);
+		
 
         // Set the viewport
+		sf::RenderWindow& target = *currentCamera->getRenderWindow();
         target.setActive(true);
 
         // In case a user only draws using gl calls, we need to set the viewport first.
@@ -496,7 +498,9 @@ namespace QSFML {
         target.clear(m_settings.colors.defaultBackground);
         QSFMLP_SCENE_END_BLOCK;
         QSFMLP_SCENE_BLOCK("Process draw", QSFML_COLOR_STAGE_7);
+        m_cameras.currentRenderingCamera = currentCamera;
         GameObjectContainer::draw(target);
+		m_cameras.currentRenderingCamera = nullptr;
         QSFMLP_SCENE_END_BLOCK;
         QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_8);
         target.display();
