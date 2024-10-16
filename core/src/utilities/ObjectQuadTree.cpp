@@ -38,7 +38,7 @@ namespace QSFML
 			return insert_internal(item);
 		}
 
-		bool ObjectQuadTree::insert(const std::vector<Objects::GameObjectPtr> &objs)
+		bool ObjectQuadTree::insert(const QSFML::vector<Objects::GameObjectPtr> &objs)
 		{
 			bool success = true;
 			for (auto obj : objs)
@@ -58,11 +58,11 @@ namespace QSFML
 			m_allObjs.push_back(item);
 			return true;
 		}
-		void ObjectQuadTree::search(const Utilities::AABB& area, std::list< Objects::GameObjectPtr>& container) const
+		void ObjectQuadTree::search(const Utilities::AABB& area, QSFML::list< Objects::GameObjectPtr>& container) const
 		{
 			m_tree.search(area, container);
 		}
-		const std::list<ObjectQuadTree::TreeItem>& ObjectQuadTree::getAllItems() const
+		const QSFML::vector<ObjectQuadTree::TreeItem>& ObjectQuadTree::getAllItems() const
 		{
 			return m_allObjs;
 		}
@@ -162,18 +162,18 @@ namespace QSFML
 			});
 			
 		}
-		void ObjectQuadTree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
+		void ObjectQuadTree::checkCollisions(QSFML::vector<Utilities::Collisioninfo>& collisions,
 											 bool onlyFirstCollision)
 		{
 			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
 			if (m_threadWorker)
 			{
-				std::vector<Utilities::Collisioninfo> sector1;
-				std::vector<Utilities::Collisioninfo> sector2;
-				std::vector<Utilities::Collisioninfo> sector3;
-				std::vector<Utilities::Collisioninfo> sector4;
-				std::vector<Utilities::Collisioninfo> sector5;
-				std::vector<Utilities::Collisioninfo> sector6;
+				QSFML::vector<Utilities::Collisioninfo> sector1;
+				QSFML::vector<Utilities::Collisioninfo> sector2;
+				QSFML::vector<Utilities::Collisioninfo> sector3;
+				QSFML::vector<Utilities::Collisioninfo> sector4;
+				QSFML::vector<Utilities::Collisioninfo> sector5;
+				QSFML::vector<Utilities::Collisioninfo> sector6;
 				m_collisions1 = &sector5;
 				m_collisions2 = &sector6;
 				m_onlyFirstCollision = onlyFirstCollision;
@@ -311,7 +311,7 @@ namespace QSFML
 			item.containter = &m_objects;
 			item.iterator = m_objects.end();
 		}
-		void ObjectQuadTree::Tree::search(const Utilities::AABB& area, std::list< Objects::GameObjectPtr>& container) const
+		void ObjectQuadTree::Tree::search(const Utilities::AABB& area, QSFML::list< Objects::GameObjectPtr>& container) const
 		{
 			for (auto obj : m_objects)
 			{
@@ -375,13 +375,13 @@ namespace QSFML
 				this->checkCollisions(*this->m_collisions, this->m_onlyFirstCollision);
 				});
 		}
-		void ObjectQuadTree::Tree::setThreadedParams(std::vector<Utilities::Collisioninfo>* container, bool onlyFisrtCollision)
+		void ObjectQuadTree::Tree::setThreadedParams(QSFML::vector<Utilities::Collisioninfo>* container, bool onlyFisrtCollision)
 		{
 			m_collisions = container;
 			m_onlyFirstCollision = onlyFisrtCollision;
 		}
 
-		void ObjectQuadTree::Tree::checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
+		void ObjectQuadTree::Tree::checkCollisions(QSFML::vector<Utilities::Collisioninfo>& collisions,
 												   bool onlyFirstCollision)
 		{
 			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);
@@ -396,7 +396,7 @@ namespace QSFML
 			m_childTrees[3].checkCollisions(collisions, onlyFirstCollision);
 		
 		}
-		void ObjectQuadTree::Tree::checkCollisionsSingleLayer(std::vector<Utilities::Collisioninfo>& collisions,
+		void ObjectQuadTree::Tree::checkCollisionsSingleLayer(QSFML::vector<Utilities::Collisioninfo>& collisions,
 														      bool onlyFirstCollision)
 		{
 			checkCollisionsSingleLayerSelf(collisions, onlyFirstCollision);
@@ -404,7 +404,7 @@ namespace QSFML
 				return;
 			checkCollisionsSingleLayerSelfDeep(collisions, onlyFirstCollision);
 		}
-		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelf(std::vector<Utilities::Collisioninfo>& collisions,
+		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelf(QSFML::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision)
 		{
 			// Iterate over the objects and call checkCollision
@@ -416,7 +416,7 @@ namespace QSFML
 				}
 			}
 		}
-		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(std::vector<Utilities::Collisioninfo>& collisions,
+		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(QSFML::vector<Utilities::Collisioninfo>& collisions,
 																	  bool onlyFirstCollision)
 		{
 			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
@@ -447,7 +447,7 @@ namespace QSFML
 			if(m_statsManager)
 				m_statsManager->addBoundingBoxCollisionCheck(4 * m_objects.size());
 		}
-		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(size_t index, std::vector<Utilities::Collisioninfo>& collisions,
+		void ObjectQuadTree::Tree::checkCollisionsSingleLayerSelfDeep(size_t index, QSFML::vector<Utilities::Collisioninfo>& collisions,
 															          bool onlyFirstCollision)
 		{
 			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
@@ -462,7 +462,7 @@ namespace QSFML
 			}
 		}
 		void ObjectQuadTree::Tree::checkCollision(Objects::GameObjectPtr other,
-			std::vector<Utilities::Collisioninfo>& collisions,
+			QSFML::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision)
 		{
 			QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_4);

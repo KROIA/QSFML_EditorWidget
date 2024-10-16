@@ -6,7 +6,7 @@ namespace QSFML
 namespace Utilities
 {
 
-AABB AABB::getFrame(const std::vector<AABB> &list)
+AABB AABB::getFrame(const QSFML::vector<AABB> &list)
 {
     sf::Vector2f min, max;
     min.x = std::numeric_limits<float>::max();
@@ -30,7 +30,7 @@ AABB AABB::getFrame(const std::vector<AABB> &list)
     }
     return AABB(min, max - min);
 }
-AABB AABB::getFrame(const std::vector<sf::Vector2f>& points)
+AABB AABB::getFrame(const QSFML::vector<sf::Vector2f>& points)
 {
     sf::Vector2f min, max;
     min.x = std::numeric_limits<float>::max();

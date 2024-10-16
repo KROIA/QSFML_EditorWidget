@@ -35,12 +35,12 @@ private:
 	void calculateDensity();
 	void calculateVelocity();
 	void applyBoundaryConditions();
-	void diffuse(int b, std::vector<CellData>& x, std::vector<CellData>& x0, float diff, float dt);
-	void advect(int b, std::vector<CellData>& d, std::vector<CellData>& d0, std::vector<CellData>& u, std::vector<CellData>& v, float dt);
-	void project(std::vector<CellData>& u, std::vector<CellData>& v, std::vector<CellData>& p, std::vector<CellData>& div);
-	void setBoundary(int b, std::vector<CellData>& x);
-	void linearSolve(int b, std::vector<CellData>& x, std::vector<CellData>& x0, float a, float c);
-	void addSource(std::vector<CellData>& x, std::vector<CellData>& s, float dt);
+	void diffuse(int b, QSFML::vector<CellData>& x, QSFML::vector<CellData>& x0, float diff, float dt);
+	void advect(int b, QSFML::vector<CellData>& d, QSFML::vector<CellData>& d0, QSFML::vector<CellData>& u, QSFML::vector<CellData>& v, float dt);
+	void project(QSFML::vector<CellData>& u, QSFML::vector<CellData>& v, QSFML::vector<CellData>& p, QSFML::vector<CellData>& div);
+	void setBoundary(int b, QSFML::vector<CellData>& x);
+	void linearSolve(int b, QSFML::vector<CellData>& x, QSFML::vector<CellData>& x0, float a, float c);
+	void addSource(QSFML::vector<CellData>& x, QSFML::vector<CellData>& s, float dt);
 
 
 
@@ -50,10 +50,10 @@ private:
 
 	GridPainter *m_gridPainter;
 
-	std::vector<CellData> &m_cells;
+	QSFML::vector<CellData> &m_cells;
 
-	std::vector<CellData> m_cells1;
-	std::vector<CellData> m_cells2;
+	QSFML::vector<CellData> m_cells1;
+	QSFML::vector<CellData> m_cells2;
 
 	
 };

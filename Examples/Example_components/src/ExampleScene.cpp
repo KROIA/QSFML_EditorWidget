@@ -214,8 +214,8 @@ void ExampleScene::shapeComponent()
     obj->addUpdateFunction([shape, boundingBox](GameObject&)
                            {
                                static float t = 0;
-							   static std::vector<sf::Vector2f> lastPoints = shape->getPoints();
-							   static std::vector<sf::Vector2f> targetPoints = shape->getPoints();
+							   static QSFML::vector<sf::Vector2f> lastPoints = shape->getPoints();
+							   static QSFML::vector<sf::Vector2f> targetPoints = shape->getPoints();
                                t += 0.01;
                                if (t > 1)
                                {
@@ -227,7 +227,7 @@ void ExampleScene::shapeComponent()
 								   }
                                }
                                
-							   std::vector<sf::Vector2f> newPoints;
+							   QSFML::vector<sf::Vector2f> newPoints;
 							   newPoints.reserve(lastPoints.size());
 							   for (size_t i = 0; i < lastPoints.size(); i++)
 							   {

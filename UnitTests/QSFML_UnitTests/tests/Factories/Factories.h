@@ -7,7 +7,7 @@ namespace Factories
 
 
 
-	std::vector<sf::Vector2f> randomShapePoints(
+	QSFML::vector<sf::Vector2f> randomShapePoints(
 		float radius,
 		size_t vertecies);
 

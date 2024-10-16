@@ -41,11 +41,11 @@ namespace QSFML
         {
             return m_gridArea;
         }
-        void BackgroundGrid::setLineColor(const std::vector<sf::Color>& alternatingColors)
+        void BackgroundGrid::setLineColor(const QSFML::vector<sf::Color>& alternatingColors)
         {
             m_alternatingColors = alternatingColors;
         }
-        const std::vector<sf::Color>& BackgroundGrid::getLineColor() const
+        const QSFML::vector<sf::Color>& BackgroundGrid::getLineColor() const
         {
             return m_alternatingColors;
         }
@@ -81,7 +81,7 @@ namespace QSFML
         void BackgroundGrid::DrawableComp::drawGrid(sf::RenderTarget& target,
             const sf::IntRect& area,
             unsigned int spacing,
-            const std::vector<sf::Color>& alternatingColors,
+            const QSFML::vector<sf::Color>& alternatingColors,
             sf::RenderStates states) const
         {
 #ifdef QSFML_USE_GL_DRAW

@@ -20,12 +20,12 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
        
 
         void addObject(Objects::GameObjectPtr obj);
-        void addObject(const std::vector<Objects::GameObjectPtr> &objs);
+        void addObject(const QSFML::vector<Objects::GameObjectPtr> &objs);
 
         void removeObject(Objects::GameObjectPtr obj);
-        void removeObject(const std::vector<Objects::GameObjectPtr> &objs);
+        void removeObject(const QSFML::vector<Objects::GameObjectPtr> &objs);
         void deleteObject(Objects::GameObjectPtr obj);
-        void deleteObject(const std::vector<Objects::GameObjectPtr> &objs);
+        void deleteObject(const QSFML::vector<Objects::GameObjectPtr> &objs);
         void clearObjects();
         void cleanup();
 
@@ -34,8 +34,8 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         void reserveObjectsCount(size_t size);
         size_t getObjectsCount() const;
         template<typename T> size_t getObjectsCount() const;
-        const std::vector<Objects::GameObjectPtr> &getObjects() const;
-        template<typename T> std::vector<T*> getObjects() const;
+        const QSFML::vector<Objects::GameObjectPtr> &getObjects() const;
+        template<typename T> QSFML::vector<T*> getObjects() const;
         template<typename T> T* getFirstObject() const;
 
         bool objectExists(Objects::GameObjectPtr obj);
@@ -55,7 +55,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObjectPtr> getAllObjects(const std::string &name);
+        QSFML::vector<Objects::GameObjectPtr> getAllObjects(const std::string &name);
 
         /// <summary>
         /// Searches the object with the given name in the object list.
@@ -71,7 +71,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         /// </summary>
         /// <param name="name">name of the object</param>
         /// <returns>a list of found objects</returns>
-        std::vector<Objects::GameObjectPtr> getAllObjectsRecursive(const std::string& name);
+        QSFML::vector<Objects::GameObjectPtr> getAllObjectsRecursive(const std::string& name);
 
         template<typename T>
         T* findFirstObject()
@@ -87,10 +87,10 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         }
 
         template<typename T>
-        std::vector<T*> findAllObject()
+        QSFML::vector<T*> findAllObject()
         {
             QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            std::vector<T*> list;
+            QSFML::vector<T*> list;
             for (auto& obj : m_allObjects->getObjects())
             {
                 T* casted = dynamic_cast<T*>(obj);
@@ -116,16 +116,16 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         }
 
         template<typename T>
-        std::vector<T*> findAllObjectRecursive()
+        QSFML::vector<T*> findAllObjectRecursive()
         {
             QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            std::vector<T*> list;
+            QSFML::vector<T*> list;
             for (auto& obj : m_allObjects->getObjects())
             {
                 T* casted = dynamic_cast<T*>(obj);
                 if (casted)
                     list.push_back(casted);
-                std::vector<T*> subList = obj->getChilds<T>();
+                QSFML::vector<T*> subList = obj->getChilds<T>();
                 if(subList.size() > 0)
                     list.insert(list.end(), subList.begin(), subList.end());
             }
@@ -149,10 +149,10 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         }
 
         template<typename T>
-        std::vector<T*> findAllObject(const std::string& objName)
+        QSFML::vector<T*> findAllObject(const std::string& objName)
         {
             QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            std::vector<T*> list;
+            QSFML::vector<T*> list;
             for (auto& obj : m_allObjects->getObjects())
             {
                 T* casted = dynamic_cast<T*>(obj);
@@ -187,10 +187,10 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         }
 
         template<typename T>
-        std::vector<T*> findAllObjectRecursive(const std::string& objName)
+        QSFML::vector<T*> findAllObjectRecursive(const std::string& objName)
         {
             QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            std::vector<T*> list;
+            QSFML::vector<T*> list;
             for (auto& obj : m_allObjects->getObjects())
             {
                 T* casted = dynamic_cast<T*>(obj);
@@ -199,7 +199,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
                     if (casted->getName() == objName)
                         list.push_back(casted);
                 }
-                std::vector<T*> subList = obj->getChilds<T>();
+                QSFML::vector<T*> subList = obj->getChilds<T>();
                 if (subList.size() > 0)
                     list.insert(list.end(), subList.begin(), subList.end());
             }
@@ -219,7 +219,7 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         void draw(sf::RenderWindow& window);
     protected:
         void updateNewElements();
-        void sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&events);
+        void sfEvent(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&events);
         void update();
         
 
@@ -233,17 +233,17 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         void addObject_internal();
         void deleteObject_internal();
 
-        std::vector<Objects::GameObjectPtr> m_objectsToAdd;
-        std::vector<Objects::GameObjectPtr> m_objectsToDelete;
-        std::vector<Objects::GameObjectPtr> m_objectsToRemove;
+        QSFML::vector<Objects::GameObjectPtr> m_objectsToAdd;
+        QSFML::vector<Objects::GameObjectPtr> m_objectsToDelete;
+        QSFML::vector<Objects::GameObjectPtr> m_objectsToRemove;
 
 
         // All objects will be contained in this list
         GameObjectGroup *m_allObjects;
         size_t m_currentThreadGroupInsertIndex;
         size_t m_threadGroupCount;
-        std::vector<GameObjectGroup*> m_threadGroups;
-        //std::vector<GameObjectGroup*> m_renderLayerGroups;
+        QSFML::vector<GameObjectGroup*> m_threadGroups;
+        //QSFML::vector<GameObjectGroup*> m_renderLayerGroups;
         GameObjectLayerGroup m_renderLayerGroup;
 
         Scene *m_parent;
@@ -261,7 +261,7 @@ size_t GameObjectContainer::getObjectsCount() const
     return m_allObjects->getObjectsCount<T>();
 }
 template<typename T>
-std::vector<T*> GameObjectContainer::getObjects() const
+QSFML::vector<T*> GameObjectContainer::getObjects() const
 {
     return m_allObjects->getObjects<T>();
 }

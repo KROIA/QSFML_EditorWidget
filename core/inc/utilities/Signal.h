@@ -187,7 +187,7 @@ namespace QSFML
             
             const std::string m_name;
             const std::string m_profilerName;
-            std::vector<SlotFunctionContainer> m_slotsWithArgs;
+            QSFML::vector<SlotFunctionContainer> m_slotsWithArgs;
         };
     }
 }

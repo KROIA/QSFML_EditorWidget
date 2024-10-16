@@ -43,8 +43,8 @@ namespace Objects
 
             void addDataPoint(float value);
             void removeFirstDataPoint();
-            void setDataPoints(const std::vector<float> &dataPoints);
-            const std::vector<float> &getDataPoints() const;
+            void setDataPoints(const QSFML::vector<float> &dataPoints);
+            const QSFML::vector<float> &getDataPoints() const;
             void clear();
 
             void update() override;
@@ -52,8 +52,8 @@ namespace Objects
         private:
             void getMinMax(float &min, float &max);
 
-            std::vector<float> m_dataPoints;
-			std::vector<sf::Vector2f> m_points;
+            QSFML::vector<float> m_dataPoints;
+			QSFML::vector<sf::Vector2f> m_points;
             
            // sf::Vector2f m_origin;
             sf::Vector2f m_size;

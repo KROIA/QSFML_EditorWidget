@@ -290,7 +290,7 @@ namespace QSFML
 			}
 			return ret;
 		}
-		bool Ray::raycast(const std::vector<Components::Shape>& shapes, 
+		bool Ray::raycast(const QSFML::vector<Components::Shape>& shapes, 
 			float& outDistanceFactor, 
 			size_t& outShapeIndex, 
 			size_t& outEdge) const
@@ -320,7 +320,7 @@ namespace QSFML
 			}
 			return ret;
 		}
-		bool Ray::raycast(const std::vector<Components::Shape*>& shapes,
+		bool Ray::raycast(const QSFML::vector<Components::Shape*>& shapes,
 			float& outDistanceFactor,
 			size_t& outShapeIndex,
 			size_t& outEdge) const
@@ -369,7 +369,7 @@ namespace QSFML
 			if (!raycast_internal(aabb, dummy1, edge))
 				return false;
 
-			std::vector<sf::Vector2f> points = shape.getTransformedPoints();
+			QSFML::vector<sf::Vector2f> points = shape.getTransformedPoints();
 
 			float minDistance = std::numeric_limits<float>::max();
 			for (size_t i = 0; i < points.size(); ++i)

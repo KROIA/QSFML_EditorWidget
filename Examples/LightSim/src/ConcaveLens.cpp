@@ -98,8 +98,8 @@ float ConcaveLens::getFocusLength() const
 
 /*
 bool ConcaveLens::processLaser(const QSFML::Utilities::Ray& ray,
-	std::vector< QSFML::Utilities::Ray>& reflectedOut,
-	std::vector< LaserInfo>& additionalLightPathsOut) const
+	QSFML::vector< QSFML::Utilities::Ray>& reflectedOut,
+	QSFML::vector< LaserInfo>& additionalLightPathsOut) const
 {
 	sf::Vector2f collisionPoint;
 	return processLaser_intern(ray, reflectedOut, additionalLightPathsOut, false, collisionPoint);
@@ -118,8 +118,8 @@ bool ConcaveLens::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& di
 }
 
 bool ConcaveLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
-	std::vector< QSFML::Utilities::Ray>& reflectedOut,
-	std::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
+	QSFML::vector< QSFML::Utilities::Ray>& reflectedOut,
+	QSFML::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
 	sf::Vector2f& collisionPointOut) const
 {
 
@@ -242,8 +242,8 @@ void ConcaveLens::LensShape::LensPainter::drawComponent(sf::RenderTarget& target
 #ifdef USE_PARABLE
 	
 	
-	std::vector < sf::Vertex> left;
-	std::vector < sf::Vertex> right;
+	QSFML::vector < sf::Vertex> left;
+	QSFML::vector < sf::Vertex> right;
 	m_lens->getPainterVertecies(left, right, resolution);
 
 	for (size_t i = 0; i < resolution; ++i)
@@ -770,7 +770,7 @@ bool ConcaveLens::LensShape::getParableCollisionFactor(const QSFML::Utilities::R
 
 }
 
-void ConcaveLens::LensShape::getPainterVertecies(std::vector < sf::Vertex>& left, std::vector < sf::Vertex>& right, size_t resolution)
+void ConcaveLens::LensShape::getPainterVertecies(QSFML::vector < sf::Vertex>& left, QSFML::vector < sf::Vertex>& right, size_t resolution)
 {
 	float dx = m_diameter / (resolution-1);
 

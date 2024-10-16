@@ -68,7 +68,7 @@ namespace QSFML
 			void onFrame();
 
 			void pollEvents();
-			const std::vector<sf::Event>& getThisCameraEvents() const { return m_events; }
+			const QSFML::vector<sf::Event>& getThisCameraEvents() const { return m_events; }
 			
 			
 			
@@ -99,7 +99,7 @@ namespace QSFML
 			sf::Vector2u m_currentViewSize;
 			QTimer m_frameTimer;
 			bool m_enableFrameTimer = true;
-			std::vector<sf::Event> m_events;
+			QSFML::vector<sf::Event> m_events;
 			sf::Transform m_lastTransform;
 
 			mutable sf::Texture* m_screenCaptureTexture = nullptr;

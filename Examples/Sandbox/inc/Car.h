@@ -44,7 +44,7 @@ private:
 	Components::KeyPressEvent* m_keyEventRight;
 
 	sf::Vector2f m_velocity;
-	std::vector<sf::Image*> m_images;
+	QSFML::vector<sf::Image*> m_images;
 	//sf::Vector2f m_acceleration;
 
 	float m_stearingAngle;

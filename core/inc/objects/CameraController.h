@@ -90,7 +90,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
             ~SfEventComponent(){}
 
             void setController(CameraController *controller);
-            void sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>>& events) override;
+            void sfEvent(const QSFML::pair<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events) override;
 
         private:
             CameraController *m_controller;

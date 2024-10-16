@@ -19,7 +19,7 @@ namespace QSFML
 		public:
 			static LifetimeChecker &instance();
 
-			static std::vector<void*> getAlivePointers();
+			static QSFML::vector<void*> getAlivePointers();
 			static size_t getAliveCount();
 			static size_t getDeadCount();
 			static size_t getTotalCount();
@@ -87,7 +87,7 @@ namespace QSFML
 			void setDead_internal(void* ptr);
 
 
-			std::unordered_map<void*, bool> m_alive;
+			QSFML::unordered_map<void*, bool> m_alive;
 			std::mutex m_mutex;
 		};
 	}

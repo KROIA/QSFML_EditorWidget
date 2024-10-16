@@ -3,11 +3,11 @@
 namespace Factories
 {
 
-	std::vector<sf::Vector2f> randomShapePoints(
+	QSFML::vector<sf::Vector2f> randomShapePoints(
 		float radius,
 		size_t vertecies)
 	{
-		std::vector<sf::Vector2f> v;
+		QSFML::vector<sf::Vector2f> v;
 		v.reserve(vertecies);
 		float rad = 0;
 		float dRad = M_PI * 2 / (float)vertecies;
@@ -42,7 +42,7 @@ namespace Factories
 		size_t vertecies)
 	{
 		// Create compontents
-		std::vector<sf::Vector2f> points = randomShapePoints(radius, vertecies);
+		QSFML::vector<sf::Vector2f> points = randomShapePoints(radius, vertecies);
 		QSFML::Components::Collider* collider = new QSFML::Components::Collider();
 		collider->setVertecies(points);
 
@@ -83,7 +83,7 @@ namespace Factories
 		obj->addComponent(painter);
 	
 		float angle = QSFML::Utilities::RandomEngine::getFloat(0, 2*M_PI);
-		std::vector<sf::Vector2f> path;
+		QSFML::vector<sf::Vector2f> path;
 		path.reserve(length);
 		sf::Vector2f lastPos = QSFML::Utilities::RandomEngine::getVector() * 1000.f;
 		for (size_t j = 0; j < length; ++j)

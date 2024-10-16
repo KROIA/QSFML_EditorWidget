@@ -62,7 +62,7 @@ class VectorDisplayer: public QSFML::Objects::GameObject
                 {
 
                 }
-                void sfEvent(const std::pair<QSFML::Objects::CameraWindow*, std::vector<sf::Event>>& events) override
+                void sfEvent(const QSFML::pair<QSFML::Objects::CameraWindow*, QSFML::vector<sf::Event>>& events) override
                 {
                     for (const auto& e : events.second)
                     {

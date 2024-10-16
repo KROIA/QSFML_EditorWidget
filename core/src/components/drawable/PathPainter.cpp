@@ -25,7 +25,7 @@ namespace QSFML
 
         }
        
-        void PathPainter::setPath(const std::vector<sf::Vector2f>& path)
+        void PathPainter::setPath(const QSFML::vector<sf::Vector2f>& path)
         {
 			m_vertecies.clear();
 			m_vertecies.resize(path.size() - 1);

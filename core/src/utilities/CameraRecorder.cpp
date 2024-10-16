@@ -186,7 +186,7 @@ namespace QSFML
 			while (true)
 			{
 				bool isRunning = false;
-				std::vector<ThreadData::ImageData> images;
+				QSFML::vector<ThreadData::ImageData> images;
 				{
 					QSFMLP_GENERAL_BLOCK("Waiting for image", QSFML_COLOR_STAGE_1);
 					std::unique_lock<std::mutex> lock(data.mutex);

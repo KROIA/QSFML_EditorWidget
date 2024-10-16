@@ -44,7 +44,7 @@ namespace QSFML
 				ThreadData(const ThreadData&)
 				{}
 				std::thread* thread = nullptr;
-				std::vector<ImageData> images;
+				QSFML::vector<ImageData> images;
 				std::mutex mutex;
 				std::condition_variable condition;
 				volatile bool running = true;
@@ -53,7 +53,7 @@ namespace QSFML
 			static void threadFunction(ThreadData& data, CameraRecorder &recorder);
 
 
-			std::vector<ThreadData> m_threadData;
+			QSFML::vector<ThreadData> m_threadData;
 			std::string m_outputFolder;
 			bool m_isCapturing = false;
 			bool m_bufferMode = false;
@@ -63,7 +63,7 @@ namespace QSFML
 			Objects::CameraWindow* m_cameraWindow = nullptr;
 			QTimer* m_timer = nullptr;
 
-			std::vector<ThreadData::ImageData> m_bufferedImages;
+			QSFML::vector<ThreadData::ImageData> m_bufferedImages;
 		};
 	}
 }

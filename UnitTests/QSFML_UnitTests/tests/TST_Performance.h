@@ -63,8 +63,8 @@ private slots:
 		m_tree.shrink();
 		m_tree.insert(m_currentScene->getObjects());
 
-		std::vector<QSFML::Utilities::Collisioninfo> collisions;
-		std::vector<sf::Vector2f> collisionPoints;
+		QSFML::vector<QSFML::Utilities::Collisioninfo> collisions;
+		QSFML::vector<sf::Vector2f> collisionPoints;
 
 		TimePoint t11 = std::chrono::high_resolution_clock::now();
 		m_tree.checkCollisions(collisions, false);
@@ -93,7 +93,7 @@ private:
 	//QSFML::Objects::GameObjectPtr m_pointPainterObj = nullptr;
 	QSFML::Components::PointPainter* m_pointPainter = nullptr;
 	TestResults *m_currentResults;
-	std::vector<QSFML::Utilities::Stats> m_stats;
+	QSFML::vector<QSFML::Utilities::Stats> m_stats;
 	QSFML::Utilities::ObjectQuadTree m_tree;
 
 	double m_averageCollisionCheckTimeFull = 0;
@@ -282,7 +282,7 @@ private:
 		sf::Color color1 = sf::Color::Red;
 		sf::Color color2 = sf::Color::Green;
 		m_tree.setStatsManager(scene);
-		std::vector<QSFML::Objects::GameObjectPtr> objs;
+		QSFML::vector<QSFML::Objects::GameObjectPtr> objs;
 		for (size_t i = 0; i < objectCount; ++i)
 		{
 			sf::Vector2f randPos = QSFML::Utilities::RandomEngine::getVector({ 0,0 }, { 800,600 });
@@ -294,7 +294,7 @@ private:
 		//	m_tree.clear();
 		//	m_tree.shrink();
 		//	m_tree.insert(m_currentScene->getObjects());
-		//	std::vector<QSFML::Utilities::Collisioninfo> collisions;
+		//	QSFML::vector<QSFML::Utilities::Collisioninfo> collisions;
 		//	m_tree.checkCollisions(collisions, false);
 		//	});
 		

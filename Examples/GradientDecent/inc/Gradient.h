@@ -51,7 +51,7 @@ private:
         //void updateShape();
         void updateColor();
 
-        std::vector<sf::Vertex> m_vertices;
+        QSFML::vector<sf::Vertex> m_vertices;
         //float m_thickness;
         sf::Color m_color;
     };
@@ -62,6 +62,6 @@ private:
         Lines* line;
        // int iterationCunt = 0;
     };
-    std::vector<Instance> m_lines;
+    QSFML::vector<Instance> m_lines;
     QSFML::Components::Text* m_text;
 };

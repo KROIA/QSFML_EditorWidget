@@ -34,10 +34,10 @@ namespace Components
              *  \brief Sets the vertecies of the collider. Relative position to this colliders position.
              *         Vertecies have to be set clockwise
              */
-            void setVertecies(const std::vector<sf::Vector2f>& vertecies);
+            void setVertecies(const QSFML::vector<sf::Vector2f>& vertecies);
             void addVertex(const sf::Vector2f& vertex);
             size_t getVertexCount() const;
-            const std::vector<sf::Vector2f>& getVertecies() const;
+            const QSFML::vector<sf::Vector2f>& getVertecies() const;
             const Utilities::AABB& getBoundingBox() const;
             
             void clear();
@@ -45,19 +45,19 @@ namespace Components
             void move(const sf::Vector2f& offset);
             const sf::Vector2f& getPos() const;
 
-            bool checkCollision(const std::vector<Objects::GameObjectPtr>& objs,
-                                std::vector<Utilities::Collisioninfo>& collisions,
+            bool checkCollision(const QSFML::vector<Objects::GameObjectPtr>& objs,
+                                QSFML::vector<Utilities::Collisioninfo>& collisions,
                                 bool onlyFirstCollisionPerObject = true) const;
-            bool checkCollision(const std::vector<Components::Collider*> &other,
-                std::vector<Utilities::Collisioninfo>& collisions,
+            bool checkCollision(const QSFML::vector<Components::Collider*> &other,
+                QSFML::vector<Utilities::Collisioninfo>& collisions,
                 bool onlyFirstCollisionPerObject = true) const;
 
-            bool checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
-            void checkCollision_noAABB(const std::vector<Components::Collider*>& other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
-            bool checkCollision_noAABB(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+            bool checkCollision(Collider* other, QSFML::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+            void checkCollision_noAABB(const QSFML::vector<Components::Collider*>& other, QSFML::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
+            bool checkCollision_noAABB(Collider* other, QSFML::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision = true) const;
             bool contains(const sf::Vector2f& point);
 
-            static bool contains(const std::vector<sf::Vector2f>& polygon, 
+            static bool contains(const QSFML::vector<sf::Vector2f>& polygon, 
                                  const sf::Vector2f& point);
 
             Painter* createPainter();
@@ -109,13 +109,13 @@ namespace Components
 
             
     
-            mutable std::vector<sf::Vector2f> m_absoluteVertices;
-            std::vector<sf::Vector2f> m_relativeVertices;
+            mutable QSFML::vector<sf::Vector2f> m_absoluteVertices;
+            QSFML::vector<sf::Vector2f> m_relativeVertices;
             sf::Vector2f m_pos;
             mutable Utilities::AABB m_boundingBox;
 			mutable bool m_dirty = true;
 
-            std::vector<Painter*> m_painters;
+            QSFML::vector<Painter*> m_painters;
     };
 
 

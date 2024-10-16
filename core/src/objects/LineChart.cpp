@@ -113,13 +113,13 @@ void LineChart::removeFirstDataPoint()
     if(m_dataPoints.size() > 0)
     m_dataPoints.erase(m_dataPoints.begin());
 }
-void LineChart::setDataPoints(const std::vector<float> &dataPoints)
+void LineChart::setDataPoints(const QSFML::vector<float> &dataPoints)
 {
     m_dataPoints = dataPoints;
     if (m_dataPoints.size() > m_maxDataPoints)
         m_dataPoints.erase(m_dataPoints.begin(), m_dataPoints.end() - m_maxDataPoints);
 }
-const std::vector<float> &LineChart::getDataPoints() const
+const QSFML::vector<float> &LineChart::getDataPoints() const
 {
     return m_dataPoints;
 }

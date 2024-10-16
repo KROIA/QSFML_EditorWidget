@@ -1,5 +1,6 @@
 #include "ExampleScene.h"
 
+
 using namespace QSFML;
 using namespace QSFML::Objects;
 

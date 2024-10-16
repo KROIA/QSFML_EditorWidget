@@ -36,7 +36,7 @@ namespace QSFML
                 void updateVertecies(size_t vertexCount) const;
 				mutable bool m_isDirty = true;
 #ifdef QSFML_USE_GL_DRAW
-				mutable std::vector<sf::Vector2f> m_vertecies;
+				mutable QSFML::vector<sf::Vector2f> m_vertecies;
 #else
                 mutable sf::VertexArray m_vertecies;
 #endif
@@ -61,7 +61,7 @@ namespace QSFML
 
             void setPoint(const sf::Vector2f& pos);
             void setPoint(const sf::Vector2f&pos, float radius, const sf::Color& color);
-            void setPoints(const std::vector<sf::Vector2f>& points);
+            void setPoints(const QSFML::vector<sf::Vector2f>& points);
             void addPoint(const sf::Vector2f& pos);
             void addPoint(const sf::Vector2f& pos, float radius, const sf::Color& color);
 
@@ -104,7 +104,7 @@ namespace QSFML
             bool m_useGlobalPosition = false;
 
             
-            std::vector<PointData> m_points;
+            QSFML::vector<PointData> m_points;
         };
     }
 }

@@ -8,7 +8,30 @@
 
 
 /// USER_SECTION_START 2
-
+#if defined(EASTL) && defined(QSFML_USE_EASTL_IF_AVAILABLE)
+// https://github.com/electronicarts/EASTL/blob/master/doc/CMake/EASTL_Project_Integration.md#setting-up-your-code
+// https://stackoverflow.com/questions/40856087/how-to-build-eastl-library
+void* operator new[](size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line)
+{
+	QSFML_UNUSED(name);
+	QSFML_UNUSED(flags);
+	QSFML_UNUSED(debugFlags);
+	QSFML_UNUSED(file);
+	QSFML_UNUSED(line);
+	return malloc(size);
+}
+void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+{
+	QSFML_UNUSED(alignment);
+	QSFML_UNUSED(alignmentOffset);
+	QSFML_UNUSED(pName);
+	QSFML_UNUSED(flags);
+	QSFML_UNUSED(debugFlags);
+	QSFML_UNUSED(file);
+	QSFML_UNUSED(line);
+	return malloc(size);
+}
+#endif
 /// USER_SECTION_END
 
 namespace QSFML

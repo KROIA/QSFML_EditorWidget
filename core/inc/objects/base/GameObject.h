@@ -336,14 +336,14 @@ protected:
          * @warning Do not use this function from within a event handler
 		 * @param order 
 		 */
-		void setEventOrder(const std::vector<EventSequenceElement>& order) { m_eventOrder = order; }
+		void setEventOrder(const QSFML::vector<EventSequenceElement>& order) { m_eventOrder = order; }
 
 		/**
 		 * @brief 
 		 * Gets the order in which events are processed by this object
 		 * @return event order list
 		 */
-		const std::vector<EventSequenceElement>& getEventOrder() const { return m_eventOrder; }
+		const QSFML::vector<EventSequenceElement>& getEventOrder() const { return m_eventOrder; }
 
 		/**
 		 * @brief
@@ -351,14 +351,14 @@ protected:
 		 * @warning Do not use this function from within a update function
 		 * @param order
 		 */
-		void setUpdateOrder(const std::vector<UpdateSequenceElement>& order) { m_updateOrder = order; }
+		void setUpdateOrder(const QSFML::vector<UpdateSequenceElement>& order) { m_updateOrder = order; }
 
 		/**
 		 * @brief
 		 * Gets the order in which the object is updated
 		 * @return update order list
 		 */
-		const std::vector<UpdateSequenceElement>& getUpdateOrder() const { return m_updateOrder; }
+		const QSFML::vector<UpdateSequenceElement>& getUpdateOrder() const { return m_updateOrder; }
 
 		/**
 		 * @brief
@@ -366,14 +366,14 @@ protected:
 		 * @warning Do not use this function from within a draw function
 		 * @param order
 		 */
-        void setDrawOrder(const std::vector<DrawSequenceElement>& order) { m_drawOrder = order; }
+        void setDrawOrder(const QSFML::vector<DrawSequenceElement>& order) { m_drawOrder = order; }
 
         /**
          * @brief 
 		 * Gets the order in which the object is drawn
 		 * @return draw order list
          */
-        const std::vector<DrawSequenceElement>& getDrawOrder() const { return m_drawOrder; }
+        const QSFML::vector<DrawSequenceElement>& getDrawOrder() const { return m_drawOrder; }
 
 
         /**
@@ -385,7 +385,7 @@ protected:
 		 * @warning Do not use this function from within another custom event function
          * @param func 
          */
-        void addEventFunction(const std::function<void(GameObject&, const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&)>& func) { m_onEventCallbacks.push_back(func); }
+        void addEventFunction(const std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)>& func) { m_onEventCallbacks.push_back(func); }
         
         /**
          * @brief 
@@ -406,7 +406,7 @@ protected:
 		 * Gets the custom event functions
 		 * @return the custom event functions
          */
-        const std::vector<std::function<void(GameObject&, const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&)> >& getEventFunctions() const { return m_onEventCallbacks; }
+        const QSFML::vector<std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)> >& getEventFunctions() const { return m_onEventCallbacks; }
 
 
 		/**
@@ -438,7 +438,7 @@ protected:
 		 * Gets the custom update functions
 		 * @return list of update functions
 		 */
-		const std::vector<std::function<void(GameObject&)>>& getUpdateFunctions() const { return m_onUpdateCallbacks; }
+		const QSFML::vector<std::function<void(GameObject&)>>& getUpdateFunctions() const { return m_onUpdateCallbacks; }
         
 
 		/**
@@ -470,7 +470,7 @@ protected:
 		 * Gets the custom draw functions
 		 * @return list of custom draw functions
 		 */
-		const std::vector<std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)> >& getDrawFunctions() const { return m_onDrawCallbacks; }
+		const QSFML::vector<std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)> >& getDrawFunctions() const { return m_onDrawCallbacks; }
 
         /**
          * @brief 
@@ -550,7 +550,7 @@ protected:
 		 * Adds multiple childs to this object
          * @param childs 
          */
-        void addChilds(const std::vector<GameObjectPtr>& childs);
+        void addChilds(const QSFML::vector<GameObjectPtr>& childs);
 
         /**
          * @brief 
@@ -566,7 +566,7 @@ protected:
 		 * This does not delete the childs
          * @param childs 
          */
-        void removeChilds(const std::vector<GameObjectPtr>& childs);
+        void removeChilds(const QSFML::vector<GameObjectPtr>& childs);
 
         /**
          * @brief 
@@ -612,7 +612,7 @@ protected:
          * Gets the list of childs
          * @return list of childs
          */
-        const std::vector<GameObjectPtr>& getChilds() const { return m_childObjectManagerData.objs; }
+        const QSFML::vector<GameObjectPtr>& getChilds() const { return m_childObjectManagerData.objs; }
 
 		/**
 		 * @brief
@@ -630,7 +630,7 @@ protected:
 		 * @return list of childs of the given type
          */
         template<typename T>
-        std::vector<T*> getChilds() const;
+        QSFML::vector<T*> getChilds() const;
 
         /**
          * @brief 
@@ -640,7 +640,7 @@ protected:
 		 * @return list of childs of the given type
          */
         template<typename T>
-        std::vector<T*> getChildsRecusrive() const;
+        QSFML::vector<T*> getChildsRecusrive() const;
 
         /**
          * @brief 
@@ -656,7 +656,7 @@ protected:
          * @param name of the searched child
 		 * @return list of childs with the given name
          */
-        std::vector<GameObjectPtr> getAllChilds(const std::string& name);
+        QSFML::vector<GameObjectPtr> getAllChilds(const std::string& name);
 
         /**
          * @brief 
@@ -674,7 +674,7 @@ protected:
          * @param name of the searched child
 		 * @return list of childs with the given name
          */
-        std::vector<GameObjectPtr> getAllChildsRecursive(const std::string& name);
+        QSFML::vector<GameObjectPtr> getAllChildsRecursive(const std::string& name);
 
         // ---------
 
@@ -692,7 +692,7 @@ protected:
 		 * Adds multiple components to this object
          * @param components 
          */
-        void addComponents(const std::vector<Components::ComponentPtr>& components);
+        void addComponents(const QSFML::vector<Components::ComponentPtr>& components);
 
         /**
          * @brief 
@@ -706,7 +706,7 @@ protected:
 		 * Removes multiple components from this object
          * @param components 
          */
-        void removeComponents(const std::vector<Components::ComponentPtr>& components);
+        void removeComponents(const QSFML::vector<Components::ComponentPtr>& components);
 
         /**
          * @brief 
@@ -762,19 +762,19 @@ protected:
 		 * Gets all components of the given type
 		 * @return list of components with the given type
          */
-        const std::vector<Components::ComponentPtr>& getComponents() const;
+        const QSFML::vector<Components::ComponentPtr>& getComponents() const;
         template <typename T>
-        std::vector<T*> getComponents() const;
+        QSFML::vector<T*> getComponents() const;
         template <>
-        std::vector<Components::Collider*> getComponents<Components::Collider>() const;
+        QSFML::vector<Components::Collider*> getComponents<Components::Collider>() const;
         template <>
-        std::vector<Utilities::Updatable*> getComponents<Utilities::Updatable>() const;
+        QSFML::vector<Utilities::Updatable*> getComponents<Utilities::Updatable>() const;
         template <>
-        std::vector<Components::SfEventHandle*> getComponents<Components::SfEventHandle>() const;
+        QSFML::vector<Components::SfEventHandle*> getComponents<Components::SfEventHandle>() const;
         template <>
-        std::vector<Components::Transform*> getComponents<Components::Transform>() const;
+        QSFML::vector<Components::Transform*> getComponents<Components::Transform>() const;
         template <typename T>
-        std::vector<T*> getComponentsRecursive() const;
+        QSFML::vector<T*> getComponentsRecursive() const;
 
         /**
          * @brief 
@@ -839,7 +839,7 @@ protected:
          * @param name of the component
          * @return list of all components with the given name
          */
-        std::vector<Components::ComponentPtr> getAllComponents(const std::string& name);
+        QSFML::vector<Components::ComponentPtr> getAllComponents(const std::string& name);
 
         /**
          * @brief 
@@ -857,7 +857,7 @@ protected:
          * @param name of the component
 		 * @return list of all components with the given name
          */
-        std::vector<Components::ComponentPtr> getAllComponentsRecursive(const std::string& name);
+        QSFML::vector<Components::ComponentPtr> getAllComponentsRecursive(const std::string& name);
 
 
 
@@ -907,7 +907,7 @@ protected:
          * @return true if a collision occured, otherweise false
          */
         bool checkCollision(const GameObjectPtr other,
-            std::vector<Utilities::Collisioninfo>& collisions,
+            QSFML::vector<Utilities::Collisioninfo>& collisions,
             bool onlyFirstCollision) const;
 
         /**
@@ -918,7 +918,7 @@ protected:
 		 * @param onlyFirstCollision if set to true, the check will stop for each object after the first collision
          */
         void checkCollision(const Utilities::ObjectQuadTree& tree,
-            std::vector<Utilities::Collisioninfo>& collisions,
+            QSFML::vector<Utilities::Collisioninfo>& collisions,
             bool onlyFirstCollision);
         // ---------
 
@@ -1065,7 +1065,7 @@ protected:
 		 * @param name of the object
 		 * @return list of found objects
          */
-        std::vector<Objects::GameObjectPtr> getAllObjectsGlobal(const std::string& name);
+        QSFML::vector<Objects::GameObjectPtr> getAllObjectsGlobal(const std::string& name);
         
         /**
          * @brief 
@@ -1083,7 +1083,7 @@ protected:
 		 * @param name of the object
 		 * @return list of found objects
          */
-        std::vector<Objects::GameObjectPtr> getAllObjectsGlobalRecusive(const std::string& name);
+        QSFML::vector<Objects::GameObjectPtr> getAllObjectsGlobalRecusive(const std::string& name);
 
         /**
          * @brief 
@@ -1393,18 +1393,18 @@ protected:
 
     private:
 
-        std::vector<std::string> toStringInternal(const std::string &preStr) const;
-        bool getAllChilds_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
-        bool getAllChildsRecursive_internal(const std::string& name, std::vector<GameObjectPtr>& foundList);
+        QSFML::vector<std::string> toStringInternal(const std::string &preStr) const;
+        bool getAllChilds_internal(const std::string& name, QSFML::vector<GameObjectPtr>& foundList);
+        bool getAllChildsRecursive_internal(const std::string& name, QSFML::vector<GameObjectPtr>& foundList);
         
         void markTransformDirty();
         sf::Transform updateTransformInternal(sf::Transform parentTransform) const;
 		sf::Transform updateTransformInternal()const;
         
-        //bool findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList);
+        //bool findAllComponentsRecursive_internal(const std::string& name, QSFML::vector<Components::Component*>& foundList);
 
         //template<typename T>
-        //void getChildsRecusrive_internal(std::vector<T*> &listOut) const;
+        //void getChildsRecusrive_internal(QSFML::vector<T*> &listOut) const;
 
 
         //void removeChild_internal();
@@ -1437,13 +1437,13 @@ protected:
        
 
         
-        //std::vector<GameObjectPtr> m_childs;
-        //std::vector<Components::Component*> m_componentsManagerData.all;
+        //QSFML::vector<GameObjectPtr> m_childs;
+        //QSFML::vector<Components::Component*> m_componentsManagerData.all;
        
 
-        //std::vector<Utilities::Updatable*> m_updatableComponents;
-        //std::vector<Components::Collider*> m_colliders;
-        //std::vector<Utilities::Transformable*> m_transformables;
+        //QSFML::vector<Utilities::Updatable*> m_updatableComponents;
+        //QSFML::vector<Components::Collider*> m_colliders;
+        //QSFML::vector<Utilities::Transformable*> m_transformables;
         mutable Utilities::AABB m_boundingBox; 
         //mutable sf::Vector2f m_oldPosition;
         std::function<Utilities::AABB()>* m_getCustomBoundingBoxFunction = nullptr;
@@ -1452,26 +1452,26 @@ protected:
         void needsEventUpdateChanged(bool needsEventUpdate);
         void needsEventUpdate(bool needsEventUpdate);
         //bool m_thisNeedsEventUpdate;
-        //std::vector<Components::SfEventHandle*> m_eventComponents;
+        //QSFML::vector<Components::SfEventHandle*> m_eventComponents;
 
         // Will send a signal to the parent to notify, the new status
         void needsDrawUpdateChanged(bool needsDrawUpdate);
         void needsDrawUpdate(bool needsDrawUpdate);
         //bool m_thisNeedsDrawUpdate;
-        //std::vector<Components::Drawable*> m_drawableComponents;
+        //QSFML::vector<Components::Drawable*> m_drawableComponents;
 
         
-        //std::vector<GameObjectPtr> m_toAddChilds;
-        //std::vector<GameObjectPtr> m_toDeleteChilds;
-        //std::vector<GameObjectPtr> m_toRemoveChilds;
+        //QSFML::vector<GameObjectPtr> m_toAddChilds;
+        //QSFML::vector<GameObjectPtr> m_toDeleteChilds;
+        //QSFML::vector<GameObjectPtr> m_toRemoveChilds;
         
-        //std::vector<Components::Component*> m_toAddComponents;
-        //std::vector<Components::Component*> m_componentsManagerData.toRemove;
+        //QSFML::vector<Components::Component*> m_toAddComponents;
+        //QSFML::vector<Components::Component*> m_componentsManagerData.toRemove;
 
         SceneSettings::UpdateControlls m_updateControlls;
-		std::vector< std::function<void(GameObject&, const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&)> > m_onEventCallbacks;
-		std::vector< std::function<void(GameObject&)> > m_onUpdateCallbacks;
-		std::vector< std::function<void(const GameObject&,sf::RenderTarget&,sf::RenderStates)> > m_onDrawCallbacks;
+		QSFML::vector< std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)> > m_onEventCallbacks;
+		QSFML::vector< std::function<void(GameObject&)> > m_onUpdateCallbacks;
+		QSFML::vector< std::function<void(const GameObject&,sf::RenderTarget&,sf::RenderStates)> > m_onDrawCallbacks;
 
         RenderLayer m_renderLayer;
 
@@ -1479,7 +1479,7 @@ protected:
         void setSceneParent(Scene *parent);
         
         
-        void sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>> &events);
+        void sfEvent(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>> &events);
         void update_internal();
         void inSceneAdded_internal();
         //void draw(sf::RenderWindow &window) const;
@@ -1495,42 +1495,42 @@ protected:
 
         struct ChildObjectManagerData
         {
-            std::vector<GameObjectPtr> objs;
+            QSFML::vector<GameObjectPtr> objs;
 
-            std::vector<GameObjectPtr> toAdd;
-            std::vector<GameObjectPtr> toRemove;
-            std::vector<GameObjectPtr> toDelete;
+            QSFML::vector<GameObjectPtr> toAdd;
+            QSFML::vector<GameObjectPtr> toRemove;
+            QSFML::vector<GameObjectPtr> toDelete;
 
             bool objectsChanged;
         };
         struct ComponentManagerData
         {
-            std::vector<Components::ComponentPtr> all;
+            QSFML::vector<Components::ComponentPtr> all;
 
-            std::vector<Utilities::Updatable*> updatables;
-            std::vector<Components::Collider*> colliders;
-            std::vector<Components::SfEventHandle*> eventHandler;
-            std::vector<Components::Drawable*> drawable;
+            QSFML::vector<Utilities::Updatable*> updatables;
+            QSFML::vector<Components::Collider*> colliders;
+            QSFML::vector<Components::SfEventHandle*> eventHandler;
+            QSFML::vector<Components::Drawable*> drawable;
             mutable Components::Transform* transform = nullptr;
 
-            std::vector<Components::ComponentPtr> toAdd;
-            std::vector<Components::ComponentPtr> toRemove;
-            std::vector<Components::ComponentPtr> toDelete;
+            QSFML::vector<Components::ComponentPtr> toAdd;
+            QSFML::vector<Components::ComponentPtr> toRemove;
+            QSFML::vector<Components::ComponentPtr> toDelete;
 
             std::atomic<bool> thisNeedsDrawUpdate = false;
             std::atomic<bool> thisNeedsEventUpdate = false;
 
 			// Container to hold which are created by this object
 			// This is needed to delete the components when the object is deleted
-            //std::vector<Components::ComponentPtr> selfCreatedComponents;
+            //QSFML::vector<Components::ComponentPtr> selfCreatedComponents;
         };
 
 		ChildObjectManagerData m_childObjectManagerData;
         ComponentManagerData m_componentsManagerData;
 
-		std::vector<EventSequenceElement> m_eventOrder;
-		std::vector<UpdateSequenceElement> m_updateOrder;
-		std::vector<DrawSequenceElement> m_drawOrder;
+		QSFML::vector<EventSequenceElement> m_eventOrder;
+		QSFML::vector<UpdateSequenceElement> m_updateOrder;
+		QSFML::vector<DrawSequenceElement> m_drawOrder;
 
         // Static
         static size_t s_objNameCounter;
@@ -1565,9 +1565,9 @@ T* GameObject::getFirstChild() const
     return nullptr;
 }
 template<typename T>
-std::vector<T*> GameObject::getChilds() const
+QSFML::vector<T*> GameObject::getChilds() const
 {
-    std::vector<T*> childs;
+    QSFML::vector<T*> childs;
     for (auto& obj : m_childObjectManagerData.objs)
     {
         if (T* child = dynamic_cast<T*>(obj))
@@ -1579,16 +1579,16 @@ std::vector<T*> GameObject::getChilds() const
 }
 
 template<typename T>
-std::vector<T*> GameObject::getChildsRecusrive() const
+QSFML::vector<T*> GameObject::getChildsRecusrive() const
 {
-    std::vector<T*> childs;
+    QSFML::vector<T*> childs;
     for (auto& obj : m_childObjectManagerData.objs)
     {
         if (T* child = dynamic_cast<T*>(obj))
         {
             childs.push_back(child);
         }
-        std::vector<T*> childChilds = obj->getChildsRecusrive<T>();
+        QSFML::vector<T*> childChilds = obj->getChildsRecusrive<T>();
         childs.insert(childs.end(), childChilds.begin(), childChilds.end());
     }
     return childs;
@@ -1683,9 +1683,9 @@ Components::Transform* GameObject::getFirstComponent<Components::Transform>() co
 
 
 template <typename T>
-std::vector<T*> GameObject::getComponents() const
+QSFML::vector<T*> GameObject::getComponents() const
 {
-    std::vector<T*> components;
+    QSFML::vector<T*> components;
     components.reserve(m_componentsManagerData.all.size());
     for (auto& comp : m_componentsManagerData.all)
     {
@@ -1697,33 +1697,33 @@ std::vector<T*> GameObject::getComponents() const
     return components;
 }
 template <>
-std::vector<Components::Collider*> GameObject::getComponents<Components::Collider>() const
+QSFML::vector<Components::Collider*> GameObject::getComponents<Components::Collider>() const
 {
     return m_componentsManagerData.colliders;
 }
 template <>
-std::vector<Utilities::Updatable*> GameObject::getComponents<Utilities::Updatable>() const
+QSFML::vector<Utilities::Updatable*> GameObject::getComponents<Utilities::Updatable>() const
 {
     return m_componentsManagerData.updatables;
 }
 template <>
-std::vector<Components::SfEventHandle*> GameObject::getComponents<Components::SfEventHandle>() const
+QSFML::vector<Components::SfEventHandle*> GameObject::getComponents<Components::SfEventHandle>() const
 {
     return m_componentsManagerData.eventHandler;
 }
 template <>
-std::vector<Components::Transform*> GameObject::getComponents<Components::Transform>() const
+QSFML::vector<Components::Transform*> GameObject::getComponents<Components::Transform>() const
 {
     return { m_componentsManagerData.transform };
 }
 
 template <typename T>
-std::vector<T*> GameObject::getComponentsRecursive() const
+QSFML::vector<T*> GameObject::getComponentsRecursive() const
 {
-    std::vector<T*> comps = getComponents<T>();
+    QSFML::vector<T*> comps = getComponents<T>();
     for (size_t i = 0; i < m_childObjectManagerData.objs.size(); ++i)
     {
-        std::vector<T*> comps2 = m_childObjectManagerData.objs[i]->getComponentsRecursive<T>();
+        QSFML::vector<T*> comps2 = m_childObjectManagerData.objs[i]->getComponentsRecursive<T>();
         comps.insert(comps.end(), comps2.begin(), comps2.end());
     }
     return comps;

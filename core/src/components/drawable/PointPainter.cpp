@@ -132,7 +132,7 @@ namespace QSFML
         {
             m_points = { PointData(pos, radius, color) };
         }
-        void PointPainter::setPoints(const std::vector<sf::Vector2f>& points)
+        void PointPainter::setPoints(const QSFML::vector<sf::Vector2f>& points)
         {
             m_points.clear();
             m_points.reserve(points.size());

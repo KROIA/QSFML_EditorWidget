@@ -52,7 +52,7 @@ Collider& Collider::operator=(const Collider& other)
 
 
 
-void Collider::setVertecies(const std::vector<sf::Vector2f>& vertecies)
+void Collider::setVertecies(const QSFML::vector<sf::Vector2f>& vertecies)
 {
     m_relativeVertices = vertecies;
     markDirty();
@@ -89,7 +89,7 @@ size_t Collider::getVertexCount() const
 {
     return m_relativeVertices.size();
 }
-const std::vector<sf::Vector2f>& Collider::getVertecies() const
+const QSFML::vector<sf::Vector2f>& Collider::getVertecies() const
 {
     return m_relativeVertices;
 }
@@ -130,8 +130,8 @@ const sf::Vector2f& Collider::getPos() const
     return m_pos;
 }
 
-bool Collider::checkCollision(const std::vector<Objects::GameObjectPtr>& objs,
-    std::vector<Utilities::Collisioninfo>& collisions,
+bool Collider::checkCollision(const QSFML::vector<Objects::GameObjectPtr>& objs,
+    QSFML::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_1);
@@ -146,8 +146,8 @@ bool Collider::checkCollision(const std::vector<Objects::GameObjectPtr>& objs,
     }
     return hasCollision;
 }
-bool Collider::checkCollision(const std::vector<Components::Collider*>& other,
-    std::vector<Utilities::Collisioninfo>& collisions,
+bool Collider::checkCollision(const QSFML::vector<Components::Collider*>& other,
+    QSFML::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollisionPerObject) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);
@@ -162,7 +162,7 @@ bool Collider::checkCollision(const std::vector<Components::Collider*>& other,
 }
 
 
-bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
+bool Collider::checkCollision(Collider* other, QSFML::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 { 
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
     if (isDirty())
@@ -179,14 +179,14 @@ bool Collider::checkCollision(Collider* other, std::vector<Utilities::Collisioni
     
     return checkCollision_noAABB(other, collisions, onlyFirstCollision);
 }
-void Collider::checkCollision_noAABB(const std::vector<Components::Collider*>& other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
+void Collider::checkCollision_noAABB(const QSFML::vector<Components::Collider*>& other, QSFML::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 {
     if (isDirty())
         logWarning(__PRETTY_FUNCTION__ + std::string("Collider: ") + getName() + " is dirty, collision check might be incorrect");
     for (auto otherCollider : other)
         checkCollision_noAABB(otherCollider, collisions, onlyFirstCollision);
 }
-bool Collider::checkCollision_noAABB(Collider* other, std::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
+bool Collider::checkCollision_noAABB(Collider* other, QSFML::vector<Utilities::Collisioninfo>& collisions, bool onlyFirstCollision) const
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_3);
     if (isDirty())
@@ -339,7 +339,7 @@ bool Collider::contains(const sf::Vector2f& point)
     }
     return result;
 }
-bool Collider::contains(const std::vector<sf::Vector2f>& polygon, 
+bool Collider::contains(const QSFML::vector<sf::Vector2f>& polygon, 
                         const sf::Vector2f& point)
 {
     QSFMLP_PHYSICS_FUNCTION(QSFML_COLOR_STAGE_2);

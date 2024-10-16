@@ -244,7 +244,7 @@ namespace QSFML
         {
             m_controller = controller;
         }
-        void CameraController::SfEventComponent::sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>>& events)
+        void CameraController::SfEventComponent::sfEvent(const QSFML::pair<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events)
         {
             if (!m_controller) return;
             

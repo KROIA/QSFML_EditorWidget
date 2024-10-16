@@ -11,7 +11,7 @@ CollisionObject::CollisionObject(const std::string& name, QSFML::Objects::GameOb
 			sf::Vector2f(5,20)
 		  });
 }
-CollisionObject::CollisionObject(const std::vector<sf::Vector2f>& vertecies,
+CollisionObject::CollisionObject(const QSFML::vector<sf::Vector2f>& vertecies,
 								 const std::string& name, 
 	QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
@@ -23,7 +23,7 @@ CollisionObject::~CollisionObject()
 
 }
 
-void CollisionObject::setup(const std::vector<sf::Vector2f>& vertecies)
+void CollisionObject::setup(const QSFML::vector<sf::Vector2f>& vertecies)
 {
 	m_collider = new QSFML::Components::Collider();
 	m_collider->setVertecies(vertecies);

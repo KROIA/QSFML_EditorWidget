@@ -21,7 +21,7 @@ namespace QSFML
 
 			VectorFieldPainter(const std::string& name = "VectorFieldPainter");
 
-			void setField(const std::vector<Element>& field)
+			void setField(const QSFML::vector<Element>& field)
 			{
 				m_field = field;
 			}
@@ -29,7 +29,7 @@ namespace QSFML
 			{
 				m_field.reserve(size);
 			}
-			std::vector<Element>& getField()
+			QSFML::vector<Element>& getField()
 			{
 				return m_field;
 			}
@@ -38,7 +38,7 @@ namespace QSFML
 				m_field.clear();
 			}
 
-			const std::vector<Element>& getField() const
+			const QSFML::vector<Element>& getField() const
 			{
 				return m_field;
 			}
@@ -52,21 +52,21 @@ namespace QSFML
 			}
 
 			// Iterator
-			std::vector<Element>::iterator begin()
+			QSFML::vector<Element>::iterator begin()
 			{
 				return m_field.begin();
 			}
-			std::vector<Element>::iterator end()
+			QSFML::vector<Element>::iterator end()
 			{
 				return m_field.end();
 			}
 
 			// Const Iterator
-			std::vector<Element>::const_iterator begin() const
+			QSFML::vector<Element>::const_iterator begin() const
 			{
 				return m_field.begin();
 			}
-			std::vector<Element>::const_iterator end() const
+			QSFML::vector<Element>::const_iterator end() const
 			{
 				return m_field.end();
 			}
@@ -75,7 +75,7 @@ namespace QSFML
 			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 		private:
-			std::vector<Element> m_field;
+			QSFML::vector<Element> m_field;
 		};
 	}
 }

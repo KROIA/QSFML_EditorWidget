@@ -7,7 +7,7 @@
 namespace QSFML
 {
 SceneThreadWorker::SceneThreadWorker(size_t threadCount,
-                                       std::vector<GameObjectGroup*> *group)
+                                       QSFML::vector<GameObjectGroup*> *group)
 {
     m_groups = group;
     setupThreads(threadCount);

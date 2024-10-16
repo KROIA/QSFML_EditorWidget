@@ -180,7 +180,7 @@ void addCar(Scene* scene,
     Car* car = new Car(settings, qparent);
     scene->addObject(car);
 
-    //std::vector< Objects::CameraWindow*> cams = car->getChildsRecusrive<Objects::CameraWindow>();
+    //QSFML::vector< Objects::CameraWindow*> cams = car->getChildsRecusrive<Objects::CameraWindow>();
 
 }
 
@@ -381,7 +381,7 @@ SandBox::~SandBox()
 
 void SandBox::onTimerFinished()
 {
-    std::vector<sf::Vector2f> points;
+    QSFML::vector<sf::Vector2f> points;
     
     for (size_t i = 0; i < 20; ++i)
     {

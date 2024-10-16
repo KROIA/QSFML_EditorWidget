@@ -2,7 +2,7 @@
 
 
 
-std::vector<Planet*> Planet::m_planets;
+QSFML::vector<Planet*> Planet::m_planets;
 bool Planet::m_enableCollision = true;
 sf::FloatRect Planet::m_worldBounds;
 

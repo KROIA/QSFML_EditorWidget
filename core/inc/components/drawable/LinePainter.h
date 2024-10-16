@@ -78,7 +78,7 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
         sf::Color m_color;
         //bool m_useGlobalPosition = false;
 
-        std::vector<LineData> m_lines;
+        QSFML::vector<LineData> m_lines;
 };
 }
 }
