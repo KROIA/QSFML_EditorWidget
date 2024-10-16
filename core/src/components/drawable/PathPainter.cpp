@@ -28,12 +28,22 @@ namespace QSFML
         void PathPainter::setPath(const QSFML::vector<sf::Vector2f>& path)
         {
 			m_vertecies.clear();
-			m_vertecies.resize(path.size() - 1);
-			for (size_t i = 0; i < path.size() - 1; ++i)
+			m_vertecies.resize(path.size());
+			for (size_t i = 0; i < path.size(); ++i)
 			{
                 m_vertecies[i].color = m_color;
                 m_vertecies[i].position = path[i];
 			}
+        }
+        QSFML::vector<sf::Vector2f> PathPainter::getPath() const
+        {
+            QSFML::vector<sf::Vector2f> p;
+            p.reserve(m_vertecies.size());
+            for (size_t i = 0; i < m_vertecies.size(); ++i)
+            {
+                p.push_back(m_vertecies[i].position);
+            }
+            return p;
         }
         void PathPainter::appenPoint(const sf::Vector2f& point)
         {
