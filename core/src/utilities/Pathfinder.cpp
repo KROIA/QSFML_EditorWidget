@@ -29,18 +29,18 @@ namespace QSFML
             }
 		}
 
-		bool Pathfinder::addNode(const std::string& id, const sf::Vector2f& position)
+		bool Pathfinder::addNode(const QSFML::string& id, const sf::Vector2f& position)
 		{
 			if (m_nodes.find(id) != m_nodes.end())
 				return false;
 			Node node;
 			node.position = position;
-			m_nodes.at(id) = node;
+			m_nodes[id] = node;
             onPathChanged();
 			//m_built = false;
 			return true;
 		}
-        bool Pathfinder::addEdge(const std::string& sourceNodeID, const std::string& destinationNodeID, Direction dir)
+        bool Pathfinder::addEdge(const QSFML::string& sourceNodeID, const QSFML::string& destinationNodeID, Direction dir)
         {
             float distance = 0;
 			if (m_nodes.find(sourceNodeID) != m_nodes.end() && m_nodes.find(destinationNodeID) != m_nodes.end())
@@ -49,7 +49,7 @@ namespace QSFML
 			}
 			return addEdge(sourceNodeID, destinationNodeID, distance, dir);
         }
-		bool Pathfinder::addEdge(const std::string& sourceNodeID, const std::string& destinationNodeID, float weight, Direction dir)
+		bool Pathfinder::addEdge(const QSFML::string& sourceNodeID, const QSFML::string& destinationNodeID, float weight, Direction dir)
 		{
             bool success = addEdge(sourceNodeID, destinationNodeID, weight);
             if (dir == Direction::Bidirectional)
@@ -58,7 +58,7 @@ namespace QSFML
             onPathChanged();
             return success;
 		}
-        bool Pathfinder::addEdge(const std::string& sourceNodeID, const std::string& destinationNodeID, float weight)
+        bool Pathfinder::addEdge(const QSFML::string& sourceNodeID, const QSFML::string& destinationNodeID, float weight)
         {
             // Check if both nodes exist
             if (m_nodes.find(sourceNodeID) == m_nodes.end() || m_nodes.find(destinationNodeID) == m_nodes.end())
@@ -67,7 +67,7 @@ namespace QSFML
             }
 
             // Add edge from source to destination if it doesn't already exist
-            auto& sourceEdges = m_edges.at(sourceNodeID);
+            auto& sourceEdges = m_edges[sourceNodeID];
             bool edgeExists = std::any_of(sourceEdges.begin(), sourceEdges.end(), [&](const Edge& edge) {
                 return edge.destinationNodeID == destinationNodeID;
                 });
@@ -82,16 +82,16 @@ namespace QSFML
         }
 
 
-		void Pathfinder::setNodes(const QSFML::unordered_map<std::string, Node>& nodes)
+		void Pathfinder::setNodes(const QSFML::unordered_map<QSFML::string, Node>& nodes)
 		{
 			m_nodes = nodes;
 
 			setEdges(m_edges);
 		}
-        void Pathfinder::setEdges(const QSFML::unordered_map<std::string, QSFML::vector<Edge>>& edges)
+        void Pathfinder::setEdges(const QSFML::unordered_map<QSFML::string, QSFML::vector<Edge>>& edges)
         {
 			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
-            QSFML::unordered_map<std::string, QSFML::vector<Edge>> newEdges;
+            QSFML::unordered_map<QSFML::string, QSFML::vector<Edge>> newEdges;
 
             // Remove edges that can't exist
             for (auto& edge : edges)
@@ -103,7 +103,7 @@ namespace QSFML
                     {
                         if (m_nodes.find(edge2.destinationNodeID) != m_nodes.end())
                         {
-                            newEdges.at(edge.first).push_back(edge2);
+                            newEdges[edge.first].push_back(edge2);
                         }
                     }
                 }
@@ -122,7 +122,7 @@ namespace QSFML
             m_edges.clear();
 			onPathChanged();
         }
-        void Pathfinder::clearEdges(const std::string& nodeID)
+        void Pathfinder::clearEdges(const QSFML::string& nodeID)
         {
             QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 			m_edges.erase(nodeID);
@@ -140,7 +140,7 @@ namespace QSFML
         }
 
 
-        Pathfinder::Node Pathfinder::getNode(const std::string& id) const
+        Pathfinder::Node Pathfinder::getNode(const QSFML::string& id) const
         {
             if (m_nodes.find(id) != m_nodes.end())
             {
@@ -148,7 +148,7 @@ namespace QSFML
             }
             return Node();
         }
-        void Pathfinder::setNode(const std::string& id, const Node& node)
+        void Pathfinder::setNode(const QSFML::string& id, const Node& node)
         {
 			const auto& it = m_nodes.find(id);
             if (it != m_nodes.end())
@@ -172,7 +172,7 @@ namespace QSFML
             onPathChanged();
         }
 
-        float Pathfinder::getDistance(const std::string& startNodeID, const std::string& endNodeID) const
+        float Pathfinder::getDistance(const QSFML::string& startNodeID, const QSFML::string& endNodeID) const
         {
 			if (m_nodes.find(startNodeID) == m_nodes.end() || m_nodes.find(endNodeID) == m_nodes.end())
 			{
@@ -184,11 +184,11 @@ namespace QSFML
 			return std::sqrt(std::pow(startPos.x - endPos.x, 2) + std::pow(startPos.y - endPos.y, 2));
         }
 
-        float Pathfinder::getPathDistance(const std::string& startNodeID, const std::string& endNodeID) const
+        float Pathfinder::getPathDistance(const QSFML::string& startNodeID, const QSFML::string& endNodeID) const
         {
 			return getPathDistance(findPath(startNodeID, endNodeID));
         }
-        float Pathfinder::getPathDistance(const QSFML::vector<std::string>& path) const
+        float Pathfinder::getPathDistance(const QSFML::vector<QSFML::string>& path) const
         {
 			QSFML::vector<sf::Vector2f> positions = getPathPositions(path);
             float length = 0;
@@ -198,12 +198,12 @@ namespace QSFML
 			}
 			return length;
         }
-        sf::Vector2f Pathfinder::lerp(const std::string& startNodeID, const std::string& endNodeID, float t) const
+        sf::Vector2f Pathfinder::lerp(const QSFML::string& startNodeID, const QSFML::string& endNodeID, float t) const
         {
 			QSFML::vector<sf::Vector2f> positions = findPathPositions(startNodeID, endNodeID);
 			return VectorMath::lerp(positions, t);
         }
-        sf::Vector2f Pathfinder::lerp(const QSFML::vector<std::string>& path, float t) const
+        sf::Vector2f Pathfinder::lerp(const QSFML::vector<QSFML::string>& path, float t) const
         {
 			QSFML::vector<sf::Vector2f> positions = getPathPositions(path);
 			return VectorMath::lerp(positions, t);
@@ -227,7 +227,7 @@ namespace QSFML
 			}
         }
 
-		QSFML::vector<std::string> Pathfinder::findPath(const std::string& startNodeID, const std::string& endNodeID) const
+		QSFML::vector<QSFML::string> Pathfinder::findPath(const QSFML::string& startNodeID, const QSFML::string& endNodeID) const
 		{
             QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
             // If either start or end node is missing, return an empty path
@@ -237,22 +237,22 @@ namespace QSFML
             }
 
             // Priority queue for Dijkstra's algorithm; stores (cost, node ID)
-            using QueueElement = QSFML::pair<float, std::string>;
+            using QueueElement = QSFML::pair<float, QSFML::string>;
             std::priority_queue<QueueElement, QSFML::vector<QueueElement>, std::greater<>> priorityQueue;
 
             // Map to store the minimum cost to reach each node
-            QSFML::unordered_map<std::string, float> minCost;
+            QSFML::unordered_map<QSFML::string, float> minCost;
             // Map to store the previous node in the optimal path
-            QSFML::unordered_map<std::string, std::string> previousNode;
+            QSFML::unordered_map<QSFML::string, QSFML::string> previousNode;
 
             // Initialize all nodes with maximum possible cost
             for (const auto& pair : m_nodes)
             {
-                minCost.at(pair.first) = std::numeric_limits<float>::infinity();
+                minCost[pair.first] = std::numeric_limits<float>::infinity();
             }
 
             // Set the start node cost to 0 and add it to the queue
-            minCost.at(startNodeID) = 0.0f;
+            minCost[startNodeID] = 0.0f;
             priorityQueue.push({ 0.0f, startNodeID });
 
             // Dijkstra's algorithm loop
@@ -285,8 +285,8 @@ namespace QSFML
                         // If a cheaper path to the destination is found
                         if (newCost < minCost.at(edge.destinationNodeID))
                         {
-                            minCost.at(edge.destinationNodeID) = newCost;
-							previousNode.at(edge.destinationNodeID) = currentNodeID;
+                            minCost[edge.destinationNodeID] = newCost;
+							previousNode[edge.destinationNodeID] = currentNodeID;
                             //previousNode[edge.destinationNodeID] = currentNodeID;
                             priorityQueue.push({ newCost, edge.destinationNodeID });
                         }
@@ -295,11 +295,11 @@ namespace QSFML
             }
 
             // Build the path by tracing from endNodeID to startNodeID
-            QSFML::vector<std::string> path;
+            QSFML::vector<QSFML::string> path;
 			path.reserve(50);
             if (previousNode.find(endNodeID) != previousNode.end() || startNodeID == endNodeID)
             {
-                std::string currentNodeID = endNodeID;
+                QSFML::string currentNodeID = endNodeID;
                 while (currentNodeID != startNodeID)
                 {
                     path.push_back(currentNodeID);
@@ -313,22 +313,22 @@ namespace QSFML
 
             return path;
 		}
-        QSFML::vector<sf::Vector2f> Pathfinder::findPathPositions(const std::string& startNodeID, const std::string& endNodeID) const
+        QSFML::vector<sf::Vector2f> Pathfinder::findPathPositions(const QSFML::string& startNodeID, const QSFML::string& endNodeID) const
         {
             QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
-            QSFML::vector<std::string> path = findPath(startNodeID, endNodeID);
+            QSFML::vector<QSFML::string> path = findPath(startNodeID, endNodeID);
             QSFML::vector<sf::Vector2f> positions;
-            for (const std::string& nodeID : path)
+            for (const QSFML::string& nodeID : path)
             {
                 positions.push_back(m_nodes.at(nodeID).position);
             }
             return positions;
         }
-        QSFML::vector<sf::Vector2f> Pathfinder::getPathPositions(const QSFML::vector<std::string> &path) const
+        QSFML::vector<sf::Vector2f> Pathfinder::getPathPositions(const QSFML::vector<QSFML::string> &path) const
         {
             QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
             QSFML::vector<sf::Vector2f> positions;
-            for (const std::string& nodeID : path)
+            for (const QSFML::string& nodeID : path)
             {
 				const auto& it = m_nodes.find(nodeID);
 				if (it != m_nodes.end())
@@ -362,7 +362,7 @@ namespace QSFML
 			}
         }
 
-        void Pathfinder::Painter::drawPath(const std::string& startNodeID, const std::string& endNodeID)
+        void Pathfinder::Painter::drawPath(const QSFML::string& startNodeID, const QSFML::string& endNodeID)
         {
 			m_pathChanged = true;
 			m_startNodeID = startNodeID;
@@ -375,9 +375,9 @@ namespace QSFML
 
             m_path = m_pathfinder->findPath(m_startNodeID, m_endNodeID);
 			m_pathNodes.clear();
-			for (const std::string& nodeID : m_path)
+			for (const QSFML::string& nodeID : m_path)
 			{
-				m_pathNodes.at(nodeID) = true;
+				m_pathNodes[nodeID] = true;
 			}
 			m_pathChanged = false;
         }

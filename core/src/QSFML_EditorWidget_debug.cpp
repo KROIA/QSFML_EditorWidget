@@ -31,6 +31,50 @@ void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, cons
 	QSFML_UNUSED(line);
 	return malloc(size);
 }
+
+// EASTL also wants us to define this (see string.h line 197)
+
+int Vsnprintf8(char* pDestination, size_t n, const char* pFormat, va_list arguments)
+{
+#ifdef _MSC_VER
+	QSFML_UNUSED(pDestination);
+	QSFML_UNUSED(n);
+	QSFML_UNUSED(pFormat);
+	QSFML_UNUSED(arguments);
+	return 0;// _vsnprintf(pDestination, n, pFormat, arguments);
+#else
+	return vsnprintf(pDestination, n, pFormat, arguments);
+#endif
+}
+
+int Vsnprintf16(char16_t* pDestination, size_t n, const char16_t* pFormat, va_list arguments)
+{
+#ifdef _MSC_VER
+	QSFML_UNUSED(pDestination);
+	QSFML_UNUSED(n);
+	QSFML_UNUSED(pFormat);
+	QSFML_UNUSED(arguments);
+	return 0;// _vsnwprintf((wchar_t*)pDestination, n, (wchar_t*)pFormat, arguments);
+#else
+	char* d = new char[n + 1];
+	int r = vsnprintf(d, n, convertstring<char16_t, char>(pFormat).c_str(), arguments);
+	memcpy(pDestination, convertstring<char, char16_t>(d).c_str(), (n + 1) * sizeof(char16_t));
+	delete[] d;
+	return r;
+#endif
+}
+namespace EA {
+	namespace StdC {
+		int Vsnprintf(char* pDestination, size_t n, const char* pFormat, va_list arguments)
+		{
+			QSFML_UNUSED(pDestination);
+			QSFML_UNUSED(n);
+			QSFML_UNUSED(pFormat);
+			QSFML_UNUSED(arguments);
+			return 0;
+		}
+	}
+}
 #endif
 /// USER_SECTION_END
 

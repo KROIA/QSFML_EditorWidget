@@ -126,6 +126,10 @@ const sf::Color& LinePainter::getColor(size_t index) const
 {
     return m_lines[index].color;
 }
+void LinePainter::clear()
+{
+	m_lines.clear();
+}
 void LinePainter::drawComponent(sf::RenderTarget& target,
                         sf::RenderStates states) const
 {

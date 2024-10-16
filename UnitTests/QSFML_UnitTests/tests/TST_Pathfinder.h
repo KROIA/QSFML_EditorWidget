@@ -97,12 +97,12 @@ private:
 				Pathfinder::Node node = pathfinder.getNode("A");
 				node.position = worldPos;
 				pathfinder.setNode("A", node);
-				QSFML::unordered_map<std::string, Pathfinder::Node> nodes = pathfinder.getNodes();
+				QSFML::unordered_map<QSFML::string, Pathfinder::Node> nodes = pathfinder.getNodes();
 				nodes.erase("A");
 
 				// Find the closest node to "A"
 				float minDist = std::numeric_limits<float>::max();
-				std::string closestNodeID;
+				QSFML::string closestNodeID;
 				for (auto& node : nodes)
 				{
 					float dist = std::sqrt(std::pow(node.second.position.x - worldPos.x, 2) + std::pow(node.second.position.y - worldPos.y, 2));
@@ -124,9 +124,9 @@ private:
 		delete scene;
 	}
 
-	static void connectNearestNeighbours(Pathfinder& pathfinder, size_t connectionCount, const std::string& lastNode)
+	static void connectNearestNeighbours(Pathfinder& pathfinder, size_t connectionCount, const QSFML::string& lastNode)
 	{
-		QSFML::unordered_map<std::string, Pathfinder::Node> nodes = pathfinder.getNodes();
+		QSFML::unordered_map<QSFML::string, Pathfinder::Node> nodes = pathfinder.getNodes();
 		nodes.erase(lastNode);
 		// Get connections from last node to save them
 		QSFML::vector<Pathfinder::Edge> lastNodeConnections;
@@ -138,7 +138,7 @@ private:
 		for (auto& firstNode : nodes)
 		{
 			// Sort by distance ( shortest first )
-			QSFML::vector<QSFML::pair<std::string, float>> distances;
+			QSFML::vector<QSFML::pair<QSFML::string, float>> distances;
 			for (auto& node : nodes)
 			{
 				if (node.first == firstNode.first)
@@ -146,7 +146,7 @@ private:
 				float dist = std::sqrt(std::pow(node.second.position.x - firstNode.second.position.x, 2) + std::pow(node.second.position.y - firstNode.second.position.y, 2));
 				distances.push_back({ node.first, dist });
 			}
-			std::sort(distances.begin(), distances.end(), [](const QSFML::pair<std::string, float>& a, const QSFML::pair<std::string, float>& b)
+			eastl::sort(distances.begin(), distances.end(), [](const QSFML::pair<QSFML::string, float>& a, const QSFML::pair<QSFML::string, float>& b)
 					  {
 						  return a.second < b.second;
 					  });
@@ -182,8 +182,8 @@ private:
 		scene->addObject(obj);
 
 		// Nodes which define the start and end of the path
-		std::string firstNode;
-		std::string lastNode;
+		QSFML::string firstNode;
+		QSFML::string lastNode;
 		sf::Vector2u area(800, 600);
 		float lastNodeForce = 15;
 		int nodeCount = 200;
@@ -194,7 +194,10 @@ private:
 		// Add random nodes and edges
 		for (int i = 0; i < nodeCount; ++i)
 		{
-			std::string id = "Node" + std::to_string(i);
+			std::string idStr = "Node" + std::to_string(i);
+			QSFML::string idStr3 = eastl::to_string(i);
+			QSFML::string idStr2 = "Node" + QSFML::string(std::to_string(i).c_str());
+			QSFML::string id = QSFML::string(idStr.c_str());
 			pathfinder.addNode(id, { (float)(rand() % area.x), (float)(rand() % area.y) });
 			//if (i > 0)
 			//	pathfinder.addEdge("Node" + std::to_string(i - 1), id, Pathfinder::Direction::Bidirectional);
@@ -229,17 +232,17 @@ private:
 				Pathfinder::Node node = pathfinder.getNode(lastNode);
 				node.position = worldPos;
 				pathfinder.setNode(lastNode, node);
-				QSFML::unordered_map<std::string, Pathfinder::Node> nodes = pathfinder.getNodes();
+				QSFML::unordered_map<QSFML::string, Pathfinder::Node> nodes = pathfinder.getNodes();
 				nodes.erase(lastNode);
 				
 				// Sort by distance ( shortest first )
-				QSFML::vector<QSFML::pair<std::string, float>> distances;
+				QSFML::vector<QSFML::pair<QSFML::string, float>> distances;
 				for (auto& node : nodes)
 				{
 					float dist = std::sqrt(std::pow(node.second.position.x - worldPos.x, 2) + std::pow(node.second.position.y - worldPos.y, 2));
 					distances.push_back({ node.first, dist });
 				}
-				std::sort(distances.begin(), distances.end(), [](const QSFML::pair<std::string, float>& a, const QSFML::pair<std::string, float>& b)
+				eastl::sort(distances.begin(), distances.end(), [](const QSFML::pair<QSFML::string, float>& a, const QSFML::pair<QSFML::string, float>& b)
 					{
 						return a.second < b.second;
 					});
@@ -262,10 +265,10 @@ private:
 		// It simulates edges as springs that apply a force to the nodes
 		obj->addUpdateFunction([&pathfinder, lastNode, lastNodeForce, lastNodeConnectionCount, targetDistance, connectionCountPerNode](Objects::GameObject& obj)
 			{
-				QSFML::unordered_map<std::string, Pathfinder::Node> nodes = pathfinder.getNodes();
-				QSFML::unordered_map<std::string, QSFML::vector<Pathfinder::Edge>>edges = pathfinder.getEdges();
+				QSFML::unordered_map<QSFML::string, Pathfinder::Node> nodes = pathfinder.getNodes();
+				QSFML::unordered_map<QSFML::string, QSFML::vector<Pathfinder::Edge>>edges = pathfinder.getEdges();
 
-				QSFML::unordered_map<std::string, sf::Vector2f> forces;
+				QSFML::unordered_map<QSFML::string, sf::Vector2f> forces;
 				float speed = obj.getDeltaT() * 1;
 				for (auto& edge : edges)
 				{

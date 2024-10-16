@@ -47,6 +47,8 @@ class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
         const sf::Color &getColor() const;
         const sf::Color &getColor(size_t index) const;
 
+        void clear();
+
         /*
         /// <summary>
         /// Setting to switch from relative to global position
