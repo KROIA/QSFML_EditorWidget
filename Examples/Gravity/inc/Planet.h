@@ -18,7 +18,7 @@ public:
 	void setMass(float mass);
 	const sf::Vector2f &getVelocity() const { return m_velocity; }
 
-	static const std::vector<Planet*> &getPlanets() { return m_planets; }
+	static const QSFML::vector<Planet*> &getPlanets() { return m_planets; }
 
 	static sf::Vector2f calculateGravityPotential(const sf::Vector2f &position);
 	static void setEnableCollision(bool enable) { m_enableCollision = enable; }
@@ -63,7 +63,7 @@ private:
 	float m_mass = 1;
 	float m_radius = 50;
 
-	static std::vector<Planet*> m_planets;
+	static QSFML::vector<Planet*> m_planets;
 	static bool m_enableCollision;
 	static sf::FloatRect m_worldBounds;
 };

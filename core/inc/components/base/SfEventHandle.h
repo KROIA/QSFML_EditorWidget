@@ -65,7 +65,7 @@ class QSFML_EDITOR_WIDGET_EXPORT SfEventHandle :   public Component
          *          Scene if the Component is enabled
          * \param events, The sf::Event events from the scene, grouped by CameraWindow which detected the event
          */
-        virtual void sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>> &events) = 0;
+        virtual void sfEvent(const QSFML::pair<Objects::CameraWindow*, QSFML::vector<sf::Event>> &events) = 0;
 
 
         void setSceneParent(Scene* parent) override;
@@ -94,7 +94,7 @@ class QSFML_EDITOR_WIDGET_EXPORT SfEventHandle :   public Component
 		 		}
 		 	}
 		}
-        const std::vector<Objects::CameraWindow*> &getCameraFilter() const
+        const QSFML::vector<Objects::CameraWindow*> &getCameraFilter() const
 		{
 			return m_cameraFilter;
 		}
@@ -104,7 +104,7 @@ class QSFML_EDITOR_WIDGET_EXPORT SfEventHandle :   public Component
         }
 
     private:
-        void sfEvent_internal(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>& events)
+        void sfEvent_internal(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events)
         {
             for (auto& filter : m_cameraFilter)
             {
@@ -117,7 +117,7 @@ class QSFML_EDITOR_WIDGET_EXPORT SfEventHandle :   public Component
         }
 
         // Only propagate events that are from a camera in this list
-        std::vector<Objects::CameraWindow*> m_cameraFilter;
+        QSFML::vector<Objects::CameraWindow*> m_cameraFilter;
 };
 }
 }

@@ -73,16 +73,10 @@ void ExampleScene::setupScene()
 
     float worldSize = 2000;
 
-    DefaultEditor* defaultEditor = new DefaultEditor("Editor", sf::Vector2f(worldSize, worldSize));
+    DefaultEditor* defaultEditor = new DefaultEditor("Editor", sf::FloatRect(-worldSize/2, -worldSize/2, worldSize, worldSize));
     defaultEditor->setRenderLayer(RenderLayer::layer_0);
-    defaultEditor->setPosition(-sf::Vector2f(worldSize*0.5f, worldSize*0.5f));
-    defaultEditor->getCamera()->setMaxMovingBounds(sf::FloatRect(-worldSize * 0.5f, -worldSize * 0.5f, worldSize, worldSize));
+    //defaultEditor->getCamera()->setMaxMovingBounds(sf::FloatRect(-worldSize * 0.5f, -worldSize * 0.5f, worldSize, worldSize));
     m_scene->addObject(defaultEditor);
-    sf::View view = m_scene->getDefaultCamera()->getThisCameraView();
-    view.setSize(worldSize, worldSize);
-    view.setCenter(worldSize * 0.5f, worldSize * 0.5f);
-    m_scene->getDefaultCamera()->setThisCameraView(view);
-    m_scene->getDefaultCamera()->setPosition(0, 1);
 
     GameObject* planetSystem = new GameObject("PlanetSystem");
     QSFML::Components::VectorFieldPainter *vectorField = new QSFML::Components::VectorFieldPainter();
@@ -94,7 +88,7 @@ void ExampleScene::setupScene()
 
     int spacing = 10;
    
-    std::vector<QSFML::Components::VectorFieldPainter::Element> field;
+    QSFML::vector<QSFML::Components::VectorFieldPainter::Element> field;
     field.reserve((worldSize / spacing)*(worldSize / spacing));
     for (int x = -worldSize * 0.5; x < worldSize*0.5; x += spacing)
     {
@@ -128,7 +122,7 @@ void ExampleScene::setupScene()
             first = false;
             return;
         }*/
-		const std::vector<Planet*> &planets = Planet::getPlanets();
+		const QSFML::vector<Planet*> &planets = Planet::getPlanets();
         for (auto planet : planets)
 		{
 			planet->applyVelocity();
@@ -139,7 +133,7 @@ void ExampleScene::setupScene()
 		{
             sf::Vector2f dir = Planet::calculateGravityPotential(fieldElement.position)*10.f;
             float magnitudeSqr = dir.x * dir.x + dir.y * dir.y;
-            const static std::vector<sf::Color> colors = {sf::Color::Blue, sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow, sf::Color(200,200,0), sf::Color::Red};
+            const static QSFML::vector<sf::Color> colors = {sf::Color::Blue, sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow, sf::Color(200,200,0), sf::Color::Red};
             fieldElement.color = Color::lerpCubic(colors, pow(magnitudeSqr, 0.3));
             if (magnitudeSqr > 30)
 			{
@@ -190,7 +184,7 @@ void ExampleScene::onScreenCapture()
 					 std::unique_lock<std::mutex> lock(data.mutex);
 					 data.condition.wait(lock, [this, &data] {return !data.images.empty(); });
 
-					 std::vector<ThreadData::ImageData> images = data.images;
+					 QSFML::vector<ThreadData::ImageData> images = data.images;
 					 data.images.clear();
                      data.images.reserve(10);
 					 lock.unlock();

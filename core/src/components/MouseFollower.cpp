@@ -20,7 +20,7 @@ MouseFollower::MouseFollower(const MouseFollower &other)
 
 }
 
-void MouseFollower::sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>>& events)
+void MouseFollower::sfEvent(const QSFML::pair<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events)
 {
     Objects::CameraWindow* cam = events.first;
     for (auto& event : events.second)

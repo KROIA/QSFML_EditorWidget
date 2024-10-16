@@ -43,12 +43,12 @@ namespace QSFML
 			sf::Vector2f getTransformedPoint(std::size_t index) const;
 
 			void addPoint(const sf::Vector2f& point);
-			void addPoints(const std::vector<sf::Vector2f>& points);
-			void setPoints(const std::vector<sf::Vector2f>& points);
+			void addPoints(const QSFML::vector<sf::Vector2f>& points);
+			void setPoints(const QSFML::vector<sf::Vector2f>& points);
 			void removePoint(std::size_t index);
 
-			const std::vector<sf::Vector2f>& getPoints() const;
-			std::vector<sf::Vector2f> getTransformedPoints() const;
+			const QSFML::vector<sf::Vector2f>& getPoints() const;
+			QSFML::vector<sf::Vector2f> getTransformedPoints() const;
 			
 
 			Utilities::AABB getLocalBounds() const;
@@ -68,9 +68,9 @@ namespace QSFML
 		private:
 			void updateTranformedPoints();
 			void updateVertexColors();
-			std::vector<sf::Vector2f> m_points;
-			//std::vector<sf::Vector2f> m_transformedPoints;
-			//std::vector<sf::Vertex> m_transformedVertecies;
+			QSFML::vector<sf::Vector2f> m_points;
+			//QSFML::vector<sf::Vector2f> m_transformedPoints;
+			//QSFML::vector<sf::Vertex> m_transformedVertecies;
 			//sf::Transform m_transform;
 			sf::Color m_fillColor;
 			sf::Color m_outlineColor;

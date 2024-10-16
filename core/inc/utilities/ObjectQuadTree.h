@@ -34,8 +34,8 @@ namespace QSFML
 				{}
 				Objects::GameObjectPtr obj;
 			private:
-				std::list<Objects::GameObjectPtr>* containter;
-				std::list<Objects::GameObjectPtr>::iterator iterator;
+				QSFML::vector<Objects::GameObjectPtr>* containter;
+				QSFML::vector<Objects::GameObjectPtr>::iterator iterator;
 			};
 			ObjectQuadTree(Utilities::StatsManager* statsManager, const Utilities::AABB& area, size_t maxDepth = 10);
 			ObjectQuadTree(const ObjectQuadTree& other) = delete;
@@ -44,10 +44,10 @@ namespace QSFML
 			void setStatsManager(Utilities::StatsManager* manager);
 
 			bool insert(Objects::GameObjectPtr obj);
-			bool insert(const std::vector<Objects::GameObjectPtr>& objs);
+			bool insert(const QSFML::vector<Objects::GameObjectPtr>& objs);
 
-			void search(const Utilities::AABB& area, std::list< Objects::GameObjectPtr>& container) const;
-			const std::list<TreeItem>& getAllItems() const;
+			void search(const Utilities::AABB& area, QSFML::list< Objects::GameObjectPtr>& container) const;
+			const QSFML::vector<TreeItem>& getAllItems() const;
 			void remove(Objects::GameObjectPtr obj);
 			void remove(const TreeItem& item);
 			bool relocate(TreeItem& item);
@@ -58,7 +58,7 @@ namespace QSFML
 			size_t getMaxDepth() const;
 
 			void enableCollisionThreads(bool enable);
-			void checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
+			void checkCollisions(QSFML::vector<Utilities::Collisioninfo>& collisions,
 								 bool onlyFirstCollision = true);
 
 
@@ -137,7 +137,7 @@ namespace QSFML
 				bool hasChilds();
 
 				void insert(TreeItem& item);
-				void search(const Utilities::AABB& area, std::list< Objects::GameObjectPtr>& container) const;
+				void search(const Utilities::AABB& area, QSFML::list< Objects::GameObjectPtr>& container) const;
 				void clear();
 				bool shrink(); // returns false if this can be deleted
 
@@ -146,25 +146,25 @@ namespace QSFML
 
 
 				void setupThreadWorker(ThreadWorker* worker);
-				void setThreadedParams(std::vector<Utilities::Collisioninfo>* container, bool onlyFisrtCollision);
+				void setThreadedParams(QSFML::vector<Utilities::Collisioninfo>* container, bool onlyFisrtCollision);
 
 
 
-				void checkCollisions(std::vector<Utilities::Collisioninfo>& collisions,
+				void checkCollisions(QSFML::vector<Utilities::Collisioninfo>& collisions,
 					bool onlyFirstCollision = true);
-				void checkCollisionsSingleLayer(std::vector<Utilities::Collisioninfo>& collisions,
+				void checkCollisionsSingleLayer(QSFML::vector<Utilities::Collisioninfo>& collisions,
 					bool onlyFirstCollision = true);
-				void checkCollisionsSingleLayerSelf(std::vector<Utilities::Collisioninfo>& collisions,
+				void checkCollisionsSingleLayerSelf(QSFML::vector<Utilities::Collisioninfo>& collisions,
 					bool onlyFirstCollision = true);
-				void checkCollisionsSingleLayerSelfDeep(std::vector<Utilities::Collisioninfo>& collisions,
+				void checkCollisionsSingleLayerSelfDeep(QSFML::vector<Utilities::Collisioninfo>& collisions,
 					bool onlyFirstCollision = true);
-				void checkCollisionsSingleLayerSelfDeep(size_t index, std::vector<Utilities::Collisioninfo>& collisions,
+				void checkCollisionsSingleLayerSelfDeep(size_t index, QSFML::vector<Utilities::Collisioninfo>& collisions,
 					bool onlyFirstCollision = true);
 
 				
 			private:
 				void checkCollision(Objects::GameObjectPtr other,
-					std::vector<Utilities::Collisioninfo>& collisions,
+					QSFML::vector<Utilities::Collisioninfo>& collisions,
 					bool onlyFirstCollision);
 				
 				void draw(sf::Text& text, sf::RectangleShape &rect, const sf::Color& color, sf::RenderTarget& target,
@@ -181,23 +181,23 @@ namespace QSFML
 				Utilities::AABB m_childAreas[4];
 				bool m_enableChilds;
 
-				std::list<Objects::GameObjectPtr> m_objects;
+				QSFML::vector<Objects::GameObjectPtr> m_objects;
 
 				// special collision detection container for multithreading;
-				std::vector<Utilities::Collisioninfo>* m_collisions;
+				QSFML::vector<Utilities::Collisioninfo>* m_collisions;
 				bool m_onlyFirstCollision;
 				Utilities::StatsManager* m_statsManager;
 			};
 
 			Tree m_tree;
-			std::list<TreeItem> m_allObjs;
-			std::unordered_map<Objects::GameObjectPtr, size_t> m_allObjMap;
-			std::vector<ObjectQuadTreePainter*> m_painters;
+			QSFML::vector<TreeItem> m_allObjs;
+			QSFML::unordered_map<Objects::GameObjectPtr, size_t> m_allObjMap;
+			QSFML::vector<ObjectQuadTreePainter*> m_painters;
 			ThreadWorker* m_threadWorker;
 
 			// special collision detection container for multithreading;
-			std::vector<Utilities::Collisioninfo>* m_collisions1;
-			std::vector<Utilities::Collisioninfo>* m_collisions2;
+			QSFML::vector<Utilities::Collisioninfo>* m_collisions1;
+			QSFML::vector<Utilities::Collisioninfo>* m_collisions2;
 			bool m_onlyFirstCollision;
 
 			Utilities::StatsManager* m_statsManager;

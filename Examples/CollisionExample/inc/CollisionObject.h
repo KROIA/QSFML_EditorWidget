@@ -7,7 +7,7 @@ class CollisionObject : public QSFML::Objects::GameObject
 public:
 	CollisionObject(const std::string& name = "MyObject",
 		QSFML::Objects::GameObjectPtr parent = nullptr);
-	CollisionObject(const std::vector<sf::Vector2f>& vertecies,
+	CollisionObject(const QSFML::vector<sf::Vector2f>& vertecies,
 					const std::string& name = "MyObject",
 		QSFML::Objects::GameObjectPtr parent = nullptr);
     ~CollisionObject();
@@ -17,7 +17,7 @@ public:
 	//QSFML::Components::Collider* getCollider() const;
 
 private:
-	void setup(const std::vector<sf::Vector2f>& vertecies);
+	void setup(const QSFML::vector<sf::Vector2f>& vertecies);
 	void onAwake() override;
 	QSFML::Components::Collider* m_collider;
 };

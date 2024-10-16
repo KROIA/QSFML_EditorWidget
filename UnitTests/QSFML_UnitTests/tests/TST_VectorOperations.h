@@ -57,10 +57,10 @@ private:
 	};
 
 	double m_margin = 0.0001;
-	std::vector<SingleVectorOperationData<float>> m_singleVectorOperationData;
-	std::vector<DoubleVectorOperationData<float>> m_doubleVectorOperationData;
-	std::vector<SingleVectorOperationData<double>> m_D_singleVectorOperationData;
-	std::vector<DoubleVectorOperationData<double>> m_D_doubleVectorOperationData;
+	QSFML::vector<SingleVectorOperationData<float>> m_singleVectorOperationData;
+	QSFML::vector<DoubleVectorOperationData<float>> m_doubleVectorOperationData;
+	QSFML::vector<SingleVectorOperationData<double>> m_D_singleVectorOperationData;
+	QSFML::vector<DoubleVectorOperationData<double>> m_D_doubleVectorOperationData;
 	void setupVectors()
 	{
 		m_singleVectorOperationData.push_back(getSingleVectorData<float>(0.0f, 1.0f));

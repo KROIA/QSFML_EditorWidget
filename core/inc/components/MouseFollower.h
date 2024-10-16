@@ -26,7 +26,7 @@ class QSFML_EDITOR_WIDGET_EXPORT MouseFollower : public QObject, public SfEventH
      * Gets called by the Scene to process the events for a specific camera.
      * @param events 
      */
-    void sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>> &events) override;
+    void sfEvent(const QSFML::pair<Objects::CameraWindow*, QSFML::vector<sf::Event>> &events) override;
 
 
     signals:

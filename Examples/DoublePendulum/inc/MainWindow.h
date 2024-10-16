@@ -39,7 +39,7 @@ private:
     Ui::MainWindow* ui;
 
     QSFML::Scene* m_scene;
-    std::vector<Pendulum*> m_pendulums;
+    QSFML::vector<Pendulum*> m_pendulums;
 
     //Pendulum* m_pendulum;
 };

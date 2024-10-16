@@ -157,8 +157,8 @@ namespace QSFML
 			 *         false, if the shape does not collide with the ray. outDistanceFactor is not changed.
 			 */ 
 			bool raycast(const Components::Shape& shape, float &outDistanceFactor, size_t &outEdge) const;
-			bool raycast(const std::vector<Components::Shape>& shapes, float &outDistanceFactor, size_t &outShapeIndex, size_t &outEdge) const;
-			bool raycast(const std::vector<Components::Shape*>& shapes, float &outDistanceFactor, size_t &outShapeIndex, size_t &outEdge) const;
+			bool raycast(const QSFML::vector<Components::Shape>& shapes, float &outDistanceFactor, size_t &outShapeIndex, size_t &outEdge) const;
+			bool raycast(const QSFML::vector<Components::Shape*>& shapes, float &outDistanceFactor, size_t &outShapeIndex, size_t &outEdge) const;
 			
 			bool raycast(const AABB& aabb, float &outDistanceFactor, size_t &outEdge) const;
 		
@@ -186,8 +186,8 @@ namespace QSFML
 				sf::Color m_lineColor;
 				float m_pointRadius;
 
-				mutable std::vector<sf::Vector2f> m_points;
-				mutable std::vector<LinePainter> m_lines;
+				mutable QSFML::vector<sf::Vector2f> m_points;
+				mutable QSFML::vector<LinePainter> m_lines;
 			};
 
 			RayPainter *createRayPainter();

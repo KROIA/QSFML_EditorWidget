@@ -7,7 +7,7 @@
 #include <QDebug>
 
 using std::string;
-using std::vector;
+using QSFML::vector;
 
 void benchmark();
 void printTime(const string &msg, const std::chrono::duration<long long, std::ratio<1,1000000000>> &duration);
@@ -80,7 +80,7 @@ void benchmark()
     printTime("Increment 2",end-start);
 
     start = std::chrono::high_resolution_clock::now();
-    for(std::vector<size_t>::iterator it = list.begin(); it != list.end(); ++it) {
+    for(QSFML::vector<size_t>::iterator it = list.begin(); it != list.end(); ++it) {
         ++(*it);
     }
     end = std::chrono::high_resolution_clock::now();

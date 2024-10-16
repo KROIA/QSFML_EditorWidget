@@ -14,7 +14,7 @@ namespace QSFML
 				static_cast<sf::Uint8>(color1.a + (color2.a - color1.a) * t)
 			);
 		}
-		sf::Color lerpLinear(const std::vector<sf::Color>& colors, float t)
+		sf::Color lerpLinear(const QSFML::vector<sf::Color>& colors, float t)
 		{
 			if (colors.size() == 0)
 				return sf::Color::Black;
@@ -46,7 +46,7 @@ namespace QSFML
 			);
 		}
 
-		sf::Color lerpCubic(const std::vector<sf::Color>& colors, float t)
+		sf::Color lerpCubic(const QSFML::vector<sf::Color>& colors, float t)
 		{
 			if (colors.size() == 0)
 				return sf::Color::Black;

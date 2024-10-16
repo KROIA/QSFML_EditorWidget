@@ -425,7 +425,7 @@ namespace VectorMath
 	{
 		return start + (end - start) * t;
 	}
-    sf::Vector2f lerp(const std::vector<sf::Vector2f>& path, float t)
+    sf::Vector2f lerp(const QSFML::vector<sf::Vector2f>& path, float t)
     {
         if (path.size() == 0)
             return sf::Vector2f(0, 0);
@@ -456,7 +456,7 @@ namespace VectorMath
         return path[path.size() - 1];
     }
 
-    Vector2d lerp(const std::vector<Vector2d>& path, double t)
+    Vector2d lerp(const QSFML::vector<Vector2d>& path, double t)
     {
         if (path.size() == 0)
             return Vector2d(0, 0);

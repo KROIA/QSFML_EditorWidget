@@ -64,31 +64,31 @@ void FluidGrid::applyBoundaryConditions()
 
 
 }
-void FluidGrid::diffuse(int b, std::vector<CellData>& x, std::vector<CellData>& x0, float diff, float dt)
+void FluidGrid::diffuse(int b, QSFML::vector<CellData>& x, QSFML::vector<CellData>& x0, float diff, float dt)
 {
 	 
 }
-void FluidGrid::advect(int b, std::vector<CellData>& d, std::vector<CellData>& d0,
-	std::vector<CellData>& u, std::vector<CellData>& v, float dt)
+void FluidGrid::advect(int b, QSFML::vector<CellData>& d, QSFML::vector<CellData>& d0,
+	QSFML::vector<CellData>& u, QSFML::vector<CellData>& v, float dt)
 {
 
 		
 }
-void FluidGrid::project(std::vector<CellData>&u, std::vector<CellData>&v, std::vector<CellData>&p, std::vector<CellData>&div)
+void FluidGrid::project(QSFML::vector<CellData>&u, QSFML::vector<CellData>&v, QSFML::vector<CellData>&p, QSFML::vector<CellData>&div)
 {
 
 }
 
-void FluidGrid::setBoundary(int b, std::vector<CellData>& x)
+void FluidGrid::setBoundary(int b, QSFML::vector<CellData>& x)
 {
 
 }
-void FluidGrid::linearSolve(int b, std::vector<CellData>& x, std::vector<CellData>& x0, float a, float c)
+void FluidGrid::linearSolve(int b, QSFML::vector<CellData>& x, QSFML::vector<CellData>& x0, float a, float c)
 {
 
 
 }
-void FluidGrid::addSource(std::vector<CellData>& x, std::vector<CellData>& s, float dt)
+void FluidGrid::addSource(QSFML::vector<CellData>& x, QSFML::vector<CellData>& s, float dt)
 {
 
 }

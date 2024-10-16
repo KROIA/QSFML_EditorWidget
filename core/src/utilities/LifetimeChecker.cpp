@@ -19,11 +19,11 @@ namespace QSFML
 			return instance;
 		}
 
-		std::vector<void*> LifetimeChecker::getAlivePointers()
+		QSFML::vector<void*> LifetimeChecker::getAlivePointers()
 		{
 			LifetimeChecker& inst = instance();
 			std::lock_guard<std::mutex> lock(inst.m_mutex);
-			std::vector<void*> alive;
+			QSFML::vector<void*> alive;
 			for (auto& pair : inst.m_alive)
 			{
 				if (pair.second && pair.first)
@@ -67,7 +67,7 @@ namespace QSFML
 		{
 			LifetimeChecker& inst = instance();
 			std::lock_guard<std::mutex> lock(inst.m_mutex);
-			std::vector<void*> stillAlive;
+			QSFML::vector<void*> stillAlive;
 			stillAlive.reserve(inst.m_alive.size());
 			for (auto it = inst.m_alive.begin(); it != inst.m_alive.end();)
 			{

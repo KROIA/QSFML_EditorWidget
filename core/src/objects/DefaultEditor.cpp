@@ -15,7 +15,17 @@ namespace QSFML
         {
 			m_lightColor = sf::Color(130, 130, 130);
 			m_darkColor = sf::Color(100, 100, 100);
-            setup(size);
+            setup(sf::IntRect(0,0,size.x, size.y));
+        }
+        DefaultEditor::DefaultEditor(const std::string& name,
+            const sf::FloatRect& area)
+            : GameObject(name)
+            , m_cam(new CameraController("Camera"))
+            , m_grid(new BackgroundGrid("Grid"))
+        {
+            m_lightColor = sf::Color(130, 130, 130);
+            m_darkColor = sf::Color(100, 100, 100);
+            setup(sf::IntRect(area));
         }
         DefaultEditor::DefaultEditor(const DefaultEditor &other)
             : GameObject(other)
@@ -24,15 +34,20 @@ namespace QSFML
         {
 			m_darkColor = other.m_darkColor;
 			m_lightColor = other.m_lightColor;
-            setup(sf::Vector2f(other.m_grid->getSize().width, other.m_grid->getSize().height));
+            setup(other.m_grid->getSize());
         }
         DefaultEditor::~DefaultEditor()
         {
 
         }
-        void DefaultEditor::setup(const sf::Vector2f& size)
+
+        void DefaultEditor::onAwake()
         {
-            m_grid->setSize(sf::IntRect(0, 0, size.x, size.y));
+            m_cam->setCameraView(sf::FloatRect(m_grid->getSize()));
+        }
+        void DefaultEditor::setup(const sf::IntRect& area)
+        {
+            m_grid->setSize(area);
             m_grid->setLineColor({ m_lightColor,
                                 m_darkColor,
                                 m_darkColor,
@@ -86,7 +101,7 @@ namespace QSFML
         {
 			m_darkColor = darkColor;
 			m_lightColor = lightColor;
-            setup({ (float)m_grid->getSize().width, (float)m_grid->getSize().height });
+            setup(m_grid->getSize());
         }
         void DefaultEditor::setLineThickness(float thickness)
         {

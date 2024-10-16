@@ -35,8 +35,8 @@ private:
 
     QSFML::Scene* m_scene;
 
-    std::vector<Mirror*> m_mirrors;
-    std::vector<Laser*> m_lasers;
-    std::vector<ConvexLens*> m_convexLenss;
+    QSFML::vector<Mirror*> m_mirrors;
+    QSFML::vector<Laser*> m_lasers;
+    QSFML::vector<ConvexLens*> m_convexLenss;
 
 };

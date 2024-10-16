@@ -40,12 +40,12 @@ private:
 			
         }
         std::thread* thread = nullptr;
-		std::vector<ImageData> images;
+		QSFML::vector<ImageData> images;
         std::mutex mutex;
         std::condition_variable condition;
         Log::LogObject log;
     };
-	std::vector<ThreadData> m_threadData;
+	QSFML::vector<ThreadData> m_threadData;
     */
     QSFML::Scene* m_scene;
 };

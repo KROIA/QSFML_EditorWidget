@@ -33,9 +33,9 @@ private:
     sf::Color m_color;
     sf::Vector2f m_pos;
 
-    std::vector<sf::Vertex> m_horizontalLines;
-    std::vector<sf::Vertex> m_verticalLines;
+    QSFML::vector<sf::Vertex> m_horizontalLines;
+    QSFML::vector<sf::Vertex> m_verticalLines;
 
 
-    std::vector<CellVisualisation> m_cells;
+    QSFML::vector<CellVisualisation> m_cells;
 };

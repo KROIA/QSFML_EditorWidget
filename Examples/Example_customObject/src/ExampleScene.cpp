@@ -125,7 +125,7 @@ QSFML::Objects::GameObject* ExampleScene::customizedObjectFactory(const std::str
         });
 
 	// Add an event function to the object
-    object->addEventFunction([](GameObject& obj, const std::unordered_map<CameraWindow*, std::vector<sf::Event>>& events)
+    object->addEventFunction([](GameObject& obj, const QSFML::unordered_map<CameraWindow*, QSFML::vector<sf::Event>>& events)
         {
             // Custom event handler
             obj.logInfo("Events: " + std::to_string(events.size()));

@@ -383,9 +383,9 @@ class QSFML_EDITOR_WIDGET_EXPORT AABB
 
 
 
-        static AABB getFrame(const std::vector<AABB> &list);               //!<\return a AABB with the position and size, so that all AABB's in the list would fit in it.
+        static AABB getFrame(const QSFML::vector<AABB> &list);               //!<\return a AABB with the position and size, so that all AABB's in the list would fit in it.
                                                                            //!<        Its a frame around all rects from the list.
-        static AABB getFrame(const std::vector<sf::Vector2f>& points);     //!<\return a AABB with the position and size, so that all points in the list would fit in it.
+        static AABB getFrame(const QSFML::vector<sf::Vector2f>& points);     //!<\return a AABB with the position and size, so that all points in the list would fit in it.
                                                                            //!<        Its a frame around all points from the list.
                                                                            
         static AABB lerp(const AABB& start, const AABB& end, float t)

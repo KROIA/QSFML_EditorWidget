@@ -125,7 +125,7 @@ void Pendulum::update()
 {
     double dt = getFixedDeltaT();
     //double dt = getDeltaT();
-    std::vector<sf::Vector2f> points{
+    QSFML::vector<sf::Vector2f> points{
        // m_origin
     };
     //int substeps = 1000;

@@ -127,8 +127,8 @@ void CurvedMirror::updateLine()
 }
 /*
 bool CurvedMirror::processLaser(const LightRay& ray,
-	std::vector< QSFML::Utilities::Ray>& reflectedOut,
-	std::vector< LaserInfo>& additionalLightPathsOut) const
+	QSFML::vector< QSFML::Utilities::Ray>& reflectedOut,
+	QSFML::vector< LaserInfo>& additionalLightPathsOut) const
 {
 	float factorA, factorB;
 

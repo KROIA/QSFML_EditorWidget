@@ -29,7 +29,7 @@ namespace QSFML
         m_toAddContainer.push_back(obj);
         obj->setSceneParent(m_parent);
     }
-    void GameObjectGroup::addObject(const std::vector<GameObjectPtr>& objs)
+    void GameObjectGroup::addObject(const QSFML::vector<GameObjectPtr>& objs)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         for (size_t i = 0; i < objs.size(); ++i)
@@ -70,7 +70,7 @@ namespace QSFML
         obj->setSceneParent(nullptr);
         m_container.erase(m_container.begin() + index);
     }
-    void GameObjectGroup::removeObject(const std::vector<GameObjectPtr>& objs)
+    void GameObjectGroup::removeObject(const QSFML::vector<GameObjectPtr>& objs)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         for (size_t i = 0; i < objs.size(); ++i)
@@ -84,7 +84,7 @@ namespace QSFML
         removeObject(obj);
         Internal::LifetimeChecker::deleteSecured(obj);
     }
-    void GameObjectGroup::deleteObject(const std::vector<Objects::GameObjectPtr>& objs)
+    void GameObjectGroup::deleteObject(const QSFML::vector<Objects::GameObjectPtr>& objs)
     {
         QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
         removeObject(objs);
@@ -128,15 +128,15 @@ namespace QSFML
         return m_container.size();
     }
 
-    const std::vector<GameObjectPtr>& GameObjectGroup::getObjects() const
+    const QSFML::vector<GameObjectPtr>& GameObjectGroup::getObjects() const
     {
         return m_container;
     }
-    const std::vector<Objects::GameObjectPtr>& GameObjectGroup::getObjectsToAdd() const
+    const QSFML::vector<Objects::GameObjectPtr>& GameObjectGroup::getObjectsToAdd() const
     {
         return m_toAddContainer;
     }
-    const std::vector<Objects::GameObjectPtr>& GameObjectGroup::getObjectsToDelete() const
+    const QSFML::vector<Objects::GameObjectPtr>& GameObjectGroup::getObjectsToDelete() const
     {
         return m_toDelete;
     }
@@ -172,7 +172,7 @@ namespace QSFML
                 m_container[i]->updateObjectChanges();
         }
     }
-    void GameObjectGroup::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>& events)
+    void GameObjectGroup::sfEvent(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events)
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {

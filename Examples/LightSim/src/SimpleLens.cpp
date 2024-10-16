@@ -82,8 +82,8 @@ float SimpleLens::getFocusLength() const
 
 /*
 bool SimpleLens::processLaser(const QSFML::Utilities::Ray& ray,
-	std::vector< QSFML::Utilities::Ray>& reflectedOut,
-	std::vector< LaserInfo>& additionalLightPathsOut) const
+	QSFML::vector< QSFML::Utilities::Ray>& reflectedOut,
+	QSFML::vector< LaserInfo>& additionalLightPathsOut) const
 {
 	sf::Vector2f collisionPoint;
 	return processLaser_intern(ray, reflectedOut, additionalLightPathsOut, false, collisionPoint);
@@ -102,8 +102,8 @@ bool SimpleLens::getRaycastDistance(const QSFML::Utilities::Ray& ray, float& dis
 }
 
 bool SimpleLens::processLaser_intern(const QSFML::Utilities::Ray& ray,
-	std::vector< QSFML::Utilities::Ray>& reflectedOut,
-	std::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
+	QSFML::vector< QSFML::Utilities::Ray>& reflectedOut,
+	QSFML::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
 	sf::Vector2f& collisionPointOut) const
 {
 
@@ -235,7 +235,7 @@ void SimpleLens::LensShape::LensPainter::drawComponent(sf::RenderTarget& target,
 	sf::RenderStates states) const
 {
 	const size_t resolution = 20;
-	std::vector < sf::Vertex> points;
+	QSFML::vector < sf::Vertex> points;
 	m_lens->getPainterVertecies(points);
 
 	for (size_t i = 0; i < points.size(); ++i)
@@ -260,9 +260,9 @@ float  SimpleLens::LensShape::getFocusLength() const
 }
 
 
-void SimpleLens::LensShape::getPainterVertecies(std::vector < sf::Vertex>& points)
+void SimpleLens::LensShape::getPainterVertecies(QSFML::vector < sf::Vertex>& points)
 {
-	points = std::vector < sf::Vertex>
+	points = QSFML::vector < sf::Vertex>
 	{
 		sf::Vertex(m_pos + QSFML::VectorMath::getRotatedUnitVectorRAD(m_angle)*m_diameter / 2.f),
 		sf::Vertex(m_pos - QSFML::VectorMath::getRotatedUnitVectorRAD(m_angle)*m_diameter / 2.f)

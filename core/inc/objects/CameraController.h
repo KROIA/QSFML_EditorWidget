@@ -48,6 +48,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
         void setZoom(float amount, const sf::Vector2i &pixel);
 
         void setCameraView(const sf::View &view);
+        void setCameraView(const sf::FloatRect& area);
 
         void update() override;
 
@@ -90,7 +91,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
             ~SfEventComponent(){}
 
             void setController(CameraController *controller);
-            void sfEvent(const std::pair<Objects::CameraWindow*, std::vector<sf::Event>>& events) override;
+            void sfEvent(const QSFML::pair<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events) override;
 
         private:
             CameraController *m_controller;

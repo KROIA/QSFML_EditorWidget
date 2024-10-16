@@ -358,7 +358,7 @@ size_t GameObject::getComponentIndex(Component *comp) const
             return i;
     return npos;
 }
-const std::vector<Component*> &GameObject::getComponents() const
+const QSFML::vector<Component*> &GameObject::getComponents() const
 {
     return m_components;
 }
@@ -377,10 +377,10 @@ Components::Component* GameObject::findFirstComponent(const std::string& name)
 	}
 	return nullptr;
 }
-std::vector<Components::Component*> GameObject::findAllComponents(const std::string& name)
+QSFML::vector<Components::Component*> GameObject::findAllComponents(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-	std::vector<Components::Component*> results;
+	QSFML::vector<Components::Component*> results;
 	results.reserve(m_components.size());
     size_t nameSize = name.size();
     for (const auto& comp : m_components)
@@ -414,15 +414,15 @@ Components::Component* GameObject::findFirstComponentRecursive(const std::string
 	}
     return nullptr;
 }
-std::vector<Components::Component*> GameObject::findAllComponentsRecursive(const std::string& name)
+QSFML::vector<Components::Component*> GameObject::findAllComponentsRecursive(const std::string& name)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-    std::vector<Components::Component*> results;
+    QSFML::vector<Components::Component*> results;
     results.reserve(m_components.size());
     findAllComponentsRecursive_internal(name, results);
     return results;
 }
-bool GameObject::findAllComponentsRecursive_internal(const std::string& name, std::vector<Components::Component*>& foundList)
+bool GameObject::findAllComponentsRecursive_internal(const std::string& name, QSFML::vector<Components::Component*>& foundList)
 {
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     bool found = false;
@@ -443,7 +443,7 @@ bool GameObject::findAllComponentsRecursive_internal(const std::string& name, st
 }
 
 
-const std::vector<Components::Collider*> &GameObject::getCollider() const
+const QSFML::vector<Components::Collider*> &GameObject::getCollider() const
 {
     return m_colliders;
 }*/
@@ -452,11 +452,11 @@ const std::vector<Components::Collider*> &GameObject::getCollider() const
 /*
 bool GameObject::checkCollision(const GameObjectPtr other) const
 {
-    std::vector<Utilities::Collisioninfo> collisions;
+    QSFML::vector<Utilities::Collisioninfo> collisions;
     return checkCollision(other, collisions);
 }
 bool GameObject::checkCollision(const GameObjectPtr other, 
-    std::vector<Utilities::Collisioninfo>& collisions,
+    QSFML::vector<Utilities::Collisioninfo>& collisions,
     bool onlyFirstCollision) const
 {
     // Check if bounding box intersects
@@ -465,7 +465,7 @@ bool GameObject::checkCollision(const GameObjectPtr other,
 		return false;
 
     // Check for collisions
-    const std::vector<Components::Collider*> &otherColliders = other->getCollider();
+    const QSFML::vector<Components::Collider*> &otherColliders = other->getCollider();
     bool hasCollision = false;
     for (auto thisCollider : m_colliders)
     {
@@ -474,21 +474,21 @@ bool GameObject::checkCollision(const GameObjectPtr other,
     return hasCollision;
 }
 void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree, 
-                                  std::vector<Utilities::Collisioninfo>& collisions,
+                                  QSFML::vector<Utilities::Collisioninfo>& collisions,
                                   bool onlyFirstCollision)
 {
-    std::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
+    QSFML::list<Utilities::ObjectQuadTree::TreeItem> objs = tree.getAllItems();
     for (auto &objStruct : objs)
     {
         GameObjectPtr obj = objStruct.obj;
-        std::list< QSFML::Objects::GameObjectPtr> possibleColliders;
+        QSFML::list< QSFML::Objects::GameObjectPtr> possibleColliders;
         tree.search(obj->getBoundingBox(), possibleColliders);
         for (auto it : possibleColliders)
         {
             if (obj == it)
                 continue;
 
-            const std::vector<Components::Collider*> &otherColliders = it->getCollider();
+            const QSFML::vector<Components::Collider*> &otherColliders = it->getCollider();
             for (auto objCollider : obj->m_colliders)
             {
                 objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
@@ -520,7 +520,7 @@ void GameObject::setUpdateControlls(const SceneSettings::UpdateControlls &contro
 std::string GameObject::toString() const
 {
     using std::string;
-    std::vector<string> lines = toStringInternal("");
+    QSFML::vector<string> lines = toStringInternal("");
     string msg;
     for(size_t i=0; i<lines.size(); ++i)
     {
@@ -618,13 +618,13 @@ void GameObject::update()
 {
 
 }
-std::vector<std::string> GameObject::toStringInternal(const std::string &preStr) const
+QSFML::vector<std::string> GameObject::toStringInternal(const std::string &preStr) const
 {
 	//QSFMLP_OBJECT_BLOCK("GameObject::toStringInternal: " + getName(), QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
     QSFMLP_OBJECT_TEXT("Name", getName());
     using std::string;
-    std::vector<string> lines;
+    QSFML::vector<string> lines;
     const GameObject* t = this;
 
     auto en = [](bool enabled) {
@@ -645,7 +645,7 @@ std::vector<std::string> GameObject::toStringInternal(const std::string &preStr)
     for(size_t i=0; i< m_childObjectManagerData.objs.size(); ++i)
     {
 
-        std::vector<std::string> subList = m_childObjectManagerData.objs[i]->toStringInternal(preStr+ " |  ");
+        QSFML::vector<std::string> subList = m_childObjectManagerData.objs[i]->toStringInternal(preStr+ " |  ");
         lines.insert(lines.end(), subList.begin(), subList.end());
     }
     lines.push_back(preStr+" ----");
@@ -723,7 +723,7 @@ void GameObject::updateObjectChanges()
     }
 }
 
-void GameObject::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>& events)
+void GameObject::sfEvent(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events)
 {
     if (!m_enabled || !m_updateControlls.enableEventLoop || !m_componentsManagerData.thisNeedsEventUpdate) return;
     //QSFMLP_OBJECT_BLOCK("GameObject::sfEvent: count="+std::to_string(events.size())+" " + getName(), QSFML_COLOR_STAGE_1);

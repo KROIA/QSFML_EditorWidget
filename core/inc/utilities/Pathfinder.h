@@ -27,46 +27,46 @@ namespace QSFML
 			};
 			struct Edge
 			{
-				std::string destinationNodeID;
+				QSFML::string destinationNodeID;
 				float weight = 1;
 			};
 
 			Pathfinder();
 			~Pathfinder();
 
-			bool addNode(const std::string& id, const sf::Vector2f& position);
-			bool addEdge(const std::string& sourceNodeID, const std::string& destinationNodeID, Direction dir = Direction::Unidirectional);
-			bool addEdge(const std::string& sourceNodeID, const std::string& destinationNodeID, float weight, Direction dir);
-			bool addEdge(const std::string& sourceNodeID, const std::string& destinationNodeID, float weight);
-			void setNodes(const std::unordered_map<std::string, Node>& nodes);
-			void setEdges(const std::unordered_map<std::string, std::vector<Edge>>& edges);
+			bool addNode(const QSFML::string& id, const sf::Vector2f& position);
+			bool addEdge(const QSFML::string& sourceNodeID, const QSFML::string& destinationNodeID, Direction dir = Direction::Unidirectional);
+			bool addEdge(const QSFML::string& sourceNodeID, const QSFML::string& destinationNodeID, float weight, Direction dir);
+			bool addEdge(const QSFML::string& sourceNodeID, const QSFML::string& destinationNodeID, float weight);
+			void setNodes(const QSFML::unordered_map<QSFML::string, Node>& nodes);
+			void setEdges(const QSFML::unordered_map<QSFML::string, QSFML::vector<Edge>>& edges);
 			void clearNodes();
 			void clearEdges();
-			void clearEdges(const std::string& nodeID);
+			void clearEdges(const QSFML::string& nodeID);
 			void clear();
 
-			Node getNode(const std::string& id) const;
-			void setNode(const std::string& id, const Node& node);
+			Node getNode(const QSFML::string& id) const;
+			void setNode(const QSFML::string& id, const Node& node);
 			void setWeigthsFromNodeDistances();
 
-			float getDistance(const std::string& startNodeID, const std::string& endNodeID) const;
-			float getPathDistance(const std::string& startNodeID, const std::string& endNodeID) const;
-			float getPathDistance(const std::vector<std::string>& path) const;
-			sf::Vector2f lerp(const std::string& startNodeID, const std::string& endNodeID, float t) const;
-			sf::Vector2f lerp(const std::vector<std::string>& path, float t) const;
+			float getDistance(const QSFML::string& startNodeID, const QSFML::string& endNodeID) const;
+			float getPathDistance(const QSFML::string& startNodeID, const QSFML::string& endNodeID) const;
+			float getPathDistance(const QSFML::vector<QSFML::string>& path) const;
+			sf::Vector2f lerp(const QSFML::string& startNodeID, const QSFML::string& endNodeID, float t) const;
+			sf::Vector2f lerp(const QSFML::vector<QSFML::string>& path, float t) const;
 
-			const std::unordered_map<std::string, Node>& getNodes() const
+			const QSFML::unordered_map<QSFML::string, Node>& getNodes() const
 			{
 				return m_nodes;
 			}
-			const std::unordered_map<std::string, std::vector<Edge>>& getEdges() const
+			const QSFML::unordered_map<QSFML::string, QSFML::vector<Edge>>& getEdges() const
 			{
 				return m_edges;
 			}
 
-			std::vector<std::string> findPath(const std::string& startNodeID, const std::string& endNodeID) const;
-			std::vector<sf::Vector2f> findPathPositions(const std::string& startNodeID, const std::string& endNodeID) const;
-			std::vector<sf::Vector2f> getPathPositions(const std::vector<std::string> &path) const;
+			QSFML::vector<QSFML::string> findPath(const QSFML::string& startNodeID, const QSFML::string& endNodeID) const;
+			QSFML::vector<sf::Vector2f> findPathPositions(const QSFML::string& startNodeID, const QSFML::string& endNodeID) const;
+			QSFML::vector<sf::Vector2f> getPathPositions(const QSFML::vector<QSFML::string> &path) const;
 
 
 			// Painter 
@@ -79,7 +79,7 @@ namespace QSFML
 			public:
 				~Painter();
 
-				void drawPath(const std::string& startNodeID, const std::string& endNodeID);
+				void drawPath(const QSFML::string& startNodeID, const QSFML::string& endNodeID);
 				void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 				void enablePathPoints(bool enable) { m_enablePathPoints = enable; }
 				bool isPathPointsEnabled() const { return m_enablePathPoints; }
@@ -108,10 +108,10 @@ namespace QSFML
 				bool m_enablePathPoints = true;
 				bool m_enablePathLines = true;
 
-				std::string m_startNodeID;
-				std::string m_endNodeID;
-				mutable std::vector<std::string> m_path;
-				mutable std::unordered_map<std::string, bool> m_pathNodes;
+				QSFML::string m_startNodeID;
+				QSFML::string m_endNodeID;
+				mutable QSFML::vector<QSFML::string> m_path;
+				mutable QSFML::unordered_map<QSFML::string, bool> m_pathNodes;
 				mutable float m_t = 0;
 
 
@@ -132,12 +132,12 @@ namespace QSFML
 			void onPathChanged();
 				
 			// string is the node id
-			std::unordered_map<std::string, Node> m_nodes;
+			QSFML::unordered_map<QSFML::string, Node> m_nodes;
 
 			// string is the source node id, and vector of edges from this source node
-			std::unordered_map<std::string, std::vector<Edge>> m_edges;
+			QSFML::unordered_map<QSFML::string, QSFML::vector<Edge>> m_edges;
 
-			std::vector<Painter*> m_painters;
+			QSFML::vector<Painter*> m_painters;
 
 
 		};

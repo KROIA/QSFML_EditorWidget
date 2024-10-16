@@ -55,8 +55,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         sf::Vector2u getCameraSize() const;
         sf::Vector2u getOldCameraSize() const;
         sf::Vector2f getViewCenterPosition() const;
-		const std::vector<sf::Event>& getEvents() const;
-		const std::vector<sf::Event>& getEvents(Objects::CameraWindow *camera) const;
+		const QSFML::vector<sf::Event>& getEvents() const;
+		const QSFML::vector<sf::Event>& getEvents(Objects::CameraWindow *camera) const;
 
         sf::Vector2i getMousePosition() const;
         sf::Vector2f getMouseWorldPosition() const;
@@ -66,7 +66,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         
 		sf::Image captureScreen();
         void captureScreen(sf::Image& image);
-        //void sfEvent(const std::vector<sf::Event> &events);
+        //void sfEvent(const QSFML::vector<sf::Event> &events);
 
         static const sf::Font& getDefaultTextFont();
 
@@ -116,7 +116,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
 
     private:
 
-        void internal_event(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>> &events);
+        void internal_event(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>> &events);
 
 
 
@@ -139,8 +139,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         struct Cameras
 		{
             Objects::CameraWindow* defaultCamera = nullptr;
-			std::vector<Objects::CameraWindow*> cameras;
-			std::unordered_map<Objects::CameraWindow*, Objects::CameraWindow*> cameraMap;
+			QSFML::vector<Objects::CameraWindow*> cameras;
+			QSFML::unordered_map<Objects::CameraWindow*, Objects::CameraWindow*> cameraMap;
 		
             bool hasCamera(Objects::CameraWindow* camera) const
             {
@@ -178,7 +178,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         Cameras m_cameras;
 
         static std::string m_profilerOutputFile;
-        static std::vector<Scene*> s_instances;
+        static QSFML::vector<Scene*> s_instances;
 
     };
 }

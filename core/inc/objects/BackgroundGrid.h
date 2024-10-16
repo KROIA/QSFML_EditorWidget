@@ -25,8 +25,8 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
 		void setLineWidth(float thickness) { m_lineThickness = thickness; }
 		float getLineWidth() const { return m_lineThickness; }
 
-        void setLineColor(const std::vector<sf::Color> &alternatingColors);
-        const std::vector<sf::Color> &getLineColor() const;
+        void setLineColor(const QSFML::vector<sf::Color> &alternatingColors);
+        const QSFML::vector<sf::Color> &getLineColor() const;
 
         void setGridSpacing(unsigned int spacing);
         unsigned int getGridSpacing() const;
@@ -37,7 +37,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
         sf::IntRect m_gridArea;
         unsigned int m_gridSpacing;
 		float m_lineThickness = 1;
-        std::vector<sf::Color> m_alternatingColors;
+        QSFML::vector<sf::Color> m_alternatingColors;
 
         DrawableComp* m_draw;
 
@@ -53,7 +53,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
             void drawGrid(sf::RenderTarget& target,
                 const sf::IntRect& area,
                 unsigned int spacing,
-                const std::vector<sf::Color>& alternatingColors,
+                const QSFML::vector<sf::Color>& alternatingColors,
                 sf::RenderStates states) const;
 
             BackgroundGrid* m_grid;

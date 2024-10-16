@@ -45,7 +45,7 @@ void GameObjectContainer::initializeThreads(size_t threadCount)
     {
         m_threadGroups.push_back(new GameObjectGroup(m_parent));
     }
-    const std::vector<GameObjectPtr> &objs = m_allObjects->getObjects();
+    const QSFML::vector<GameObjectPtr> &objs = m_allObjects->getObjects();
     for(size_t i=0; i<objs.size(); ++i)
     {
         m_threadGroups[i%m_threadGroups.size()]->addObject(objs[i]);
@@ -75,7 +75,7 @@ void GameObjectContainer::addObject(GameObjectPtr obj)
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToAdd.push_back(obj);
 }
-void GameObjectContainer::addObject(const std::vector<GameObjectPtr> &objs)
+void GameObjectContainer::addObject(const QSFML::vector<GameObjectPtr> &objs)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToAdd.insert(m_objectsToAdd.end(), objs.begin(), objs.end());
@@ -105,7 +105,7 @@ void GameObjectContainer::removeObject(GameObjectPtr obj)
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToRemove.push_back(obj);
 }
-void GameObjectContainer::removeObject(const std::vector<GameObjectPtr> &objs)
+void GameObjectContainer::removeObject(const QSFML::vector<GameObjectPtr> &objs)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToRemove.insert(m_objectsToRemove.end(), objs.begin(), objs.end());
@@ -115,7 +115,7 @@ void GameObjectContainer::deleteObject(Objects::GameObjectPtr obj)
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToDelete.push_back(obj);
 }
-void GameObjectContainer::deleteObject(const std::vector<Objects::GameObjectPtr> &objs)
+void GameObjectContainer::deleteObject(const QSFML::vector<Objects::GameObjectPtr> &objs)
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
     m_objectsToDelete.insert(m_objectsToRemove.end(), objs.begin(), objs.end());
@@ -141,7 +141,7 @@ void GameObjectContainer::cleanup()
     delete m_allObjects;
     delete m_threadWorker;
 
-    std::vector<Objects::GameObjectPtr> objs = m_allObjects->getObjects();
+    QSFML::vector<Objects::GameObjectPtr> objs = m_allObjects->getObjects();
     m_allObjects->clearObjects();
     m_renderLayerGroup.clearObjects();
     for (auto& obj : objs)
@@ -158,9 +158,9 @@ void GameObjectContainer::cleanup()
 void GameObjectContainer::applyObjectChanges()
 {
     QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-    std::vector<GameObjectPtr> objectsToAdd = m_objectsToAdd;
-    std::vector<GameObjectPtr> objectsToRemove = m_objectsToRemove;
-    std::vector<GameObjectPtr> objectsToDelete = m_objectsToDelete;
+    QSFML::vector<GameObjectPtr> objectsToAdd = m_objectsToAdd;
+    QSFML::vector<GameObjectPtr> objectsToRemove = m_objectsToRemove;
+    QSFML::vector<GameObjectPtr> objectsToDelete = m_objectsToDelete;
     if(objectsToAdd.empty() && objectsToRemove.empty() && objectsToDelete.empty())
 		return;
     m_objectsToAdd.clear();
@@ -178,7 +178,7 @@ void GameObjectContainer::applyObjectChanges()
         {
             m_parent->m_cameras.removeCamera(cam);
         }
-        std::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
+        QSFML::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
         for (auto& cam1 : cams)
         {
         	m_parent->m_cameras.removeCamera(cam1);
@@ -204,7 +204,7 @@ void GameObjectContainer::applyObjectChanges()
         {
 			m_parent->m_cameras.removeCamera(cam);
         }
-        std::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
+        QSFML::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
         for (auto& cam1 : cams)
         {
             m_parent->m_cameras.removeCamera(cam1);
@@ -239,7 +239,7 @@ void GameObjectContainer::applyObjectChanges()
         {
             m_parent->m_cameras.addCamera(cam);
         }
-        std::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
+        QSFML::vector< Objects::CameraWindow*> cams = obj->getChildsRecusrive<Objects::CameraWindow>();
         for (auto& cam1 : cams)
         {
             m_parent->m_cameras.addCamera(cam1);
@@ -257,7 +257,7 @@ size_t GameObjectContainer::getObjectsCount() const
     return m_allObjects->getObjectsCount();
 }
 
-const std::vector<GameObjectPtr> &GameObjectContainer::getObjects() const
+const QSFML::vector<GameObjectPtr> &GameObjectContainer::getObjects() const
 {
     return m_allObjects->getObjects();
 }
@@ -289,9 +289,9 @@ Objects::GameObjectPtr GameObjectContainer::getFirstObject(const std::string& na
     }
     return nullptr;
 }
-std::vector<Objects::GameObjectPtr> GameObjectContainer::getAllObjects(const std::string& name)
+QSFML::vector<Objects::GameObjectPtr> GameObjectContainer::getAllObjects(const std::string& name)
 {
-    std::vector<Objects::GameObjectPtr> results;
+    QSFML::vector<Objects::GameObjectPtr> results;
     results.reserve(20);
     size_t nameSize = name.size();
     for (auto& obj : m_allObjects->getObjects())
@@ -322,9 +322,9 @@ Objects::GameObjectPtr GameObjectContainer::getFirstObjectRecursive(const std::s
     }
     return nullptr;
 }
-std::vector<Objects::GameObjectPtr> GameObjectContainer::getAllObjectsRecursive(const std::string& name)
+QSFML::vector<Objects::GameObjectPtr> GameObjectContainer::getAllObjectsRecursive(const std::string& name)
 {
-    std::vector<Objects::GameObjectPtr> results;
+    QSFML::vector<Objects::GameObjectPtr> results;
     results.reserve(50);
     size_t nameSize = name.size();
     for (auto& obj : m_allObjects->getObjects())
@@ -332,7 +332,7 @@ std::vector<Objects::GameObjectPtr> GameObjectContainer::getAllObjectsRecursive(
         const std::string& objName = obj->getName();
         if (objName.size() != nameSize)
         {
-            std::vector<GameObjectPtr> childs = obj->getAllChildsRecursive(name);
+            QSFML::vector<GameObjectPtr> childs = obj->getAllChildsRecursive(name);
             if (childs.size())
                 results.insert(results.end(), childs.begin(), childs.end());
             continue;
@@ -387,7 +387,7 @@ void GameObjectContainer::updateNewElements()
     
     deleteObject_internal();
     
-    std::vector<Objects::GameObjectPtr> toAdd = m_allObjects->getObjectsToAdd();
+    QSFML::vector<Objects::GameObjectPtr> toAdd = m_allObjects->getObjectsToAdd();
 
     addObject_internal();
     m_allObjects->updateNewElements();
@@ -395,7 +395,7 @@ void GameObjectContainer::updateNewElements()
     for (auto obj : toAdd)
         obj->inSceneAdded_internal();
 }
-void GameObjectContainer::sfEvent(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>&events)
+void GameObjectContainer::sfEvent(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&events)
 {
     m_allObjects->sfEvent(events);
 }

@@ -32,9 +32,9 @@ namespace QSFML
         public:
             ThreadWorker(const std::string& name = "ThreadWorker");
             ThreadWorker(ThreadWork* work, const std::string& name = "ThreadWorker");
-            ThreadWorker(const std::vector<ThreadWork*>& workload, const std::string& name = "ThreadWorker");
+            ThreadWorker(const QSFML::vector<ThreadWork*>& workload, const std::string& name = "ThreadWorker");
             ThreadWorker(const std::function<void()>& executionFunction, const std::string& name = "ThreadWorker");
-            ThreadWorker(const std::vector<std::function<void()>>& executionFunctions, const std::string& name = "ThreadWorker");
+            ThreadWorker(const QSFML::vector<std::function<void()>>& executionFunctions, const std::string& name = "ThreadWorker");
             ~ThreadWorker();
 
             void setWaitingFunc(const std::function<void()>& func);
@@ -74,7 +74,7 @@ namespace QSFML
             void threadFunction(ThreadData& data);
 
             std::string m_name;
-            std::vector<ThreadData*> m_threads;
+            QSFML::vector<ThreadData*> m_threads;
             std::mutex m_mutex;
             std::condition_variable m_conditionVar;
             std::function<void()>* m_sleepWorkFunc = nullptr; // function gets called while waiting for threads

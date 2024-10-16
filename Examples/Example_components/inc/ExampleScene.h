@@ -41,5 +41,5 @@ private:
 
     QSFML::Scene* m_scene;
 
-	std::vector<ObjectData> m_objects;
+	QSFML::vector<ObjectData> m_objects;
 };

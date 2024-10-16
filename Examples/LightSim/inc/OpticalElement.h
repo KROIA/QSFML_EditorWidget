@@ -38,7 +38,7 @@ public:
     ~OpticalElement();
     OBJECT_DECL(OpticalElement);
 
-    static const std::vector<OpticalElement*> const& getOpticalElements();
+    static const QSFML::vector<OpticalElement*> & getOpticalElements();
 
     void setShape(Shape* shape);
     Shape* getShape() const;
@@ -55,8 +55,8 @@ public:
     bool doesRefract() const;
 
     bool processLaser(const LightRay& ray, 
-                              std::vector< LightRay> & reflectedOut,
-                              std::vector< LaserInfo> &additionalLightPathsOut) const;
+                              QSFML::vector< LightRay> & reflectedOut,
+                              QSFML::vector< LaserInfo> &additionalLightPathsOut) const;
     bool getRaycastDistance(const LightRay& ray, float & outDistance) const;
 
 
@@ -82,8 +82,8 @@ protected:
 private:
 
     void processLaser_intern(const LightRay& ray,
-        std::vector< LightRay>& reflectedOut,
-        std::vector< LaserInfo>& additionalLightPathsOut,
+        QSFML::vector< LightRay>& reflectedOut,
+        QSFML::vector< LaserInfo>& additionalLightPathsOut,
         sf::Vector2f& outNextCollisionPoint) const;
 
     class Painter : public QSFML::Components::Drawable
@@ -99,7 +99,7 @@ private:
         void drawComponent(sf::RenderTarget& target,
             sf::RenderStates states) const override;
 
-        mutable std::vector<QSFML::Utilities::Ray> m_normalList;
+        mutable QSFML::vector<QSFML::Utilities::Ray> m_normalList;
 
 
     private:
@@ -112,7 +112,7 @@ private:
     bool m_doesRefract;
     mutable size_t m_bounceCount;
     size_t m_maxBounceCount;
-    static std::vector<OpticalElement*> s_opticalElements;
+    static QSFML::vector<OpticalElement*> s_opticalElements;
 
     
 };

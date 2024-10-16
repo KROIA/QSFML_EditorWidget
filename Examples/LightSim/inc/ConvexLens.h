@@ -34,14 +34,14 @@ public:
 private:
 	
 	//bool processLaser(const LightRay& ray,
-	//	std::vector< LightRay>& reflectedOut,
-	//	std::vector< LaserInfo>& additionalLightPathsOut) const override;
+	//	QSFML::vector< LightRay>& reflectedOut,
+	//	QSFML::vector< LaserInfo>& additionalLightPathsOut) const override;
 	//bool getRaycastDistance(const LightRay& ray, float& distanceOut) const override;
 
 
 	//bool processLaser_intern(const LightRay& ray,
-	//	std::vector< LightRay>& reflectedOut,
-	//	std::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
+	//	QSFML::vector< LightRay>& reflectedOut,
+	//	QSFML::vector< LaserInfo>& additionalLightPathsOut, bool outgoingRay,
 	//	sf::Vector2f & collisionPointOut) const;
 	
 	void update() override;
@@ -89,7 +89,7 @@ private:
 			double& outNormal1, double &outNormal2, 
 			bool &fac1InRange, bool &vac2InRange) const;
 
-		void getPainterVertecies(std::vector < sf::Vertex>& left, std::vector < sf::Vertex>& right, size_t resolution);
+		void getPainterVertecies(QSFML::vector < sf::Vertex>& left, QSFML::vector < sf::Vertex>& right, size_t resolution);
 		
 		
 
@@ -125,7 +125,7 @@ private:
 
 		};
 
-		mutable std::vector<sf::Drawable*> m_tmpDraw;
+		mutable QSFML::vector<sf::Drawable*> m_tmpDraw;
 		LensPainter* m_painter;
 		ConvexLens* m_lens;
 	};

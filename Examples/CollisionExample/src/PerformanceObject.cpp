@@ -10,7 +10,7 @@ PerformanceObject::PerformanceObject(const std::string& name, QSFML::Objects::Ga
 
 	size_t verteciesCount = 3 + (rand() % 50);
 	float radius = QSFML::Utilities::RandomEngine::getFloat(2, 10);
-	std::vector<sf::Vector2f> vertecies;
+	QSFML::vector<sf::Vector2f> vertecies;
 	vertecies.reserve(verteciesCount);
 	float rad = 0;
 	float dRad = M_PI * 2 / (float)verteciesCount;
@@ -29,7 +29,7 @@ PerformanceObject::PerformanceObject(const std::string& name, QSFML::Objects::Ga
 	addComponent(m_collider);
 	addComponent(m_collider->createPainter());
 }
-PerformanceObject::PerformanceObject(const std::vector<sf::Vector2f>& vertecies, const std::string& name, QSFML::Objects::GameObjectPtr parent)
+PerformanceObject::PerformanceObject(const QSFML::vector<sf::Vector2f>& vertecies, const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
 	, m_dynamic(true)
 {

@@ -155,7 +155,7 @@ namespace QSFML
             }
             return updateTransformInternal();
             /*
-            std::vector<GameObjectPtr> parents;
+            QSFML::vector<GameObjectPtr> parents;
             parents.reserve(10);
             GameObjectPtr parent = m_parent;
             while (parent)

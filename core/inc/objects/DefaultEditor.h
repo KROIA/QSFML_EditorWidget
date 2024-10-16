@@ -18,6 +18,8 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObjec
     public:
         DefaultEditor(const std::string &name = "DefaultEditor",
                       const sf::Vector2f &size = sf::Vector2f(800,600));
+        DefaultEditor(const std::string& name,
+                      const sf::FloatRect& area);
         DefaultEditor(const DefaultEditor &other);
         ~DefaultEditor();
         OBJECT_DECL(DefaultEditor);
@@ -37,10 +39,11 @@ class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObjec
         void onDisableRuntimeInfo();
 
     protected:
+        void onAwake() override;
 
     private:
         
-        void setup(const sf::Vector2f& size);
+        void setup(const sf::IntRect& area);
         void onSceneParentChange(Scene* oldParent, Scene* newParent) override;
 
         CameraController* m_cam;

@@ -29,8 +29,8 @@ public:
 private:
 	void updateLine();
 	//bool processLaser(const LightRay& ray,
-	//	std::vector< QSFML::Utilities::Ray>& reflectedOut,
-	//	std::vector< LaserInfo>& additionalLightPathsOut) const override;
+	//	QSFML::vector< QSFML::Utilities::Ray>& reflectedOut,
+	//	QSFML::vector< LaserInfo>& additionalLightPathsOut) const override;
 	//bool getRaycastDistance(const LightRay& ray, float& distanceOut) const override;
 
 	void update() override;
@@ -48,13 +48,13 @@ private:
 		float m_openingAngle;
 		unsigned int m_resolution;
 		sf::Vector2f m_pos;
-		std::vector<QSFML::Utilities::Ray> m_mirrorRays;
+		QSFML::vector<QSFML::Utilities::Ray> m_mirrorRays;
 
 	};
 
 	MirrorShape m_shape;
 
 
-	std::vector<QSFML::Components::LinePainter*> m_mirrorLines;	 
+	QSFML::vector<QSFML::Components::LinePainter*> m_mirrorLines;	 
 	float m_rotationSpeed;
 };

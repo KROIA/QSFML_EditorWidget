@@ -60,7 +60,7 @@ private:
 	QSFML::Components::Text *m_text = nullptr;
 	QSFML::Objects::LineChart *m_chart = nullptr;
 	QSFML::Components::PathPainter* m_pathPainter;
-	std::vector<float> m_chartData;
+	QSFML::vector<float> m_chartData;
     //QSFML::Components::LinePainter *m_linePainters[2];
 
 	static constexpr size_t m_count = 2;

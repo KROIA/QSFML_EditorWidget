@@ -13,7 +13,7 @@ namespace QSFML
 			m_componentsManagerData.toAdd.push_back(component);
 			onObjectsChanged();
 		}
-		void GameObject::addComponents(const std::vector<Components::ComponentPtr>& components)
+		void GameObject::addComponents(const QSFML::vector<Components::ComponentPtr>& components)
 		{
 			m_componentsManagerData.toAdd.insert(m_componentsManagerData.toAdd.end(), components.begin(), components.end());
 			onObjectsChanged();
@@ -34,7 +34,7 @@ namespace QSFML
 			m_componentsManagerData.toRemove.push_back(component);
 			onObjectsChanged();
 		}
-		void GameObject::removeComponents(const std::vector<Components::ComponentPtr>& components)
+		void GameObject::removeComponents(const QSFML::vector<Components::ComponentPtr>& components)
 		{
 			m_componentsManagerData.toRemove.insert(m_componentsManagerData.toRemove.end(), components.begin(), components.end());
 			onObjectsChanged();
@@ -63,7 +63,7 @@ namespace QSFML
 			}
 			return nullptr;
 		}*/
-		const std::vector<Components::ComponentPtr>& GameObject::getComponents() const
+		const QSFML::vector<Components::ComponentPtr>& GameObject::getComponents() const
 		{
 			return m_componentsManagerData.all;
 		}
@@ -117,10 +117,10 @@ namespace QSFML
 			}
 			return nullptr;
 		}
-		std::vector<Components::ComponentPtr> GameObject::getAllComponents(const std::string& name)
+		QSFML::vector<Components::ComponentPtr> GameObject::getAllComponents(const std::string& name)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			std::vector<Components::ComponentPtr> comps;
+			QSFML::vector<Components::ComponentPtr> comps;
 			for (auto& comp : m_componentsManagerData.all)
 			{
 				if (comp->getName() == name)
@@ -145,10 +145,10 @@ namespace QSFML
 			}
 			return nullptr;
 		}
-		std::vector<Components::ComponentPtr> GameObject::getAllComponentsRecursive(const std::string& name)
+		QSFML::vector<Components::ComponentPtr> GameObject::getAllComponentsRecursive(const std::string& name)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			std::vector<Components::ComponentPtr> comps;
+			QSFML::vector<Components::ComponentPtr> comps;
 			for (auto& comp : m_componentsManagerData.all)
 			{
 				if (comp->getName() == name)
@@ -156,7 +156,7 @@ namespace QSFML
 			}
 			for (auto& obj : m_childObjectManagerData.objs)
 			{
-				std::vector<Components::ComponentPtr> childComps = obj->getAllComponentsRecursive(name);
+				QSFML::vector<Components::ComponentPtr> childComps = obj->getAllComponentsRecursive(name);
 				comps.insert(comps.end(), childComps.begin(), childComps.end());
 			}
 			return comps;
@@ -184,7 +184,7 @@ namespace QSFML
 		void GameObject::updateBoundingBox() const
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_4);
-			std::vector<Utilities::AABB> boxes;
+			QSFML::vector<Utilities::AABB> boxes;
 			boxes.reserve(m_componentsManagerData.colliders.size()+
 			m_childObjectManagerData.objs.size());
 
@@ -218,9 +218,9 @@ namespace QSFML
 				m_componentsManagerData.toDelete.size() == 0)
 				return;
 
-			std::vector<Components::ComponentPtr> newComps = m_componentsManagerData.toAdd;
-			std::vector<Components::ComponentPtr> toRemoveComps = m_componentsManagerData.toRemove;
-			std::vector<Components::ComponentPtr> toDeleteComps = m_componentsManagerData.toDelete;
+			QSFML::vector<Components::ComponentPtr> newComps = m_componentsManagerData.toAdd;
+			QSFML::vector<Components::ComponentPtr> toRemoveComps = m_componentsManagerData.toRemove;
+			QSFML::vector<Components::ComponentPtr> toDeleteComps = m_componentsManagerData.toDelete;
 			m_componentsManagerData.toAdd.clear();
 			m_componentsManagerData.toRemove.clear();
 			m_componentsManagerData.toDelete.clear();
@@ -437,11 +437,11 @@ namespace QSFML
 		}
 		bool GameObject::checkCollision(const GameObjectPtr other) const
 		{
-			std::vector<Utilities::Collisioninfo> collisions;
+			QSFML::vector<Utilities::Collisioninfo> collisions;
 			return checkCollision(other, collisions, true);
 		}
 		bool GameObject::checkCollision(const GameObjectPtr other,
-			std::vector<Utilities::Collisioninfo>& collisions,
+			QSFML::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision) const
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
@@ -459,7 +459,7 @@ namespace QSFML
 				return false;
 
 			// Check for collisions
-			const std::vector<Components::Collider*>& otherColliders = other->m_componentsManagerData.colliders;
+			const QSFML::vector<Components::Collider*>& otherColliders = other->m_componentsManagerData.colliders;
 			bool hasCollision = false;
 			for (auto thisCollider : m_componentsManagerData.colliders)
 			{
@@ -468,17 +468,17 @@ namespace QSFML
 			return hasCollision;
 		}
 		void GameObject::checkCollision(const Utilities::ObjectQuadTree& tree,
-			std::vector<Utilities::Collisioninfo>& collisions,
+			QSFML::vector<Utilities::Collisioninfo>& collisions,
 			bool onlyFirstCollision)
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
-			std::list<GameObjectPtr> objs;
+			QSFML::list<GameObjectPtr> objs;
 			tree.search(getBoundingBox(), objs);
 			for (auto& obj : objs)
 			{			
 				if (obj == this)
 					continue;
-				const std::vector<Components::Collider*>& otherColliders = obj->m_componentsManagerData.colliders;
+				const QSFML::vector<Components::Collider*>& otherColliders = obj->m_componentsManagerData.colliders;
 				for (auto objCollider : m_componentsManagerData.colliders)
 				{
 					objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);

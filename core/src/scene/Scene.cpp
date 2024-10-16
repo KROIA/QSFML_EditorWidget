@@ -25,7 +25,7 @@ namespace QSFML {
         "~/Library/Fonts/Arial.ttf"
     };
 
-    std::vector<Scene*> Scene::s_instances;
+    QSFML::vector<Scene*> Scene::s_instances;
     std::string Scene::m_profilerOutputFile = "profiler_output.prof";
 
     Scene::Scene(QWidget* parent, const SceneSettings &settings) 
@@ -211,20 +211,20 @@ namespace QSFML {
 		if (!m_cameras.defaultCamera) return sf::Vector2f(0, 0);
         return m_cameras.defaultCamera->getThisCameraViewCenterPosition();
 	}
-    const std::vector<sf::Event>& Scene::getEvents() const
+    const QSFML::vector<sf::Event>& Scene::getEvents() const
     {
         if (m_cameras.defaultCamera)
             return m_cameras.defaultCamera->getThisCameraEvents();
 
-        static std::vector<sf::Event> dummy;
+        static QSFML::vector<sf::Event> dummy;
         return dummy;
     }
-    const std::vector<sf::Event>& Scene::getEvents(Objects::CameraWindow* camera) const
+    const QSFML::vector<sf::Event>& Scene::getEvents(Objects::CameraWindow* camera) const
     {
 		if (m_cameras.hasCamera(camera))
 			return camera->getThisCameraEvents();
 
-		static std::vector<sf::Event> dummy;
+		static QSFML::vector<sf::Event> dummy;
         return dummy;
     }
 
@@ -387,11 +387,11 @@ namespace QSFML {
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         StatsManager::resetFrame_eventloop();
         
-        std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>> events;
+        QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>> events;
         for(auto camera : m_cameras.cameras)
 		{
             camera->pollEvents();
-            const std::vector<sf::Event> &cameraEvents = camera->getThisCameraEvents();
+            const QSFML::vector<sf::Event> &cameraEvents = camera->getThisCameraEvents();
             if (cameraEvents.size() > 0)
 			    events[camera] = cameraEvents;
 		}
@@ -504,7 +504,7 @@ namespace QSFML {
         QSFMLP_SCENE_END_BLOCK;
     }
 
-    //void Scene::sfEvent(const std::vector<sf::Event>& events)
+    //void Scene::sfEvent(const QSFML::vector<sf::Event>& events)
     //{
     //    QSFML_UNUSED(events);
     //}
@@ -529,7 +529,7 @@ namespace QSFML {
         }
         return textfont;
     }
-    void Scene::internal_event(const std::unordered_map<Objects::CameraWindow*, std::vector<sf::Event>>& events)
+    void Scene::internal_event(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events)
     {
         GameObjectContainer::sfEvent(events);
     }

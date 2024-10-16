@@ -23,7 +23,7 @@ namespace QSFML
 		/// <param name="colors">List of colors which are equaly spaced in the t domain</param>
 		/// <param name="t">Interpolation parameter. Range: [0 : 1]</param>
 		/// <returns>The the interpolated color</returns>
-		QSFML_EDITOR_WIDGET_EXPORT sf::Color lerpLinear(const std::vector<sf::Color>& colors, float t);
+		QSFML_EDITOR_WIDGET_EXPORT sf::Color lerpLinear(const QSFML::vector<sf::Color>& colors, float t);
 
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace QSFML
 		/// <param name="colors">List of colors which are equaly spaced in the t domain</param>
 		/// <param name="t">Interpolation parameter. Range: [0 : 1]</param>
 		/// <returns>The the interpolated color</returns>
-		QSFML_EDITOR_WIDGET_EXPORT sf::Color lerpCubic(const std::vector<sf::Color>& colors, float t);
+		QSFML_EDITOR_WIDGET_EXPORT sf::Color lerpCubic(const QSFML::vector<sf::Color>& colors, float t);
 	
 	}
 }

@@ -14,7 +14,7 @@ namespace QSFML
     {
         public:
             SceneThreadWorker(size_t threadCount,
-                               std::vector<GameObjectGroup*> *group);
+                               QSFML::vector<GameObjectGroup*> *group);
             ~SceneThreadWorker();
 
             void process();
@@ -26,11 +26,11 @@ namespace QSFML
             struct ThreadsData;
             static void threadFunc(ThreadsData data);
 
-            std::vector<GameObjectGroup*> *m_groups;
+            QSFML::vector<GameObjectGroup*> *m_groups;
 
             std::condition_variable m_cv;
 
-            std::vector<std::thread*> m_threads;
+            QSFML::vector<std::thread*> m_threads;
 
 
             std::atomic<bool> *m_threadRunning;
@@ -43,7 +43,7 @@ namespace QSFML
             std::mutex m_finishedMutex;
             struct ThreadsData
             {
-                std::vector<GameObjectGroup*> *groupsList;
+                QSFML::vector<GameObjectGroup*> *groupsList;
                 std::atomic<bool> *running;
                 bool *exit;
                 std::atomic<bool> *threadReleaseToWork;

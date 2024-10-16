@@ -1,7 +1,7 @@
 #include "OpticalElement.h"
 
 #define USE_DEBUG_DRAW
-std::vector<OpticalElement*> OpticalElement::s_opticalElements;
+QSFML::vector<OpticalElement*> OpticalElement::s_opticalElements;
 OpticalElement::OpticalElement(const std::string& name)
 	: GameObject(name)
 	, m_shape(nullptr)
@@ -44,7 +44,7 @@ OpticalElement::~OpticalElement()
 }
 OBJECT_IMPL(OpticalElement);
 
-const std::vector<OpticalElement*> const& OpticalElement::getOpticalElements()
+const QSFML::vector<OpticalElement*> & OpticalElement::getOpticalElements()
 {
 	return s_opticalElements;
 }
@@ -97,8 +97,8 @@ bool OpticalElement::doesRefract() const
 }
 
 bool OpticalElement::processLaser(const LightRay& ray,
-	std::vector< LightRay>& reflectedOut,
-	std::vector< LaserInfo>& additionalLightPathsOut) const
+	QSFML::vector< LightRay>& reflectedOut,
+	QSFML::vector< LaserInfo>& additionalLightPathsOut) const
 {
 	if (!m_shape)
 		return false;
@@ -186,8 +186,8 @@ bool OpticalElement::reflectAndRefract(const LightRay& ray, const Shape& shape, 
 }
 
 void OpticalElement::processLaser_intern(const LightRay& ray,
-	std::vector< LightRay>& reflectedOut,
-	std::vector< LaserInfo>& additionalLightPathsOut,
+	QSFML::vector< LightRay>& reflectedOut,
+	QSFML::vector< LaserInfo>& additionalLightPathsOut,
 	sf::Vector2f& outNextCollisionPoint) const
 {
 	const float newPointOffset = 0.0001;

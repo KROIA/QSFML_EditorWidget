@@ -121,8 +121,8 @@ void Laser::updateRay(LightRay& r, LaserInfo& info, unsigned int iteration)
 
 	if (nearesElement)
 	{
-		std::vector<LightRay> reflected;
-		std::vector< LaserInfo> additionalLightPaths;
+		QSFML::vector<LightRay> reflected;
+		QSFML::vector< LaserInfo> additionalLightPaths;
 		if (nearesElement->processLaser(ray, reflected, additionalLightPaths))
 		{
 			if(additionalLightPaths.size())
@@ -136,7 +136,7 @@ void Laser::updateRay(LightRay& r, LaserInfo& info, unsigned int iteration)
 }
 
 
-Laser::LaserPainter::LaserPainter(std::vector<LaserInfo>& l, const std::string& name)
+Laser::LaserPainter::LaserPainter(QSFML::vector<LaserInfo>& l, const std::string& name)
 	: Drawable(name)
 	, m_lasers(l)
 {

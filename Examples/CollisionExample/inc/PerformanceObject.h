@@ -7,7 +7,7 @@ class PerformanceObject : public QSFML::Objects::GameObject
 public:
 	PerformanceObject(const std::string& name = "PerformanceObject",
 		QSFML::Objects::GameObjectPtr parent = nullptr);
-	PerformanceObject(const std::vector<sf::Vector2f>& vertecies,
+	PerformanceObject(const QSFML::vector<sf::Vector2f>& vertecies,
 		const std::string& name = "PerformanceObject",
 		QSFML::Objects::GameObjectPtr parent = nullptr);
 	~PerformanceObject();

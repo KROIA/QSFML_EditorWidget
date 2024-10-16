@@ -15,7 +15,7 @@ using namespace QSFML::Objects;
 */
 
 // Shapes to apply a raycast on
-static std::vector<Components::Shape*> targetShapes;
+static QSFML::vector<Components::Shape*> targetShapes;
 
 static GameObject* createTarget(const sf::Vector2f &targetPos);
 static GameObject* createLaserObject();

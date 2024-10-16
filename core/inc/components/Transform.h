@@ -161,7 +161,7 @@ namespace QSFML
         void updateGlobalTransform() const
         {
            /* Transformable* parent = m_transformParent;
-			std::vector<const Transformable*> transformTree;
+			QSFML::vector<const Transformable*> transformTree;
             transformTree.reserve(20);
 			while (parent)
 			{
@@ -183,7 +183,7 @@ namespace QSFML
 
 
 			//Transformable* m_transformParent = nullptr;
-			//std::vector<Transformable*> m_children;
+			//QSFML::vector<Transformable*> m_children;
 
 			sf::Transformable m_transformable;
 

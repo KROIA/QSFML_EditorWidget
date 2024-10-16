@@ -130,12 +130,12 @@ namespace QSFML
 			//	m_transformedVertecies.push_back(m_transformedVertecies[0]);
 			//}
 		}
-		void Shape::addPoints(const std::vector<sf::Vector2f>& points)
+		void Shape::addPoints(const QSFML::vector<sf::Vector2f>& points)
 		{
 			m_points.insert(m_points.end(), points.begin(), points.end());
 			updateTranformedPoints();
 		}
-		void Shape::setPoints(const std::vector<sf::Vector2f>& points)
+		void Shape::setPoints(const QSFML::vector<sf::Vector2f>& points)
 		{
 			m_points = points;
 			updateTranformedPoints();
@@ -151,13 +151,13 @@ namespace QSFML
 			//}
 		}
 
-		const std::vector<sf::Vector2f>& Shape::getPoints() const
+		const QSFML::vector<sf::Vector2f>& Shape::getPoints() const
 		{
 			return m_points;
 		}
-		std::vector<sf::Vector2f> Shape::getTransformedPoints() const
+		QSFML::vector<sf::Vector2f> Shape::getTransformedPoints() const
 		{
-			std::vector<sf::Vector2f> transformedPoints;
+			QSFML::vector<sf::Vector2f> transformedPoints;
 			sf::Transform transform;
 			if (m_parent)
 				transform = m_parent->getGlobalTransform() * getTransform();
@@ -228,7 +228,7 @@ namespace QSFML
 			{
 				return;
 			}
-			std::vector<sf::Vertex> transformedVertecies;
+			QSFML::vector<sf::Vertex> transformedVertecies;
 			transformedVertecies.reserve(m_points.size() + 1);
 			for (const auto& point : m_points)
 			{
@@ -278,7 +278,7 @@ namespace QSFML
 			}
 			if (m_outline)
 			{
-				std::vector<sf::Vertex> outline = m_transformedVertecies;
+				QSFML::vector<sf::Vertex> outline = m_transformedVertecies;
 				for (auto& vertex : outline)
 				{
 					vertex.color = m_outlineColor;

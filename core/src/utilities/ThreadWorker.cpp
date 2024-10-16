@@ -58,7 +58,7 @@ namespace QSFML
         {
             addWork(work);
         }
-        ThreadWorker::ThreadWorker(const std::vector<ThreadWork*>& workload, const std::string& name)
+        ThreadWorker::ThreadWorker(const QSFML::vector<ThreadWork*>& workload, const std::string& name)
             : m_name(name)
             , m_sleepWorkFunc(nullptr)
         {
@@ -74,7 +74,7 @@ namespace QSFML
 
             addFunction(executionFunction);
         }
-        ThreadWorker::ThreadWorker(const std::vector < std::function<void()>>& executionFunctions, const std::string& name)
+        ThreadWorker::ThreadWorker(const QSFML::vector < std::function<void()>>& executionFunctions, const std::string& name)
             : m_name(name)
             , m_sleepWorkFunc(nullptr)
         {
