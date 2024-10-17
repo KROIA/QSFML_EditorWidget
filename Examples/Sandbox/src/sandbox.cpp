@@ -455,13 +455,13 @@ void shaderTest(Scene* scene)
 			QSFML::Utilities::AABB viewRect(camera->getThisCameraViewRect());
             
             sf::RectangleShape rectangle;
-            rectangle.setSize(viewRect.getSize() * areaScale);
-           // rectangle.setSize(sf::Vector2f(100,100));
+           // rectangle.setSize(viewRect.getSize() * areaScale);
+            rectangle.setSize(sf::Vector2f(100,100));
 			rectangle.setPosition(camera->getThisCameraMouseWorldPosition());
 
             
             sf::Vector2f pixelPos = sf::Vector2f(camera->getThisCameraMousePosition()) * camera->getThisCameraDpiScale().x;
-            pixelPos -= sf::Vector2f(camera->getInThisCameraScreenSpace({ viewRect.TL().x,viewRect.TL().y + rectangle.getSize().y })) * camera->getThisCameraDpiScale().x;
+            pixelPos -= sf::Vector2f(camera->getInThisCameraScreenSpace({0,rectangle.getPosition().y-rectangle.getSize().y}) - camera->getInThisCameraScreenSpace({0,0})) * camera->getThisCameraDpiScale().x;
             pixelPos.y = -pixelPos.y;
             
 	
