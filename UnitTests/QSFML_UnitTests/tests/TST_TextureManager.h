@@ -7,7 +7,6 @@
 #include <QDir>
 #include <QTimer>
 
-static const std::string assetPath = "../UnitTests/QSFML_UnitTests/assets";
 
 using namespace QSFML;
 
@@ -38,7 +37,7 @@ private slots:
 
 private:
 	QTimer m_stopTimer;
-
+	const std::string assetPath = "../UnitTests/QSFML_UnitTests/assets";
 	// Tests
 	TEST_FUNCTION(load1)
 	{
@@ -133,16 +132,19 @@ private:
 		// Create a scene
 		Scene::setProfilerOutputFileName("TST_TextureManager_displayTest.prof");
 		Scene* scene = createDefaultScene();
-		Objects::GameObjectPtr pointPainterObj = new Objects::GameObject();
-		scene->addObject(pointPainterObj);
+		Objects::GameObjectPtr gameObj = new Objects::GameObject();
+		scene->addObject(gameObj);
 
-		pointPainterObj->addDrawFunction([nextTextureTime](const Objects::GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
+		gameObj->addDrawFunction([nextTextureTime](const Objects::GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
 			{
 				float time = obj.getAge()*10;
 				size_t textureIndex = ((int)time / ((int)nextTextureTime+1)) % Assets::TextureManager::getTextureCount();
 
 				const sf::Texture& texture = Assets::TextureManager::getTexture(textureIndex);
 				sf::Sprite sprite(texture);
+
+				sf::RectangleShape shape(sf::Vector2f(100, 100));
+				shape.setTexture(&texture);
 
 				target.draw(sprite);
 			});

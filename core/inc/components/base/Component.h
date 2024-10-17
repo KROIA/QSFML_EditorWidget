@@ -87,6 +87,14 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         void setEnabled(bool enable)
         {
 			m_enabled = enable;
+			if (m_enabled)
+			{
+				onEnable();
+			}
+			else
+			{
+				onDisable();
+			}
 		}
 
         /**
@@ -121,6 +129,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         {
             m_sceneParent = parent;
         }
+
+		virtual void onEnable() {}
+		virtual void onDisable() {}
         
 
         // Scene operations
@@ -145,7 +156,10 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          * \brief getSceneParent
          * \return returns the Scene, this component belongs to
          */
-        Scene* getSceneParent() const;
+        Scene* getSceneParent() const
+        {
+            return m_sceneParent;
+        }
 
         /// Logging
         void log(const Log::Message& msg) const;

@@ -31,6 +31,7 @@
 #include "components/KeyPressEvent.h"
 #include "components/MouseFollower.h"
 #include "components/MousePressEvent.h"
+#include "components/TextureAnimation.h"
 
 
 #include "objects/base/GameObject.h"

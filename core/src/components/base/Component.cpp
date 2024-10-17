@@ -124,10 +124,7 @@ double Component::getDeltaT() const
     return m_parent->getDeltaT();
 }
 
-QSFML::Scene* Component::getSceneParent() const
-{
-    return m_sceneParent;
-}
+
 
 void Component::log(const Log::Message & msg) const
 { 

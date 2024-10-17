@@ -8,6 +8,12 @@ namespace QSFML
 {
 	namespace Assets
 	{
+		/**
+		 * @brief 
+		 * This class is used to manage textures
+		 * It loads all textures in a given path and stores them
+		 * The textures can be accessed by their index or relative path
+		 */
 		class QSFML_EDITOR_WIDGET_EXPORT TextureManager
 		{
 			TextureManager();

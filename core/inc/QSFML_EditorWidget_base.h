@@ -47,6 +47,19 @@ namespace QSFML
 	using map = eastl::map<A, B>;
 
 	using string = eastl::string;
+
+	template<typename T>
+	string to_string(T v)
+	{
+		return eastl::to_string(v);
+	}
+
+	// sort redirection with lamda
+	template<typename T>
+	void sort(T begin, T end, std::function<bool(const typename T::value_type&, const typename T::value_type&)> compare)
+	{
+		eastl::sort(begin, end, compare);
+	}
 }
 
 // https://github.com/electronicarts/EASTL/blob/master/doc/CMake/EASTL_Project_Integration.md#setting-up-your-code
@@ -86,6 +99,20 @@ namespace QSFML
 	using map = std::map<A, B>;
 
 	using string = std::string;
+
+	// to_string redirection
+	template<typename T>
+	string to_string(T v)
+	{
+		return std::to_string(v);
+	}
+
+	// sort redirection with lamda
+	template<typename T>
+	void sort(T begin, T end, std::function<bool(const typename T::value_type&, const typename T::value_type&)> compare)
+	{
+		std::sort(begin, end, compare);
+	}
 }
 #endif
 
