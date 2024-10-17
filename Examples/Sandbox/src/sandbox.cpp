@@ -418,37 +418,41 @@ void addCar(Scene* scene,
 void shaderTest(Scene* scene)
 {
     std::string shaderStr =
-        "uniform vec2 u_resolution; // The resolution of the screen           \n"
-        "//uniform vec2 u_offset;     // Offset for panning                   \n"
-        "//uniform float u_zoom;      // Zoom level                           \n"
-        "//uniform int u_maxIterations; // Maximum number of iterations       \n"
-        "uniform vec2 rectPosition;                                           \n"
-        "                                                                     \n"
-        "                                                                     \n"
-        "void main() {                                                        \n"
-        "    //vec2 u_resolution = vec2(500,500);                             \n"
-        "                                                                     \n"
-        "    vec2 st = (gl_FragCoord.xy-rectPosition.xy) / u_resolution.xy;                     \n"
-        "    vec3 color = vec3(0.0);                                          \n"
-        "                                                                     \n"
-        "    // bottom-left                                                   \n"
-        "    vec2 bl = smoothstep(0.0, 0.05, st);                              \n"
-        "    float pct = bl.x * bl.y;                                         \n"
-        "                                                                     \n"
-        "    // top-right                                                     \n"
-        "    vec2 tr = smoothstep(0., 0.05, 1.0 - st);                         \n"
-        "    pct *= tr.x * tr.y;                                              \n"
-        "                                                                     \n"
-        "    color = mix(vec3(0,1,0), vec3(0,0,1), pct);                                               \n"
-        "                                                                     \n"
-        "    gl_FragColor = vec4(color, 1-pct);                                 \n"
-        "}                                                                    \n";
+        "// Blur.frag                                                                                             \n"
+        "uniform sampler2D texture; // The texture of the shape                                                   \n"
+        "uniform vec2 resolution;    // The resolution of the window or render texture                            \n"
+        "uniform float blurRadius;   // The radius of the blur effect                                             \n"
+        "                                                                                                         \n"
+        "void main() {                                                                                            \n"
+        "    vec2 texCoords = gl_TexCoord[0].xy;  // Get the texture coordinates                                  \n"
+        "    vec2 blur = vec2(blurRadius / resolution.x, blurRadius / resolution.y); // Adjust blur size          \n"
+        "                                                                                                         \n"
+        "    // Gaussian blur weights                                                                             \n"
+        "    float weight[5] = float[](0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);                       \n"
+        "                                                                                                         \n"
+        "    vec4 color = texture2D(texture, texCoords) * weight[0]; // Center pixel contribution                 \n"
+        "                                                                                                         \n"
+        "    // Loop over the surrounding pixels in the x and y direction                                         \n"
+        "    for (int i = 1; i < 5; ++i) {                                                                        \n"
+        "        color += texture2D(texture, texCoords + vec2(blur.x * i, 0.0)) * weight[i];                      \n"
+        "        color += texture2D(texture, texCoords - vec2(blur.x * i, 0.0)) * weight[i];                      \n"
+        "        color += texture2D(texture, texCoords + vec2(0.0, blur.y * i)) * weight[i];                      \n"
+        "        color += texture2D(texture, texCoords - vec2(0.0, blur.y * i)) * weight[i];                      \n"
+        "    }                                                                                                    \n"
+        "                                                                                                         \n"
+        "    gl_FragColor = color;                                                                                \n"
+        "}                                                                                                        \n";
+
+
 
 	GameObjectPtr obj = new GameObject();
 	sf::Shader* shader = new sf::Shader();
 	shader->loadFromMemory(shaderStr, sf::Shader::Fragment);
 
-	obj->addDrawFunction([shader](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
+    sf::Texture* texture = new sf::Texture();
+    texture->loadFromFile("arrows.png");
+
+	obj->addDrawFunction([shader, texture](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
 		{
             auto camera = obj.getCurrentRenderCamera();
             float areaScale = 0.5;
@@ -457,21 +461,33 @@ void shaderTest(Scene* scene)
             sf::RectangleShape rectangle;
            // rectangle.setSize(viewRect.getSize() * areaScale);
             rectangle.setSize(sf::Vector2f(100,100));
-			rectangle.setPosition(camera->getThisCameraMouseWorldPosition());
+            sf::Vector2f mousePos = camera->getThisCameraMouseWorldPosition();
+			rectangle.setPosition(sf::Vector2f(50,50));
 
             
-            sf::Vector2f pixelPos = sf::Vector2f(camera->getThisCameraMousePosition()) * camera->getThisCameraDpiScale().x;
-            pixelPos -= sf::Vector2f(camera->getInThisCameraScreenSpace({0,rectangle.getPosition().y-rectangle.getSize().y}) - camera->getInThisCameraScreenSpace({0,0})) * camera->getThisCameraDpiScale().x;
-            pixelPos.y = -pixelPos.y;
+            //rectangle.setTexture(texture);
             
-	
-			rectangle.setFillColor(sf::Color::White);
-            // Pass uniforms to the shader
-            shader->setUniform("u_resolution", sf::Vector2f(camera->getThisCameraSize())* areaScale); // Window size as resolution
-            //shader->setUniform("u_resolution", sf::Vector2f(camera->getInThisCameraScreenSpace(rectangle.getSize()))); // Window size as resolution
-            shader->setUniform("rectPosition", pixelPos); // Position of the rectangle
+            // Set shader parameters
+            //shader->setUniform("resolution", sf::Glsl::Vec2(400,200));
+            //shader->setUniform("shapePos", sf::Glsl::Vec2(rectangle.getPosition().x, -rectangle.getPosition().y));
+            //shader->setUniform("shapeSize", sf::Glsl::Vec2(rectangle.getSize().x, rectangle.getSize().y));
+            //shader->setUniform("blurRadius", 30.0f);  // Adjust blur radius
 
-			target.draw(rectangle, shader);
+            shader->setUniform("texture", sf::Shader::CurrentTexture);
+            shader->setUniform("resolution", sf::Glsl::Vec2(rectangle.getSize().x, rectangle.getSize().y));
+            shader->setUniform("blurRadius", 5.0f); // Adjust this for more or less blur
+
+            sf::RenderTexture renderTexture;
+            renderTexture.create(200,200);
+
+            renderTexture.clear(sf::Color::Transparent);
+            renderTexture.draw(rectangle);
+            renderTexture.display();
+
+            sf::Sprite sprite(renderTexture.getTexture());
+            sprite.setPosition(mousePos);
+			sprite.setOrigin(sprite.getTexture()->getSize().x / 2, sprite.getTexture()->getSize().y / 2);
+            target.draw(sprite, shader);
 		});
 
 	scene->addObject(obj);
