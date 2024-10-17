@@ -175,6 +175,7 @@ private:
 		m_currentScene = nullptr;
 		m_currentResults = nullptr;
 		m_update.stop();
+		m_stopTimer.stop();
 		delete scene;
 		processStats(results);
 	}
@@ -200,6 +201,7 @@ private:
 		m_currentScene = nullptr;
 		m_currentResults = nullptr;
 		m_update.stop();
+		m_stopTimer.stop();
 		delete scene;
 		processStats(results);
 	}
@@ -225,6 +227,7 @@ private:
 		m_currentScene = nullptr;
 		m_currentResults = nullptr;
 		m_update.stop();
+		m_stopTimer.stop();
 		delete scene;
 		processStats(results);
 	}
@@ -249,6 +252,7 @@ private:
 		m_currentScene = nullptr;
 		m_currentResults = nullptr;
 		m_update.stop();
+		m_stopTimer.stop();
 		delete scene;
 		processStats(results);
 	}
@@ -305,6 +309,7 @@ private:
 		processStats(results);
 		m_tree.setStatsManager(nullptr);
 		m_update.stop();
+		m_stopTimer.stop();
 		delete scene;
 		m_pointPainter = nullptr;
 	}

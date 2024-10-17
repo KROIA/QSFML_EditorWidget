@@ -72,10 +72,9 @@ public:
 		//	Objects::GameObject::DrawSequenceElement::components
 		//				  });
 
-
-		scene->start();
 		qApp->exec();
 		delete scene;
+		m_stopTimer.stop();
 	}
 
 

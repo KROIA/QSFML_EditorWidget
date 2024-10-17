@@ -56,4 +56,6 @@
 #include "utilities/Color.h"
 #include "utilities/LifetimeChecker.h"
 #include "utilities/CameraRecorder.h"
+
+#include "assets/TextureManager.h"
 /// USER_SECTION_END

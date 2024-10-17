@@ -121,6 +121,7 @@ private:
 
 
 		qApp->exec();
+		m_stopTimer.stop();
 		delete scene;
 	}
 
@@ -336,6 +337,7 @@ private:
 		scene->start();
 		// Start the application to process the eventloop and run the engine
 		qApp->exec();
+		m_stopTimer.stop();
 		delete scene;
 	}
 
