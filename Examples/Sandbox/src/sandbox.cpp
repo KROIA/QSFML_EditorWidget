@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QCloseEvent>
 #include <QDebug>
+#include <QScreen>
 
 using namespace QSFML;
 using namespace QSFML::Objects;
@@ -95,6 +96,7 @@ SandBox::SandBox(QWidget *parent)
         m_scene_1->addObject(GameObject);
         GameObject->setEnabled(false);
 
+        shaderTest(m_scene_1);
 		addNastedRotatingVector(m_scene_1);
 
         QTimer* timer = new QTimer(this);
@@ -102,7 +104,7 @@ SandBox::SandBox(QWidget *parent)
         connect(timer, &QTimer::timeout, this, &SandBox::onTimerFinished);
         timer->start(1000);
 
-		shaderTest(m_scene_1);
+		
         m_scene_1->start();
     }
     
@@ -420,13 +422,13 @@ void shaderTest(Scene* scene)
         "//uniform vec2 u_offset;     // Offset for panning                   \n"
         "//uniform float u_zoom;      // Zoom level                           \n"
         "//uniform int u_maxIterations; // Maximum number of iterations       \n"
-        "                                                                     \n"
+        "uniform vec2 rectPosition;                                           \n"
         "                                                                     \n"
         "                                                                     \n"
         "void main() {                                                        \n"
         "    //vec2 u_resolution = vec2(500,500);                             \n"
         "                                                                     \n"
-        "    vec2 st = gl_FragCoord.xy / u_resolution.xy;                     \n"
+        "    vec2 st = (gl_FragCoord.xy-rectPosition.xy) / u_resolution.xy;                     \n"
         "    vec3 color = vec3(0.0);                                          \n"
         "                                                                     \n"
         "    // bottom-left                                                   \n"
@@ -448,18 +450,27 @@ void shaderTest(Scene* scene)
 
 	obj->addDrawFunction([shader](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
 		{
-			QSFML::Utilities::AABB viewRect(obj.getCurrentRenderCamera()->getThisCameraViewRect());
- 
-            sf::RectangleShape rectangle(viewRect.getSize());
-			rectangle.setPosition(viewRect.getPos());
+            auto camera = obj.getCurrentRenderCamera();
+            float areaScale = 0.5;
+			QSFML::Utilities::AABB viewRect(camera->getThisCameraViewRect());
+            
+            sf::RectangleShape rectangle;
+            rectangle.setSize(viewRect.getSize() * areaScale);
+           // rectangle.setSize(sf::Vector2f(100,100));
+			rectangle.setPosition(camera->getThisCameraMouseWorldPosition());
+
+            
+            sf::Vector2f pixelPos = sf::Vector2f(camera->getThisCameraMousePosition()) * camera->getThisCameraDpiScale().x;
+            pixelPos -= sf::Vector2f(camera->getInThisCameraScreenSpace({ viewRect.TL().x,viewRect.TL().y + rectangle.getSize().y })) * camera->getThisCameraDpiScale().x;
+            pixelPos.y = -pixelPos.y;
+            
+	
 			rectangle.setFillColor(sf::Color::White);
             // Pass uniforms to the shader
-            shader->setUniform("u_resolution", sf::Vector2f(target.getSize())); // Window size as resolution
-            //shader->setUniform("rectPosition", sf::Vector2f(0,0)); // Position of the rectangle
-            //shader->setUniform("rectSize", sf::Vector2f(viewRect.getSize())); // Size of the rectangle
-            //shader->setUniform("position", sf::Vector2f(obj.getMousePosition())); // Size of the rectangle
-			
-			
+            shader->setUniform("u_resolution", sf::Vector2f(camera->getThisCameraSize())* areaScale); // Window size as resolution
+            //shader->setUniform("u_resolution", sf::Vector2f(camera->getInThisCameraScreenSpace(rectangle.getSize()))); // Window size as resolution
+            shader->setUniform("rectPosition", pixelPos); // Position of the rectangle
+
 			target.draw(rectangle, shader);
 		});
 
