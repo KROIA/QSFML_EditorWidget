@@ -19,7 +19,11 @@ namespace QSFML
 			m_currentUVRect.height = m_texture.getSize().y / m_imageDim.y;
 			m_repeating = false;
 			m_1InvSpeed = 1.0f;
+			m_speed = 1.0f;
 			m_animationDirection = 1;
+			m_currentTextureIndex = 0;
+			m_elapsedTime = 0;
+			m_timeDomain = TimeDomain::realSimulationTime;
 
 			//m_imageCount = imageCount.x * imageCount.y;
 			//m_currentImageIndex = 0;
@@ -38,11 +42,43 @@ namespace QSFML
 			m_currentUVRect.height = m_texture.getSize().y / m_imageDim.y;
 			m_repeating = false;
 			m_1InvSpeed = 1.0f;
+			m_speed = 1.0f;
 			m_animationDirection = 1;
+			m_currentTextureIndex = 0;
+			m_elapsedTime = 0;
+			m_timeDomain = TimeDomain::realSimulationTime;
 
 			//m_imageCount = imageCount.x * imageCount.y;
 			//m_currentImageIndex = 0;
 			setEnabled(false);
+		}
+
+		TextureAnimation::TextureAnimation(const TextureAnimation& other)
+			: Component(other)
+			, Updatable()
+			, m_texture(other.m_texture)
+			, m_imageDim(other.m_imageDim)
+			, m_currentUVRect(other.m_currentUVRect)
+			, m_currentAnimationStep(other.m_currentAnimationStep)
+			, m_currentAnimationSequence(other.m_currentAnimationSequence)
+			, m_currentTextureIndex(other.m_currentTextureIndex)
+			, m_elapsedTime(other.m_elapsedTime)
+			, m_timeDomain(other.m_timeDomain)
+			, m_repeating(other.m_repeating)
+			, m_speed(other.m_speed)
+			, m_1InvSpeed(other.m_1InvSpeed)
+			, m_animationDirection(other.m_animationDirection)
+			, m_animations(other.m_animations)
+			, m_sumDuration(other.m_sumDuration)
+			, m_currentAnimationTime(other.m_currentAnimationTime)
+			, m_shape(other.m_shape)
+			, m_sprite(other.m_sprite)
+		{
+			m_animationSequence.reserve(other.m_animationSequence.size());
+			for (size_t i = 0; i < other.m_animationSequence.size(); i++)
+			{
+				m_animationSequence.push_back(&m_animations[other.m_animationSequence[i]->name]);
+			}
 		}
 		TextureAnimation::~TextureAnimation()
 		{
@@ -100,11 +136,29 @@ namespace QSFML
 		}
 		void TextureAnimation::start()
 		{
+			if (m_animationSequence.size() == 0)
+			{
+				logger().logWarning("Animation sequence is empty, nothing to animate");
+				return;
+			}
 			setEnabled(true);
 		}
 		void TextureAnimation::stop()
 		{
 			setEnabled(false);
+		}
+
+		void TextureAnimation::setSpeed(float speed)
+		{
+			m_speed = speed;
+			std::signbit(speed) ? m_animationDirection = -1 : m_animationDirection = 1;
+			if (speed == 0)
+			{
+				m_1InvSpeed = 999999;
+				return;
+			}
+			
+			m_1InvSpeed = std::abs(1 / speed);
 		}
 
 		float TextureAnimation::getProgress() const
@@ -118,7 +172,7 @@ namespace QSFML
 			if (m_shape)
 			{
 				m_shape->setTexture(&m_texture);
-				setAnimationIndex(m_imageDim.x * m_imageDim.y);
+				setTextureIndex(m_imageDim.x * m_imageDim.y);
 			}
 		}
 		void TextureAnimation::bindTo(sf::Sprite* sprite)
@@ -127,16 +181,25 @@ namespace QSFML
 			if (m_sprite)
 			{
 				m_sprite->setTexture(m_texture);
-				setAnimationIndex(m_imageDim.x * m_imageDim.y);
+				setTextureIndex(m_imageDim.x * m_imageDim.y);
 			}
 		}
 
 		void TextureAnimation::onEnable()
 		{
 			m_currentAnimationStep = 0;
-			m_currentAnimationSequenceStep = 0;
+			m_currentAnimationSequence = 0;
 			m_elapsedTime = 0;
 			m_currentAnimationTime = 0;
+			m_currentTextureIndex = 0;
+
+			if (m_speed == 0)
+			{
+				int currentIndex = m_currentTextureIndex;
+				setEnabled(false);
+				setTextureIndex(currentIndex);
+				return;
+			}
 
 			// Calculate the sum duration
 			m_sumDuration = 0;
@@ -147,23 +210,32 @@ namespace QSFML
 					m_sumDuration += step.duration;
 				}
 			}
-			setAnimationIndex(m_animationSequence[m_currentAnimationSequenceStep]->steps[m_currentAnimationStep].index);
+			setTextureIndex(m_animationSequence[m_currentAnimationSequence]->steps[m_currentAnimationStep].index);
 		}
 		void TextureAnimation::onDisable()
 		{
 			m_currentAnimationStep = 0;
-			m_currentAnimationSequenceStep = 0;
+			m_currentAnimationSequence = 0;
 			m_elapsedTime = 0;
 
 
 			// Select texture element outside of the image to make it invisible
-			setAnimationIndex(m_imageDim.x * m_imageDim.y);
+			setTextureIndex(m_imageDim.x * m_imageDim.y);
 		}
 
 		void TextureAnimation::update()
 		{
-			float deltaT = getDeltaT();
-			Animation& animation = *m_animationSequence[m_currentAnimationSequenceStep];
+			float deltaT = 0;
+			switch (m_timeDomain)
+			{
+				case TimeDomain::realSimulationTime:
+					deltaT = getDeltaT();
+					break;
+				case TimeDomain::fixedSimulationTime:
+					deltaT = getFixedDeltaT();
+					break;
+			} 
+			Animation& animation = *m_animationSequence[m_currentAnimationSequence];
 
 			m_elapsedTime += deltaT;
 			if (m_elapsedTime >= animation.steps[m_currentAnimationStep].duration * m_1InvSpeed)
@@ -175,12 +247,12 @@ namespace QSFML
 				if (m_currentAnimationStep >= animStepSize || m_currentAnimationStep < 0 )
 				{
 					m_currentAnimationStep = (animStepSize+m_currentAnimationStep) % animStepSize;
-					m_currentAnimationSequenceStep += m_animationDirection;
+					m_currentAnimationSequence += m_animationDirection;
 
 					int animSeqSize = m_animationSequence.size();
-					if (m_currentAnimationSequenceStep >= animSeqSize || m_currentAnimationSequenceStep < 0)
+					if (m_currentAnimationSequence >= animSeqSize || m_currentAnimationSequence < 0)
 					{
-						m_currentAnimationSequenceStep = (animSeqSize+m_currentAnimationSequenceStep) % animSeqSize;
+						m_currentAnimationSequence = (animSeqSize+m_currentAnimationSequence) % animSeqSize;
 						if (!m_repeating)
 						{
 							setEnabled(false);
@@ -188,14 +260,14 @@ namespace QSFML
 						}
 						m_currentAnimationTime = 0;
 					}
-					//animation = *m_animationSequence[m_currentAnimationSequenceStep];
 				}
-				setAnimationIndex(m_animationSequence[m_currentAnimationSequenceStep]->steps[m_currentAnimationStep].index);
+				setTextureIndex(m_animationSequence[m_currentAnimationSequence]->steps[m_currentAnimationStep].index);
 			}
 		}
 
-		void TextureAnimation::setAnimationIndex(unsigned int index)
+		void TextureAnimation::setTextureIndex(unsigned int index)
 		{
+			m_currentTextureIndex = index;
 			m_currentUVRect.left = (index % m_imageDim.x) * m_currentUVRect.width;
 			m_currentUVRect.top = (index / m_imageDim.x) * m_currentUVRect.height;
 			if (m_shape)

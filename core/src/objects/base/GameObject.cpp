@@ -195,6 +195,8 @@ void GameObject::onDisable()
 }*/
 void GameObject::setEnabled(bool enable)
 {
+	if (m_enabled == enable)
+		return;
     m_enabled = enable;
 	if (m_enabled)
 		onEnable();

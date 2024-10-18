@@ -86,6 +86,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          */
         void setEnabled(bool enable)
         {
+            if (m_enabled == enable)
+                return;
 			m_enabled = enable;
 			if (m_enabled)
 			{
@@ -151,6 +153,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 
         size_t getTick() const;
         double getDeltaT() const; // Returns delta Time since last update in seconds
+		double getFixedDeltaT() const; // Returns fixed delta Time in seconds
 
         /**
          * \brief getSceneParent

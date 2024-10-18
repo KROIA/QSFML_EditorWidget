@@ -95,7 +95,7 @@ void ExampleScene::setupTutorial_4(QSFML::Scene* scene)
     object->addUpdateFunction([pathPainter, pathPainterX, pathPainterY, linePainter, pointPainter](GameObject& obj)
         {
 			// Use the age for a time source
-			float time = obj.getAge()*20;
+			float time = obj.getAge()*5;
 
 			// Calculate the sum of all rotating vectors
 			sf::Vector2f sum;
@@ -116,7 +116,7 @@ void ExampleScene::setupTutorial_4(QSFML::Scene* scene)
 			auto points = pathPainter->getPath();
 			auto pointsX = pathPainterX->getPath();
 			auto pointsY = pathPainterY->getPath();
-			float offset = obj.getDeltaT() * 500;
+			float offset = obj.getDeltaT() * 100;
 			points.push_back(sum);
 			pointsX.push_back({200, sum.y });
 			pointsY.push_back({ sum.x, 200 });

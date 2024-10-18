@@ -23,7 +23,6 @@ namespace QSFML
         class LineChart;
         class VisibleCamera;
 
-        //typedef std::shared_ptr<GameObject> GameObjectPtr;
         typedef GameObject* GameObjectPtr;
 
     }
@@ -45,7 +44,6 @@ namespace QSFML
         class Image;
         class Transform;
 
-        //typedef std::shared_ptr<Component> ComponentPtr;
         typedef Component* ComponentPtr;
     }
     namespace Utilities
@@ -74,6 +72,20 @@ namespace QSFML
         class LifetimeChecker;
     }
     
+    enum class TimeDomain
+    {
+        /**
+         * @brief 
+         * Real mesured time, multiplied with the "physicsDeltaTScale" of the SceneSettings struct
+         */
+        realSimulationTime,
+
+        /**
+         * @brief 
+		 * Fixed time, using the "physicsFixedDeltaT" of the SceneSettings struct
+         */
+        fixedSimulationTime
+    };
 
 #define CLONE_FUNC_DEC(className) \
     className *clone() const

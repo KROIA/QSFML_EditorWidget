@@ -123,6 +123,11 @@ double Component::getDeltaT() const
     if (!m_parent) return 0;
     return m_parent->getDeltaT();
 }
+double Component::getFixedDeltaT() const
+{
+	if (!m_parent) return 0;
+	return m_parent->getFixedDeltaT();
+}
 
 
 
