@@ -86,7 +86,17 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
          */
         void setEnabled(bool enable)
         {
+            if (m_enabled == enable)
+                return;
 			m_enabled = enable;
+			if (m_enabled)
+			{
+				onEnable();
+			}
+			else
+			{
+				onDisable();
+			}
 		}
 
         /**
@@ -121,6 +131,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         {
             m_sceneParent = parent;
         }
+
+		virtual void onEnable() {}
+		virtual void onDisable() {}
         
 
         // Scene operations
@@ -140,12 +153,16 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
 
         size_t getTick() const;
         double getDeltaT() const; // Returns delta Time since last update in seconds
+		double getFixedDeltaT() const; // Returns fixed delta Time in seconds
 
         /**
          * \brief getSceneParent
          * \return returns the Scene, this component belongs to
          */
-        Scene* getSceneParent() const;
+        Scene* getSceneParent() const
+        {
+            return m_sceneParent;
+        }
 
         /// Logging
         void log(const Log::Message& msg) const;

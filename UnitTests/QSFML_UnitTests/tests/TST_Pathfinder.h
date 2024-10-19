@@ -121,6 +121,7 @@ private:
 
 
 		qApp->exec();
+		m_stopTimer.stop();
 		delete scene;
 	}
 
@@ -146,7 +147,7 @@ private:
 				float dist = std::sqrt(std::pow(node.second.position.x - firstNode.second.position.x, 2) + std::pow(node.second.position.y - firstNode.second.position.y, 2));
 				distances.push_back({ node.first, dist });
 			}
-			eastl::sort(distances.begin(), distances.end(), [](const QSFML::pair<QSFML::string, float>& a, const QSFML::pair<QSFML::string, float>& b)
+			QSFML::sort(distances.begin(), distances.end(), [](const QSFML::pair<QSFML::string, float>& a, const QSFML::pair<QSFML::string, float>& b)
 					  {
 						  return a.second < b.second;
 					  });
@@ -195,7 +196,7 @@ private:
 		for (int i = 0; i < nodeCount; ++i)
 		{
 			std::string idStr = "Node" + std::to_string(i);
-			QSFML::string idStr3 = eastl::to_string(i);
+			QSFML::string idStr3 = QSFML::to_string(i);
 			QSFML::string idStr2 = "Node" + QSFML::string(std::to_string(i).c_str());
 			QSFML::string id = QSFML::string(idStr.c_str());
 			pathfinder.addNode(id, { (float)(rand() % area.x), (float)(rand() % area.y) });
@@ -242,7 +243,7 @@ private:
 					float dist = std::sqrt(std::pow(node.second.position.x - worldPos.x, 2) + std::pow(node.second.position.y - worldPos.y, 2));
 					distances.push_back({ node.first, dist });
 				}
-				eastl::sort(distances.begin(), distances.end(), [](const QSFML::pair<QSFML::string, float>& a, const QSFML::pair<QSFML::string, float>& b)
+				QSFML::sort(distances.begin(), distances.end(), [](const QSFML::pair<QSFML::string, float>& a, const QSFML::pair<QSFML::string, float>& b)
 					{
 						return a.second < b.second;
 					});
@@ -336,6 +337,7 @@ private:
 		scene->start();
 		// Start the application to process the eventloop and run the engine
 		qApp->exec();
+		m_stopTimer.stop();
 		delete scene;
 	}
 

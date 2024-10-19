@@ -8,43 +8,16 @@ namespace QSFML
 {
 	namespace Objects
 	{
-		void GameObject::addComponent(Components::ComponentPtr component)
-		{
-			m_componentsManagerData.toAdd.push_back(component);
-			onObjectsChanged();
-		}
-		void GameObject::addComponents(const QSFML::vector<Components::ComponentPtr>& components)
-		{
-			m_componentsManagerData.toAdd.insert(m_componentsManagerData.toAdd.end(), components.begin(), components.end());
-			onObjectsChanged();
-		}
+		
 
-		/*void GameObject::createTransform()
-		{
-			if (!m_componentsManagerData.transform)
-			{
-				Components::Transform* transform = new Components::Transform();
-				m_componentsManagerData.transform = transform;
-				addComponent(transform);
-			}
-		}*/
-
-		void GameObject::removeComponent(Components::ComponentPtr component)
-		{
-			m_componentsManagerData.toRemove.push_back(component);
-			onObjectsChanged();
-		}
-		void GameObject::removeComponents(const QSFML::vector<Components::ComponentPtr>& components)
-		{
-			m_componentsManagerData.toRemove.insert(m_componentsManagerData.toRemove.end(), components.begin(), components.end());
-			onObjectsChanged();
-		}
 
 		
 		void GameObject::clearComponents()
 		{
 			m_componentsManagerData.toAdd.clear();
 			m_componentsManagerData.toRemove = m_componentsManagerData.all;
+			m_componentsManagerData.sfDrawableToAdd.clear();
+			m_componentsManagerData.sfDrawableToRemove = m_componentsManagerData.sfDrawable;
 			onObjectsChanged();
 		}
 
@@ -54,15 +27,6 @@ namespace QSFML
 			onObjectsChanged();
 		}
 
-		/*Components::ComponentPtr GameObject::getComponent(const std::string& name) const
-		{
-			for (auto& comp : m_componentsManagerData.all)
-			{
-				if (comp->getName() == name)
-					return comp;
-			}
-			return nullptr;
-		}*/
 		const QSFML::vector<Components::ComponentPtr>& GameObject::getComponents() const
 		{
 			return m_componentsManagerData.all;
@@ -206,6 +170,35 @@ namespace QSFML
 			else
 				m_boundingBox = Utilities::AABB::getFrame(boxes);
 		}
+
+		//void GameObject::add(GameObjectPtr child)
+		//{
+		//	addChild(child);
+		//}
+		//void GameObject::add(Components::ComponentPtr component)
+		//{
+		//	addComponent(component);
+		//}
+			 
+		//void GameObject::remove(GameObjectPtr child)
+		//{
+		//	removeChild(child);
+		//}
+		//void GameObject::remove(Components::ComponentPtr component)
+		//{
+		//	removeComponent(component);
+		//}
+		//
+		//void GameObject::deleteLater(GameObjectPtr child)
+		//{
+		//	deleteChildLater(child);
+		//}
+		//void GameObject::deleteLater(Components::ComponentPtr component)
+		//{
+		//	deleteComponentLater(component);
+		//}
+
+		
 	
 
 
@@ -214,18 +207,28 @@ namespace QSFML
 		{
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
 			if (m_componentsManagerData.toAdd.size() == 0 &&
+				m_componentsManagerData.sfDrawableToAdd.size() == 0 &&
 				m_componentsManagerData.toRemove.size() == 0 &&
-				m_componentsManagerData.toDelete.size() == 0)
+				m_componentsManagerData.sfDrawableToRemove.size() == 0 &&
+				m_componentsManagerData.toDelete.size() == 0 &&
+				m_componentsManagerData.sfDrawableToDelete.size() == 0)
 				return;
 
 			QSFML::vector<Components::ComponentPtr> newComps = m_componentsManagerData.toAdd;
 			QSFML::vector<Components::ComponentPtr> toRemoveComps = m_componentsManagerData.toRemove;
 			QSFML::vector<Components::ComponentPtr> toDeleteComps = m_componentsManagerData.toDelete;
+			QSFML::vector<sf::Drawable*> sfDrawableNewComps = m_componentsManagerData.sfDrawableToAdd;
+			QSFML::vector<sf::Drawable*> sfDrawableToRemoveComps = m_componentsManagerData.sfDrawableToRemove;
+			QSFML::vector<sf::Drawable*> sfDrawableToDeleteComps = m_componentsManagerData.sfDrawableToDelete;
 			m_componentsManagerData.toAdd.clear();
 			m_componentsManagerData.toRemove.clear();
 			m_componentsManagerData.toDelete.clear();
+			m_componentsManagerData.sfDrawableToAdd.clear();
+			m_componentsManagerData.sfDrawableToRemove.clear();
+			m_componentsManagerData.sfDrawableToDelete.clear();
 
 			toRemoveComps.insert(toRemoveComps.end(), toDeleteComps.begin(), toDeleteComps.end());
+			sfDrawableToRemoveComps.insert(sfDrawableToRemoveComps.end(), sfDrawableToDeleteComps.begin(), sfDrawableToDeleteComps.end());
 
 
 			// Delete components
@@ -233,6 +236,14 @@ namespace QSFML
 			{
 				if (std::find(m_componentsManagerData.all.begin(), m_componentsManagerData.all.end(), comp) != m_componentsManagerData.all.end())
 					Internal::LifetimeChecker::deleteSecured(comp);
+			}
+			for (auto& drawable : sfDrawableToDeleteComps)
+			{
+				auto it = std::find(m_componentsManagerData.sfDrawable.begin(), m_componentsManagerData.sfDrawable.end(), drawable);
+				if (it != m_componentsManagerData.sfDrawable.end())
+				{
+					delete drawable;
+				}
 			}
 
 			// Remove components
@@ -272,10 +283,19 @@ namespace QSFML
 						m_componentsManagerData.drawable.erase(itDrawables);
 				}
 			}
-
+			for (auto& drawable : sfDrawableToRemoveComps)
+			{
+				auto it = std::find(m_componentsManagerData.sfDrawable.begin(), m_componentsManagerData.sfDrawable.end(), drawable);
+				if (it != m_componentsManagerData.sfDrawable.end())
+				{
+					++removedCount;
+					m_componentsManagerData.sfDrawable.erase(it);
+				}
+			}
 			
 			// Add components
 			m_componentsManagerData.all.reserve(m_componentsManagerData.all.size() + newComps.size());
+			m_componentsManagerData.sfDrawable.reserve(m_componentsManagerData.sfDrawable.size() + sfDrawableNewComps.size());
 			for (auto& comp : newComps)
 			{
 				if (hasComponent(comp) || !comp)
@@ -307,6 +327,13 @@ namespace QSFML
 					m_componentsManagerData.drawable.push_back(drawable);
 				}
 			}
+			for (auto& drawable : sfDrawableNewComps)
+			{
+				if (std::find(m_componentsManagerData.sfDrawable.begin(), m_componentsManagerData.sfDrawable.end(), drawable) != m_componentsManagerData.sfDrawable.end())
+					continue;
+				++addedCount;
+				m_componentsManagerData.sfDrawable.push_back(drawable);
+			}
 
 			if (m_sceneParent)
 			{
@@ -314,7 +341,9 @@ namespace QSFML
 				m_sceneParent->addComponent(addedCount);
 			}
 			needsEventUpdate(m_componentsManagerData.eventHandler.size() > 0 || m_onEventCallbacks.size() > 0);
-			needsDrawUpdate(m_componentsManagerData.drawable.size() > 0 || m_onDrawCallbacks.size() > 0);
+			needsDrawUpdate(m_componentsManagerData.drawable.size() > 0 || 
+							m_onDrawCallbacks.size() > 0 || 
+							m_componentsManagerData.sfDrawable.size());
 		}
 
 

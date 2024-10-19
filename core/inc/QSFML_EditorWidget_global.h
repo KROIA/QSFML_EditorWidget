@@ -66,6 +66,27 @@
 #endif
 
 /// USER_SECTION_START 5
+
+/*
+* Enables OpenGL to draw internal Components
+* If not defined, the default SFML drawing will be used
+*/
 #define QSFML_USE_GL_DRAW
-#define QSFML_USE_EASTL_IF_AVAILABLE
+
+/*
+* Enables EA STL library if available
+* EA STL is a custom implementation of the C++ Standard Library
+* It is used in the Electronic Arts games
+* Git: https://github.com/electronicarts/EASTL.git
+* If not defined, the default STL will be used
+*/
+//#define QSFML_USE_EASTL_IF_AVAILABLE
+
+/*
+* Enables the use of break points in debug mode.
+* The debuger will break at lines where a critical error occurs.
+* If not defined, the program will continue to run or may crash
+*/
+#define QSFML_ENABLE_DEBUG_BREAK
+
 /// USER_SECTION_END

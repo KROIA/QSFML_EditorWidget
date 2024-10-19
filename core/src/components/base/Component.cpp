@@ -123,11 +123,13 @@ double Component::getDeltaT() const
     if (!m_parent) return 0;
     return m_parent->getDeltaT();
 }
-
-QSFML::Scene* Component::getSceneParent() const
+double Component::getFixedDeltaT() const
 {
-    return m_sceneParent;
+	if (!m_parent) return 0;
+	return m_parent->getFixedDeltaT();
 }
+
+
 
 void Component::log(const Log::Message & msg) const
 { 

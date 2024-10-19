@@ -11,11 +11,13 @@
 #endif
 
 // Instantiate Tests here:
-// TEST_INSTANTIATE(Test_simple); // Where Test_simple is a derived class from the Test class
-TEST_INSTANTIATE(TST_Pathfinder); 
+//   TEST_INSTANTIATE(Test_simple); // Where Test_simple is a derived class from the Test class
+//TEST_INSTANTIATE(TST_Pathfinder); 
 //TEST_INSTANTIATE(TST_Performance); // Where TST_Performance is a derived class from the Test class
 //TEST_INSTANTIATE(TST_VectorOperations);
 //TEST_INSTANTIATE(TST_RenderLayer);
+//TEST_INSTANTIATE(TST_TextureManager);
+TEST_INSTANTIATE(TST_TextureAnimation);
 
 int main(int argc, char* argv[])
 {

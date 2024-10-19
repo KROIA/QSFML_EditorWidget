@@ -29,7 +29,18 @@
 #endif
 
 /// USER_SECTION_START 2
-
+#if defined(_DEBUG) && defined(QSFML_ENABLE_DEBUG_BREAK)
+	#if defined(_MSC_VER)  // If using Microsoft Visual Studio
+		#define QSFML_DEBUG_BREAK() __debugbreak()
+	#elif defined(__GNUC__) || defined(__clang__)  // If using GCC or Clang
+		#include <signal.h>
+		#define QSFML_DEBUG_BREAK() raise(SIGTRAP)
+	#else
+		#define QSFML_DEBUG_BREAK() ((void)0)  // Fallback in case it's an unknown compiler
+	#endif
+#else
+	#define QSFML_DEBUG_BREAK() ((void)0)  // No-op in release mode
+#endif
 /// USER_SECTION_END
 
 #ifdef QSFML_PROFILING
@@ -244,5 +255,17 @@ namespace QSFML
 #define QSFMLP_PHYSICS_FUNCTION(colorStage) QSFML_PROFILING_FUNCTION(CONCAT_SYMBOLS(QSFML_PROFILING_PHYSICS_COLORBASE, colorStage))
 #define QSFMLP_PHYSICS_VALUE(name, value) QSFML_PROFILING_VALUE(name, value)
 #define QSFMLP_PHYSICS_TEXT(name, value) QSFML_PROFILING_TEXT(name, value)
+
+// Asset managers
+#define QSFML_PROFILING_ASSETS_COLORBASE Purple
+#define QSFMLP_ASSETS_BLOCK_C(text, color) QSFML_PROFILING_BLOCK_C(text, color)
+#define QSFMLP_ASSETS_NONSCOPED_BLOCK_C(text, color) QSFML_PROFILING_NONSCOPED_BLOCK_C(text, color)
+#define QSFMLP_ASSETS_END_BLOCK QSFML_PROFILING_END_BLOCK;
+#define QSFMLP_ASSETS_FUNCTION_C(color) QSFML_PROFILING_FUNCTION_C(color)
+#define QSFMLP_ASSETS_BLOCK(text, colorStage) QSFML_PROFILING_BLOCK(text, CONCAT_SYMBOLS(QSFML_PROFILING_ASSETS_COLORBASE, colorStage))
+#define QSFMLP_ASSETS_NONSCOPED_BLOCK(text, colorStage) QSFML_PROFILING_NONSCOPED_BLOCK(text, CONCAT_SYMBOLS(QSFML_PROFILING_ASSETS_COLORBASE, colorStage))
+#define QSFMLP_ASSETS_FUNCTION(colorStage) QSFML_PROFILING_FUNCTION(CONCAT_SYMBOLS(QSFML_PROFILING_ASSETS_COLORBASE, colorStage))
+#define QSFMLP_ASSETS_VALUE(name, value) QSFML_PROFILING_VALUE(name, value)
+#define QSFMLP_ASSETS_TEXT(name, value) QSFML_PROFILING_TEXT(name, value)
 
 /// USER_SECTION_END

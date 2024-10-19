@@ -14,16 +14,18 @@ Car::Car(const sf::ContextSettings& settings,
 	, m_keyEventLeft(new Components::KeyPressEvent("Left", sf::Keyboard::Key::A))
 	, m_keyEventRight(new Components::KeyPressEvent("Right", sf::Keyboard::Key::D))
 {
-	addComponent(m_image);
+	add(m_image);
+	add(m_painter);
 	addComponent(m_painter);
-	addComponent(m_keyEventUp);
-	addComponent(m_keyEventDown);
-	addComponent(m_keyEventLeft);
-	addComponent(m_keyEventRight);
+	add(m_keyEventUp);
+	add(m_keyEventDown);
+	add(m_keyEventLeft);
+	add(m_keyEventRight);
+	
 
 
 	m_camera = new Objects::CameraWindow(settings, "CustomCamera2", qparent);
-	addChild(m_camera);
+	add(m_camera);
 	
 
 	m_image->setScale(0.5, 0.5);
@@ -60,16 +62,16 @@ void Car::update()
 
 	m_acceleration = std::min(m_acceleration, m_maxAcceleration);
 	m_acceleration = std::max(m_acceleration, -m_maxAcceleration);
-	m_stearingAngle *= std::min(std::abs(m_acceleration * deltaT*0.1f), 1.f);
+	m_stearingAngle *= std::min(std::abs(m_acceleration * deltaT*0.01f), 1.f);
 	m_stearingAngle = std::max(m_stearingAngle, -m_maxStearingAngle);
 	m_stearingAngle = std::min(m_stearingAngle, m_maxStearingAngle);
 
-	GameObject::rotate(m_stearingAngle * deltaT);
-	m_painter->m_stearingAngle = m_stearingAngle * deltaT * 5;
+	GameObject::rotate(m_stearingAngle * deltaT*0.1);
+	m_painter->m_stearingAngle = m_stearingAngle * deltaT * 0.5;
 	if(m_acceleration < 0)
 		m_painter->m_stearingAngle = -m_painter->m_stearingAngle;
 	
-	sf::Vector2f deltaPos = QSFML::VectorMath::getRotatedRAD(sf::Vector2f(0, m_acceleration * deltaT), getRotation()*M_PI/180.f);
+	sf::Vector2f deltaPos = QSFML::VectorMath::getRotatedRAD(sf::Vector2f(0, m_acceleration * deltaT*0.1), getRotation()*M_PI/180.f);
 	GameObject::move(deltaPos);
 	sf::Vector2f pos = getPosition();
 	//logInfo("Position: " + std::to_string(pos.x) + " " + std::to_string(pos.y));

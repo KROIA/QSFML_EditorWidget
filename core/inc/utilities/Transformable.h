@@ -114,7 +114,6 @@ namespace QSFML
         void markDirty()
         {
 			m_needsTransformUpdate = true;
-			// <! ToDo mark children dirty
         }
         void updateGlobalTransform() const
         {

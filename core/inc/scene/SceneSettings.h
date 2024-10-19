@@ -78,7 +78,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT SceneSettings
         {
             frameTime = 0.016; // 62.5 FPS
             //physicsUseFixedTimeInterval = true;
-            physicsDeltaTScale = 0.1;
+            physicsDeltaTScale = 1.f;
             physicsFixedDeltaT = 0.01;
         }
     };
