@@ -57,7 +57,7 @@ namespace QSFML
 			// Load all textures
 			for (const QFileInfo& fileInfo : list)
 			{
-				QSFMLP_ASSETS_BLOCK(QSFML_COLOR_STAGE_2);
+				QSFMLP_ASSETS_BLOCK("Load texture", QSFML_COLOR_STAGE_2);
 				sf::Texture texture;
 				std::string texPath = fileInfo.absoluteFilePath().toStdString();
 				std::string texName = texPath.substr(path.size() + 1);

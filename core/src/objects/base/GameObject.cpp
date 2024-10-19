@@ -54,6 +54,7 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
     m_drawOrder = {
         DrawSequenceElement::components,
         DrawSequenceElement::childs,
+        DrawSequenceElement::sfDrawables,
 		DrawSequenceElement::customDrawFunctions
     };
    
@@ -904,6 +905,19 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
                 }
                 break;
             }
+			case DrawSequenceElement::sfDrawables:
+			{
+				if (m_componentsManagerData.drawable.size())
+				{
+					QSFMLP_OBJECT_BLOCK("SfDrawables draw", QSFML_COLOR_STAGE_2);
+					for (auto& comp : m_componentsManagerData.sfDrawable)
+					{
+						window.draw(*comp, states);
+					}
+					QSFMLP_OBJECT_END_BLOCK;
+				}
+				break;
+			}
             case DrawSequenceElement::customDrawFunctions:
             {
                 if (m_onDrawCallbacks.size() > 0)

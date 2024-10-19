@@ -400,8 +400,6 @@ namespace QSFML
 
 			TimeDomain m_timeDomain;
 
-			//std::function<void(Animation&)> onFinished;
-
 			sf::Shape* m_shape = nullptr;
 			sf::Sprite* m_sprite = nullptr;
 		};

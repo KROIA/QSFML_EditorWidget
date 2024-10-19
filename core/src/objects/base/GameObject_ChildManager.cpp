@@ -171,8 +171,10 @@ namespace QSFML
 			{
 				if (obj->getName() == name)
 					return obj;
+				GameObjectPtr child = obj->getFirstChildRecursive(name);
+				if (child)
+					return child;
 			}
-			// <! ToDo recursive
 			return nullptr;
 		}
 		QSFML::vector<GameObjectPtr> GameObject::getAllChildsRecursive(const std::string& name)
@@ -182,9 +184,20 @@ namespace QSFML
 			{
 				if (obj->getName() == name)
 					result.push_back(obj);
+
+				QSFML::vector<GameObjectPtr> childs = obj->getAllChildsRecursive(name);
+				result.insert(result.end(), childs.begin(), childs.end());
 			}
-			// <! ToDo recursive
 			return result;
+		}
+		size_t GameObject::getChildCountRecursive() const
+		{
+			size_t count = m_childObjectManagerData.objs.size();
+			for (auto& obj : m_childObjectManagerData.objs)
+			{
+				count += obj->getChildCountRecursive();
+			}
+			return count;
 		}
 		bool GameObject::getAllChilds_internal(const std::string& name, QSFML::vector<GameObjectPtr>& foundList)
 		{
