@@ -907,7 +907,7 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
             }
 			case DrawSequenceElement::sfDrawables:
 			{
-				if (m_componentsManagerData.drawable.size())
+				if (m_componentsManagerData.sfDrawable.size())
 				{
 					QSFMLP_OBJECT_BLOCK("SfDrawables draw", QSFML_COLOR_STAGE_2);
 					for (auto& comp : m_componentsManagerData.sfDrawable)

@@ -1,5 +1,6 @@
 #include "assets/TextureManager.h"
 #include <QDir>
+#include <QDirIterator>
 
 namespace QSFML
 {
@@ -48,8 +49,12 @@ namespace QSFML
 			m_logger.logDebug("Loading textures from path: \"" + path + "\"");
 #endif
 			dir.setNameFilters(m_fileNameFilters);
-			dir.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
-			QFileInfoList list = dir.entryInfoList();
+			QDirIterator it(dir.absolutePath(), m_fileNameFilters, QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+			QFileInfoList list;
+			while (it.hasNext()) {
+				it.next();
+				list.append(it.fileInfo());
+			}
 
 			// Reserve space for all textures
 			m_textures.reserve(list.size());

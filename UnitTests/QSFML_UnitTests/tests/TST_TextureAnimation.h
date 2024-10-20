@@ -33,7 +33,7 @@ private slots:
 
 private:
 	QTimer m_stopTimer;
-	const std::string assetPath = "../UnitTests/QSFML_UnitTests/assets/animations";
+	const std::string assetPath = "../UnitTests/QSFML_UnitTests/assets";
 	// Tests
 	
 
@@ -56,8 +56,8 @@ private:
 		Objects::GameObjectPtr gameObj = new Objects::GameObject();
 		scene->addObject(gameObj);
 
-		Components::TextureAnimation* textureAnimation1 = new Components::TextureAnimation(Assets::TextureManager::getTexture("animation-walking.png"), sf::Vector2u(12, 4));
-		Components::TextureAnimation* textureAnimation2 = new Components::TextureAnimation(Assets::TextureManager::getTexture("loading-animation.png"), sf::Vector2u(5, 4));
+		Components::TextureAnimation* textureAnimation1 = new Components::TextureAnimation(Assets::TextureManager::getTexture("animations/animation-walking.png"), sf::Vector2u(12, 4));
+		Components::TextureAnimation* textureAnimation2 = new Components::TextureAnimation(Assets::TextureManager::getTexture("animations/loading-animation.png"), sf::Vector2u(5, 4));
 		gameObj->addComponent(textureAnimation1);
 		gameObj->addComponent(textureAnimation2);
 		//gameObj->updateObjectChanges();
