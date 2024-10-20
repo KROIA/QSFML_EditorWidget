@@ -378,8 +378,8 @@ protected:
 		 * @warning Do not use this function from within another custom event function
          * @param func 
          */
-        void addEventFunction(const std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)>& func) { m_onEventCallbacks.push_back(func); }
-        
+        void addEventFunction(const std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)>& func);
+
         /**
          * @brief 
 		 * Removes all custom event functions
@@ -1381,6 +1381,20 @@ protected:
         template <typename T>
         void add(T* item);
 
+		void add(const std::function<void(GameObject&)>& func) 
+        { 
+            addUpdateFunction(func); 
+        }
+
+        void add(const std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)>& func)
+		{
+			addDrawFunction(func);
+		}
+
+        void add(const std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)>& func)
+		{
+			addEventFunction(func);
+		}
 		
 
         /**

@@ -20,12 +20,18 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
        
 
         void addObject(Objects::GameObjectPtr obj);
-        void addObject(const QSFML::vector<Objects::GameObjectPtr> &objs);
+		void add(Objects::GameObjectPtr obj) { addObject(obj); }
+        void addObject(const QSFML::vector<Objects::GameObjectPtr>& objs);
+		void add(const QSFML::vector<Objects::GameObjectPtr>& objs) { addObject(objs); }
 
         void removeObject(Objects::GameObjectPtr obj);
+		void remove(Objects::GameObjectPtr obj) { removeObject(obj); }
         void removeObject(const QSFML::vector<Objects::GameObjectPtr> &objs);
+		void remove(const QSFML::vector<Objects::GameObjectPtr>& objs) { removeObject(objs); }
         void deleteObject(Objects::GameObjectPtr obj);
+		void del(Objects::GameObjectPtr obj) { deleteObject(obj); }
         void deleteObject(const QSFML::vector<Objects::GameObjectPtr> &objs);
+		void del(const QSFML::vector<Objects::GameObjectPtr>& objs) { deleteObject(objs); }
         void clearObjects();
         void cleanup();
 

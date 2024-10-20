@@ -35,11 +35,11 @@ void ExampleScene::setupTutorial_4(QSFML::Scene* scene)
 	Components::LinePainter* linePainter = new Components::LinePainter("AttachedVectors");
 	Components::PointPainter* pointPainter = new Components::PointPainter("ComplexSumPoint");
 
-	object->addComponent(linePainter);
-	object->addComponent(pathPainter);
-	object->addComponent(pathPainterX);
-	object->addComponent(pathPainterY);
-	object->addComponent(pointPainter);
+	object->add(linePainter);
+	object->add(pathPainter);
+	object->add(pathPainterX);
+	object->add(pathPainterY);
+	object->add(pointPainter);
 
 	pathPainter->setColor(sf::Color::Blue);
 	pathPainterX->setColor(sf::Color::Red);
@@ -92,7 +92,7 @@ void ExampleScene::setupTutorial_4(QSFML::Scene* scene)
 
 
     // Add an update function to the object that calculates the vectors and plots
-    object->addUpdateFunction([pathPainter, pathPainterX, pathPainterY, linePainter, pointPainter](GameObject& obj)
+    object->add([pathPainter, pathPainterX, pathPainterY, linePainter, pointPainter](GameObject& obj)
         {
 			// Use the age for a time source
 			float time = obj.getAge()*5;

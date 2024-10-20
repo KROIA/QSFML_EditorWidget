@@ -421,10 +421,15 @@ namespace QSFML
 			if (m_parent)
 				m_parent->needsDrawUpdateChanged(m_componentsManagerData.thisNeedsDrawUpdate);
 		}
+		void GameObject::addEventFunction(const std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)>& func) 
+		{ 
+			m_onEventCallbacks.push_back(func);
+			needsEventUpdate(true);
+		}
 
 		void GameObject::addUpdateFunction(const std::function<void(GameObject&)>& func) 
 		{ 
-			needsEventUpdate(true); 
+			//needsEventUpdate(true); 
 			m_onUpdateCallbacks.push_back(func); 
 		}
 		void GameObject::addDrawFunction(const std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)>& func)

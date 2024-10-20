@@ -49,11 +49,11 @@ void ExampleScene::setupTutorial_1(QSFML::Scene* scene)
                      });
 
     // Add the components to the object
-    object->addComponent(shape);
-    object->addComponent(mouseFollower);
+    object->add(shape);
+    object->add(mouseFollower);
 
     // Add an update function to the object
-    object->addUpdateFunction([](GameObject& obj)
+    object->add([](GameObject& obj)
                               {
                                   // param obj is a reference to the object (replacement for the this pointer)
                                   obj.rotate(1);
