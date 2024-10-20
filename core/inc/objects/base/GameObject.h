@@ -1381,20 +1381,41 @@ protected:
         template <typename T>
         void add(T* item);
 
+
+        /**
+         * @brief
+         * Adds a custom event function to the object
+         * @see addEventFunction
+         * @param func
+         */
+        void add(const std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)>& func)
+        {
+            addEventFunction(func);
+        }
+
+		/**
+		 * @brief 
+		 * Adds a custom update function to the object
+		 * @see addUpdateFunction
+		 * @param func 
+		 */
 		void add(const std::function<void(GameObject&)>& func) 
         { 
             addUpdateFunction(func); 
         }
 
+        /**
+         * @brief 
+		 * Adds a custom draw function to the object
+		 * @see addDrawFunction
+         * @param func 
+         */
         void add(const std::function<void(const GameObject&, sf::RenderTarget&, sf::RenderStates)>& func)
 		{
 			addDrawFunction(func);
 		}
 
-        void add(const std::function<void(GameObject&, const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>&)>& func)
-		{
-			addEventFunction(func);
-		}
+        
 		
 
         /**
