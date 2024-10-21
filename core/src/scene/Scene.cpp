@@ -56,19 +56,6 @@ namespace QSFML {
     Scene::~Scene()
     {
         stop();
-
-		// Crashes sometimes when the window is closed
-        //if (parentWidget())
-        //    parentWidget()->layout()->removeWidget(this);
-        //m_window->close();
-        //delete m_window;
-        //m_window = nullptr;
-#ifdef QSFML_PROFILING
-        if (s_instances.size() == 1)
-        {
-            saveProfilerFile();
-        }
-#endif
         for (size_t i = 0; i < s_instances.size(); ++i)
         {
             if (s_instances[i] == this)
@@ -77,6 +64,12 @@ namespace QSFML {
             }
         }
         GameObjectContainer::cleanup();
+#ifdef QSFML_PROFILING
+        if (s_instances.size() == 1)
+        {
+            saveProfilerFile();
+        }
+#endif
     }
 
 

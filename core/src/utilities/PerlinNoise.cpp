@@ -23,6 +23,7 @@ namespace QSFML
 
 		float PerlinNoise::noise(float x, float y, int octaves, const sf::Vector2u& gridsize) const
 		{
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 			float value = 0.0f;
 			float amplitude = 1.0f;
 			float frequency = 1.0f;
@@ -95,7 +96,7 @@ namespace QSFML
 		// Sample Perlin noise at coordinates x, y
 		float PerlinNoise::perlin(float x, float y) const
 		{
-
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_2);
 			// Determine grid cell corner coordinates
 			int x0 = (int)x;
 			int y0 = (int)y;

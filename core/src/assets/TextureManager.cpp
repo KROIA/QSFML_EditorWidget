@@ -17,7 +17,7 @@ namespace QSFML
 
 		TextureManager::~TextureManager()
 		{
-			clear_internal();
+			//clear_internal();
 		}
 
 		TextureManager& TextureManager::instance()
