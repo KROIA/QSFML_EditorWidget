@@ -95,8 +95,8 @@ namespace QSFML
 		void TextureAnimation::start(const QSFML::string& animationName)
 		{
 			m_animationSequence.clear();
+			const auto &it = m_animations.find(animationName);
 #ifdef QSFML_DEBUG
-			const auto it = m_animations.find(animationName);
 			if (it == m_animations.end())
 			{
 				logger().logError("Invalid animation name: \""+std::string(animationName.c_str())+"\"");

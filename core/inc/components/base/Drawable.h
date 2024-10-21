@@ -153,6 +153,28 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
             return viewBounds.contains(position);
         }
 
+        /**
+         * @brief 
+		 * Check if the Rectangle is visible in the target
+         * @param rect 
+         * @param target 
+		 * @return true if the rectangle is visible in the target
+         */
+        bool isVisible(const sf::FloatRect& rect, const sf::RenderTarget& target) const
+        {
+            const sf::View& view = target.getView();
+            // Get the view bounds in world coordinates
+            sf::FloatRect viewBounds(
+                view.getCenter().x - view.getSize().x * 0.5f,
+                view.getCenter().y - view.getSize().y * 0.5f,
+                view.getSize().x,
+                view.getSize().y
+            );
+
+            // Check if the position is within the view bounds
+            return viewBounds.intersects(rect);
+        }
+
     protected:
        
         /// @brief 
