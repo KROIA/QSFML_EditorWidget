@@ -13,14 +13,14 @@ namespace QSFML
 			PerlinNoise(unsigned int seed);
 			~PerlinNoise();
 
-			float noise(float x, float y, int octaves, const sf::Vector2u& gridsize) const;
+			double noise(double x, double y, int octaves, const sf::Vector2u& gridsize) const;
 
 		private:
 			sf::Vector2f randomGradient(int ix, int iy) const;
-			float dotGridGradient(int ix, int iy, float x, float y) const;
+			double dotGridGradient(int ix, int iy, double x, double y) const;
 
-			float interpolate(float a0, float a1, float w) const;
-			float perlin(float x, float y) const;
+			double interpolate(double a0, double a1, double w) const;
+			double perlin(double x, double y) const;
 
 			unsigned int m_seed;
 		};
