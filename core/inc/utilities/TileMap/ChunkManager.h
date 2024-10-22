@@ -34,34 +34,162 @@ namespace QSFML
 			void loadChunk(const sf::Vector2f& pos);
 
 			const std::vector<Chunk*>& getChunks(const sf::FloatRect &area) const;
+			
 
 			void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 			private:
+			
+			static sf::Vector2i getChunkPosition(const sf::Vector2f& pos)
+			{
+				sf::Vector2i chunkPos = sf::Vector2i(Chunk::CHUNK_SIZE * ((int)pos.x / Chunk::CHUNK_SIZE), Chunk::CHUNK_SIZE * ((int)pos.y / Chunk::CHUNK_SIZE));
+				if (pos.x < 0 && chunkPos.x == 0)
+					chunkPos.x -= Chunk::CHUNK_SIZE;
+				if (pos.y < 0 && chunkPos.y == 0)
+					chunkPos.y -= Chunk::CHUNK_SIZE;
+				return chunkPos;
+			}
+			static sf::Vector2i getChunkPosition(const sf::Vector2i& pos)
+			{
+				sf::Vector2i chunkPos = sf::Vector2i(Chunk::CHUNK_SIZE * (pos.x / Chunk::CHUNK_SIZE), Chunk::CHUNK_SIZE * (pos.y / Chunk::CHUNK_SIZE));
+				if (pos.x < 0 && chunkPos.x == 0)
+					chunkPos.x -= Chunk::CHUNK_SIZE;
+				if (pos.y < 0 && chunkPos.y == 0)
+					chunkPos.y -= Chunk::CHUNK_SIZE;
+				return chunkPos;
+			}
+			static sf::Vector2i getChunkGroupPosition(const sf::Vector2f& pos)
+			{
+				bool isNegX = pos.x < 0;
+				bool isNegY = pos.y < 0;
+
+				sf::Vector2i chunkGroupPos = sf::Vector2i(Chunk::CHUNK_SIZE_SQR * ((int)(pos.x + isNegX) / Chunk::CHUNK_SIZE_SQR),
+					                                      Chunk::CHUNK_SIZE_SQR * ((int)(pos.y + isNegY) / Chunk::CHUNK_SIZE_SQR));
+				
+				//if (isNegX)
+				//	chunkGroupPos.x = Chunk::CHUNK_SIZE_SQR - chunkGroupPos.x - 1;
+				//if (isNegY)
+				//	chunkGroupPos.y = Chunk::CHUNK_SIZE_SQR - chunkGroupPos.y - 1;
+
+				if (pos.x < 0)
+					chunkGroupPos.x -= Chunk::CHUNK_SIZE_SQR;
+				if (pos.y < 0)
+					chunkGroupPos.y -= Chunk::CHUNK_SIZE_SQR;
+				return chunkGroupPos;
+			}
+			static sf::Vector2i getChunkGroupPosition(const sf::Vector2i& pos)
+			{
+				bool isNegX = pos.x < 0;
+				bool isNegY = pos.y < 0;
+
+				sf::Vector2i chunkGroupPos = sf::Vector2i(Chunk::CHUNK_SIZE_SQR * ((pos.x + isNegX) / Chunk::CHUNK_SIZE_SQR),
+					                                      Chunk::CHUNK_SIZE_SQR * ((pos.y + isNegY) / Chunk::CHUNK_SIZE_SQR));
+
+				//if (isNegX)
+				//	chunkGroupPos.x = Chunk::CHUNK_SIZE_SQR - chunkGroupPos.x - 1;
+				//if (isNegY)
+				//	chunkGroupPos.y = Chunk::CHUNK_SIZE_SQR - chunkGroupPos.y - 1;
+
+				if (pos.x < 0)
+					chunkGroupPos.x -= Chunk::CHUNK_SIZE_SQR;
+				if (pos.y < 0)
+					chunkGroupPos.y -= Chunk::CHUNK_SIZE_SQR;
+				return chunkGroupPos;
+			}
+			static sf::Vector2i getRelativeChunkPosInGroup(const sf::Vector2i& pos)
+			{
+				bool isNegX = pos.x < 0;
+				bool isNegY = pos.y < 0;
+
+				sf::Vector2i chunkIndex = sf::Vector2i((abs(pos.x + isNegX) / Chunk::CHUNK_SIZE) % Chunk::CHUNK_SIZE,
+													   (abs(pos.y + isNegY) / Chunk::CHUNK_SIZE) % Chunk::CHUNK_SIZE);
+
+				if (isNegX)
+					chunkIndex.x = Chunk::CHUNK_SIZE - chunkIndex.x - 1;
+				if (isNegY)
+					chunkIndex.y = Chunk::CHUNK_SIZE - chunkIndex.y - 1;
+#ifdef QSFML_DEBUG
+				if (chunkIndex.x >= Chunk::CHUNK_SIZE || chunkIndex.y >= Chunk::CHUNK_SIZE)
+					getLogger().logError("getRelativeChunkPosInGroup: Index out of bounds");
+#endif
+				return chunkIndex;
+			}
+			static sf::Vector2i getRelativeChunkPosInGroup(const sf::Vector2f& pos)
+			{
+				bool isNegX = pos.x < 0;
+				bool isNegY = pos.y < 0;
+
+				sf::Vector2i chunkIndex = sf::Vector2i(((int)abs(pos.x + (float)isNegX) / Chunk::CHUNK_SIZE) % Chunk::CHUNK_SIZE,
+													   ((int)abs(pos.y + (float)isNegY) / Chunk::CHUNK_SIZE) % Chunk::CHUNK_SIZE);
+
+				if (isNegX)
+					chunkIndex.x = Chunk::CHUNK_SIZE - chunkIndex.x - 1;
+				if (isNegY)
+					chunkIndex.y = Chunk::CHUNK_SIZE - chunkIndex.y - 1;
+#ifdef QSFML_DEBUG
+				if (chunkIndex.x >= Chunk::CHUNK_SIZE || chunkIndex.y >= Chunk::CHUNK_SIZE)
+					getLogger().logError("getRelativeChunkPosInGroup: Index out of bounds");
+#endif
+				return chunkIndex;
+			}
+			static size_t getRelativeChunkIndexInGroup(const sf::Vector2i& relativePos)
+			{
+#ifdef QSFML_DEBUG
+				size_t pos = relativePos.y * Chunk::CHUNK_SIZE + relativePos.x;
+				if (pos >= Chunk::CHUNK_SIZE_SQR)
+					getLogger().logError("getRelativeChunkIndexInGroup: Index out of bounds");
+#endif
+				return relativePos.y * Chunk::CHUNK_SIZE + relativePos.x;
+			}
+
+
+
 			struct ChunkGroup
 			{
 				sf::Vector2i position;
 				Chunk* chunks[Chunk::CHUNK_SIZE * Chunk::CHUNK_SIZE];
+				sf::VertexArray m_vertexBuffer;
+				//Chunk m_lowResChunk;
 
-				ChunkGroup()
-				{
-					memset(chunks, 0, sizeof(Chunk*) * Chunk::CHUNK_SIZE * Chunk::CHUNK_SIZE);
-				}
+				ChunkGroup(const sf::Vector2i& pos);
 
 				Chunk* getChunk(size_t x, size_t y)
 				{
+#ifdef QSFML_DEBUG
+					if (x >= Chunk::CHUNK_SIZE || y >= Chunk::CHUNK_SIZE)
+					{
+						getLogger().logError("ChunkGroup::getChunk: Index out of bounds");
+						return nullptr;
+					}
+#endif
 					return chunks[y * Chunk::CHUNK_SIZE + x];
 				}
+
+				void updateLowResMap();
+
+				void draw(sf::RenderTarget& target, const sf::RenderStates &states) const
+				{
+					target.draw(m_vertexBuffer, states);
+				}
+
+
+				
 			};
+			const std::vector<ChunkGroup*>& getChunkGroups(const sf::FloatRect& area) const;
+
 			
 			std::unordered_map<sf::Vector2i, Chunk*, VectorHash> m_loadedChunks;
 			std::unordered_map<sf::Vector2i, ChunkGroup*, VectorHash>m_chunkGroups;
 			sf::IntRect m_generatedChunkBounds;
 
 
+			mutable bool m_needsDrawUpdate;
 			mutable sf::FloatRect m_visibleArea;
 			mutable std::vector<Chunk*> m_visibleChunks;
 			mutable std::vector<ChunkGroup*> m_visibleChunkGroups;
+#ifdef QSFML_DEBUG
+			mutable std::vector<sf::FloatRect> m_visibleChunkGroupBounds;
+#endif
 
 			Chunk::Resources m_resources;
 			float m_scale;

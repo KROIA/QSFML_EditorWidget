@@ -132,7 +132,7 @@ namespace QSFML
 			 */
 			const sf::IntRect& getUVRect() const
 			{
-				return m_currentUVRect.toIntRect();
+				return m_currentUVRectInt;
 			}
 
 			/**
@@ -388,6 +388,7 @@ namespace QSFML
 			Assets::TextureMap m_textureMap;
 
 			Assets::TextureMap::UVMapCoords m_currentUVRect;			//<! Current UV rectangle of the subimage
+			sf::IntRect m_currentUVRectInt;							//<! Current UV rectangle of the subimage as integer
 
 			int m_currentAnimationStep;				//<! The current step in the current animation sequence
 			int m_currentAnimationSequence;			//<! The current animation sequence

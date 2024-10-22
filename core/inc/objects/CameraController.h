@@ -36,11 +36,11 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
         void moveRight(float amount);
         void moveUp(float amount);
         void moveDown(float amount);
-        void movePosition(const sf::Vector2f &delta);
-        void setPosition(const sf::Vector2f &pos);
+        //void movePosition(const sf::Vector2f &delta);
+        //void setPosition(const sf::Vector2f &pos);
 
-        void rotate(float angle);
-        void setRotation(float angle);
+        //void rotate(float angle);
+        //void setRotation(float angle);
 
         void zoom(float amount);
         void zoom(float amount, const sf::Vector2i &pixel);

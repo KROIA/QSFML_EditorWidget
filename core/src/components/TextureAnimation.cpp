@@ -15,6 +15,7 @@ namespace QSFML
 			, m_textureMap(texture, imageCount)
 		{
 			m_currentUVRect = m_textureMap.getUVMapCoords(0);
+			m_currentUVRectInt = m_currentUVRect.toIntRect();
 			m_repeating = false;
 			m_1InvSpeed = 1.0f;
 			m_speed = 1.0f;
@@ -36,6 +37,7 @@ namespace QSFML
 			, m_textureMap(Assets::TextureManager::getTexture(textureID), imageCount)
 		{
 			m_currentUVRect = m_textureMap.getUVMapCoords(0);
+			m_currentUVRectInt = m_currentUVRect.toIntRect();
 			m_repeating = false;
 			m_1InvSpeed = 1.0f;
 			m_speed = 1.0f;
@@ -54,6 +56,7 @@ namespace QSFML
 			, Updatable()
 			, m_textureMap(other.m_textureMap)
 			, m_currentUVRect(other.m_currentUVRect)
+			, m_currentUVRectInt(other.m_currentUVRectInt)
 			, m_currentAnimationStep(other.m_currentAnimationStep)
 			, m_currentAnimationSequence(other.m_currentAnimationSequence)
 			, m_currentTextureIndex(other.m_currentTextureIndex)
@@ -263,21 +266,21 @@ namespace QSFML
 		void TextureAnimation::setTextureIndex(unsigned int index)
 		{
 			m_currentTextureIndex = index;
-			sf::IntRect rect;
+			m_currentUVRect = m_textureMap.getUVMapCoords(index);
+			m_currentUVRectInt = m_currentUVRect.toIntRect();
 			if (m_currentTextureIndex >= m_textureMap.getImageCount())
 			{
-				rect.left = (index % m_textureMap.getMapDim().x) * m_textureMap.getSubImageSize().x;
-				rect.top = (index / m_textureMap.getMapDim().x) * m_textureMap.getSubImageSize().y;
+				m_currentUVRectInt.left = (index % m_textureMap.getMapDim().x) * m_textureMap.getSubImageSize().x;
+				m_currentUVRectInt.top = (index / m_textureMap.getMapDim().x) * m_textureMap.getSubImageSize().y;
 			}
-			else
-				rect = m_textureMap.getUVMapCoords(m_currentTextureIndex).toIntRect();
+
 			if (m_shape)
 			{
-				m_shape->setTextureRect(rect);
+				m_shape->setTextureRect(m_currentUVRectInt);
 			}
 			if (m_sprite)
 			{
-				m_sprite->setTextureRect(rect);
+				m_sprite->setTextureRect(m_currentUVRectInt);
 			}
 		}
 	}

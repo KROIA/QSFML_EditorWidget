@@ -80,137 +80,22 @@ class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
         QSFML::vector<Objects::GameObjectPtr> getAllObjectsRecursive(const std::string& name);
 
         template<typename T>
-        T* findFirstObject()
-        {
-            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            for (auto& obj : m_allObjects->getObjects())
-            {
-                T* casted = dynamic_cast<T*>(obj);
-                if (casted)
-					return casted;
-            }
-            return nullptr;
-        }
+        T* getFirstObjectRecursive();
 
         template<typename T>
-        QSFML::vector<T*> findAllObject()
-        {
-            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            QSFML::vector<T*> list;
-            for (auto& obj : m_allObjects->getObjects())
-            {
-                T* casted = dynamic_cast<T*>(obj);
-                if (casted)
-                    list.push_back(casted);
-            }
-            return list;
-        }
-        template<typename T>
-        T* findFirstObjectRecursive()
-        {
-            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            for (auto& obj : m_allObjects->getObjects())
-            {
-                T* casted = dynamic_cast<T*>(obj);
-                if (casted)
-                    return casted;
-                casted = obj->getFirstChild<T>();
-                if (casted)
-					return casted;
-            }
-            return nullptr;
-        }
+        QSFML::vector<T*> getObjectsRecursive();
 
         template<typename T>
-        QSFML::vector<T*> findAllObjectRecursive()
-        {
-            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            QSFML::vector<T*> list;
-            for (auto& obj : m_allObjects->getObjects())
-            {
-                T* casted = dynamic_cast<T*>(obj);
-                if (casted)
-                    list.push_back(casted);
-                QSFML::vector<T*> subList = obj->getChilds<T>();
-                if(subList.size() > 0)
-                    list.insert(list.end(), subList.begin(), subList.end());
-            }
-            return list;
-        }
+        T* getFirstObject(const std::string& objName);
 
         template<typename T>
-        T* findFirstObject(const std::string &objName)
-        {
-            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            for (auto& obj : m_allObjects->getObjects())
-            {
-                T* casted = dynamic_cast<T*>(obj);
-                if (casted)
-                {
-                    if (casted->getName() == objName)
-                        return casted;
-                }
-            }
-            return nullptr;
-        }
+        QSFML::vector<T*> getObjects(const std::string& objName);
 
         template<typename T>
-        QSFML::vector<T*> findAllObject(const std::string& objName)
-        {
-            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            QSFML::vector<T*> list;
-            for (auto& obj : m_allObjects->getObjects())
-            {
-                T* casted = dynamic_cast<T*>(obj);
-                if (casted)
-                {
-                    if (casted->getName() == objName)
-                        list.push_back(casted);
-                }
-            }
-            return list;
-        }
-        template<typename T>
-        T* findFirstObjectRecursive(const std::string& objName)
-        {
-            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            for (auto& obj : m_allObjects->getObjects())
-            {
-                T* casted = dynamic_cast<T*>(obj);
-                if (casted)
-                {
-                    if (casted->getName() == objName)
-                        return casted;
-                }
-                casted = obj->getFirstChild<T>();
-                if (casted)
-                {
-                    if (casted->getName() == objName)
-                        return casted;
-                }
-            }
-            return nullptr;
-        }
+        T* getFirstObjectRecursive(const std::string& objName);
 
         template<typename T>
-        QSFML::vector<T*> findAllObjectRecursive(const std::string& objName)
-        {
-            QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
-            QSFML::vector<T*> list;
-            for (auto& obj : m_allObjects->getObjects())
-            {
-                T* casted = dynamic_cast<T*>(obj);
-                if (casted)
-                {
-                    if (casted->getName() == objName)
-                        list.push_back(casted);
-                }
-                QSFML::vector<T*> subList = obj->getChilds<T>();
-                if (subList.size() > 0)
-                    list.insert(list.end(), subList.begin(), subList.end());
-            }
-            return list;
-        }
+        QSFML::vector<T*> getObjectsRecursive(const std::string& objName);
 
 
         void deleteLater(Objects::GameObjectPtr obj);
@@ -275,6 +160,112 @@ template<typename T>
 T* GameObjectContainer::getFirstObject() const
 {
     return m_allObjects->getFirstObject<T>();
+}
+template<typename T>
+T* GameObjectContainer::getFirstObjectRecursive()
+{
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        T* casted = dynamic_cast<T*>(obj);
+        if (casted)
+            return casted;
+        casted = obj->getFirstChild<T>();
+        if (casted)
+            return casted;
+    }
+    return nullptr;
+}
+
+template<typename T>
+QSFML::vector<T*> GameObjectContainer::getObjectsRecursive()
+{
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFML::vector<T*> list;
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        T* casted = dynamic_cast<T*>(obj);
+        if (casted)
+            list.push_back(casted);
+        QSFML::vector<T*> subList = obj->getChilds<T>();
+        if (subList.size() > 0)
+            list.insert(list.end(), subList.begin(), subList.end());
+    }
+    return list;
+}
+
+template<typename T>
+T* GameObjectContainer::getFirstObject(const std::string& objName)
+{
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        T* casted = dynamic_cast<T*>(obj);
+        if (casted)
+        {
+            if (casted->getName() == objName)
+                return casted;
+        }
+    }
+    return nullptr;
+}
+
+template<typename T>
+QSFML::vector<T*> GameObjectContainer::getObjects(const std::string& objName)
+{
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFML::vector<T*> list;
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        T* casted = dynamic_cast<T*>(obj);
+        if (casted)
+        {
+            if (casted->getName() == objName)
+                list.push_back(casted);
+        }
+    }
+    return list;
+}
+template<typename T>
+T* GameObjectContainer::getFirstObjectRecursive(const std::string& objName)
+{
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        T* casted = dynamic_cast<T*>(obj);
+        if (casted)
+        {
+            if (casted->getName() == objName)
+                return casted;
+        }
+        casted = obj->getFirstChild<T>();
+        if (casted)
+        {
+            if (casted->getName() == objName)
+                return casted;
+        }
+    }
+    return nullptr;
+}
+
+template<typename T>
+QSFML::vector<T*> GameObjectContainer::getObjectsRecursive(const std::string& objName)
+{
+    QSFMLP_SCENE_FUNCTION(QSFML_COLOR_STAGE_1);
+    QSFML::vector<T*> list;
+    for (auto& obj : m_allObjects->getObjects())
+    {
+        T* casted = dynamic_cast<T*>(obj);
+        if (casted)
+        {
+            if (casted->getName() == objName)
+                list.push_back(casted);
+        }
+        QSFML::vector<T*> subList = obj->getChilds<T>();
+        if (subList.size() > 0)
+            list.insert(list.end(), subList.begin(), subList.end());
+    }
+    return list;
 }
 
 

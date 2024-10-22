@@ -16,10 +16,10 @@ namespace QSFML
 			, m_chunkData(nullptr)
 			, m_loaded(false)
 			, m_position(pos)
-			, m_vertexBuffer(sf::PrimitiveType::Quads)
-			, m_lowResVertexBuffer(sf::PrimitiveType::Quads)
+			, m_vertexBuffer(sf::PrimitiveType::Quads, CHUNK_SIZE_SQR * 4)
+			, m_lowResVertexBuffer(sf::PrimitiveType::Quads, CHUNK_LOW_RES_SIZE* CHUNK_LOW_RES_SIZE*4)
 		{
-			m_vertexBuffer.resize(CHUNK_SIZE * CHUNK_SIZE * 4);
+			
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
 				for (int y = 0; y < CHUNK_SIZE; y++)
@@ -37,13 +37,13 @@ namespace QSFML
 					m_vertexBuffer[idx + 3].texCoords = sf::Vector2f(0, 1);
 				}
 			}
-			m_lowResVertexBuffer.resize(4*4);
-			float chunkSize2 = CHUNK_SIZE *0.5f;
-			for (int x = 0; x < 2; x++)
+		
+			float chunkSize2 = (float)CHUNK_SIZE/(float)CHUNK_LOW_RES_SIZE;
+			for (int x = 0; x < CHUNK_LOW_RES_SIZE; x++)
 			{
-				for (int y = 0; y < 2; y++)
+				for (int y = 0; y < CHUNK_LOW_RES_SIZE; y++)
 				{
-					int i = (y * 2 + x) * 4;
+					int i = (y * CHUNK_LOW_RES_SIZE + x) * 4;
 					m_lowResVertexBuffer[i].position = sf::Vector2f(m_position.x + x * chunkSize2, m_position.y + y * chunkSize2) * scale;
 					m_lowResVertexBuffer[i + 1].position = sf::Vector2f(m_position.x + (x + 1) * chunkSize2, m_position.y + y * chunkSize2) * scale;
 					m_lowResVertexBuffer[i + 2].position = sf::Vector2f(m_position.x + (x + 1) * chunkSize2, m_position.y + (y + 1) * chunkSize2) * scale;
@@ -91,7 +91,7 @@ namespace QSFML
 			{
 				float r = 0 , g=0, b=0, a=0;
 			};
-			ColorF color[4];
+			ColorF color[CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE];
 			for (size_t x = 0; x < CHUNK_SIZE; x++)
 			{
 				for (size_t y = 0; y < CHUNK_SIZE; y++)
@@ -116,7 +116,7 @@ namespace QSFML
 
 
 					m_chunkData->setTextureIndex(x, y, textureIndex);
-					int colIndex = (y *2 / CHUNK_SIZE) * 2 + (x*2 / CHUNK_SIZE);
+					size_t colIndex = ((y * CHUNK_LOW_RES_SIZE) / CHUNK_SIZE) * CHUNK_LOW_RES_SIZE + ((x * CHUNK_LOW_RES_SIZE) / CHUNK_SIZE);
 					color[colIndex].r += m_resources.lowLevelReplacementColors[textureIndex].r;
 					color[colIndex].g += m_resources.lowLevelReplacementColors[textureIndex].g;
 					color[colIndex].b += m_resources.lowLevelReplacementColors[textureIndex].b;
@@ -124,11 +124,11 @@ namespace QSFML
 					
 				}
 			}
-			float divisor = 4.f / (CHUNK_SIZE * CHUNK_SIZE);
+			float divisor = (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE) / (CHUNK_SIZE * CHUNK_SIZE);
 
 			sf::Color col;
 			ColorF col1;
-			for (int i = 0; i < 4; i++)
+			for (size_t i = 0; i < CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE; i++)
 			{
 				color[i].r *= divisor;
 				color[i].g *= divisor;
@@ -147,10 +147,10 @@ namespace QSFML
 				col1.b += color[i].b;
 				col1.a += color[i].a;
 			}
-			col.r = (sf::Uint8)(col1.r / 4.f);
-			col.g = (sf::Uint8)(col1.g / 4.f);
-			col.b = (sf::Uint8)(col1.b / 4.f);
-			col.a = (sf::Uint8)(col1.a / 4.f);
+			col.r = (sf::Uint8)(col1.r / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
+			col.g = (sf::Uint8)(col1.g / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
+			col.b = (sf::Uint8)(col1.b / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
+			col.a = (sf::Uint8)(col1.a / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
 			
 			
 			m_chunkData->setLowLevelReplacementColor(col);
@@ -175,11 +175,47 @@ namespace QSFML
 			//updateTextureCoords();
 			//states.texture = &m_textureMap.getTexture();
 			target.draw(m_vertexBuffer, states);
+
+#ifdef QSFML_DEBUG
+			// Draw border lines
+			sf::VertexArray lines(sf::PrimitiveType::LineStrip, 5);
+			lines[0].position = sf::Vector2f(m_position.x, m_position.y);
+			lines[1].position = sf::Vector2f(m_position.x + CHUNK_SIZE, m_position.y);
+			lines[2].position = sf::Vector2f(m_position.x + CHUNK_SIZE, m_position.y + CHUNK_SIZE);
+			lines[3].position = sf::Vector2f(m_position.x, m_position.y + CHUNK_SIZE);
+			lines[4].position = lines[0].position;
+
+			sf::Color color(200, 200, 0);
+			lines[0].color = color;
+			lines[1].color = color;
+			lines[2].color = color;
+			lines[3].color = color;
+			lines[4].color = color;
+			target.draw(lines);
+#endif
 		}
 
 		void Chunk::draw_LOD_low(sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			target.draw(m_lowResVertexBuffer, states);
+
+#ifdef QSFML_DEBUG
+			// Draw border lines
+			sf::VertexArray lines(sf::PrimitiveType::LineStrip, 5);
+			lines[0].position = sf::Vector2f(m_position.x, m_position.y);
+			lines[1].position = sf::Vector2f(m_position.x + CHUNK_SIZE, m_position.y);
+			lines[2].position = sf::Vector2f(m_position.x + CHUNK_SIZE, m_position.y + CHUNK_SIZE);
+			lines[3].position = sf::Vector2f(m_position.x, m_position.y + CHUNK_SIZE);
+			lines[4].position = lines[0].position;
+
+			sf::Color color(200,50,0);
+			lines[0].color = color;
+			lines[1].color = color;
+			lines[2].color = color;
+			lines[3].color = color;
+			lines[4].color = color;
+			target.draw(lines);
+#endif
 		}
 
 
@@ -192,16 +228,65 @@ namespace QSFML
 				return;
 			}
 			const std::vector<size_t>& textureIdx = m_chunkData->getTextureIndex();
-			for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++)
+
+			struct ColorF
 			{
-				const size_t& textureIndex = textureIdx[i];
-				size_t idx = i * 4;
-				const Assets::TextureMap::UVMapCoords& uvMapCoords = m_resources.textureMap.getUVMapCoords(textureIndex);
-				m_vertexBuffer[idx].texCoords = uvMapCoords.topLeft;
-				m_vertexBuffer[idx + 1].texCoords = uvMapCoords.topRight;
-				m_vertexBuffer[idx + 2].texCoords = uvMapCoords.bottomRight;
-				m_vertexBuffer[idx + 3].texCoords = uvMapCoords.bottomLeft;
+				float r = 0, g = 0, b = 0, a = 0;
+			};
+
+			ColorF color[CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE];
+
+			for (size_t x = 0; x < CHUNK_SIZE; x++)
+			{
+				for (size_t y = 0; y < CHUNK_SIZE; y++)
+				{
+					size_t idx = (y * CHUNK_SIZE + x) * 4;
+					size_t textureIndex = textureIdx[y * CHUNK_SIZE + x];
+					const Assets::TextureMap::UVMapCoords& uvMapCoords = m_resources.textureMap.getUVMapCoords(textureIndex);
+					m_vertexBuffer[idx].texCoords = uvMapCoords.topLeft;
+					m_vertexBuffer[idx + 1].texCoords = uvMapCoords.topRight;
+					m_vertexBuffer[idx + 2].texCoords = uvMapCoords.bottomRight;
+					m_vertexBuffer[idx + 3].texCoords = uvMapCoords.bottomLeft;
+
+					size_t colIndex = (y * CHUNK_LOW_RES_SIZE / CHUNK_SIZE) * CHUNK_LOW_RES_SIZE + (x * CHUNK_LOW_RES_SIZE / CHUNK_SIZE);
+					color[colIndex].r += m_resources.lowLevelReplacementColors[textureIndex].r;
+					color[colIndex].g += m_resources.lowLevelReplacementColors[textureIndex].g;
+					color[colIndex].b += m_resources.lowLevelReplacementColors[textureIndex].b;
+					color[colIndex].a += m_resources.lowLevelReplacementColors[textureIndex].a;
+
+				}
 			}
+
+			float divisor = (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE) / (CHUNK_SIZE * CHUNK_SIZE);
+
+			sf::Color col;
+			ColorF col1;
+			for (size_t i = 0; i < CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE; i++)
+			{
+				color[i].r *= divisor;
+				color[i].g *= divisor;
+				color[i].b *= divisor;
+				color[i].a *= divisor;
+
+				int index = i * 4;
+				sf::Color c(color[i].r, color[i].g, color[i].b, color[i].a);
+				m_lowResVertexBuffer[index].color = c;
+				m_lowResVertexBuffer[index + 1].color = c;
+				m_lowResVertexBuffer[index + 2].color = c;
+				m_lowResVertexBuffer[index + 3].color = c;
+
+				col1.r += color[i].r;
+				col1.g += color[i].g;
+				col1.b += color[i].b;
+				col1.a += color[i].a;
+			}
+			col.r = (sf::Uint8)(col1.r / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
+			col.g = (sf::Uint8)(col1.g / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
+			col.b = (sf::Uint8)(col1.b / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
+			col.a = (sf::Uint8)(col1.a / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
+
+
+			m_chunkData->setLowLevelReplacementColor(col);
 		}
 	}
 }

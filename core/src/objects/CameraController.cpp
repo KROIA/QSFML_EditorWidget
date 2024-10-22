@@ -2,6 +2,7 @@
 #include "Scene/Scene.h"
 #include "objects/CameraWindow.h"
 #include <QDebug>
+#include "utilities/VectorOperations.h"
 
 using namespace QSFML::Objects;
 namespace QSFML
@@ -77,21 +78,21 @@ namespace QSFML
 
         void CameraController::moveLeft(float amount)
         {
-            movePosition(sf::Vector2f(-amount, 0));
+            move(sf::Vector2f(-amount, 0));
         }
         void CameraController::moveRight(float amount)
         {
-            movePosition(sf::Vector2f(amount, 0));
+            move(sf::Vector2f(amount, 0));
         }
         void CameraController::moveUp(float amount)
         {
-            movePosition(sf::Vector2f(0, -amount));
+            move(sf::Vector2f(0, -amount));
         }
         void CameraController::moveDown(float amount)
         {
-            movePosition(sf::Vector2f(0, amount));
+            move(sf::Vector2f(0, amount));
         }
-        void CameraController::movePosition(const sf::Vector2f& delta)
+        /*void CameraController::movePosition(const sf::Vector2f& delta)
         {
             Objects::CameraWindow* cam = getCamera();
             if (!cam) return;
@@ -124,7 +125,7 @@ namespace QSFML
             sf::View view = cam->getCameraView();
             view.setRotation(angle);
             cam->setThisCameraView(view);
-        }
+        }*/
         void CameraController::zoom(float amount)
         {
             Objects::CameraWindow* cam = getCamera();
@@ -199,6 +200,19 @@ namespace QSFML
         }
         void CameraController::update()
         {
+            Objects::CameraWindow* cam = getCamera();
+            if (!cam) 
+                return;
+            sf::Transform globalTransform = getGlobalTransform();
+            sf::Vector2f pos = globalTransform.transformPoint({ 0.0, 0.0 });
+            float rot = VectorMath::getRotation(globalTransform);
+
+            
+            sf::View view = cam->getThisCameraView();
+			view.setCenter(pos);
+			view.setRotation(rot);
+            positionCheck(view);
+            cam->setThisCameraView(view);
 
         }
         Objects::CameraWindow* CameraController::getCamera() const
@@ -298,7 +312,7 @@ namespace QSFML
                     sf::Vector2f deltaPos = m_controller->getInThisCameraWorldSpace(sf::Vector2i(startPos)) - 
                                             m_controller->getInThisCameraWorldSpace(sf::Vector2i(newPos));
 
-                    m_controller->movePosition(deltaPos);
+                    m_controller->move(deltaPos);
                     startPos = newPos;
                     break;
                 }
@@ -360,6 +374,7 @@ namespace QSFML
             else if (cameraPos.y > m_maxMovingBounds.top + m_maxMovingBounds.height)
                 cameraPos.y = m_maxMovingBounds.top + m_maxMovingBounds.height;
 
+			setPosition(cameraPos);
             view.setSize(viewRect.width, viewRect.height);
             view.setCenter(cameraPos);
         }

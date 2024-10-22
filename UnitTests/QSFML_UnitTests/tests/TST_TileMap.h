@@ -52,9 +52,12 @@ private:
 		Scene* scene = createDefaultScene();
 		Objects::GameObjectPtr gameObj = new Objects::GameObject();
 		scene->addObject(gameObj);
+		scene->applyObjectChanges();
+
+		
 
 		Utilities::ChunkManager chunkManager(Assets::TextureManager::getTexture("MapTiles0.png"), sf::Vector2u(5, 1));
-		chunkManager.loadChunk(sf::Vector2f(9, 9));
+		chunkManager.loadChunk(sf::Vector2f(-256, 16));
 		
 		gameObj->addUpdateFunction([&chunkManager](const Objects::GameObject& obj)
 			{
@@ -63,6 +66,19 @@ private:
 				//chunkManager.loadChunk(pos);
 
 				//return;
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
+				{
+					static QSFML::Objects::GameObjectPtr camController = obj.getSceneParent()->getFirstObjectRecursive<Objects::CameraController>();
+					if(camController)
+						camController->rotate(1);
+				}else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
+				{
+					static QSFML::Objects::GameObjectPtr camController = obj.getSceneParent()->getFirstObjectRecursive<Objects::CameraController>();
+					if (camController)
+						camController->rotate(-1);
+				}
+					
+
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
 				{
 					for (int i = 0; i < 100; ++i)
@@ -140,6 +156,8 @@ private:
 		Objects::DefaultEditor* editor = new Objects::DefaultEditor("Editor", sf::Vector2f(1000, 800));
 		scene->addObject(editor);
 		editor->getCamera()->setMinZoom(0.01);
+		editor->getCamera()->setMaxMovingBounds(sf::FloatRect(-10000, -10000, 20000, 20000));
+		//editor->getCamera()->setRotation(5);
 
 		return scene;
 	}

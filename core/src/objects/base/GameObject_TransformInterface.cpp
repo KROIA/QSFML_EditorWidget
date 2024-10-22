@@ -150,10 +150,14 @@ namespace QSFML
             QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
             if (m_componentsManagerData.transform)
             {
-                if (!m_componentsManagerData.transform->isDirty())
-					return m_componentsManagerData.transform->getGlobalTransform();
+                if (m_componentsManagerData.transform->isDirty())
+                {
+                    updateTransformInternal();
+                }
+                return m_componentsManagerData.transform->getGlobalTransform();
             }
-            return updateTransformInternal();
+            
+            return sf::Transform::Identity;
             /*
             QSFML::vector<GameObjectPtr> parents;
             parents.reserve(10);
@@ -185,7 +189,7 @@ namespace QSFML
             for (auto& obj : m_childObjectManagerData.objs)
                 obj->markTransformDirty();
         }
-        sf::Transform GameObject::updateTransformInternal(sf::Transform parentTransform) const
+        void GameObject::updateTransformInternal(sf::Transform parentTransform) const
         {
             QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_3);
             Components::Transform* transform = getFirstComponent<Components::Transform>();
@@ -209,23 +213,23 @@ namespace QSFML
                 collider->updateColliderData();
             }
            // updateBoundingBox();
-            return globalTransform;
+           // return globalTransform;
         }
-        sf::Transform GameObject::updateTransformInternal() const
+        void GameObject::updateTransformInternal() const
         {
             QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_2);
             if (m_rootParent)
             {
                 sf::Transform transform;
-                transform = m_rootParent->updateTransformInternal(transform);
+                m_rootParent->updateTransformInternal(transform);
                 updateBoundingBox();
-				return transform;
+				//return transform;
             }
             else
             {
                 logError(getName() + ": " + __PRETTY_FUNCTION__ + " Can't update transform, no root parent found");
             }
-            return sf::Transform();
+            //return sf::Transform();
         }
 
 	}

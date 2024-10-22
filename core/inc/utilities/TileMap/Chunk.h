@@ -18,7 +18,9 @@ namespace QSFML
 				Assets::TextureMap textureMap;
 				std::vector<sf::Color> lowLevelReplacementColors;
 			};
-			static constexpr int CHUNK_SIZE = 16;
+			static constexpr int CHUNK_SIZE = ChunkData::CHUNK_SIZE;
+			static constexpr int CHUNK_SIZE_SQR = CHUNK_SIZE * CHUNK_SIZE;
+			static constexpr int CHUNK_LOW_RES_SIZE = CHUNK_SIZE / 4;
 			static Log::LogObject& getLogger();
 
 			Chunk(const sf::Vector2i& pos, const Resources& resources, float scale = 1);
