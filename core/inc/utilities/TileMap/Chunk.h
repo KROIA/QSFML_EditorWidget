@@ -21,7 +21,7 @@ namespace QSFML
 			static constexpr int CHUNK_SIZE = 16;
 			static Log::LogObject& getLogger();
 
-			Chunk(const sf::Vector2i& pos, const Resources& resources);
+			Chunk(const sf::Vector2i& pos, const Resources& resources, float scale = 1);
 			virtual ~Chunk();
 
 			const sf::Vector2i& getPosition() const { return m_position; }
@@ -52,6 +52,8 @@ namespace QSFML
 			bool m_loaded;
 			sf::Vector2i m_position;
 			sf::VertexArray m_vertexBuffer;
+
+			sf::VertexArray m_lowResVertexBuffer;
 			
 		};
 	}

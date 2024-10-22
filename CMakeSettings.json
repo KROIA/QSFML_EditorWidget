@@ -1,49 +1,57 @@
 {
-  "configurations": [
-    {
-      "buildCommandArgs": "",
-      "buildRoot": "${projectDir}\\build\\${name}",
-      "cmakeCommandArgs": "",
-      "configurationType": "Debug",
-      "ctestCommandArgs": "",
-      "generator": "Ninja",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "installRoot": "${projectDir}",
-      "intelliSenseMode": "windows-msvc-x64",
-      "name": "x64-Debug"
-    },
-    {
-      "buildCommandArgs": "",
-      "buildRoot": "${projectDir}\\build\\${name}",
-      "cmakeCommandArgs": "",
-      "configurationType": "Release",
-      "ctestCommandArgs": "",
-      "generator": "Ninja",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "installRoot": "${projectDir}",
-      "name": "x64-Release"
-    },
-    {
-      "buildRoot": "${projectDir}\\build\\${name}",
-      "cmakeCommandArgs": "-DQSFML_PROFILING=1 -DLOGGER_PROFILING=1",
-      "configurationType": "Release",
-      "ctestCommandArgs": "",
-      "generator": "Ninja",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "installRoot": "${projectDir}",
-      "name": "x64-Release-Profile"
-    },
-    {
-      "buildCommandArgs": "",
-      "buildRoot": "${projectDir}\\build\\${name}",
-      "cmakeCommandArgs": "-DQSFML_PROFILING=1",
-      "configurationType": "Debug",
-      "ctestCommandArgs": "",
-      "generator": "Ninja",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "installRoot": "${projectDir}",
-      "intelliSenseMode": "windows-msvc-x64",
-      "name": "x64-Debug-Profile"
-    }
-  ]
+    "configurations": [
+        {
+            "buildCommandArgs": "",
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "cmakeCommandArgs": "",
+            "configurationType": "Debug",
+            "ctestCommandArgs": "",
+            "generator": "Ninja",
+            "inheritEnvironments": [
+                "msvc_x64_x64"
+            ],
+            "installRoot": "${projectDir}",
+            "intelliSenseMode": "windows-msvc-x64",
+            "name": "x64-Debug"
+        },
+        {
+            "buildCommandArgs": "",
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "cmakeCommandArgs": "",
+            "configurationType": "Release",
+            "ctestCommandArgs": "",
+            "generator": "Ninja",
+            "inheritEnvironments": [
+                "msvc_x64_x64"
+            ],
+            "installRoot": "${projectDir}",
+            "name": "x64-Release"
+        },
+        {
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "cmakeCommandArgs": "-DQSFML_PROFILING=1",
+            "configurationType": "Release",
+            "ctestCommandArgs": "",
+            "generator": "Ninja",
+            "inheritEnvironments": [
+                "msvc_x64_x64"
+            ],
+            "installRoot": "${projectDir}",
+            "name": "x64-Release-Profile"
+        },
+        {
+            "buildCommandArgs": "",
+            "buildRoot": "${projectDir}\\build\\${name}",
+            "cmakeCommandArgs": "-DQSFML_PROFILING=1",
+            "configurationType": "Debug",
+            "ctestCommandArgs": "",
+            "generator": "Ninja",
+            "inheritEnvironments": [
+                "msvc_x64_x64"
+            ],
+            "installRoot": "${projectDir}",
+            "intelliSenseMode": "windows-msvc-x64",
+            "name": "x64-Debug-Profile"
+        }
+    ]
 }

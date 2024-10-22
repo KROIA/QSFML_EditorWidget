@@ -56,13 +56,6 @@ namespace QSFML {
     Scene::~Scene()
     {
         stop();
-        for (size_t i = 0; i < s_instances.size(); ++i)
-        {
-            if (s_instances[i] == this)
-            {
-                s_instances.erase(s_instances.begin() + i);
-            }
-        }
         GameObjectContainer::cleanup();
 #ifdef QSFML_PROFILING
         if (s_instances.size() == 1)
@@ -70,6 +63,13 @@ namespace QSFML {
             saveProfilerFile();
         }
 #endif
+        for (size_t i = 0; i < s_instances.size(); ++i)
+        {
+            if (s_instances[i] == this)
+            {
+                s_instances.erase(s_instances.begin() + i);
+            }
+        }
     }
 
 

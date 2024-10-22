@@ -65,46 +65,49 @@ private:
 				//return;
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
 				{
-					static int edgeIndex = 0;
-					static int edgeSize = 0;
-					static int edgeCounter = 0;
-					
-					static const int chunkSize = Utilities::Chunk::CHUNK_SIZE;
-					// load chunks in a spiral pattern
-					
-					static sf::Vector2f pos = sf::Vector2f(0, 0);
-					chunkManager.loadChunk(pos);
+					for (int i = 0; i < 100; ++i)
+					{
+						static int edgeIndex = 0;
+						static int edgeSize = 0;
+						static int edgeCounter = 0;
+
+						static const int chunkSize = chunkManager.getChunkSpacing();
+						// load chunks in a spiral pattern
+
+						static sf::Vector2f pos = sf::Vector2f(0, 0);
+						chunkManager.loadChunk(pos);
 
 
-					switch (edgeIndex)
-					{
-						case 0:
-							pos.x += chunkSize;
-							break;
-						case 1:
-							pos.y += chunkSize;
-							break;
-						case 2:
-							pos.x -= chunkSize;
-							break;
-						case 3:
-							pos.y -= chunkSize;
-							break;
-					}
-					
-					
-										
-					edgeCounter++;
-					if (edgeCounter >= edgeSize)
-					{
-						edgeCounter = 0;
-						edgeIndex++;
-						if (edgeIndex >= 4)
+						switch (edgeIndex)
 						{
-							edgeIndex = 0;
-							edgeSize += 2;
-							pos.x -= chunkSize;
-							pos.y -= chunkSize;
+							case 0:
+								pos.x += chunkSize;
+								break;
+							case 1:
+								pos.y += chunkSize;
+								break;
+							case 2:
+								pos.x -= chunkSize;
+								break;
+							case 3:
+								pos.y -= chunkSize;
+								break;
+						}
+
+
+
+						edgeCounter++;
+						if (edgeCounter >= edgeSize)
+						{
+							edgeCounter = 0;
+							edgeIndex++;
+							if (edgeIndex >= 4)
+							{
+								edgeIndex = 0;
+								edgeSize += 2;
+								pos.x -= chunkSize;
+								pos.y -= chunkSize;
+							}
 						}
 					}
 
