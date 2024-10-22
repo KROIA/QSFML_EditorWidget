@@ -3,6 +3,7 @@
 #include "QSFML_EditorWidget_base.h"
 #include "components/base/Component.h"
 #include "utilities/Updatable.h"
+#include "assets/TextureMap.h"
 #include "SFML/Graphics/Shape.hpp"
 #include "SFML/Graphics/Texture.hpp"
 
@@ -131,6 +132,16 @@ namespace QSFML
 			 */
 			const sf::IntRect& getUVRect() const
 			{
+				return m_currentUVRect.toIntRect();
+			}
+
+			/**
+			 * @brief 
+			 * Returns the current Vertex coordinates of the subimage.
+			 * @return vertex coordinates of the subimage
+			 */
+			const Assets::TextureMap::UVMapCoords& getUVMapCoords() const
+			{
 				return m_currentUVRect;
 			}
 
@@ -141,7 +152,7 @@ namespace QSFML
 			 */
 			const sf::Texture& getTexture() const
 			{
-				return m_texture;
+				return m_textureMap.getTexture();
 			}
 
 			/**
@@ -374,12 +385,9 @@ namespace QSFML
 			
 		private:
 
-			
+			Assets::TextureMap m_textureMap;
 
-			const sf::Texture& m_texture;
-			const sf::Vector2u m_imageDim;
-
-			sf::IntRect m_currentUVRect;			//<! Current UV rectangle of the subimage
+			Assets::TextureMap::UVMapCoords m_currentUVRect;			//<! Current UV rectangle of the subimage
 
 			int m_currentAnimationStep;				//<! The current step in the current animation sequence
 			int m_currentAnimationSequence;			//<! The current animation sequence

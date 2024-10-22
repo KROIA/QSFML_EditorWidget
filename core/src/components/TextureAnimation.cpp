@@ -12,11 +12,9 @@ namespace QSFML
 			const std::string& name)
 			: Component(name)
 			, Updatable()
-			, m_texture(texture)
-			, m_imageDim(imageCount)
+			, m_textureMap(texture, imageCount)
 		{
-			m_currentUVRect.width = m_texture.getSize().x / m_imageDim.x;
-			m_currentUVRect.height = m_texture.getSize().y / m_imageDim.y;
+			m_currentUVRect = m_textureMap.getUVMapCoords(0);
 			m_repeating = false;
 			m_1InvSpeed = 1.0f;
 			m_speed = 1.0f;
@@ -35,11 +33,9 @@ namespace QSFML
 			const std::string& name)
 			: Component(name)
 			, Updatable()
-			, m_texture(Assets::TextureManager::getTexture(textureID))
-			, m_imageDim(imageCount)
+			, m_textureMap(Assets::TextureManager::getTexture(textureID), imageCount)
 		{
-			m_currentUVRect.width = m_texture.getSize().x / m_imageDim.x;
-			m_currentUVRect.height = m_texture.getSize().y / m_imageDim.y;
+			m_currentUVRect = m_textureMap.getUVMapCoords(0);
 			m_repeating = false;
 			m_1InvSpeed = 1.0f;
 			m_speed = 1.0f;
@@ -56,8 +52,7 @@ namespace QSFML
 		TextureAnimation::TextureAnimation(const TextureAnimation& other)
 			: Component(other)
 			, Updatable()
-			, m_texture(other.m_texture)
-			, m_imageDim(other.m_imageDim)
+			, m_textureMap(other.m_textureMap)
 			, m_currentUVRect(other.m_currentUVRect)
 			, m_currentAnimationStep(other.m_currentAnimationStep)
 			, m_currentAnimationSequence(other.m_currentAnimationSequence)
@@ -171,8 +166,8 @@ namespace QSFML
 			m_shape = shape;
 			if (m_shape)
 			{
-				m_shape->setTexture(&m_texture);
-				setTextureIndex(m_imageDim.x * m_imageDim.y);
+				m_shape->setTexture(&m_textureMap.getTexture());
+				setTextureIndex(m_textureMap.getImageCount());
 			}
 		}
 		void TextureAnimation::bindTo(sf::Sprite* sprite)
@@ -180,8 +175,8 @@ namespace QSFML
 			m_sprite = sprite;
 			if (m_sprite)
 			{
-				m_sprite->setTexture(m_texture);
-				setTextureIndex(m_imageDim.x * m_imageDim.y);
+				m_sprite->setTexture(m_textureMap.getTexture());
+				setTextureIndex(m_textureMap.getImageCount());
 			}
 		}
 
@@ -220,7 +215,7 @@ namespace QSFML
 
 
 			// Select texture element outside of the image to make it invisible
-			setTextureIndex(m_imageDim.x * m_imageDim.y);
+			setTextureIndex(m_textureMap.getImageCount());
 		}
 
 		void TextureAnimation::update()
@@ -268,15 +263,21 @@ namespace QSFML
 		void TextureAnimation::setTextureIndex(unsigned int index)
 		{
 			m_currentTextureIndex = index;
-			m_currentUVRect.left = (index % m_imageDim.x) * m_currentUVRect.width;
-			m_currentUVRect.top = (index / m_imageDim.x) * m_currentUVRect.height;
+			sf::IntRect rect;
+			if (m_currentTextureIndex >= m_textureMap.getImageCount())
+			{
+				rect.left = (index % m_textureMap.getMapDim().x) * m_textureMap.getSubImageSize().x;
+				rect.top = (index / m_textureMap.getMapDim().x) * m_textureMap.getSubImageSize().y;
+			}
+			else
+				rect = m_textureMap.getUVMapCoords(m_currentTextureIndex).toIntRect();
 			if (m_shape)
 			{
-				m_shape->setTextureRect(m_currentUVRect);
+				m_shape->setTextureRect(rect);
 			}
 			if (m_sprite)
 			{
-				m_sprite->setTextureRect(m_currentUVRect);
+				m_sprite->setTextureRect(rect);
 			}
 		}
 	}

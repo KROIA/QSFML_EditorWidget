@@ -57,6 +57,10 @@
 #include "utilities/Color.h"
 #include "utilities/LifetimeChecker.h"
 #include "utilities/CameraRecorder.h"
+#include "utilities/TileMap/Chunk.h"
+#include "utilities/TileMap/ChunkData.h"
+#include "utilities/TileMap/ChunkManager.h"
 
 #include "assets/TextureManager.h"
+#include "assets/TextureMap.h"
 /// USER_SECTION_END
