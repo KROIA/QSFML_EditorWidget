@@ -63,4 +63,8 @@
 
 #include "assets/TextureManager.h"
 #include "assets/TextureMap.h"
+
+//#ifdef FAST_NOISE_LITE
+	#include "FastNoiseLite.h"
+//#endif
 /// USER_SECTION_END

@@ -29,11 +29,20 @@ namespace QSFML
 			ChunkManager(const sf::Texture& texture, const sf::Vector2u& mapDim);
 			~ChunkManager();
 
+			void setChunkFactory(std::shared_ptr<Chunk::ChunkFactoryBase> factory)
+			{
+				m_chunkFactory = factory;
+			}
 			float getChunkSpacing() const { return m_scale * Chunk::CHUNK_SIZE; }
 
+			void loadChunk(const sf::FloatRect& area, size_t numThreads = 1, bool async = false);
 			void loadChunk(const sf::Vector2f& pos);
+			
 
 			const std::vector<Chunk*>& getChunks(const sf::FloatRect &area) const;
+			const sf::IntRect& getLoadedChunkBounds() const { return m_generatedChunkBounds; }
+			size_t getLoadedChunkCount() const { return m_loadedChunks.size(); }
+
 			
 
 			void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -42,20 +51,44 @@ namespace QSFML
 			
 			static sf::Vector2i getChunkPosition(const sf::Vector2f& pos)
 			{
-				sf::Vector2i chunkPos = sf::Vector2i(Chunk::CHUNK_SIZE * ((int)pos.x / Chunk::CHUNK_SIZE), Chunk::CHUNK_SIZE * ((int)pos.y / Chunk::CHUNK_SIZE));
+				bool isNegX = pos.x < 0;
+				bool isNegY = pos.y < 0;
+
+				sf::Vector2i chunkPos = sf::Vector2i(Chunk::CHUNK_SIZE * ((int)(pos.x + isNegX) / Chunk::CHUNK_SIZE),
+												     Chunk::CHUNK_SIZE * ((int)(pos.y + isNegY) / Chunk::CHUNK_SIZE));
+
+
+				if (pos.x < 0)
+					chunkPos.x -= Chunk::CHUNK_SIZE;
+				if (pos.y < 0)
+					chunkPos.y -= Chunk::CHUNK_SIZE;
+
+				/*sf::Vector2i chunkPos = sf::Vector2i(Chunk::CHUNK_SIZE * ((int)pos.x / Chunk::CHUNK_SIZE), Chunk::CHUNK_SIZE * ((int)pos.y / Chunk::CHUNK_SIZE));
 				if (pos.x < 0 && chunkPos.x == 0)
 					chunkPos.x -= Chunk::CHUNK_SIZE;
 				if (pos.y < 0 && chunkPos.y == 0)
-					chunkPos.y -= Chunk::CHUNK_SIZE;
+					chunkPos.y -= Chunk::CHUNK_SIZE;*/
 				return chunkPos;
 			}
 			static sf::Vector2i getChunkPosition(const sf::Vector2i& pos)
 			{
-				sf::Vector2i chunkPos = sf::Vector2i(Chunk::CHUNK_SIZE * (pos.x / Chunk::CHUNK_SIZE), Chunk::CHUNK_SIZE * (pos.y / Chunk::CHUNK_SIZE));
+				bool isNegX = pos.x < 0;
+				bool isNegY = pos.y < 0;
+
+				sf::Vector2i chunkPos = sf::Vector2i(Chunk::CHUNK_SIZE * ((pos.x + isNegX) / Chunk::CHUNK_SIZE),
+													 Chunk::CHUNK_SIZE * ((pos.y + isNegY) / Chunk::CHUNK_SIZE));
+
+
+				if (pos.x < 0)
+					chunkPos.x -= Chunk::CHUNK_SIZE;
+				if (pos.y < 0)
+					chunkPos.y -= Chunk::CHUNK_SIZE;
+
+				/*sf::Vector2i chunkPos = sf::Vector2i(Chunk::CHUNK_SIZE * (pos.x / Chunk::CHUNK_SIZE), Chunk::CHUNK_SIZE * (pos.y / Chunk::CHUNK_SIZE));
 				if (pos.x < 0 && chunkPos.x == 0)
 					chunkPos.x -= Chunk::CHUNK_SIZE;
 				if (pos.y < 0 && chunkPos.y == 0)
-					chunkPos.y -= Chunk::CHUNK_SIZE;
+					chunkPos.y -= Chunk::CHUNK_SIZE;*/
 				return chunkPos;
 			}
 			static sf::Vector2i getChunkGroupPosition(const sf::Vector2f& pos)
@@ -65,11 +98,7 @@ namespace QSFML
 
 				sf::Vector2i chunkGroupPos = sf::Vector2i(Chunk::CHUNK_SIZE_SQR * ((int)(pos.x + isNegX) / Chunk::CHUNK_SIZE_SQR),
 					                                      Chunk::CHUNK_SIZE_SQR * ((int)(pos.y + isNegY) / Chunk::CHUNK_SIZE_SQR));
-				
-				//if (isNegX)
-				//	chunkGroupPos.x = Chunk::CHUNK_SIZE_SQR - chunkGroupPos.x - 1;
-				//if (isNegY)
-				//	chunkGroupPos.y = Chunk::CHUNK_SIZE_SQR - chunkGroupPos.y - 1;
+			
 
 				if (pos.x < 0)
 					chunkGroupPos.x -= Chunk::CHUNK_SIZE_SQR;
@@ -176,8 +205,10 @@ namespace QSFML
 				
 			};
 			const std::vector<ChunkGroup*>& getChunkGroups(const sf::FloatRect& area) const;
+			void updateGeneratedChunkBounds(const QSFML::vector<Chunk*>& newChunks);
+			void updateGeneratedChunkBounds(const Chunk*& newChunk);
+			void insertNewChunk(Chunk*& chunk);
 
-			
 			std::unordered_map<sf::Vector2i, Chunk*, VectorHash> m_loadedChunks;
 			std::unordered_map<sf::Vector2i, ChunkGroup*, VectorHash>m_chunkGroups;
 			sf::IntRect m_generatedChunkBounds;
@@ -185,14 +216,26 @@ namespace QSFML
 
 			mutable bool m_needsDrawUpdate;
 			mutable sf::FloatRect m_visibleArea;
-			mutable std::vector<Chunk*> m_visibleChunks;
-			mutable std::vector<ChunkGroup*> m_visibleChunkGroups;
+			mutable QSFML::vector<Chunk*> m_visibleChunks;
+			mutable QSFML::vector<ChunkGroup*> m_visibleChunkGroups;
 #ifdef QSFML_DEBUG
-			mutable std::vector<sf::FloatRect> m_visibleChunkGroupBounds;
+			mutable QSFML::vector<sf::FloatRect> m_visibleChunkGroupBounds;
 #endif
 
 			Chunk::Resources m_resources;
 			float m_scale;
+
+			struct AsyncChunkLoaderData
+			{
+				std::mutex mutex;
+				std::atomic<bool> stop;
+				std::vector<std::thread*> threads;
+				QSFML::vector<Chunk*> loadedChunks;
+			};
+
+			std::vector<AsyncChunkLoaderData*> m_asyncChunkLoaderData;
+
+			std::shared_ptr<Chunk::ChunkFactoryBase> m_chunkFactory = nullptr;
 		};
 	}
 }

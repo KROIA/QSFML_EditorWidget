@@ -1,6 +1,6 @@
 #include "utilities/TileMap/Chunk.h"
 #include "utilities/PerlinNoise.h"
-#include "FastNoiseLite.h"
+
 
 namespace QSFML
 {
@@ -59,6 +59,41 @@ namespace QSFML
 				delete m_chunkData;
 		}
 
+		sf::IntRect Chunk::getBounds(const QSFML::vector<Chunk*>& chunks)
+		{
+			sf::IntRect bounds;
+			if (chunks.empty())
+				return bounds;
+			for (const auto& chunk : chunks)
+			{
+				sf::IntRect chunkBounds = chunk->getBounds();
+				if (chunkBounds.left < bounds.left)
+				{
+					bounds.width += bounds.left - chunkBounds.left;
+					bounds.left = chunkBounds.left;
+				}
+				if (chunkBounds.top < bounds.top)
+				{
+					bounds.height += bounds.top - chunkBounds.top;
+					bounds.top = chunkBounds.top;
+				}
+				if (chunkBounds.left + chunkBounds.width > bounds.left + bounds.width)
+					bounds.width = chunkBounds.left + chunkBounds.width - bounds.left;
+				if (chunkBounds.top + chunkBounds.height > bounds.top + bounds.height)
+					bounds.height = chunkBounds.top + chunkBounds.height - bounds.top;
+			}
+			return bounds;
+		}
+		sf::IntRect Chunk::getBounds(const sf::IntRect& A, const sf::IntRect& B)
+		{
+			sf::IntRect bounds;
+			bounds.left = std::min(A.left, B.left);
+			bounds.top = std::min(A.top, B.top);
+			bounds.width = std::max(A.left + A.width, B.left + B.width) - bounds.left;
+			bounds.height = std::max(A.top + A.height, B.top + B.height) - bounds.top;
+			return bounds;
+		}
+
 		void Chunk::generate()
 		{
 			if (m_loaded)
@@ -75,86 +110,12 @@ namespace QSFML
 				getLogger().logError("generate(): Pos: {"+std::to_string(m_position.x)+","+std::to_string(m_position.y)+"} "
 									 "Chunk::m_chunkData is not initialized");
 			}
+			updateTextureCoords();
 			m_loaded = true;
 		}
 		void Chunk::onGenerate()
 		{
-			m_chunkData = new ChunkData();
-			
-			//static Utilities::PerlinNoise noise;
-			static FastNoiseLite noise;
-			noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
-
-			float scale = 1;
-
-			struct ColorF
-			{
-				float r = 0 , g=0, b=0, a=0;
-			};
-			ColorF color[CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE];
-			for (size_t x = 0; x < CHUNK_SIZE; x++)
-			{
-				for (size_t y = 0; y < CHUNK_SIZE; y++)
-				{
-					sf::Vector2f pos = sf::Vector2f(((float)x + m_position.x)*scale, ((float)y + m_position.y)*scale);
-					//float value = noise.noise(pos.x, pos.y, 5, sf::Vector2u(100, 100))+0.5f;
-					float value = noise.GetNoise(pos.x, pos.y);
-
-
-					size_t textureIndex = 0;
-
-					
-					if (value < 0.2f)
-						textureIndex = 2;
-					else if (value < 0.4f)
-						textureIndex = 3;
-					else if (value < 0.6f)
-						textureIndex = 2;
-					else if (value < 0.7f)
-						textureIndex = 4;
-
-
-
-					m_chunkData->setTextureIndex(x, y, textureIndex);
-					size_t colIndex = ((y * CHUNK_LOW_RES_SIZE) / CHUNK_SIZE) * CHUNK_LOW_RES_SIZE + ((x * CHUNK_LOW_RES_SIZE) / CHUNK_SIZE);
-					color[colIndex].r += m_resources.lowLevelReplacementColors[textureIndex].r;
-					color[colIndex].g += m_resources.lowLevelReplacementColors[textureIndex].g;
-					color[colIndex].b += m_resources.lowLevelReplacementColors[textureIndex].b;
-					color[colIndex].a += m_resources.lowLevelReplacementColors[textureIndex].a;
-					
-				}
-			}
-			float divisor = (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE) / (CHUNK_SIZE * CHUNK_SIZE);
-
-			sf::Color col;
-			ColorF col1;
-			for (size_t i = 0; i < CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE; i++)
-			{
-				color[i].r *= divisor;
-				color[i].g *= divisor;
-				color[i].b *= divisor;
-				color[i].a *= divisor;
-
-				int index = i * 4;
-				sf::Color c(color[i].r, color[i].g, color[i].b, color[i].a);
-				m_lowResVertexBuffer[index].color = c;
-				m_lowResVertexBuffer[index +1].color = c;
-				m_lowResVertexBuffer[index +2].color = c;
-				m_lowResVertexBuffer[index +3].color = c;
-
-				col1.r += color[i].r;
-				col1.g += color[i].g;
-				col1.b += color[i].b;
-				col1.a += color[i].a;
-			}
-			col.r = (sf::Uint8)(col1.r / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
-			col.g = (sf::Uint8)(col1.g / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
-			col.b = (sf::Uint8)(col1.b / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
-			col.a = (sf::Uint8)(col1.a / (float)(CHUNK_LOW_RES_SIZE * CHUNK_LOW_RES_SIZE));
-			
-			
-			m_chunkData->setLowLevelReplacementColor(col);
-			
+			m_chunkData = new ChunkData();		
 		}
 
 
