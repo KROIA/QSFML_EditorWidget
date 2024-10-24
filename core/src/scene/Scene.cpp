@@ -399,7 +399,22 @@ namespace QSFML {
         QSFMLP_SCENE_BLOCK("Process sf::Events", QSFML_COLOR_STAGE_3);
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         StatsManager::resetFrame_eventloop();
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+        sf::RenderWindow& target = *m_cameras.defaultCamera->getRenderWindow();
+        //m_cameras.defaultCamera->setFocus(Qt::FocusReason::MouseFocusReason);
+        bool qWindowHasFocus = m_cameras.defaultCamera->hasFocus();
+        target.requestFocus();
+        bool sfmlHasFocus = target.hasFocus();
         
+        sfmlHasFocus;
+        qWindowHasFocus;
+        if (!target.hasFocus())
+        {
+            int a = 0;
+            a;
+        }
+        
+#endif
         QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>> events;
         for(auto camera : m_cameras.cameras)
 		{
@@ -410,8 +425,7 @@ namespace QSFML {
 		}
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
         QSFML::vector<sf::Event>& mainCamEvents = events[m_cameras.defaultCamera];
-        sf::RenderWindow& target = *m_cameras.defaultCamera->getRenderWindow();
-		target.setActive(true);
+        
         for (auto ev : mainCamEvents)
             ImGui::SFML::ProcessEvent(ev);
 		applyImGuiEventFilter(mainCamEvents);
