@@ -56,7 +56,7 @@ namespace QSFML
             connect(&m_frameTimer, &QTimer::timeout, this, &CameraWindow::onFrame, Qt::DirectConnection);
             m_frameTimer.setInterval(1000 / 30.f);
             //setSettings(settings);
-
+            createRenderWindow();
             show();
         }
         CameraWindow::~CameraWindow()
@@ -345,46 +345,7 @@ namespace QSFML
         }
         void CameraWindow::showEvent(QShowEvent*)
         {
-            if (!m_window)
-            {
-                // Under X11, we need to flush the commands sent to the server to ensure that
-                // SFML will get an updated view of the windows
-#ifdef Q_WS_X11
-                XFlush(QX11Info::display());
-#endif
-
-                // Create the SFML window with the widget handle
-                m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(), m_settings);
-                m_window->setFramerateLimit(0);
-                //m_window->setVerticalSyncEnabled(false);
-                //m_view = m_window->getView();
-
-               
-                //m_updateTimer.autoRestart(true);
-                //m_updateTimer.start();
-
-
-               // m_syncedUpdateT_t1 = std::chrono::high_resolution_clock::now();
-               // m_update_t1 = m_syncedUpdateT_t1;
-               // m_paint_t1 = m_syncedUpdateT_t1;
-                m_oldViewSize = m_window->getSize();
-				m_currentViewSize = m_oldViewSize;
-
-                // Calculate the dpi scale
-                QRect geometry = QWidget::geometry();
-                m_dpiScale.x = (float)m_oldViewSize.x / geometry.width();
-                m_dpiScale.y = (float)m_oldViewSize.y / geometry.height();
-
-
-                //sf::View view = m_window->getView();
-                //GameObject::setPosition(view.getCenter());
-                //GameObject::setRotation(view.getRotation());
-                //GameObject::setScale(view.getSize());
-            }
-
-            // Setup the timer to trigger a refresh at specified framerate
-            if(m_enableFrameTimer)
-                m_frameTimer.start();
+            createRenderWindow();
         }
         void CameraWindow::closeEvent(QCloseEvent*)
         {
@@ -445,5 +406,49 @@ namespace QSFML
 				m_screenCaptureTexture->create(newSize.x, newSize.y);
             }
         }
+        void CameraWindow::createRenderWindow()
+        {
+            if (!m_window)
+            {
+                // Under X11, we need to flush the commands sent to the server to ensure that
+                // SFML will get an updated view of the windows
+#ifdef Q_WS_X11
+                XFlush(QX11Info::display());
+#endif
+
+                // Create the SFML window with the widget handle
+                m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(), m_settings);
+                m_window->setFramerateLimit(0);
+                //m_window->setVerticalSyncEnabled(false);
+                //m_view = m_window->getView();
+
+
+                //m_updateTimer.autoRestart(true);
+                //m_updateTimer.start();
+
+
+               // m_syncedUpdateT_t1 = std::chrono::high_resolution_clock::now();
+               // m_update_t1 = m_syncedUpdateT_t1;
+               // m_paint_t1 = m_syncedUpdateT_t1;
+                m_oldViewSize = m_window->getSize();
+                m_currentViewSize = m_oldViewSize;
+
+                // Calculate the dpi scale
+                QRect geometry = QWidget::geometry();
+                m_dpiScale.x = (float)m_oldViewSize.x / geometry.width();
+                m_dpiScale.y = (float)m_oldViewSize.y / geometry.height();
+
+
+                //sf::View view = m_window->getView();
+                //GameObject::setPosition(view.getCenter());
+                //GameObject::setRotation(view.getRotation());
+                //GameObject::setScale(view.getSize());
+            }
+
+            // Setup the timer to trigger a refresh at specified framerate
+            if (m_enableFrameTimer)
+                m_frameTimer.start();
+        }
+
     }
 }

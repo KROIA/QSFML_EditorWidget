@@ -4,7 +4,7 @@ include(FetchContent)
 function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE_PATHS)
     # Define the git repository and tag to download from
     set(LIB_NAME FastNeuseLite)
-	set(LIB_MACRO_NAME FAST_NOISE_LITE)
+	set(LIB_MACRO_NAME FAST_NOISE_LITE_LIBRARY_AVAILABLE)
     set(GIT_REPO https://github.com/Auburn/FastNoiseLite.git)
     set(GIT_TAG master)
 

@@ -89,7 +89,7 @@ namespace QSFML
 			private:
 
 			void resizeEvent(const sf::Vector2u& oldSize, const sf::Vector2u& newSize);
-
+			void createRenderWindow();
 
 			sf::RenderWindow* m_window = nullptr;
 			sf::ContextSettings m_settings;

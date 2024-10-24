@@ -6,7 +6,11 @@
 #include <QHBoxLayout>
 #include <qapplication.h>
 #include <thread>
-#include <iostream>
+
+#ifdef IMGUI_SFML
+    #include <imgui-SFML.h>
+    #include <imgui.h>
+#endif
 
 #include "objects/CameraWindow.h"
 
@@ -51,6 +55,10 @@ namespace QSFML {
 		const auto geometry = m_cameras.defaultCamera->geometry();
         m_cameras.defaultCamera->setGeometry(geometry.x(), geometry.y(), settings.layout.fixedSize.x, settings.layout.fixedSize.y);
         setSettings(settings);
+
+#ifdef IMGUI_SFML
+        ImGui::SFML::Init(window);
+#endif
 
     }
     Scene::~Scene()

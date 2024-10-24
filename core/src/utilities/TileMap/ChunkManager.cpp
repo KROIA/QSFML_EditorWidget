@@ -372,7 +372,6 @@ namespace QSFML
 			sf::FloatRect frameRect = sf::FloatRect(sf::Vector2f(chunkGroupStart),
 												   sf::Vector2f(chunkGroupEnd- chunkGroupStart));
 			m_visibleChunkGroupBounds.push_back(frameRect);
-
 #endif
 
 			// Find relevant ChunkGroups
@@ -526,7 +525,7 @@ namespace QSFML
 				{
 					chunk->draw(target, states);
 				}
-				getLogger().logInfo("Visible low level chunk groups: " + std::to_string(m_visibleChunkGroups.size()));
+				//getLogger().logInfo("Visible low level chunk groups: " + std::to_string(m_visibleChunkGroups.size()));
 			}
 
 #ifdef QSFML_DEBUG

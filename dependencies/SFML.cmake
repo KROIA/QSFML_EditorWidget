@@ -4,7 +4,7 @@ include(FetchContent)
 function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
     set(LIB_NAME SFML)
-    set(LIB_MACRO_NAME SFML)
+    set(LIB_MACRO_NAME SFML_LIBRARY_AVAILABLE)
     set(GIT_REPO https://github.com/SFML/SFML.git)
     set(GIT_TAG 2.6.1)
 
