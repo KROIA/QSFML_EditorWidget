@@ -277,6 +277,10 @@ namespace QSFML
             if (!getSceneParent() || !m_window)
                 return;
             getSceneParent()->paint(this);
+            QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_8);
+            m_window->display();
+            m_window->setActive(false);
+            QSFMLP_SCENE_END_BLOCK;
         }
         void CameraWindow::pollEvents()
         {

@@ -15,9 +15,9 @@ namespace QSFML
 				std::size_t operator()(const sf::Vector2i& v) const {
 					size_t hashed = 0;
 
-					static constexpr int shiftCount = sizeof(int) * 8;
-					long xMasked = ((long)v.x << shiftCount);
-					long yMasked = ((long)v.y & (~long(0) >> shiftCount));
+					static constexpr unsigned int shiftCount = (unsigned int)sizeof(int) * 8;
+					long xMasked = (((long)v.x) << shiftCount);
+					long yMasked = (((long)v.y) & (~long(0) >> shiftCount));
 					// shorten the int range and combine both coordinates to one value
 					hashed = xMasked | yMasked;
 					return hashed;

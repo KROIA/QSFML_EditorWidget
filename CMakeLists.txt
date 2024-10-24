@@ -145,14 +145,16 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 ## USER_SECTION_END
 
+include(cmake/QtLocator.cmake)
+include(cmake/dependencies.cmake)
+include(cmake/ExampleMaster.cmake)
 
 foreach(DEF ${USER_SPECIFIC_GLOBAL_DEFINES})
 	add_compile_definitions(${DEF})
 endforeach()
-
-include(cmake/QtLocator.cmake)
-include(cmake/dependencies.cmake)
-include(cmake/ExampleMaster.cmake)
+foreach(DEF ${DEPENDENCY_NAME_MACRO})
+ 	add_compile_definitions(${DEF})
+endforeach()
 
 ## USER_SECTION_START 5
 

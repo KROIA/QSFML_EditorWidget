@@ -126,6 +126,11 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         TimePoint m_update_t1;
         TimePoint m_paint_t1;
 
+#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
+		sf::Clock m_imguiClock;
+        void applyImGuiEventFilter(QSFML::vector<sf::Event>& events);
+#endif
+
 
         SceneSettings m_settings;
         //sf::RenderWindow *m_window;
