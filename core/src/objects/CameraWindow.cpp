@@ -61,12 +61,7 @@ namespace QSFML
         }
         CameraWindow::~CameraWindow()
         {
-            m_frameTimer.stop();
-            if (m_window)
-            {
-                m_window->close();
-                delete m_window;
-            }
+            destroyRenderWindow();
             delete m_screenCaptureTexture;
         }
 
@@ -353,23 +348,11 @@ namespace QSFML
         }
         void CameraWindow::closeEvent(QCloseEvent*)
         {
-            m_frameTimer.stop();
-            if (m_window)
-            {
-                m_window->close();
-                delete m_window;
-                m_window = nullptr;
-            }
+            destroyRenderWindow();
         }
         void CameraWindow::hideEvent(QHideEvent*)
         {
-			m_frameTimer.stop();
-            if (m_window)
-            {
-                m_window->close();
-                delete m_window;
-                m_window = nullptr;
-            }
+            destroyRenderWindow();
         }
 
 
@@ -452,6 +435,18 @@ namespace QSFML
             // Setup the timer to trigger a refresh at specified framerate
             if (m_enableFrameTimer)
                 m_frameTimer.start();
+        }
+        void CameraWindow::destroyRenderWindow()
+        {
+            m_frameTimer.stop();
+            if (m_window)
+            {
+                if (getSceneParent())
+                    getSceneParent()->onCameraWindowClose(this);
+                m_window->close();
+                delete m_window;
+                m_window = nullptr;
+            }
         }
 
     }

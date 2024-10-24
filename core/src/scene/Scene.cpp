@@ -7,10 +7,7 @@
 #include <qapplication.h>
 #include <thread>
 
-#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
-    #include <imgui-SFML.h>
-    #include <imgui.h>
-#endif
+
 
 #include "objects/CameraWindow.h"
 
@@ -56,7 +53,8 @@ namespace QSFML {
         m_cameras.defaultCamera->setGeometry(geometry.x(), geometry.y(), settings.layout.fixedSize.x, settings.layout.fixedSize.y);
         setSettings(settings);
 
-#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+		m_imGuiContext = ImGui::CreateContext();
         ImGui::SFML::Init(*m_cameras.defaultCamera->getRenderWindow());
 #endif
 
@@ -65,9 +63,15 @@ namespace QSFML {
     {
         stop();
 
-#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
-        ImGui::SFML::Shutdown();
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+        if (m_imGuiContext)
+        {
+            ImGui::SFML::Shutdown(*m_cameras.defaultCamera->getRenderWindow());
+            ImGui::DestroyContext(m_imGuiContext);
+            m_imGuiContext = nullptr;
+        }
 #endif
+
         GameObjectContainer::cleanup();
 #ifdef QSFML_PROFILING
         if (s_instances.size() == 1)
@@ -358,6 +362,10 @@ namespace QSFML {
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsedSeconds = std::chrono::duration<double>(t2 - m_syncedUpdateT_t1).count();
 
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+        ImGui::SetCurrentContext(m_imGuiContext);
+#endif
+
         m_syncedUpdateT_t1 = t2;
         StatsManager::resetFrame_synced();
         StatsManager::setFrameTime(elapsedSeconds);
@@ -400,8 +408,10 @@ namespace QSFML {
             if (cameraEvents.size() > 0)
 			    events[camera] = cameraEvents;
 		}
-#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
         QSFML::vector<sf::Event>& mainCamEvents = events[m_cameras.defaultCamera];
+        sf::RenderWindow& target = *m_cameras.defaultCamera->getRenderWindow();
+		target.setActive(true);
         for (auto ev : mainCamEvents)
             ImGui::SFML::ProcessEvent(ev);
 		applyImGuiEventFilter(mainCamEvents);
@@ -432,7 +442,7 @@ namespace QSFML {
 
         GameObjectContainer::update();
         
-#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
         auto cam = m_cameras.defaultCamera->getRenderWindow();
         if(cam)
             ImGui::SFML::Update(*cam, m_imguiClock.restart());
@@ -461,7 +471,7 @@ namespace QSFML {
         {
             paint(m_cameras.defaultCamera);
             sf::RenderWindow& target = *m_cameras.defaultCamera->getRenderWindow();
-#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
             ImGui::ShowDemoWindow();
             ImGui::SFML::Render(target);
 #endif
@@ -559,12 +569,26 @@ namespace QSFML {
         }
         return textfont;
     }
+    void Scene::onCameraWindowClose(Objects::CameraWindow* window)
+    {
+		if (window == m_cameras.defaultCamera)
+		{
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+            if (m_imGuiContext)
+            {
+                ImGui::SFML::Shutdown(*window->getRenderWindow());
+                ImGui::DestroyContext(m_imGuiContext);
+                m_imGuiContext = nullptr;
+            }
+#endif
+		}
+    }
     void Scene::internal_event(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>>& events)
     {
         GameObjectContainer::sfEvent(events);
     }
 
-#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
     void Scene::applyImGuiEventFilter(QSFML::vector<sf::Event>& events)
     {
 		ImGuiIO& io = ImGui::GetIO();

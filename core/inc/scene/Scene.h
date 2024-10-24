@@ -12,6 +12,11 @@
 #include <QWidget>
 #include <QTimer>
 
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+#include <imgui-SFML.h>
+#include <imgui.h>
+#endif
+
 
 namespace QSFML
 {
@@ -23,6 +28,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
     {
     Q_OBJECT
         friend GameObjectContainer;
+        friend Objects::CameraWindow;
     public:
 
 
@@ -116,6 +122,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
 
 
     private:
+        void onCameraWindowClose(Objects::CameraWindow* window);
 
         void internal_event(const QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>> &events);
 
@@ -126,8 +133,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
         TimePoint m_update_t1;
         TimePoint m_paint_t1;
 
-#ifdef IMGUI_SFML_LIBRARY_AVAILABLE
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
 		sf::Clock m_imguiClock;
+        ImGuiContext* m_imGuiContext = nullptr;
         void applyImGuiEventFilter(QSFML::vector<sf::Event>& events);
 #endif
 
