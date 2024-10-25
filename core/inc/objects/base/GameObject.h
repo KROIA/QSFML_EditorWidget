@@ -1034,6 +1034,16 @@ protected:
 
         /**
          * @brief 
+         * Checks if the current rendering camera is the camera of the main view
+		 * @return true if the current rendering camera is the camera of the main view
+         */
+        bool isCurrentRenderCameraTheDefaultCamera() const
+		{
+			return getCurrentRenderCamera() == getDefaultCamera();
+		}
+
+        /**
+         * @brief 
 		 * Gets the default font for text rendering
          * @return default font
          */
@@ -1490,6 +1500,7 @@ protected:
 		 */
         virtual void onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
     private:
+        static Log::LogObject& getLogger();
 
         QSFML::vector<std::string> toStringInternal(const std::string &preStr) const;
         bool getAllChilds_internal(const std::string& name, QSFML::vector<GameObjectPtr>& foundList);

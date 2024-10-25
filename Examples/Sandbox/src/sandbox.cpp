@@ -37,6 +37,9 @@ SandBox::SandBox(QWidget *parent)
 
     m_scene_1 = nullptr;
     m_scene_2 = nullptr;
+
+	GameObjectPtr obj = new GameObject();
+    obj->getMousePosition();
     
     if(true)
     {

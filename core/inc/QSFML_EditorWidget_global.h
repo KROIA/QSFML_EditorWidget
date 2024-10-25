@@ -47,7 +47,10 @@
 #define QSFML_UNUSED(x) (void)x;
 
 /// USER_SECTION_START 4
-
+#ifndef QSFML_ASSERT
+#include <assert.h>
+#define QSFML_ASSERT(_EXPR)            assert(_EXPR)                               // You can override the default assert handler by editing imconfig.h
+#endif
 /// USER_SECTION_END
 
 #if defined(QSFML_EDITOR_WIDGET_LIB)

@@ -187,8 +187,12 @@ namespace QSFML
 				}
 
 #if IMPLOT_LIBRARY_AVAILABLE == 1
-				// Specify the size of the plot
-				ImVec2 plotSize(400, 200);  // Width: 600, Height: 400
+				// Begin a child window with dynamic width and fixed height
+				ImGui::BeginChild("PlotWindow", ImVec2(0, ImGui::GetContentRegionAvail().y), true);
+
+				// Adjust plot dimensions
+				ImVec2 plotSize = ImGui::GetContentRegionAvail();
+				plotSize.y *= 0.5f;
 
 				// Plotting using ImPlot if available
 				if (ImPlot::BeginPlot("Performance Metrics", plotSize))
@@ -205,7 +209,11 @@ namespace QSFML
 
 					ImPlot::EndPlot();
 				}
+			//ImGui::EndChild();
+				//ImGui::BeginChild("PlotWindow", ImVec2(0, 200), true);
 
+				// Adjust plot dimensions
+				//plotSize = ImGui::GetContentRegionAvail();
 				// Plotting event, update and draw time
 				if (ImPlot::BeginPlot("Frame Timing", plotSize))
 				{
@@ -227,7 +235,7 @@ namespace QSFML
 
 					ImPlot::EndPlot();
 				}
-
+				ImGui::EndChild();
 #endif
 			}
 			ImGui::End();

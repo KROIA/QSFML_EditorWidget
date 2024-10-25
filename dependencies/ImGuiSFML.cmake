@@ -9,7 +9,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
 
     set(LIB_NAME_2 imgui-sfml)
 	set(LIB_MACRO_NAME_2 IMGUI_SFML_LIBRARY_AVAILABLE)
-    set(GIT_REPO_2 https://github.com/KROIA/imgui-sfml-fork.git)
+    set(GIT_REPO_2 https://github.com/SFML/imgui-sfml.git)
     set(GIT_TAG_2 2.6.x)
 
     set(LIB_NAME_3 implot)

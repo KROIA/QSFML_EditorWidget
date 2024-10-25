@@ -16,7 +16,7 @@ namespace QSFML
 			GameObject::addDrawFunction([](const GameObject& obj, sf::RenderTarget&, sf::RenderStates)
 				{
 					QSFML::Scene* Scene = obj.getSceneParent();
-					if (Scene)
+					if (Scene && obj.isCurrentRenderCameraTheDefaultCamera())
 					{
 						const QSFML::Utilities::Stats &stats = Scene->getLastStats();
 						stats.drawImGui();
