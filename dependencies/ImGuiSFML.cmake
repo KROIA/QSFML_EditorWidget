@@ -3,17 +3,17 @@ include(FetchContent)
 
 function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE_PATHS)
     set(LIB_NAME_1 imgui)
-	set(LIB_MACRO_NAME_1 IMGUI_LIBRARY_AVAILABLE)
+    set(LIB_MACRO_NAME_1 IMGUI_LIBRARY_AVAILABLE)
     set(GIT_REPO_1 https://github.com/ocornut/imgui.git)
     set(GIT_TAG_1 master)
 
     set(LIB_NAME_2 imgui-sfml)
-	set(LIB_MACRO_NAME_2 IMGUI_SFML_LIBRARY_AVAILABLE)
+    set(LIB_MACRO_NAME_2 IMGUI_SFML_LIBRARY_AVAILABLE)
     set(GIT_REPO_2 https://github.com/SFML/imgui-sfml.git)
     set(GIT_TAG_2 2.6.x)
 
     set(LIB_NAME_3 implot)
-	set(LIB_MACRO_NAME_3 IMPLOT_LIBRARY_AVAILABLE)
+    set(LIB_MACRO_NAME_3 IMPLOT_LIBRARY_AVAILABLE)
     set(GIT_REPO_3 https://github.com/epezent/implot.git)
     set(GIT_TAG_3 master)
 

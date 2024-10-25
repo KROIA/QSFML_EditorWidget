@@ -96,8 +96,8 @@ list(APPEND USER_SPECIFIC_DEFINES)
 #    TEST_DEFINE
 # )
 # 
-list(APPEND USER_SPECIFIC_GLOBAL_DEFINES 
-    LOGGER_ENABLE_DEBUG_BREAK_ON_ERROR
+list(APPEND USER_SPECIFIC_GLOBAL_DEFINES
+  LOGGER_ENABLE_DEBUG_BREAK_ON_ERROR
 )
 
 
@@ -154,7 +154,6 @@ endforeach()
 include(cmake/QtLocator.cmake)
 include(cmake/dependencies.cmake)
 include(cmake/ExampleMaster.cmake)
-
 
 foreach(DEF ${DEPENDENCY_NAME_MACRO})
  	add_compile_definitions(${DEF})
