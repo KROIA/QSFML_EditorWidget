@@ -15,6 +15,9 @@
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
 #include <imgui-SFML.h>
 #include <imgui.h>
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+#include "implot.h"
+#endif
 #endif
 
 
@@ -136,6 +139,9 @@ class QSFML_EDITOR_WIDGET_EXPORT Scene :
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
 		sf::Clock m_imguiClock;
         ImGuiContext* m_imGuiContext = nullptr;
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+		ImPlotContext* m_imPlotContext = nullptr;
+#endif
         void applyImGuiEventFilter(QSFML::vector<sf::Event>& events);
 #endif
 

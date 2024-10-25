@@ -25,6 +25,9 @@ Car::Car(const sf::ContextSettings& settings,
 
 
 	m_camera = new Objects::CameraWindow(settings, "CustomCamera2", qparent);
+	sf::View view(sf::FloatRect(0, 0, 1000, 1000));
+	m_camera->setThisCameraView(view);
+	m_camera->setPosition(0, 0);
 	add(m_camera);
 	
 

@@ -9,6 +9,7 @@
 
 
 
+
 #include "objects/CameraWindow.h"
 
 #include <QDebug>
@@ -54,8 +55,14 @@ namespace QSFML {
         setSettings(settings);
 
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
-		m_imGuiContext = ImGui::CreateContext();
-        ImGui::SFML::Init(*m_cameras.defaultCamera->getRenderWindow());
+        if (!m_imGuiContext)
+        {
+            m_imGuiContext = ImGui::CreateContext();
+            ImGui::SFML::Init(*m_cameras.defaultCamera->getRenderWindow());
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+            m_imPlotContext = ImPlot::CreateContext();
+#endif
+        }
 #endif
 
     }
@@ -64,6 +71,13 @@ namespace QSFML {
         stop();
 
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+        if(m_imPlotContext)
+        {
+			ImPlot::DestroyContext(m_imPlotContext);
+			m_imPlotContext = nullptr;
+		}
+#endif
         if (m_imGuiContext)
         {
             ImGui::SFML::Shutdown(*m_cameras.defaultCamera->getRenderWindow());
@@ -363,7 +377,11 @@ namespace QSFML {
         double elapsedSeconds = std::chrono::duration<double>(t2 - m_syncedUpdateT_t1).count();
 
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+        m_cameras.defaultCamera->setForceFocus();
         ImGui::SetCurrentContext(m_imGuiContext);
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+		ImPlot::SetCurrentContext(m_imPlotContext);
+#endif
 #endif
 
         m_syncedUpdateT_t1 = t2;
@@ -399,36 +417,36 @@ namespace QSFML {
         QSFMLP_SCENE_BLOCK("Process sf::Events", QSFML_COLOR_STAGE_3);
         TimePoint t1 = std::chrono::high_resolution_clock::now();
         StatsManager::resetFrame_eventloop();
-#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
-        sf::RenderWindow& target = *m_cameras.defaultCamera->getRenderWindow();
-        //m_cameras.defaultCamera->setFocus(Qt::FocusReason::MouseFocusReason);
-        bool qWindowHasFocus = m_cameras.defaultCamera->hasFocus();
-        target.requestFocus();
-        bool sfmlHasFocus = target.hasFocus();
-        
-        sfmlHasFocus;
-        qWindowHasFocus;
-        if (!target.hasFocus())
-        {
-            int a = 0;
-            a;
-        }
-        
-#endif
         QSFML::unordered_map<Objects::CameraWindow*, QSFML::vector<sf::Event>> events;
         for(auto camera : m_cameras.cameras)
 		{
             camera->pollEvents();
             const QSFML::vector<sf::Event> &cameraEvents = camera->getThisCameraEvents();
-            if (cameraEvents.size() > 0)
+            if (cameraEvents.size() > 0 && camera->getRenderWindow())
 			    events[camera] = cameraEvents;
 		}
+
+
+
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
-        QSFML::vector<sf::Event>& mainCamEvents = events[m_cameras.defaultCamera];
-        
-        for (auto ev : mainCamEvents)
-            ImGui::SFML::ProcessEvent(ev);
-		applyImGuiEventFilter(mainCamEvents);
+        if (m_cameras.defaultCamera->getRenderWindow())
+        {
+            QSFML::vector<sf::Event>& mainCamEvents = events[m_cameras.defaultCamera];
+
+            if (mainCamEvents.size() > 0)
+            {
+                for (auto ev : mainCamEvents)
+                    ImGui::SFML::ProcessEvent(ev);
+                
+            }
+
+            auto cam = m_cameras.defaultCamera->getRenderWindow();
+            if (cam)
+            {
+                ImGui::SFML::Update(*cam, m_imguiClock.restart());
+                applyImGuiEventFilter(mainCamEvents);
+            }            
+        }
 #endif
         
         if(events.size() > 0)
@@ -456,11 +474,23 @@ namespace QSFML {
 
         GameObjectContainer::update();
         
-#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+/*#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
         auto cam = m_cameras.defaultCamera->getRenderWindow();
-        if(cam)
+        if (cam)
+        {
             ImGui::SFML::Update(*cam, m_imguiClock.restart());
-#endif
+            ImGuiIO& io = ImGui::GetIO();
+            bool isMouseOverImGui = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered();
+            if (!isMouseOverImGui) {
+                int a = 0;
+                a;
+            }
+            if (io.WantCaptureMouse) {
+                int a = 0;
+                a;
+            }
+        }
+#endif*/
 
         TimePoint t2 = std::chrono::high_resolution_clock::now();
         double elapsed = std::chrono::duration<double>(t2 - t1).count();
@@ -483,10 +513,12 @@ namespace QSFML {
 
         if (m_cameras.defaultCamera->isOpen())
         {
-            paint(m_cameras.defaultCamera);
             sf::RenderWindow& target = *m_cameras.defaultCamera->getRenderWindow();
+            target.setActive(true);
+            paint(m_cameras.defaultCamera);
+            
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
-            ImGui::ShowDemoWindow();
+            //ImGui::ShowDemoWindow();
             ImGui::SFML::Render(target);
 #endif
             QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_8);
@@ -526,11 +558,8 @@ namespace QSFML {
     void Scene::paint(Objects::CameraWindow* currentCamera)
     {
         QSFMLP_SCENE_BLOCK("Repaint camera", QSFML_COLOR_STAGE_5);
-		
-
         // Set the viewport
-		sf::RenderWindow& target = *currentCamera->getRenderWindow();
-        target.setActive(true);
+        sf::RenderWindow& target = *currentCamera->getRenderWindow();
 
         // In case a user only draws using gl calls, we need to set the viewport first.
         // SFML would handle this if sfml draw calls are used.
@@ -607,18 +636,24 @@ namespace QSFML {
     {
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.WantCaptureMouse)
+	//	if (ImGui::IsAnyItemActive())
 		{
 			for (size_t i = 0; i < events.size(); ++i)
 			{
 				sf::Event::EventType& type = events[i].type;
-				if (type == sf::Event::MouseMoved ||
-					type == sf::Event::MouseButtonPressed ||
-					type == sf::Event::MouseButtonReleased ||
-					type == sf::Event::MouseWheelMoved)
-				{
+                switch (type)
+                {
+				case sf::Event::MouseMoved:
+				case sf::Event::MouseButtonPressed:
+				case sf::Event::MouseButtonReleased:
+				case sf::Event::MouseEntered:
+				case sf::Event::MouseLeft:
+				case sf::Event::MouseWheelMoved:
+				case sf::Event::MouseWheelScrolled:
 					events.erase(events.begin() + i);
 					i--;
-				}
+				
+                }
 			}
 		}
     }

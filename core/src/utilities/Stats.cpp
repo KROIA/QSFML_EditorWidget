@@ -1,6 +1,10 @@
 #include "utilities/Stats.h"
 #include "Scene/Scene.h"
 
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+#include "implot.h"
+#endif
+
 #include <QDebug>
 
 namespace QSFML
@@ -25,7 +29,9 @@ namespace QSFML
 			, m_fixedDeltaT(0)
 			, m_elapsedTime(0)
 		{
-
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+			clearAllPlotBuffer();
+#endif
 		}
 		Stats::Stats(const Stats& other)
 			: m_rootObjectsCount(other.m_rootObjectsCount.load())
@@ -45,7 +51,9 @@ namespace QSFML
 			, m_fixedDeltaT(other.m_fixedDeltaT)
 			, m_elapsedTime(other.m_elapsedTime)
 		{
-
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+			clearAllPlotBuffer();
+#endif
 		}
 		Stats& Stats::operator=(const Stats& other)
 		{
@@ -111,6 +119,123 @@ namespace QSFML
 				"   Draw   time:        " + std::to_string(m_drawTime * 1000) + " ms\n";
 
 		}
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+		void Stats::drawImGui() const
+		{
+			// Save current ImGui style colors
+			ImGuiStyle& style = ImGui::GetStyle();
+			ImVec4 originalColor = style.Colors[ImGuiCol_WindowBg];
+
+			// Set background transparency
+			style.Colors[ImGuiCol_WindowBg].w = 0.5f;
+
+			// Set the predefined start size of the window
+			//ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+
+			// Update data arrays with new values
+			m_fpsData[m_currentDataIndex] = m_fps;
+			m_tpsData[m_currentDataIndex] = m_tps;
+			//m_frameTimeData[m_currentDataIndex] = m_frameTime * 1000; // convert frame time to ms
+			m_eventTimeData[m_currentDataIndex] = m_eventTime * 1000; // convert event time to ms
+			m_updateTimeData[m_currentDataIndex] = m_updateTime * 1000; // convert update time to ms
+			m_drawTimeData[m_currentDataIndex] = m_drawTime * 1000; // convert draw time to ms
+			//m_deltaTData[m_currentDataIndex] = m_deltaT * 1000; // convert deltaT to ms
+			//m_elapsedTimeData[m_currentDataIndex] = m_elapsedTime * 1000; // convert elapsed time to ms
+
+			m_currentDataIndex = (m_currentDataIndex + 1) % c_dataSize; // Keep circular buffer
+
+			// Start drawing the window
+			if (ImGui::Begin("Stats Window"))
+			{
+				ImGui::Text("Stats:");
+
+				if (ImGui::TreeNodeEx("General", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text(" Tick:                 %d", m_tick);
+					ImGui::Text(" Root Objects:         %d", m_rootObjectsCount.load());
+					ImGui::Text(" Objects:              %d", m_objectsCount.load());
+					ImGui::Text(" Components:           %d", m_componentsCount.load());
+					ImGui::TreePop();
+				}
+
+				if (ImGui::TreeNodeEx("Physics", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text(" Collision checks:     %d", m_collisionChecks.load());
+					ImGui::Text(" AABB checks:          %d", m_boundingBoxCollisionChecks.load());
+					ImGui::Text(" Collisions:           %d", m_collisions.load());
+					ImGui::TreePop();
+				}
+
+				if (ImGui::TreeNodeEx("Timing", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text(" FPS:                  %f", m_fps);
+					ImGui::Text(" TPS:                  %f", m_tps);
+					ImGui::Text(" DeltaT:               %f ms", m_deltaT * 1000);
+					ImGui::Text(" Elapsed time:         %f s", m_elapsedTime);
+					ImGui::Text(" Elapsed fixed time:   %f s", m_fixedDeltaT * m_tick);
+
+					if (ImGui::TreeNodeEx("Frame Timing", ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						ImGui::Text(" Frame time:           %f ms", m_frameTime * 1000);
+						ImGui::Text("  Event  time:         %f ms", m_eventTime * 1000);
+						ImGui::Text("  Update time:         %f ms", m_updateTime * 1000);
+						ImGui::Text("  Draw   time:         %f ms", m_drawTime * 1000);
+						ImGui::TreePop();
+					}
+
+					ImGui::TreePop();
+				}
+
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+				// Specify the size of the plot
+				ImVec2 plotSize(400, 200);  // Width: 600, Height: 400
+
+				// Plotting using ImPlot if available
+				if (ImPlot::BeginPlot("Performance Metrics", plotSize))
+				{
+					ImPlot::SetupAxesLimits(0, c_dataSize - 1, 0, 100, ImPlotCond_Once); // 0 for Y means auto-scaling
+					ImPlot::SetupAxes("Frame", "Value");
+					ImPlot::SetupAxes("Y-Axis", NULL, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoTickLabels);
+
+					// Plot FPS
+					ImPlot::PlotLine("FPS", m_fpsData.data(), c_dataSize, c_dataSize, 0, sizeof(float));
+
+					// Plot TPS
+					ImPlot::PlotLine("TPS", m_tpsData.data(), c_dataSize, c_dataSize, 0, sizeof(float));
+
+					ImPlot::EndPlot();
+				}
+
+				// Plotting event, update and draw time
+				if (ImPlot::BeginPlot("Frame Timing", plotSize))
+				{
+					// Set fixed X-axis limits (e.g., 0 to 99)
+					ImPlot::SetupAxesLimits(0, c_dataSize-1, 0, 100, ImPlotCond_Once); // 0 for Y means auto-scaling
+					ImPlot::SetupAxes("", "Time (ms)");
+					// Setup Y-axis (auto-scaling)
+					ImPlot::SetupAxes("Y-Axis", NULL, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoTickLabels);
+
+
+					// Plot Event Time
+					ImPlot::PlotLine("Event Time (ms)", m_eventTimeData.data(), c_dataSize, c_dataSize, 0, sizeof(float));
+
+					// Plot Update Time
+					ImPlot::PlotLine("Update Time (ms)", m_updateTimeData.data(), c_dataSize, c_dataSize, 0, sizeof(float));
+
+					// Plot Draw Time
+					ImPlot::PlotLine("Draw Time (ms)", m_drawTimeData.data(), c_dataSize, c_dataSize, 0, sizeof(float));
+
+					ImPlot::EndPlot();
+				}
+
+#endif
+			}
+			ImGui::End();
+
+			// Restore original background color
+			style.Colors[ImGuiCol_WindowBg] = originalColor;
+		}
+#endif
 		void Stats::print() const
 		{
 			qDebug() << toString().c_str();
@@ -167,5 +292,18 @@ namespace QSFML
 			m_deltaT = 0;
 			m_elapsedTime = 0;
 		}
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+		void Stats::clearAllPlotBuffer() const
+		{
+			memset(m_fpsData.data(), 0, c_dataSize * sizeof(double));
+			memset(m_tpsData.data(), 0, c_dataSize * sizeof(double));
+			//memset(m_frameTimeData.data(), 0, c_dataSize * sizeof(double));
+			memset(m_eventTimeData.data(), 0, c_dataSize * sizeof(double));
+			memset(m_updateTimeData.data(), 0, c_dataSize * sizeof(double));
+			memset(m_drawTimeData.data(), 0, c_dataSize * sizeof(double));
+			//memset(m_deltaTData.data(), 0, c_dataSize * sizeof(double));
+			//memset(m_elapsedTimeData.data(), 0, c_dataSize * sizeof(double));
+		}
+#endif
 	}
 }

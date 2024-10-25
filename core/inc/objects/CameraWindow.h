@@ -49,6 +49,8 @@ namespace QSFML
 
 			void enableFrameTimer(bool enable);
 
+			void setForceFocus();
+
 			/*
 			void setPosition(float x, float y) override;
 			void setPosition(const sf::Vector2f& position) override;

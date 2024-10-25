@@ -309,6 +309,7 @@ namespace QSFML
 				if (Components::Transform* transform = dynamic_cast<Components::Transform*>(comp))
 				{
 					m_componentsManagerData.transform = transform;
+					markTransformDirty();
 				}
 				if (Utilities::Updatable* updatable = dynamic_cast<Utilities::Updatable*>(comp))
 				{

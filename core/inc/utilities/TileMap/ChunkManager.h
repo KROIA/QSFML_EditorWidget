@@ -210,6 +210,7 @@ namespace QSFML
 			void insertNewChunk(Chunk*& chunk);
 
 			std::unordered_map<sf::Vector2i, Chunk*, VectorHash> m_loadedChunks;
+			std::vector<Chunk*> m_loadedChunksVec;
 			std::unordered_map<sf::Vector2i, ChunkGroup*, VectorHash>m_chunkGroups;
 			sf::IntRect m_generatedChunkBounds;
 
@@ -227,11 +228,12 @@ namespace QSFML
 
 			struct AsyncChunkLoaderData
 			{
-				std::mutex mutex;
 				std::atomic<bool> stop;
 				std::vector<std::thread*> threads;
 				QSFML::vector<Chunk*> loadedChunks;
 			};
+			std::mutex m_mutex;
+			std::atomic<int> m_threadsLoading;
 
 			std::vector<AsyncChunkLoaderData*> m_asyncChunkLoaderData;
 

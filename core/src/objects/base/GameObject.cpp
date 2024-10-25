@@ -855,6 +855,11 @@ void GameObject::update_internal()
             }
         }
     }
+
+    //if (this == m_rootParent)
+    //{
+	//	updateTransformInternal();
+    //}
 }
 
 void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const

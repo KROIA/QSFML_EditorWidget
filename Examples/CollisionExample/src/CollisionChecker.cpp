@@ -63,7 +63,7 @@ CollisionChecker::CollisionChecker(const std::string& name, QSFML::Objects::Game
 
 	m_pointPainter = new QSFML::Components::PointPainter();
 	m_pointPainter->setColor(sf::Color::Yellow);
-	addComponent(m_pointPainter);
+	
 
 	m_mouseFollower = new QSFML::Components::MouseFollower();
 	m_mouseFollower->setEnabled(false);
@@ -71,8 +71,12 @@ CollisionChecker::CollisionChecker(const std::string& name, QSFML::Objects::Game
 		this, &CollisionChecker::onMousePosChanged);
 	addComponent(m_mouseFollower);
 	addComponent(m_tree.createPainter());
+	addComponent(m_pointPainter);
 	m_tree.enableCollisionThreads(true);
 	setMode(Mode::performanceTest);
+	setDrawOrder({ DrawSequenceElement::childs, DrawSequenceElement::components });
+	
+	m_performanceContainer->setDrawOrder({ DrawSequenceElement::childs });
 
 	//createLogger();
 

@@ -32,6 +32,7 @@ namespace QSFML
         }
         void CameraWindow::setup()
         {
+			m_lastTransform.rotate(rand() % 360);
             // Setup layout of this widget
             if (parentWidget())
             {
@@ -45,12 +46,12 @@ namespace QSFML
             }
 
             // Setup some states to allow direct rendering into the widget
-            setAttribute(Qt::WA_PaintOnScreen);
-            setAttribute(Qt::WA_OpaquePaintEvent);
-            setAttribute(Qt::WA_NoSystemBackground);
+          //  setAttribute(Qt::WA_PaintOnScreen);
+          //  setAttribute(Qt::WA_OpaquePaintEvent);
+          //  setAttribute(Qt::WA_NoSystemBackground);
 
             // Set strong focus to enable keyboard events to be received
-            setFocusPolicy(Qt::StrongFocus);
+            setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
             //m_updateTimer.onFinished(std::bind(&Scene::update, this));
             connect(&m_frameTimer, &QTimer::timeout, this, &CameraWindow::onFrame, Qt::DirectConnection);
@@ -73,17 +74,17 @@ namespace QSFML
             {
                 m_window->setView(view);
                 
-                sf::Transform transform;
-                if(getParent())
-                    transform = getParent()->getGlobalTransform().getInverse();
+                //sf::Transform transform;
+                //if(getParent())
+                //    transform = getParent()->getGlobalTransform().getInverse();
 
-                sf::Vector2f center = transform.transformPoint(view.getCenter());
-                float rotation = std::atan2(transform.getMatrix()[1], transform.getMatrix()[0]) * 180 / M_PI;
-                sf::Vector2f size = transform.transformPoint(view.getCenter() + view.getSize() / 2.f) - center;
-                sf::Vector2f scale = VectorMath::getScale(transform);
-                GameObject::setPosition(center);
-                GameObject::setRotation(rotation);
-                GameObject::setScale(size);
+                //sf::Vector2f center = transform.transformPoint(view.getCenter());
+                //float rotation = std::atan2(transform.getMatrix()[1], transform.getMatrix()[0]) * 180 / M_PI;
+                //sf::Vector2f size = transform.transformPoint(view.getCenter() + view.getSize() / 2.f) - center;
+                //sf::Vector2f scale = VectorMath::getScale(transform);
+                //GameObject::setPosition(center);
+                //GameObject::setRotation(rotation);
+                //GameObject::setScale(size);
             }
         }
         const sf::View& CameraWindow::getThisCameraView() const
@@ -203,6 +204,13 @@ namespace QSFML
 			static sf::Vector2u dummy;
 			return dummy;
         }
+		void CameraWindow::setForceFocus()
+		{
+            if (m_window)
+            {
+                SetFocus((HWND)m_window->getSystemHandle());
+            }
+		}
 
 
         /*
@@ -271,6 +279,7 @@ namespace QSFML
         {
             if (!getSceneParent() || !m_window)
                 return;
+            m_window->setActive(true);
             getSceneParent()->paint(this);
             QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_8);
             m_window->display();
@@ -314,7 +323,7 @@ namespace QSFML
 				return;
             m_lastTransform = transform;
 			sf::View view = m_window->getView();
-            
+
             view.setCenter(transform.transformPoint(sf::Vector2f(0,0)));
             float rotation = std::atan2(transform.getMatrix()[1], transform.getMatrix()[0]) * 180 / M_PI;
             view.setRotation(rotation);
@@ -354,7 +363,6 @@ namespace QSFML
         {
             destroyRenderWindow();
         }
-
 
         void CameraWindow::resizeEvent(QResizeEvent* event)
         {
@@ -404,7 +412,8 @@ namespace QSFML
 #endif
 
                 // Create the SFML window with the widget handle
-                m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(), m_settings);
+				sf::WindowHandle winId_ = (sf::WindowHandle)this->winId();
+                m_window = new sf::RenderWindow(winId_, m_settings);
                 m_window->setFramerateLimit(0);
                 //m_window->setVerticalSyncEnabled(false);
                 //m_view = m_window->getView();

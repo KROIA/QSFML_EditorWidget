@@ -62,7 +62,6 @@ namespace QSFML
             connect(m_toggleRuntimeInfoEvent, &Components::KeyPressEvent::fallingEdge, this, &DefaultEditor::onToggleRuntimeInfo);
             addComponent(m_toggleRuntimeInfoEvent);
 
-
             addChild(m_grid);
             addChild(m_cam);
             m_runtimeInfo->setRenderLayer(RenderLayer::layer_5);

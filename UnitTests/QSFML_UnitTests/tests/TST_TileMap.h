@@ -163,10 +163,10 @@ private:
 
 		
 
-		Utilities::ChunkManager chunkManager(Assets::TextureManager::getTexture("MapTiles0.png"), sf::Vector2u(5, 1));
-		chunkManager.setChunkFactory(Chunk::createFactory<MyChunk>());
-		//chunkManager.loadChunk(sf::Vector2f(-256, 16));
-		chunkManager.loadChunk(sf::FloatRect(-3000,-3000,6000,6000),12,true);
+		Utilities::ChunkManager *chunkManager = new Utilities::ChunkManager(Assets::TextureManager::getTexture("MapTiles0.png"), sf::Vector2u(5, 1));
+		chunkManager->setChunkFactory(Chunk::createFactory<MyChunk>());
+		//chunkManager->loadChunk(sf::Vector2f(-256, 16));
+		chunkManager->loadChunk(sf::FloatRect(-5000,-5000,10000,10000),32,true);
 		
 		gameObj->addUpdateFunction([&chunkManager](const Objects::GameObject& obj)
 			{
@@ -196,11 +196,11 @@ private:
 						static int edgeSize = 0;
 						static int edgeCounter = 0;
 
-						static const int chunkSize = chunkManager.getChunkSpacing();
+						static const int chunkSize = chunkManager->getChunkSpacing();
 						// load chunks in a spiral pattern
 
 						static sf::Vector2f pos = sf::Vector2f(5, 5);
-						chunkManager.loadChunk(pos);
+						chunkManager->loadChunk(pos);
 
 
 						switch (edgeIndex)
@@ -241,10 +241,11 @@ private:
 
 		gameObj->addDrawFunction([&chunkManager](const Objects::GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
 			{
-				chunkManager.draw(target, states);
+				chunkManager->draw(target, states);
 			});
 
 		qApp->exec();
+		delete chunkManager;
 		m_stopTimer.stop();
 		delete scene;
 	}

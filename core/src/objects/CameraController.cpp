@@ -136,8 +136,12 @@ namespace QSFML
             m_currentZoom = newZoom;
 
             sf::View view = cam->getThisCameraView();
+            sf::Vector2f orgPos = view.getCenter();
             view.zoom(amount);
             positionCheck(view);
+            sf::Vector2f newPos = view.getCenter();
+            view.setCenter(orgPos);
+            cam->setPosition(newPos);
             cam->setThisCameraView(view);
         }
         void CameraController::zoom(float amount, const sf::Vector2i& pixel)
@@ -148,6 +152,7 @@ namespace QSFML
             if (newZoom < m_minZoom || newZoom > m_maxZoom)
                 return;
             sf::View view = cam->getThisCameraView();
+			sf::Vector2f orgPos = view.getCenter();
             m_currentZoom = newZoom;
 
             const sf::Vector2f beforeCoord = cam->getInThisCameraWorldSpace(pixel);
@@ -159,6 +164,9 @@ namespace QSFML
             const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
             view.move(offsetCoords);
             positionCheck(view);
+			sf::Vector2f newPos = view.getCenter();
+			view.setCenter(orgPos);
+			cam->setPosition(newPos);
             cam->setThisCameraView(view);
         }
         void CameraController::setZoom(float amount)
@@ -200,19 +208,19 @@ namespace QSFML
         }
         void CameraController::update()
         {
-            Objects::CameraWindow* cam = getCamera();
-            if (!cam) 
-                return;
-            sf::Transform globalTransform = getGlobalTransform();
-            sf::Vector2f pos = globalTransform.transformPoint({ 0.0, 0.0 });
-            float rot = VectorMath::getRotation(globalTransform);
+           // Objects::CameraWindow* cam = getCamera();
+            //if (!cam) 
+            //    return;
+            //sf::Transform globalTransform = getGlobalTransform();
+            //sf::Vector2f pos = globalTransform.transformPoint({ 0.0, 0.0 });
+            //float rot = VectorMath::getRotation(globalTransform);
 
             
-            sf::View view = cam->getThisCameraView();
-			view.setCenter(pos);
-			view.setRotation(rot);
-            positionCheck(view);
-            cam->setThisCameraView(view);
+            //sf::View view = cam->getThisCameraView();
+			//view.setCenter(pos);
+			//view.setRotation(rot);
+            //positionCheck(view);
+           // cam->setThisCameraView(view);
 
         }
         Objects::CameraWindow* CameraController::getCamera() const
@@ -307,12 +315,13 @@ namespace QSFML
                     // Ignore mouse movement unless a button is pressed (see above)
                     if (!mousePressed)
                         break;
+                    auto cam = m_controller->getCamera();
+                    sf::Vector2f newPos = sf::Vector2f(cam->getThisCameraMousePosition());
+                    sf::Vector2f deltaPos = cam->getInThisCameraWorldSpace(sf::Vector2i(startPos)) -
+                                            cam->getInThisCameraWorldSpace(sf::Vector2i(newPos));
 
-                    sf::Vector2f newPos = sf::Vector2f(m_controller->getThisCameraMousePosition());
-                    sf::Vector2f deltaPos = m_controller->getInThisCameraWorldSpace(sf::Vector2i(startPos)) - 
-                                            m_controller->getInThisCameraWorldSpace(sf::Vector2i(newPos));
-
-                    m_controller->move(deltaPos);
+                    cam->GameObject::move(deltaPos);
+                    //m_controller->move(deltaPos);
                     startPos = newPos;
                     break;
                 }

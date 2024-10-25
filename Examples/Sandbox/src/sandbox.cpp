@@ -56,6 +56,7 @@ SandBox::SandBox(QWidget *parent)
 
 		//Objects::CameraController* camController2 = new Objects::CameraController();
 		Objects::CameraController* camController3 = new Objects::CameraController();
+		camController3->setMaxZoom(100);
 		//cam2->addChild(camController2);
 		cam3->addChild(camController3);
         //m_scene_1->addObject(cam2);
