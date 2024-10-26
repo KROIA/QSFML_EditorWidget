@@ -16,11 +16,13 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
 
     # Check if the library has already been populated
     FetchContent_GetProperties(${LIB_NAME})
-    if(NOT ${LIB_NAME}_ALREADY_POPULATED)
+    if(NOT ${LIB_NAME}_ALREADY_POPULATED OR NOT ${LIB_NAME}_SOURCE_DIR OR NOT ${LIB_NAME}_BINARY_DIR)
         message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
         FetchContent_MakeAvailable(${LIB_NAME})
         # Set a persistent cache variable to mark the library as populated
         set(${LIB_NAME}_ALREADY_POPULATED TRUE CACHE INTERNAL "Mark ${LIB_NAME} as populated")
+        set(${LIB_NAME}_SOURCE_DIR "${${LIB_NAME}_SOURCE_DIR}" CACHE INTERNAL "${LIB_NAME} source dir")
+        set(${LIB_NAME}_BINARY_DIR "${${LIB_NAME}_BINARY_DIR}" CACHE INTERNAL "${LIB_NAME} binary dir")
     else()
         # Re-run MyLibrary's CMakeLists.txt to set up include dirs, libraries, etc.
         add_subdirectory("${${LIB_NAME}_SOURCE_DIR}" "${${LIB_NAME}_BINARY_DIR}" EXCLUDE_FROM_ALL)

@@ -35,7 +35,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
 
     # Check if the library has already been populated
     FetchContent_GetProperties(${LIB_NAME_1})
-    if(NOT ${LIB_NAME_1}_ALREADY_POPULATED)
+    if(NOT ${LIB_NAME_1}_ALREADY_POPULATED OR NOT ${LIB_NAME_1}_SOURCE_DIR OR NOT ${LIB_NAME_1}_BINARY_DIR)
         message("Downloading dependency: ${LIB_NAME_1} from: ${GIT_REPO_1} tag: ${GIT_TAG_1}")
         FetchContent_MakeAvailable(${LIB_NAME_1})
         # Set a persistent cache variable to mark the library as populated
@@ -51,7 +51,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
 
     # Check if the library has already been populated
     FetchContent_GetProperties(${LIB_NAME_2})
-    if(NOT ${LIB_NAME_2}_ALREADY_POPULATED)
+    if(NOT ${LIB_NAME_2}_ALREADY_POPULATED OR NOT ${LIB_NAME_2}_SOURCE_DIR OR NOT ${LIB_NAME_2}_BINARY_DIR)
         message("Downloading dependency: ${LIB_NAME_2} from: ${GIT_REPO_2} tag: ${GIT_TAG_2}")
         FetchContent_MakeAvailable(${LIB_NAME_2})
         # Set a persistent cache variable to mark the library as populated
@@ -63,7 +63,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
 
     # Check if the library has already been populated
     FetchContent_GetProperties(${LIB_NAME_3})
-    if(NOT ${LIB_NAME_3}_ALREADY_POPULATED)
+    if(NOT ${LIB_NAME_3}_ALREADY_POPULATED OR NOT ${LIB_NAME_3}_SOURCE_DIR OR NOT ${LIB_NAME_3}_BINARY_DIR)
         message("Downloading dependency: ${LIB_NAME_3} from: ${GIT_REPO_3} tag: ${GIT_TAG_3}")
         FetchContent_MakeAvailable(${LIB_NAME_3})
         # Set a persistent cache variable to mark the library as populated

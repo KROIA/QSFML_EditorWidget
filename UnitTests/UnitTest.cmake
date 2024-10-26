@@ -19,7 +19,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
 
     # Check if the library has already been populated
     FetchContent_GetProperties(${LIB_NAME})
-    if(NOT ${LIB_NAME}_ALREADY_POPULATED)
+    if(NOT ${LIB_NAME}_ALREADY_POPULATED) OR NOT ${LIB_NAME}_SOURCE_DIR OR NOT ${LIB_NAME}_BINARY_DIR
         message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
         FetchContent_MakeAvailable(${LIB_NAME})
         # Set a persistent cache variable to mark the library as populated

@@ -25,17 +25,8 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
         include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/QtLocator.cmake)
     endif()
 
-    # Check if the library has already been populated
-    FetchContent_GetProperties(${LIB_NAME})
-    if(NOT ${LIB_NAME}_ALREADY_POPULATED)
-        message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
-        FetchContent_MakeAvailable(${LIB_NAME})
-        # Set a persistent cache variable to mark the library as populated
-        set(${LIB_NAME}_ALREADY_POPULATED TRUE CACHE INTERNAL "Mark ${LIB_NAME} as populated")
-    else()
-        # Re-run MyLibrary's CMakeLists.txt to set up include dirs, libraries, etc.
-        add_subdirectory("${${LIB_NAME}_SOURCE_DIR}" "${${LIB_NAME}_BINARY_DIR}" EXCLUDE_FROM_ALL)
-    endif()
+    message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
+    FetchContent_MakeAvailable(${LIB_NAME})
 
     set(EASY_PROFILER_IS_AVAILABLE ON PARENT_SCOPE)
 
