@@ -1,10 +1,10 @@
-## description: simple library to create log files and UI based logging systems
+## description: Simple library to create log files and UI based logging systems
 include(FetchContent)
 
 function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
     set(LIB_NAME Logger)
-	set(LIB_MACRO_NAME LOGGER_LIBRARY_AVAILABLE)
+    set(LIB_MACRO_NAME LOGGER_LIBRARY_AVAILABLE)
     set(GIT_REPO https://github.com/KROIA/Logger.git)
     set(GIT_TAG main)
 
@@ -16,8 +16,18 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
 
     set(${LIB_NAME}_NO_EXAMPLES True)
     set(${LIB_NAME}_NO_UNITTESTS True)
-    message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
-    FetchContent_MakeAvailable(${LIB_NAME})
+    
+    # Check if the library has already been populated
+    FetchContent_GetProperties(${LIB_NAME})
+    if(NOT ${LIB_NAME}_ALREADY_POPULATED)
+        message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
+        FetchContent_MakeAvailable(${LIB_NAME})
+        # Set a persistent cache variable to mark the library as populated
+        set(${LIB_NAME}_ALREADY_POPULATED TRUE CACHE INTERNAL "Mark ${LIB_NAME} as populated")
+    else()
+        # Re-run MyLibrary's CMakeLists.txt to set up include dirs, libraries, etc.
+        add_subdirectory("${${LIB_NAME}_SOURCE_DIR}" "${${LIB_NAME}_BINARY_DIR}" EXCLUDE_FROM_ALL)
+    endif()
 
     # Add this library to the specific profiles of this project
     list(APPEND DEPS_FOR_SHARED_LIB ${LIB_NAME}_shared)

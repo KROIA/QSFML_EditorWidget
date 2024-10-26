@@ -17,8 +17,6 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
     set(GIT_REPO_3 https://github.com/epezent/implot.git)
     set(GIT_TAG_3 master)
 
-    
-
     FetchContent_Declare(
         ${LIB_NAME_1}
         GIT_REPOSITORY ${GIT_REPO_1}
@@ -35,21 +33,45 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
 		GIT_TAG        ${GIT_TAG_3}
 	)
 
-
-    message("Downloading dependency: ${LIB_NAME_1} from: ${GIT_REPO_1} tag: ${GIT_TAG_1}")
-    FetchContent_MakeAvailable(${LIB_NAME_1})
+    # Check if the library has already been populated
+    FetchContent_GetProperties(${LIB_NAME_1})
+    if(NOT ${LIB_NAME_1}_ALREADY_POPULATED)
+        message("Downloading dependency: ${LIB_NAME_1} from: ${GIT_REPO_1} tag: ${GIT_TAG_1}")
+        FetchContent_MakeAvailable(${LIB_NAME_1})
+        # Set a persistent cache variable to mark the library as populated
+        set(${LIB_NAME_1}_ALREADY_POPULATED TRUE CACHE INTERNAL "Mark ${LIB_NAME_1} as populated")
+    else()
+        # Re-run MyLibrary's CMakeLists.txt to set up include dirs, libraries, etc.
+        add_subdirectory("${${LIB_NAME_1}_SOURCE_DIR}" "${${LIB_NAME_1}_BINARY_DIR}" EXCLUDE_FROM_ALL)
+    endif()
 
     set(IMGUI_DIR ${imgui_SOURCE_DIR})
     set(IMGUI_SFML_FIND_SFML OFF)
     set(IMGUI_SFML_IMGUI_DEMO ON)
 
+    # Check if the library has already been populated
+    FetchContent_GetProperties(${LIB_NAME_2})
+    if(NOT ${LIB_NAME_2}_ALREADY_POPULATED)
+        message("Downloading dependency: ${LIB_NAME_2} from: ${GIT_REPO_2} tag: ${GIT_TAG_2}")
+        FetchContent_MakeAvailable(${LIB_NAME_2})
+        # Set a persistent cache variable to mark the library as populated
+        set(${LIB_NAME_2}_ALREADY_POPULATED TRUE CACHE INTERNAL "Mark ${LIB_NAME_2} as populated")
+    else()
+        # Re-run MyLibrary's CMakeLists.txt to set up include dirs, libraries, etc.
+        add_subdirectory("${${LIB_NAME_2}_SOURCE_DIR}" "${${LIB_NAME_2}_BINARY_DIR}" EXCLUDE_FROM_ALL)
+    endif()
 
-    
-    message("Downloading dependency: ${LIB_NAME_2} from: ${GIT_REPO_2} tag: ${GIT_TAG_2}")
-    FetchContent_MakeAvailable(${LIB_NAME_2})
-
-    message("Downloading dependency: ${LIB_NAME_3} from: ${GIT_REPO_3} tag: ${GIT_TAG_3}")
-    FetchContent_MakeAvailable(${LIB_NAME_3})
+    # Check if the library has already been populated
+    FetchContent_GetProperties(${LIB_NAME_3})
+    if(NOT ${LIB_NAME_3}_ALREADY_POPULATED)
+        message("Downloading dependency: ${LIB_NAME_3} from: ${GIT_REPO_3} tag: ${GIT_TAG_3}")
+        FetchContent_MakeAvailable(${LIB_NAME_3})
+        # Set a persistent cache variable to mark the library as populated
+        set(${LIB_NAME_3}_ALREADY_POPULATED TRUE CACHE INTERNAL "Mark ${LIB_NAME_3} as populated")
+    else()
+        # Re-run MyLibrary's CMakeLists.txt to set up include dirs, libraries, etc.
+        add_subdirectory("${${LIB_NAME_3}_SOURCE_DIR}" "${${LIB_NAME_3}_BINARY_DIR}" EXCLUDE_FROM_ALL)
+    endif()
 
     set(IMPLOT_DIR ${implot_SOURCE_DIR})
     # Add ImPlot to the project
