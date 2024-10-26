@@ -36,7 +36,7 @@
 		#include <signal.h>
 		#define QSFML_DEBUG_BREAK() raise(SIGTRAP)
 	#else
-	#define QSFML_DEBUG_BREAK() ((void)0)  // Fallback in case it's an unknown compiler
+		#define QSFML_DEBUG_BREAK() ((void)0)  // Fallback in case it's an unknown compiler
 	#endif
 #else
 	#define QSFML_DEBUG_BREAK() ((void)0)  // No-op in release mode
