@@ -55,11 +55,14 @@ namespace QSFML
 	}
 
 	// sort redirection with lamda
-	template<typename T>
-	void sort(T begin, T end, std::function<bool(const typename T::value_type&, const typename T::value_type&)> compare)
+	template <typename Iterator, typename Compare = eastl::less<typename eastl::iterator_traits<Iterator>::value_type>>
+	void sort(Iterator first, Iterator last, Compare comp = Compare())
 	{
-		eastl::sort(begin, end, compare);
+		eastl::sort(first, last, comp);
 	}
+
+
+
 }
 
 // https://github.com/electronicarts/EASTL/blob/master/doc/CMake/EASTL_Project_Integration.md#setting-up-your-code
@@ -67,12 +70,6 @@ namespace QSFML
 // EASTL requires you to have an overload for the operator new[], here is an example that just forwards to global new[]:
 void* operator new[](size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line);
 void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, const char* pName, int flags, unsigned debugFlags, const char* file, int line);
-
-// EASTL also wants us to define this (see string.h line 197)
-//int Vsnprintf(char* pDestination, size_t n, const char* pFormat, va_list arguments);
-//int Vsnprintf8(char* pDestination, size_t n, const char* pFormat, va_list arguments);
-//int Vsnprintf16(char16_t* pDestination, size_t n, const char16_t* pFormat, va_list arguments);
-
 
 #else
 #include <vector>
@@ -108,10 +105,10 @@ namespace QSFML
 	}
 
 	// sort redirection with lamda
-	template<typename T>
-	void sort(T begin, T end, std::function<bool(const typename T::value_type&, const typename T::value_type&)> compare)
+	template <typename Iterator, typename Compare = std::less<typename std::iterator_traits<Iterator>::value_type>>
+	void sort(Iterator first, Iterator last, Compare comp = Compare())
 	{
-		std::sort(begin, end, compare);
+		std::sort(first, last, comp);
 	}
 }
 #endif

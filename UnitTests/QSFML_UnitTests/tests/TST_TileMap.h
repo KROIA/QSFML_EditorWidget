@@ -7,6 +7,8 @@
 #include <QDir>
 #include <QTimer>
 
+//#define ENABLE_SCREEN_CAPTURE
+
 using namespace QSFML;
 using namespace QSFML::Utilities;
 
@@ -129,6 +131,8 @@ public:
 		connect(&m_stopTimer, &QTimer::timeout, this, &TST_TileMap::onTimeout);
 
 		m_stopTimer.setInterval(20000);
+
+
 	}
 
 private slots:
@@ -160,6 +164,16 @@ private:
 		Objects::GameObjectPtr gameObj = new Objects::GameObject();
 		scene->addObject(gameObj);
 		scene->applyObjectChanges();
+
+#ifdef ENABLE_SCREEN_CAPTURE
+		Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(scene->getDefaultCamera(), 4);
+		QTimer* singleShotTimer = new QTimer(this);
+		singleShotTimer->singleShot(1000, [recorder]()
+									{
+										recorder->startCapture(500, 0.03, "screenshots/TileMap");
+									});
+		singleShotTimer->start();
+#endif
 
 		
 

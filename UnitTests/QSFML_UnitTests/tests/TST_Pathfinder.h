@@ -6,6 +6,7 @@
 #include <QCoreapplication>
 #include <QTimer>
 
+//#define ENABLE_SCREEN_CAPTURE
 
 using namespace QSFML;
 using namespace QSFML::Utilities;
@@ -25,6 +26,8 @@ public:
 
 		connect(&m_stopTimer, &QTimer::timeout, this, &TST_Pathfinder::onTimeout);
 		m_stopTimer.setInterval(60000);
+
+
 	}
 
 
@@ -177,6 +180,16 @@ private:
 		QSFML::Scene::setProfilerOutputFileName("randomPaths.prof");
 		QSFML::Scene* scene = createDefaultScene();
 		Pathfinder pathfinder;
+
+#ifdef ENABLE_SCREEN_CAPTURE
+		Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(scene->getDefaultCamera(), 4);
+		QTimer* singleShotTimer = new QTimer(this);
+		singleShotTimer->singleShot(1000, [recorder]()
+									{
+										recorder->startCapture(500, 0.03, "screenshots/PathFinder");
+									});
+		singleShotTimer->start();
+#endif
 
 		// Create a gameobject to manage the painting and motion of the nodes
 		Objects::GameObjectPtr obj = new Objects::GameObject("PathfinderObj");
