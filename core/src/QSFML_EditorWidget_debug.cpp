@@ -8,7 +8,7 @@
 
 
 /// USER_SECTION_START 2
-#if defined(EASTL) && defined(QSFML_USE_EASTL_IF_AVAILABLE)
+#if EASTL_LIBRARY_AVAILABLE == 1 && defined(QSFML_USE_EASTL_IF_AVAILABLE)
 // https://github.com/electronicarts/EASTL/blob/master/doc/CMake/EASTL_Project_Integration.md#setting-up-your-code
 // https://stackoverflow.com/questions/40856087/how-to-build-eastl-library
 void* operator new[](size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line)

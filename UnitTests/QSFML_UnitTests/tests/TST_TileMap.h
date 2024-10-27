@@ -166,7 +166,7 @@ private:
 		Utilities::ChunkManager *chunkManager = new Utilities::ChunkManager(Assets::TextureManager::getTexture("MapTiles0.png"), sf::Vector2u(5, 1));
 		chunkManager->setChunkFactory(Chunk::createFactory<MyChunk>());
 		//chunkManager->loadChunk(sf::Vector2f(-256, 16));
-		chunkManager->loadChunk(sf::FloatRect(-5000,-5000,10000,10000),32,true);
+		chunkManager->loadChunk(sf::FloatRect(-1000,-1000,2000,2000),32,true);
 		
 		gameObj->addUpdateFunction([&chunkManager](const Objects::GameObject& obj)
 			{

@@ -64,7 +64,14 @@
 #include "assets/TextureManager.h"
 #include "assets/TextureMap.h"
 
-//#ifdef FAST_NOISE_LITE
+#if FAST_NOISE_LITE_LIBRARY_AVAILABLE == 1
 	#include "FastNoiseLite.h"
-//#endif
+#endif
+
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+	#include "imgui.h"
+	#if IMPLOT_LIBRARY_AVAILABLE == 1
+		#include "implot.h"
+	#endif
+#endif
 /// USER_SECTION_END

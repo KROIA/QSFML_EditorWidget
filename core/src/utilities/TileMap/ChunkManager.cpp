@@ -171,7 +171,7 @@ namespace QSFML
 				    	 {
 				    		 endIdx = amountOfChunks;
 				    	 }
-						 std::vector<Chunk*> chunks;
+						 QSFML::vector<Chunk*> chunks;
 						 chunks.reserve(endIdx - startIdx);
 
 						 sf::IntRect bounds(start.x, start.y, end.x - start.x, end.y - start.y);
@@ -313,7 +313,7 @@ namespace QSFML
 		}
 
 
-		const std::vector<Chunk*>& ChunkManager::getChunks(const sf::FloatRect& area) const
+		const QSFML::vector<Chunk*>& ChunkManager::getChunks(const sf::FloatRect& area) const
 		{
 			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 #ifdef QSFML_DEBUG
@@ -447,7 +447,7 @@ namespace QSFML
 			return m_visibleChunks;
 		}
 
-		const std::vector<ChunkManager::ChunkGroup*>& ChunkManager::getChunkGroups(const sf::FloatRect& area) const
+		const QSFML::vector<ChunkManager::ChunkGroup*>& ChunkManager::getChunkGroups(const sf::FloatRect& area) const
 		{
 #ifdef QSFML_DEBUG
 			m_visibleChunkGroupBounds.clear();
@@ -610,7 +610,7 @@ namespace QSFML
 #endif
 			if (zoom < 1)
 			{
-				const std::vector<Chunk*>& chunks = getChunks(viewRect);
+				const QSFML::vector<Chunk*>& chunks = getChunks(viewRect);
 				if (zoom < 0.2)
 				{
 					states.texture = &m_resources.textureMap.getTexture();
