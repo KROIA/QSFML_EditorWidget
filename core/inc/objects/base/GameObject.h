@@ -1496,8 +1496,8 @@ protected:
         bool getAllChildsRecursive_internal(const std::string& name, QSFML::vector<GameObjectPtr>& foundList);
         
         void markTransformDirty();
-        sf::Transform updateTransformInternal(sf::Transform parentTransform) const;
-		sf::Transform updateTransformInternal()const;
+        void updateTransformInternal(sf::Transform parentTransform) const;
+		void updateTransformInternal()const;
         
         //bool findAllComponentsRecursive_internal(const std::string& name, QSFML::vector<Components::Component*>& foundList);
 
