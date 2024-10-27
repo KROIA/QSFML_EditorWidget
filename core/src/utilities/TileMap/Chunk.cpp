@@ -55,8 +55,17 @@ namespace QSFML
 
 		Chunk::~Chunk()
 		{
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
+			QSFMLP_GENERAL_BLOCK("m_lowResVertexBuffer.clear()", QSFML_COLOR_STAGE_2);
+			m_lowResVertexBuffer.clear();
+			QSFMLP_GENERAL_END_BLOCK;
+			QSFMLP_GENERAL_BLOCK("m_vertexBuffer.clear()", QSFML_COLOR_STAGE_2);
+			m_vertexBuffer.clear();
+			QSFMLP_GENERAL_END_BLOCK;
+			QSFMLP_GENERAL_BLOCK("delete m_chunkData",QSFML_COLOR_STAGE_2);
 			if (m_chunkData)
 				delete m_chunkData;
+			QSFMLP_GENERAL_END_BLOCK;
 		}
 
 		sf::IntRect Chunk::getBounds(const QSFML::vector<Chunk*>& chunks)

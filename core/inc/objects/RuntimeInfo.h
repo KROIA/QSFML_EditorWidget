@@ -24,7 +24,9 @@ namespace QSFML
             void update() override;
 
         private:
+#if IMGUI_SFML_LIBRARY_AVAILABLE != 1
             Components::Text* m_text;
+#endif
             QSFML::Utilities::Stats m_oldStats;
             bool m_smoothStats;
         };

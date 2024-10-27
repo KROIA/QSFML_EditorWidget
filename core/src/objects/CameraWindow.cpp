@@ -32,6 +32,7 @@ namespace QSFML
         }
         void CameraWindow::setup()
         {
+			m_lastTransform.rotate(rand() % 360);
             // Setup layout of this widget
             if (parentWidget())
             {
@@ -45,28 +46,23 @@ namespace QSFML
             }
 
             // Setup some states to allow direct rendering into the widget
-            setAttribute(Qt::WA_PaintOnScreen);
-            setAttribute(Qt::WA_OpaquePaintEvent);
-            setAttribute(Qt::WA_NoSystemBackground);
+          //  setAttribute(Qt::WA_PaintOnScreen);
+          //  setAttribute(Qt::WA_OpaquePaintEvent);
+          //  setAttribute(Qt::WA_NoSystemBackground);
 
             // Set strong focus to enable keyboard events to be received
-            setFocusPolicy(Qt::StrongFocus);
+            setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
             //m_updateTimer.onFinished(std::bind(&Scene::update, this));
             connect(&m_frameTimer, &QTimer::timeout, this, &CameraWindow::onFrame, Qt::DirectConnection);
             m_frameTimer.setInterval(1000 / 30.f);
             //setSettings(settings);
-
+            createRenderWindow();
             show();
         }
         CameraWindow::~CameraWindow()
         {
-            m_frameTimer.stop();
-            if (m_window)
-            {
-                m_window->close();
-                delete m_window;
-            }
+            destroyRenderWindow();
             delete m_screenCaptureTexture;
         }
 
@@ -78,17 +74,17 @@ namespace QSFML
             {
                 m_window->setView(view);
                 
-                sf::Transform transform;
-                if(getParent())
-                    transform = getParent()->getGlobalTransform().getInverse();
+                //sf::Transform transform;
+                //if(getParent())
+                //    transform = getParent()->getGlobalTransform().getInverse();
 
-                sf::Vector2f center = transform.transformPoint(view.getCenter());
-                float rotation = std::atan2(transform.getMatrix()[1], transform.getMatrix()[0]) * 180 / M_PI;
-                sf::Vector2f size = transform.transformPoint(view.getCenter() + view.getSize() / 2.f) - center;
-                sf::Vector2f scale = VectorMath::getScale(transform);
-                GameObject::setPosition(center);
-                GameObject::setRotation(rotation);
-                GameObject::setScale(size);
+                //sf::Vector2f center = transform.transformPoint(view.getCenter());
+                //float rotation = std::atan2(transform.getMatrix()[1], transform.getMatrix()[0]) * 180 / M_PI;
+                //sf::Vector2f size = transform.transformPoint(view.getCenter() + view.getSize() / 2.f) - center;
+                //sf::Vector2f scale = VectorMath::getScale(transform);
+                //GameObject::setPosition(center);
+                //GameObject::setRotation(rotation);
+                //GameObject::setScale(size);
             }
         }
         const sf::View& CameraWindow::getThisCameraView() const
@@ -208,6 +204,13 @@ namespace QSFML
 			static sf::Vector2u dummy;
 			return dummy;
         }
+		void CameraWindow::setForceFocus()
+		{
+            if (m_window)
+            {
+                SetFocus((HWND)m_window->getSystemHandle());
+            }
+		}
 
 
         /*
@@ -276,7 +279,12 @@ namespace QSFML
         {
             if (!getSceneParent() || !m_window)
                 return;
+            m_window->setActive(true);
             getSceneParent()->paint(this);
+            QSFMLP_SCENE_BLOCK("Process Display", QSFML_COLOR_STAGE_8);
+            m_window->display();
+            m_window->setActive(false);
+            QSFMLP_SCENE_END_BLOCK;
         }
         void CameraWindow::pollEvents()
         {
@@ -315,7 +323,7 @@ namespace QSFML
 				return;
             m_lastTransform = transform;
 			sf::View view = m_window->getView();
-            
+
             view.setCenter(transform.transformPoint(sf::Vector2f(0,0)));
             float rotation = std::atan2(transform.getMatrix()[1], transform.getMatrix()[0]) * 180 / M_PI;
             view.setRotation(rotation);
@@ -345,68 +353,16 @@ namespace QSFML
         }
         void CameraWindow::showEvent(QShowEvent*)
         {
-            if (!m_window)
-            {
-                // Under X11, we need to flush the commands sent to the server to ensure that
-                // SFML will get an updated view of the windows
-#ifdef Q_WS_X11
-                XFlush(QX11Info::display());
-#endif
-
-                // Create the SFML window with the widget handle
-                m_window = new sf::RenderWindow((sf::WindowHandle)QWidget::winId(), m_settings);
-                m_window->setFramerateLimit(0);
-                //m_window->setVerticalSyncEnabled(false);
-                //m_view = m_window->getView();
-
-               
-                //m_updateTimer.autoRestart(true);
-                //m_updateTimer.start();
-
-
-               // m_syncedUpdateT_t1 = std::chrono::high_resolution_clock::now();
-               // m_update_t1 = m_syncedUpdateT_t1;
-               // m_paint_t1 = m_syncedUpdateT_t1;
-                m_oldViewSize = m_window->getSize();
-				m_currentViewSize = m_oldViewSize;
-
-                // Calculate the dpi scale
-                QRect geometry = QWidget::geometry();
-                m_dpiScale.x = (float)m_oldViewSize.x / geometry.width();
-                m_dpiScale.y = (float)m_oldViewSize.y / geometry.height();
-
-
-                //sf::View view = m_window->getView();
-                //GameObject::setPosition(view.getCenter());
-                //GameObject::setRotation(view.getRotation());
-                //GameObject::setScale(view.getSize());
-            }
-
-            // Setup the timer to trigger a refresh at specified framerate
-            if(m_enableFrameTimer)
-                m_frameTimer.start();
+            createRenderWindow();
         }
         void CameraWindow::closeEvent(QCloseEvent*)
         {
-            m_frameTimer.stop();
-            if (m_window)
-            {
-                m_window->close();
-                delete m_window;
-                m_window = nullptr;
-            }
+            destroyRenderWindow();
         }
         void CameraWindow::hideEvent(QHideEvent*)
         {
-			m_frameTimer.stop();
-            if (m_window)
-            {
-                m_window->close();
-                delete m_window;
-                m_window = nullptr;
-            }
+            destroyRenderWindow();
         }
-
 
         void CameraWindow::resizeEvent(QResizeEvent* event)
         {
@@ -445,5 +401,62 @@ namespace QSFML
 				m_screenCaptureTexture->create(newSize.x, newSize.y);
             }
         }
+        void CameraWindow::createRenderWindow()
+        {
+            if (!m_window)
+            {
+                // Under X11, we need to flush the commands sent to the server to ensure that
+                // SFML will get an updated view of the windows
+#ifdef Q_WS_X11
+                XFlush(QX11Info::display());
+#endif
+
+                // Create the SFML window with the widget handle
+				sf::WindowHandle winId_ = (sf::WindowHandle)this->winId();
+                m_window = new sf::RenderWindow(winId_, m_settings);
+                m_window->setFramerateLimit(0);
+                //m_window->setVerticalSyncEnabled(false);
+                //m_view = m_window->getView();
+
+
+                //m_updateTimer.autoRestart(true);
+                //m_updateTimer.start();
+
+
+               // m_syncedUpdateT_t1 = std::chrono::high_resolution_clock::now();
+               // m_update_t1 = m_syncedUpdateT_t1;
+               // m_paint_t1 = m_syncedUpdateT_t1;
+                m_oldViewSize = m_window->getSize();
+                m_currentViewSize = m_oldViewSize;
+
+                // Calculate the dpi scale
+                QRect geometry = QWidget::geometry();
+                m_dpiScale.x = (float)m_oldViewSize.x / geometry.width();
+                m_dpiScale.y = (float)m_oldViewSize.y / geometry.height();
+
+
+                //sf::View view = m_window->getView();
+                //GameObject::setPosition(view.getCenter());
+                //GameObject::setRotation(view.getRotation());
+                //GameObject::setScale(view.getSize());
+            }
+
+            // Setup the timer to trigger a refresh at specified framerate
+            if (m_enableFrameTimer)
+                m_frameTimer.start();
+        }
+        void CameraWindow::destroyRenderWindow()
+        {
+            m_frameTimer.stop();
+            if (m_window)
+            {
+                if (getSceneParent())
+                    getSceneParent()->onCameraWindowClose(this);
+                m_window->close();
+                delete m_window;
+                m_window = nullptr;
+            }
+        }
+
     }
 }

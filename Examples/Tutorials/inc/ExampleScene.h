@@ -15,7 +15,8 @@ class ExampleScene : public QMainWindow
         tutorial_1,
         tutorial_2,
         tutorial_3,
-        tutorial_4
+        tutorial_4,
+        tutorial_5
     };
 
 public:
@@ -29,6 +30,7 @@ private:
     void setupTutorial_2(QSFML::Scene* scene);
     void setupTutorial_3(QSFML::Scene* scene);
     void setupTutorial_4(QSFML::Scene* scene);
+    void setupTutorial_5(QSFML::Scene* scene);
 
     void setupScene(Tutorial t);
     void closeEvent(QCloseEvent* event) override;

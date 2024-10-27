@@ -14,6 +14,7 @@ namespace QSFML
         COMPONENT_IMPL(Transform);
         Transform()
 			: Component("Transform")
+			, m_needsTransformUpdate(true)
         {
 
         }
@@ -187,7 +188,7 @@ namespace QSFML
 
 			sf::Transformable m_transformable;
 
-			mutable bool m_needsTransformUpdate = false;
+			mutable bool m_needsTransformUpdate;
 			mutable sf::Transform m_globalTransform;
 		};
 

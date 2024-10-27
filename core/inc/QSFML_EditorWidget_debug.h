@@ -6,7 +6,7 @@
 /// USER_SECTION_END
 
 // The Logger library is automaticly included if the logger dependency .cmake file is available
-#if defined(LOGGER)
+#if LOGGER_LIBRARY_AVAILABLE == 1
 	#include "Logger.h"
 #endif
 
@@ -41,6 +41,7 @@
 #else
 	#define QSFML_DEBUG_BREAK() ((void)0)  // No-op in release mode
 #endif
+
 /// USER_SECTION_END
 
 #ifdef QSFML_PROFILING
@@ -122,7 +123,7 @@ namespace QSFML
 /// USER_SECTION_END
 
 
-#if defined(LOGGER)
+#if LOGGER_LIBRARY_AVAILABLE == 1
 	class QSFML_EDITOR_WIDGET_EXPORT Logger 
 	{
 		/// USER_SECTION_START 8

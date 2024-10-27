@@ -11,7 +11,10 @@ namespace QSFML
 		}
 		ChunkData::~ChunkData()
 		{
-
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_3);
+			QSFMLP_GENERAL_BLOCK("m_textureIdx.clear()", QSFML_COLOR_STAGE_4);
+			m_textureIdx.clear();
+			QSFMLP_GENERAL_END_BLOCK;
 		}
 
 

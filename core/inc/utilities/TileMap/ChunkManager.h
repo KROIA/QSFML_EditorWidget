@@ -15,9 +15,9 @@ namespace QSFML
 				std::size_t operator()(const sf::Vector2i& v) const {
 					size_t hashed = 0;
 
-					static constexpr int shiftCount = sizeof(int) * 8;
-					long xMasked = ((long)v.x << shiftCount);
-					long yMasked = ((long)v.y & (~long(0) >> shiftCount));
+					static constexpr unsigned int shiftCount = (unsigned int)sizeof(int) * 8;
+					long xMasked = (((long)v.x) << shiftCount);
+					long yMasked = (((long)v.y) & (~long(0) >> shiftCount));
 					// shorten the int range and combine both coordinates to one value
 					hashed = xMasked | yMasked;
 					return hashed;
@@ -39,7 +39,7 @@ namespace QSFML
 			void loadChunk(const sf::Vector2f& pos);
 			
 
-			const std::vector<Chunk*>& getChunks(const sf::FloatRect &area) const;
+			const QSFML::vector<Chunk*>& getChunks(const sf::FloatRect &area) const;
 			const sf::IntRect& getLoadedChunkBounds() const { return m_generatedChunkBounds; }
 			size_t getLoadedChunkCount() const { return m_loadedChunks.size(); }
 
@@ -204,12 +204,13 @@ namespace QSFML
 
 				
 			};
-			const std::vector<ChunkGroup*>& getChunkGroups(const sf::FloatRect& area) const;
+			const QSFML::vector<ChunkGroup*>& getChunkGroups(const sf::FloatRect& area) const;
 			void updateGeneratedChunkBounds(const QSFML::vector<Chunk*>& newChunks);
 			void updateGeneratedChunkBounds(const Chunk*& newChunk);
 			void insertNewChunk(Chunk*& chunk);
 
 			std::unordered_map<sf::Vector2i, Chunk*, VectorHash> m_loadedChunks;
+			QSFML::vector<Chunk*> m_loadedChunksVec;
 			std::unordered_map<sf::Vector2i, ChunkGroup*, VectorHash>m_chunkGroups;
 			sf::IntRect m_generatedChunkBounds;
 
@@ -227,11 +228,12 @@ namespace QSFML
 
 			struct AsyncChunkLoaderData
 			{
-				std::mutex mutex;
 				std::atomic<bool> stop;
 				std::vector<std::thread*> threads;
 				QSFML::vector<Chunk*> loadedChunks;
 			};
+			std::mutex m_mutex;
+			std::atomic<int> m_threadsLoading;
 
 			std::vector<AsyncChunkLoaderData*> m_asyncChunkLoaderData;
 

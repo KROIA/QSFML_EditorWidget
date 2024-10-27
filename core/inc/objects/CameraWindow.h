@@ -49,6 +49,8 @@ namespace QSFML
 
 			void enableFrameTimer(bool enable);
 
+			void setForceFocus();
+
 			/*
 			void setPosition(float x, float y) override;
 			void setPosition(const sf::Vector2f& position) override;
@@ -89,7 +91,8 @@ namespace QSFML
 			private:
 
 			void resizeEvent(const sf::Vector2u& oldSize, const sf::Vector2u& newSize);
-
+			void createRenderWindow();
+			void destroyRenderWindow();
 
 			sf::RenderWindow* m_window = nullptr;
 			sf::ContextSettings m_settings;

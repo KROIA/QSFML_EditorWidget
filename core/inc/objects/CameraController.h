@@ -15,7 +15,7 @@ class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
 {
         class SfEventComponent;
     public:
-        CameraController(const std::string &name = "",
+        CameraController(const std::string &name = "CameraController",
                          GameObjectPtr parent = nullptr);
         CameraController(const CameraController &other);
         ~CameraController();

@@ -49,6 +49,7 @@ namespace QSFML
 		}
 		ChunkManager::~ChunkManager()
 		{
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 			for (size_t i = 0; i < m_asyncChunkLoaderData.size(); ++i)
 			{
 				m_asyncChunkLoaderData[i]->stop = true;
@@ -59,10 +60,69 @@ namespace QSFML
 				}
 			}
 
-			for (auto& chunk : m_loadedChunks)
+			// Create threads to delete all chunks
+			//size_t numThreads = std::thread::hardware_concurrency();
+			//
+			//if (amountOfChunks < numThreads)
+			//	numThreads = 0;
+			//numThreads = 0;
+			/*std::vector<Chunk*> chunks;
+			size_t amountOfChunks = m_loadedChunks.size();
+			chunks.resize(amountOfChunks);
+			auto it = m_loadedChunks.begin();
+			for (size_t i = 0; i < amountOfChunks; ++i)
 			{
-				delete chunk.second;
+				chunks[i] = it->second;
+				++it;
+			}*/
+			/*if (numThreads > 1)
+			{
+				QSFMLP_GENERAL_BLOCK("Delete chunks threaded", QSFML_COLOR_STAGE_2);
+				size_t chunksPerThread = amountOfChunks / numThreads;
+
+				std::vector<std::thread> threads;
+				
+				threads.reserve(numThreads);
+				for (size_t i = 0; i < numThreads; ++i)
+				{
+					size_t startIdx = i * chunksPerThread;
+					size_t endIdx = (i + 1) * chunksPerThread;
+					if (i == numThreads - 1)
+					{
+						endIdx = amountOfChunks;
+					}
+					threads.emplace_back([this, startIdx, endIdx, &chunks]()
+						{
+							QSFML_PROFILING_THREAD("Delete chunks");
+							for (size_t j = startIdx; j < endIdx; ++j)
+							{
+								//QSFMLP_GENERAL_BLOCK("Delete chunks threaded", QSFML_COLOR_STAGE_3);
+								delete chunks[j];
+							}
+						});
+				}
+				QSFMLP_GENERAL_BLOCK("Waiting for threads to finish", QSFML_COLOR_STAGE_3);
+				for (size_t i = 0; i < numThreads; ++i)
+				{
+					threads[i].join();
+				}
+				QSFMLP_GENERAL_END_BLOCK;
+
 			}
+			else
+			{*/
+				QSFMLP_GENERAL_BLOCK("Delete chunks", QSFML_COLOR_STAGE_2);
+				// Delete all chunks
+				//for (auto& chunk : chunks)
+				//{
+				//	delete chunk;
+				//}
+				size_t s = m_loadedChunksVec.size();
+				for (size_t i = 0; i < s; ++i)
+				{
+					delete m_loadedChunksVec[i];
+				}
+			//}
 		}
 
 		void ChunkManager::loadChunk(const sf::FloatRect& area, size_t numThreads, bool async)
@@ -100,6 +160,7 @@ namespace QSFML
 				chunkLoader->threads.reserve(numThreads);
 				chunkLoader->loadedChunks.reserve(amountOfChunks);
 				chunkLoader->stop = false;
+				m_threadsLoading += numThreads;
 				for (size_t i = 0; i < numThreads; ++i)
 				{
 					chunkLoader->threads.emplace_back(new std::thread([this, i, start, end, chunksPerThread, chunkLoader, numThreads, amountOfChunks, async]()
@@ -110,6 +171,15 @@ namespace QSFML
 				    	 {
 				    		 endIdx = amountOfChunks;
 				    	 }
+						 QSFML::vector<Chunk*> chunks;
+						 chunks.reserve(endIdx - startIdx);
+
+						 sf::IntRect bounds(start.x, start.y, end.x - start.x, end.y - start.y);
+						 bool allNotLoaded = true;
+						 if (m_generatedChunkBounds.intersects(bounds))
+							 allNotLoaded = false;
+
+
 				    	 for (size_t j = startIdx; j < endIdx; ++j)
 				    	 {
 							 if (chunkLoader->stop)
@@ -119,36 +189,56 @@ namespace QSFML
 				    
 				    		 sf::Vector2i chunkPos = getChunkPosition(sf::Vector2f(x,y));
 				    
-				    		 auto it = m_loadedChunks.find(chunkPos);
-				    		 if (it == m_loadedChunks.end())
+							 if(!allNotLoaded)
+							 {
+								 std::unique_lock<std::mutex> lock(m_mutex);
+								 auto it = m_loadedChunks.find(chunkPos); // My be not thread safe
+								 if (it != m_loadedChunks.end())
+								 {
+					
+									 getLogger().logInfo("loadChunk_threaded(th=" + std::to_string(i) + "): Pos: {" + std::to_string(chunkPos.x) + "," + std::to_string(chunkPos.y) + "} "
+										 "Chunk already loaded");
+									 continue;
+								 }
+							 }
+				    		    
+				    		 Chunk* chunk = m_chunkFactory->create(chunkPos, m_resources, m_scale);
+							 chunks.push_back(chunk);
+				    		 //Chunk* chunk = new Chunk(chunkPos, m_resources, m_scale);
+				    		 chunk->generate();
+				    		 chunk->updateTextureCoords();
+							 
+							 if (chunks.size() >= 20 && async)
 				    		 {
-#ifdef QSFML_DEBUG
-				    			// getLogger().logInfo("loadChunk_threaded(th="+std::to_string(i)+") : Pos: { " + std::to_string(chunkPos.x) + ", " + std::to_string(chunkPos.y) + " } "
-				    			//					 "Loading new chunk");
-#endif			    
-				    			 Chunk* chunk = m_chunkFactory->create(chunkPos, m_resources, m_scale);
-				    			 //Chunk* chunk = new Chunk(chunkPos, m_resources, m_scale);
-				    			 chunk->generate();
-				    			 chunk->updateTextureCoords();
-				    			 {
-				    				 std::unique_lock<std::mutex> lock(chunkLoader->mutex);
-									 if (async)
-									 {
-										 updateGeneratedChunkBounds({ chunk });
-										 insertNewChunk(chunk);
-									 }
-									 else
-										 chunkLoader->loadedChunks.emplace_back(chunk);
-				    				 
-				    			 }
-				    		 }
-				    		 else
-				    		 {
-				    			 getLogger().logInfo("loadChunk_threaded(th=" + std::to_string(i) + "): Pos: {" + std::to_string(chunkPos.x) + "," + std::to_string(chunkPos.y) + "} "
-				    								 "Chunk already loaded");
-				    		 }
+							  {
+							 	 std::unique_lock<std::mutex> lock(m_mutex);
+							 
+							 	 updateGeneratedChunkBounds(chunks);
+							 	 for (size_t ch = 0; ch < chunks.size(); ++ch)
+							 		 insertNewChunk(chunks[ch]);
+							  }
+							  chunks.clear();
+							  chunks.reserve(20);
+							 }
+				    		 
+				    		 
 				    		 //loadChunk(sf::Vector2f(x, y));
 				    	 }
+						 if (async)
+						 {
+							 std::unique_lock<std::mutex> lock(m_mutex);
+
+							 updateGeneratedChunkBounds(chunks);
+							 for (size_t ch = 0; ch < chunks.size(); ++ch)
+								 insertNewChunk(chunks[ch]);
+						 }
+						 else
+						 {
+							 std::unique_lock<std::mutex> lock(m_mutex);
+							 chunkLoader->loadedChunks.insert(chunkLoader->loadedChunks.end(), chunks.begin(), chunks.end());
+						 }
+						 m_threadsLoading--;
+						 
 				     }));
 				}
 
@@ -177,9 +267,28 @@ namespace QSFML
 		{
 			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 			sf::Vector2i chunkPos = getChunkPosition(pos);
-
-			auto it = m_loadedChunks.find(chunkPos);
-			if (it == m_loadedChunks.end())
+			bool exists = true;
+			{
+				if (m_threadsLoading > 0)
+				{
+					std::unique_lock<std::mutex> lock(m_mutex);
+					auto it = m_loadedChunks.find(chunkPos);
+					if (it == m_loadedChunks.end())
+					{
+						exists = false;
+					}
+				}
+				else
+				{
+					auto it = m_loadedChunks.find(chunkPos);
+					if (it == m_loadedChunks.end())
+					{
+						exists = false;
+					}
+				}
+				
+			}
+			if (!exists)
 			{
 #ifdef QSFML_DEBUG
 				getLogger().logInfo("loadChunk(): Pos: {" + std::to_string(chunkPos.x) + "," + std::to_string(chunkPos.y) + "} "
@@ -204,7 +313,7 @@ namespace QSFML
 		}
 
 
-		const std::vector<Chunk*>& ChunkManager::getChunks(const sf::FloatRect& area) const
+		const QSFML::vector<Chunk*>& ChunkManager::getChunks(const sf::FloatRect& area) const
 		{
 			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 #ifdef QSFML_DEBUG
@@ -338,7 +447,7 @@ namespace QSFML
 			return m_visibleChunks;
 		}
 
-		const std::vector<ChunkManager::ChunkGroup*>& ChunkManager::getChunkGroups(const sf::FloatRect& area) const
+		const QSFML::vector<ChunkManager::ChunkGroup*>& ChunkManager::getChunkGroups(const sf::FloatRect& area) const
 		{
 #ifdef QSFML_DEBUG
 			m_visibleChunkGroupBounds.clear();
@@ -372,7 +481,6 @@ namespace QSFML
 			sf::FloatRect frameRect = sf::FloatRect(sf::Vector2f(chunkGroupStart),
 												   sf::Vector2f(chunkGroupEnd- chunkGroupStart));
 			m_visibleChunkGroupBounds.push_back(frameRect);
-
 #endif
 
 			// Find relevant ChunkGroups
@@ -452,6 +560,7 @@ namespace QSFML
 			sf::Vector2i chunkGroupPos = getChunkGroupPosition(chunkPos);
 
 			m_loadedChunks.insert(std::make_pair(chunkPos, chunk));
+			m_loadedChunksVec.push_back(chunk);
 
 			auto groupIt = m_chunkGroups.find(chunkGroupPos);
 			if (groupIt == m_chunkGroups.end())
@@ -501,7 +610,7 @@ namespace QSFML
 #endif
 			if (zoom < 1)
 			{
-				const std::vector<Chunk*>& chunks = getChunks(viewRect);
+				const QSFML::vector<Chunk*>& chunks = getChunks(viewRect);
 				if (zoom < 0.2)
 				{
 					states.texture = &m_resources.textureMap.getTexture();
@@ -526,7 +635,7 @@ namespace QSFML
 				{
 					chunk->draw(target, states);
 				}
-				getLogger().logInfo("Visible low level chunk groups: " + std::to_string(m_visibleChunkGroups.size()));
+				//getLogger().logInfo("Visible low level chunk groups: " + std::to_string(m_visibleChunkGroups.size()));
 			}
 
 #ifdef QSFML_DEBUG

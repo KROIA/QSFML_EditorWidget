@@ -14,7 +14,7 @@
 #include "SFML/System/Vector2.hpp"
 
 
-#if defined(EASTL) && defined(QSFML_USE_EASTL_IF_AVAILABLE)
+#if EASTL_LIBRARY_AVAILABLE == 1 && defined(QSFML_USE_EASTL_IF_AVAILABLE)
 
 namespace EA {
 	namespace StdC {

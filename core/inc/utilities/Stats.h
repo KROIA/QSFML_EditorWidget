@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <atomic>
 #include <string>
+#include <array>
 
 namespace QSFML
 {
@@ -98,6 +99,10 @@ namespace QSFML
 			std::string toString() const;
 			void print() const;
 
+#if IMGUI_SFML_LIBRARY_AVAILABLE == 1
+			void drawImGui() const;
+#endif
+
 		private:
 			void resetFrame_synced(Stats &copyTo);
 			void resetFrame_eventloop(Stats &copyTo);
@@ -124,6 +129,21 @@ namespace QSFML
 			double m_deltaT;		// Time in s
 			double m_fixedDeltaT;	// Time in s
 			double m_elapsedTime;	// Time in s
+
+#if IMPLOT_LIBRARY_AVAILABLE == 1
+			static constexpr size_t c_dataSize = 100;
+			mutable std::array<double, c_dataSize> m_fpsData;
+			mutable std::array<double, c_dataSize> m_tpsData;
+			//mutable std::array<double, c_dataSize> m_frameTimeData;
+			mutable std::array<double, c_dataSize> m_eventTimeData;
+			mutable std::array<double, c_dataSize> m_updateTimeData;
+			mutable std::array<double, c_dataSize> m_drawTimeData;
+			//mutable std::array<double, c_dataSize> m_deltaTData;
+			//mutable std::array<double, c_dataSize> m_elapsedTimeData;
+			mutable size_t m_currentDataIndex = 0;
+
+			void clearAllPlotBuffer() const;
+#endif
 
 			size_t m_tick;
 		};

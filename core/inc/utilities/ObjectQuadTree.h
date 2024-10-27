@@ -89,8 +89,7 @@ namespace QSFML
 				{
 					if (m_tree)
 					{
-						QSFMLP_COMPONENT_FUNCTION(QSFML_COLOR_STAGE_1);
-						QSFMLP_COMPONENT_TEXT("Name", getName());
+		
 						sf::RectangleShape rect;
 						//rect.setPosition(m_area.TL());
 						//rect.setSize(m_area.getSize());

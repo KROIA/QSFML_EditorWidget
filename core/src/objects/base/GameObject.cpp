@@ -19,7 +19,13 @@ using namespace QSFML;
 using namespace QSFML::Objects;
 using namespace QSFML::Components;
 
-OBJECT_IMPL(GameObject)
+OBJECT_IMPL(GameObject);
+
+Log::LogObject& GameObject::getLogger()
+{
+	static Log::LogObject logger("GameObject");
+	return logger;
+}
 
 size_t GameObject::s_objNameCounter = 0;
 GameObject::GameObject(const std::string &name, GameObject* parent)
@@ -576,43 +582,59 @@ void GameObject::log(const Log::Message& msg) const
 {
     if (m_logObject)
         m_logObject->log(msg);
+    else
+		getLogger().log(msg);
 }
 
 void GameObject::log(const std::string& msg) const
 {
     if (m_logObject)
         m_logObject->log(msg);
+	else
+		getLogger().log(msg);
 }
 void GameObject::log(const std::string& msg, Log::Level level) const
 {
     if (m_logObject)
         m_logObject->log(msg, level);
+    else
+		getLogger().log(msg, level);
 }
 void GameObject::log(const std::string& msg, Log::Level level, const Log::Color& col) const
 {
     if (m_logObject)
         m_logObject->log(msg, level, col);
+    else
+		getLogger().log(msg, level, col);
 }
 
 void GameObject::logDebug(const std::string& msg) const
 {
     if (m_logObject)
         m_logObject->logDebug(msg);
+    else
+		getLogger().logDebug(msg);
 }
 void GameObject::logInfo(const std::string& msg) const
 {
     if (m_logObject)
         m_logObject->logInfo(msg);
+    else
+		getLogger().logInfo(msg);
 }
 void GameObject::logWarning(const std::string& msg) const
 {
     if (m_logObject)
         m_logObject->logWarning(msg);
+    else
+		getLogger().logWarning(msg);
 }
 void GameObject::logError(const std::string& msg) const
 {
     if (m_logObject)
         m_logObject->logError(msg);
+    else
+		getLogger().logError(msg);
 }
 
 
@@ -855,6 +877,11 @@ void GameObject::update_internal()
             }
         }
     }
+
+    //if (this == m_rootParent)
+    //{
+	//	updateTransformInternal();
+    //}
 }
 
 void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const

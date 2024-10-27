@@ -321,6 +321,8 @@ namespace QSFML
 				m_sceneParent->removeGameObject(removeCount);
 				m_sceneParent->addGameObject(addCount);
 			}
+			if (addCount > 0)
+				markTransformDirty();
 		}
 
 		void GameObject::onObjectsChanged()
@@ -335,6 +337,7 @@ namespace QSFML
 
 		void GameObject::inSceneAdded_internal()
 		{
+			markTransformDirty();
 			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
 			QSFMLP_OBJECT_BLOCK("Object onAwake", QSFML_COLOR_STAGE_2);
 			onAwake();
