@@ -185,9 +185,9 @@ include(cmake/ExampleMaster.cmake)
 
 ## USER_SECTION_END
 
-foreach(DEF ${DEPENDENCY_NAME_MACRO})
- 	add_compile_definitions(${DEF})
-endforeach()
+# foreach(DEF ${DEPENDENCY_NAME_MACRO})
+#  	add_compile_definitions(${DEF})
+# endforeach()
 
 ## USER_SECTION_START 5
 
