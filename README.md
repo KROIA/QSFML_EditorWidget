@@ -65,7 +65,8 @@ This library is used to create simulations or simple games. It doesn't have all 
 * Multiple camera views can be used in one scene.
 * Predefined Components ready to use.
 * Disable specific parts of the update loop for all or individual objects to speed up the engine
-
+* [Dear Im Gui](https://github.com/ocornut/imgui) compatible
+* Built in performance [profiler](https://github.com/yse/easy_profiler)
 
 ## Installation
 #### Dependencies
