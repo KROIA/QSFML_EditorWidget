@@ -52,3 +52,9 @@ foreach(child ${children})
     message("Loading dependency ${child}")
     include(${dependency_dir}/${child})
 endforeach()
+
+# Remove duplicates from DEPENDENCY_NAME_MACRO
+list(REMOVE_DUPLICATES DEPENDENCY_NAME_MACRO)
+
+# Caching DEPENDENCY_NAME_MACRO
+set(DEPENDENCY_NAME_MACRO ${DEPENDENCY_NAME_MACRO} CACHE INTERNAL "Global defines to use in code to check for available libraries" FORCE)
