@@ -41,6 +41,17 @@ This library is used to create simulations or simple games. It doesn't have all 
 </div>
 </td>
 </tr>
+    <td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/TileMap.gif" > 
+</div>
+</td>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/PathFinder.gif" > 
+</div>
+</td>
+</tr>
 </table>
 
 
