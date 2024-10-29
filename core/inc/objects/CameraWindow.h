@@ -50,6 +50,7 @@ namespace QSFML
 			void enableFrameTimer(bool enable);
 
 			void setForceFocus();
+			bool isMouseOverWindow() const;
 
 			/*
 			void setPosition(float x, float y) override;

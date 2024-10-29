@@ -216,7 +216,7 @@ namespace QSFML
 			if (!m_window) return false;
 			sf::Vector2u windowSize = m_window->getSize();
 			sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
-			return mousePos.x >= 0 && mousePos.y >= 0 && mousePos.x < windowSize.x && mousePos.y < windowSize.y;
+			return mousePos.x >= 0 && mousePos.y >= 0 && mousePos.x < (int)windowSize.x && mousePos.y < (int)windowSize.y;
         }
 
 
