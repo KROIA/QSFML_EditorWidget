@@ -211,6 +211,13 @@ namespace QSFML
                 SetFocus((HWND)m_window->getSystemHandle());
             }
 		}
+        bool CameraWindow::isMouseOverWindow() const
+        {
+			if (!m_window) return false;
+			sf::Vector2u windowSize = m_window->getSize();
+			sf::Vector2i mousePos = sf::Mouse::getPosition(*m_window);
+			return mousePos.x >= 0 && mousePos.y >= 0 && mousePos.x < windowSize.x && mousePos.y < windowSize.y;
+        }
 
 
         /*

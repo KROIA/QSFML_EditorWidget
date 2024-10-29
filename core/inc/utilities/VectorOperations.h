@@ -73,6 +73,10 @@ namespace VectorMath
 	QSFML_EDITOR_WIDGET_EXPORT extern sf::Vector2f lerp(const QSFML::vector<sf::Vector2f> &path, float t);
 	QSFML_EDITOR_WIDGET_EXPORT extern Vector2d lerp(const QSFML::vector<Vector2d> &path, double t);
 
+    QSFML_EDITOR_WIDGET_EXPORT extern float lerp(float start, float end, float t) {
+        return start + (end - start) * t;
+    }
+
 
 
 
