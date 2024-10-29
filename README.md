@@ -41,6 +41,17 @@ This library is used to create simulations or simple games. It doesn't have all 
 </div>
 </td>
 </tr>
+    <td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/TileMap.gif" > 
+</div>
+</td>
+<td>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/PathFinder.gif" > 
+</div>
+</td>
+</tr>
 </table>
 
 
@@ -54,7 +65,8 @@ This library is used to create simulations or simple games. It doesn't have all 
 * Multiple camera views can be used in one scene.
 * Predefined Components ready to use.
 * Disable specific parts of the update loop for all or individual objects to speed up the engine
-
+* [Dear Im Gui](https://github.com/ocornut/imgui) compatible
+* Built in performance [profiler](https://github.com/yse/easy_profiler)
 
 ## Installation
 #### Dependencies

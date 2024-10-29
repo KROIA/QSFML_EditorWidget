@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20)
 
 
 ## INFO
-## Template version: 1.4.0
+## Template version: 1.4.3
 ##
 ## This is a template for a CMake project.
 ## It is designed to be used with the Visual Studio
@@ -136,7 +136,7 @@ project(${LIBRARY_NAME})
 
 # Set output paths
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
+    set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX} CACHE PATH "Installation base folder" FORCE)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
@@ -144,7 +144,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_LIB_FOLDER}")
     set(INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_BIN_FOLDER}")
     set(INSTALL_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_INCLUDE_FOLDER}")
-    set(FETCHCONTENT_BASE_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dependencies/cache")
+    set(FETCHCONTENT_BASE_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dependencies/cache" CACHE PATH "Base directory for FetchContent" FORCE)
 
     # Print output paths
     message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
@@ -185,9 +185,9 @@ include(cmake/ExampleMaster.cmake)
 
 ## USER_SECTION_END
 
-foreach(DEF ${DEPENDENCY_NAME_MACRO})
- 	add_compile_definitions(${DEF})
-endforeach()
+# foreach(DEF ${DEPENDENCY_NAME_MACRO})
+#  	add_compile_definitions(${DEF})
+# endforeach()
 
 ## USER_SECTION_START 5
 
