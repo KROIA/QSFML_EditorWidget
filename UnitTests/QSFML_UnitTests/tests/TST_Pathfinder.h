@@ -6,7 +6,7 @@
 #include <QCoreapplication>
 #include <QTimer>
 
-//#define ENABLE_SCREEN_CAPTURE
+#define ENABLE_SCREEN_CAPTURE
 
 using namespace QSFML;
 using namespace QSFML::Utilities;
@@ -200,7 +200,7 @@ private:
 		QSFML::string lastNode;
 		sf::Vector2u area(800, 600);
 		float lastNodeForce = 15;
-		int nodeCount = 200;
+		int nodeCount = 100;
 		float targetDistance = sqrt(area.x*area.y/sqrt(nodeCount));
 		size_t lastNodeConnectionCount = 5;
 		size_t connectionCountPerNode = 7;
@@ -297,7 +297,7 @@ private:
 						//distance -= 100;
 						if(distance < targetDistance)
 							continue;
-						float force = distance * distance / 100;
+						float force = (distance - targetDistance)* (distance - targetDistance) / 100;
 
 						if (edge2.destinationNodeID == lastNode)
 							force *= lastNodeForce/(float)lastNodeConnectionCount;
@@ -324,7 +324,7 @@ private:
 							continue;
 						if (distance < 1)
 							distance = 1;
-						float force = -targetDistance*10 /(distance);
+						float force = -targetDistance /(distance);
 						if (node2.first == lastNode)
 							force *= lastNodeForce;
 						sf::Vector2f dirNorm = dir / distance;
@@ -340,7 +340,12 @@ private:
 						continue;
 					const auto& forceElement = forces.find(node.first);
 					if (forceElement != forces.end())
-						node.second.position += forceElement->second * speed;
+					{
+						float amplitude = QSFML::VectorMath::getLength(forceElement->second) * speed;
+						if (amplitude > 100)
+							amplitude = 100;
+						node.second.position += QSFML::VectorMath::getNormalized(forceElement->second) * amplitude;
+					}
 				}
 				pathfinder.setNodes(nodes);
 				connectNearestNeighbours(pathfinder, connectionCountPerNode, lastNode);

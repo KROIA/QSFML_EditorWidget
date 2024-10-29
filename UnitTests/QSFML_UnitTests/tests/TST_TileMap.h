@@ -168,7 +168,7 @@ private:
 #ifdef ENABLE_SCREEN_CAPTURE
 		Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(scene->getDefaultCamera(), 4);
 		QTimer* singleShotTimer = new QTimer(this);
-		singleShotTimer->singleShot(1000, [recorder]()
+		singleShotTimer->singleShot(100, [recorder]()
 									{
 										recorder->startCapture(500, 0.03, "screenshots/TileMap");
 									});
