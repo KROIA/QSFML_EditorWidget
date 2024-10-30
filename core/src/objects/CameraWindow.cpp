@@ -368,7 +368,7 @@ namespace QSFML
         }
         void CameraWindow::hideEvent(QHideEvent*)
         {
-            destroyRenderWindow();
+            //destroyRenderWindow();
         }
 
         void CameraWindow::resizeEvent(QResizeEvent* event)
