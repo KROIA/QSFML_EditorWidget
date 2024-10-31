@@ -7,6 +7,8 @@ class Planet : public Objects::GameObject
 {
 	friend class Painter;
 public:
+	static constexpr float G = 6.67430f; // scaled G constant
+
 	OBJECT_DECL(Planet);
 	Planet(const std::string& name = "Planet", Objects::GameObjectPtr parent = nullptr);
 	~Planet();
@@ -16,13 +18,19 @@ public:
 
 	void setVelocity(const sf::Vector2f &velocity) { m_velocity = velocity; }
 	void setMass(float mass);
+	float getMass() const { return m_mass; }
 	const sf::Vector2f &getVelocity() const { return m_velocity; }
 
 	static const QSFML::vector<Planet*> &getPlanets() { return m_planets; }
 
-	static sf::Vector2f calculateGravityPotential(const sf::Vector2f &position);
+	static sf::Vector2f calculateForce(const sf::Vector2f &position);
 	static void setEnableCollision(bool enable) { m_enableCollision = enable; }
-	static void setWorldBounds(const sf::FloatRect &bounds) { m_worldBounds = bounds; }
+	static void setWorldBounds(const sf::FloatRect &bounds) 
+	{ 
+		m_worldBounds = bounds; 
+		m_enableWorldBounds = true;
+	}
+	static void enableWorldBounds(bool enable) { m_enableWorldBounds = enable; }
 private:
 	sf::Vector2f calculateForce();
 	sf::Vector2f calculateForce(Planet *other);
@@ -66,4 +74,5 @@ private:
 	static QSFML::vector<Planet*> m_planets;
 	static bool m_enableCollision;
 	static sf::FloatRect m_worldBounds;
+	static bool m_enableWorldBounds;
 };

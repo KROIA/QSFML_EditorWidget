@@ -15,7 +15,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
     set(LIB_NAME_3 implot)
     set(LIB_MACRO_NAME_3 IMPLOT_LIBRARY_AVAILABLE)
     set(GIT_REPO_3 https://github.com/epezent/implot.git)
-    set(GIT_TAG_3 master)
+    set(GIT_TAG_3 v0.16)
 
     FetchContent_Declare(
         ${LIB_NAME_1}
