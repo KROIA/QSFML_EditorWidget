@@ -69,6 +69,12 @@ This library is used to create simulations or simple games. It doesn't have all 
 * Built in performance [profiler](https://github.com/yse/easy_profiler)
 
 ## Installation
+This Project is CMake based, you need to install CMake and QT5 with the MSVC compiler.
+After that, download this repository and open the root CMakeLists.txt Project with Visual Studio.<br>
+CMake will automaticly download the dependencies for this library.
+After CMake has configured the Project, press **build->install**.<br>
+This will build all targets and copies the nessesarry QT dll's to the build directory. 
+
 #### Dependencies
 
 * <img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/arrows.png" alt="Easy Profiler"  width="40" style="vertical-align:middle;"> [easy_profiler](https://github.com/yse/easy_profiler.git) to enable performace profiling<br>
@@ -81,9 +87,7 @@ This library is used to create simulations or simple games. It doesn't have all 
 * <a href="https://github.com/electronicarts/EASTL"><img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/ea.png" alt="SFML"  width="40" style="vertical-align:middle;"></a> [EA STL](https://github.com/electronicarts/EASTL) faster container tamplates<br>
 * <a href="https://github.com/Auburn/FastNoiseLite"><img src="https://raw.githubusercontent.com/wiki/KROIA/QSFML_EditorWidget/Images/Icons/wurfel.png" alt="SFML"  width="40" style="vertical-align:middle;"></a> [FastNoiseLite](https://github.com/Auburn/FastNoiseLite) a fast portable noise library <br>
 
-Download this repository and open the root CMakeLists.txt Project with Visual Studio.<br>
-After CMake has configured the Project, press **build->install**.<br>
-This will build all targets and copies the nessesarry QT dll's to the build directory. 
+
 
 ## How to use
 ### Quickstart
