@@ -47,14 +47,34 @@ namespace QSFML
             const sf::Color& getColor() const;
             const sf::Color& getColor(size_t index) const;
 
+			void setFadeColor(const QSFML::vector<sf::Color>& colors)
+			{
+				m_fadeColors = colors;
+				m_enableFadeColor = true;
+			}
+			const QSFML::vector<sf::Color>& getFadeColor() const
+			{
+				return m_fadeColors;
+			}
+			void enableFadeColor(bool enable)
+			{
+				m_enableFadeColor = enable;
+			}
+			bool isEnableFadeColor() const
+			{
+				return m_enableFadeColor;
+			}
+
             private:
             void drawComponent(sf::RenderTarget& target,
                                sf::RenderStates states) const override;
 
             float m_thickness;
             sf::Color m_color;
+            bool m_enableFadeColor;
+			QSFML::vector<sf::Color> m_fadeColors;
 
-            QSFML::vector<sf::Vertex> m_vertecies;
+            mutable QSFML::vector<sf::Vertex> m_vertecies;
 
         };
     }

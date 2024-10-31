@@ -17,8 +17,8 @@
 //TEST_INSTANTIATE(TST_VectorOperations);
 //TEST_INSTANTIATE(TST_RenderLayer);
 //TEST_INSTANTIATE(TST_TextureManager);
-TEST_INSTANTIATE(TST_TextureAnimation);
-//TEST_INSTANTIATE(TST_TileMap);
+//TEST_INSTANTIATE(TST_TextureAnimation);
+TEST_INSTANTIATE(TST_TileMap);
 
 int main(int argc, char* argv[])
 {

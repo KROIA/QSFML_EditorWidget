@@ -18,34 +18,18 @@ public:
     private slots:
    // void onScreenCapture();
 private:
-    void setupScene();
+    void setupGeneralObjects();
+    void setupVectorField();
+    void setupGradientPainter();
+    void setupScene_solarSystem();
+    void setupScene_gravityAssist_accelerate();
+    void setupScene_gravityAssist_decelerate();
     void closeEvent(QCloseEvent* event) override;
 
 
     Ui::ExampleScene* ui;
-	/*
-    struct ThreadData
-    {
-		struct ImageData
-		{
-			sf::Image *image = nullptr;
-			size_t index;
-		};
-		ThreadData()
-		{
-
-		}
-        ThreadData(const ThreadData&)
-        {
-			
-        }
-        std::thread* thread = nullptr;
-		QSFML::vector<ImageData> images;
-        std::mutex mutex;
-        std::condition_variable condition;
-        Log::LogObject log;
-    };
-	QSFML::vector<ThreadData> m_threadData;
-    */
+	
     QSFML::Scene* m_scene;
+    QSFML::Objects::GameObjectPtr m_planetSystem;
+	int m_worldSize;
 };

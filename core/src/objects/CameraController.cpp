@@ -373,6 +373,7 @@ namespace QSFML
             {
                 viewRect.height = viewRect.width / aspectRatio;
             }
+            /*
             if (cameraPos.x < m_maxMovingBounds.left)
                 cameraPos.x = m_maxMovingBounds.left;
             else if (cameraPos.x > m_maxMovingBounds.left + m_maxMovingBounds.width)
@@ -381,7 +382,7 @@ namespace QSFML
             if (cameraPos.y < m_maxMovingBounds.top)
                 cameraPos.y = m_maxMovingBounds.top;
             else if (cameraPos.y > m_maxMovingBounds.top + m_maxMovingBounds.height)
-                cameraPos.y = m_maxMovingBounds.top + m_maxMovingBounds.height;
+                cameraPos.y = m_maxMovingBounds.top + m_maxMovingBounds.height;*/
 
 			setPosition(cameraPos);
             view.setSize(viewRect.width, viewRect.height);

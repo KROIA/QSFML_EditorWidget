@@ -15,8 +15,15 @@ Planet::Planet(const std::string& name, Objects::GameObjectPtr parent)
 	m_painter = new Painter("Painter", this);
 	m_accelerationPainter = new Components::VectorPainter("AccelerationPainter");
 	m_accelerationPainter->setColor(sf::Color::Red);
+	m_pathPainter = new Components::PathPainter("PathPainter");
+	m_pathPainter->setColor(sf::Color::Blue);
+	m_pathPainter->setThickness(4);
+	m_pathPainter->ignoreTransform(true);
+	m_pathPainter->enableFadeColor(true);
+	m_pathPainter->setFadeColor({ sf::Color(255,255,255,0), sf::Color::Blue});
 
 	addComponent(m_painter);
+	addComponent(m_pathPainter);
 	addComponent(m_accelerationPainter);
 
 	setMass(1);
@@ -35,27 +42,31 @@ void Planet::update()
 	m_acceleration = m_force / m_mass;
 
 	float magnitude = sqrt(m_acceleration.x * m_acceleration.x + m_acceleration.y * m_acceleration.y);
-	if(magnitude > 1)
-		m_acceleration = VectorMath::getNormalized(m_acceleration);
+	if(magnitude > 10)
+		m_acceleration = VectorMath::getNormalized(m_acceleration)*10.f;
 
 	m_velocity += m_acceleration * dt;
 	m_nextPosition = getPosition() + m_velocity * dt;
 
-	if (!m_enableWorldBounds)
-		return;
-
-	// Wrap around
-	if (m_worldBounds.width > 0 && m_worldBounds.height > 0)
+	if (m_enableWorldBounds)
 	{
-		if (m_nextPosition.x < m_worldBounds.left)
-			m_nextPosition.x = m_worldBounds.left + m_worldBounds.width;
-		else if (m_nextPosition.x > m_worldBounds.left + m_worldBounds.width)
-			m_nextPosition.x = m_worldBounds.left;
-		if (m_nextPosition.y < m_worldBounds.top)
-			m_nextPosition.y = m_worldBounds.top + m_worldBounds.height;
-		else if (m_nextPosition.y > m_worldBounds.top + m_worldBounds.height)
-			m_nextPosition.y = m_worldBounds.top;
+
+		// Wrap around
+		if (m_worldBounds.width > 0 && m_worldBounds.height > 0)
+		{
+			if (m_nextPosition.x < m_worldBounds.left)
+				m_nextPosition.x = m_worldBounds.left + m_worldBounds.width;
+			else if (m_nextPosition.x > m_worldBounds.left + m_worldBounds.width)
+				m_nextPosition.x = m_worldBounds.left;
+			if (m_nextPosition.y < m_worldBounds.top)
+				m_nextPosition.y = m_worldBounds.top + m_worldBounds.height;
+			else if (m_nextPosition.y > m_worldBounds.top + m_worldBounds.height)
+				m_nextPosition.y = m_worldBounds.top;
+		}
 	}
+	m_pathPainter->appenPoint(m_nextPosition);
+	if (m_pathPainter->getPointCount() > 5000)[[likely]]
+		m_pathPainter->popPointAtStart(1);
 }
 void Planet::applyVelocity()
 {
@@ -73,7 +84,7 @@ void Planet::setMass(float mass)
 	if(mass <= 0)
 		mass = 0.1;
 	m_mass = mass;
-	m_radius = pow(mass, 1.0 / 3.0)*10;
+	m_radius = pow(mass, 1.0 / 5.0)*10;
 }
 sf::Vector2f Planet::calculateForce(const sf::Vector2f& position)
 {

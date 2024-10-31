@@ -132,17 +132,44 @@ namespace QSFML
 			// Set the predefined start size of the window
 			//ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
 
-			// Update data arrays with new values
-			m_fpsData[m_currentDataIndex] = m_fps;
-			m_tpsData[m_currentDataIndex] = m_tps;
-			//m_frameTimeData[m_currentDataIndex] = m_frameTime * 1000; // convert frame time to ms
-			m_eventTimeData[m_currentDataIndex] = m_eventTime * 1000; // convert event time to ms
-			m_updateTimeData[m_currentDataIndex] = m_updateTime * 1000; // convert update time to ms
-			m_drawTimeData[m_currentDataIndex] = m_drawTime * 1000; // convert draw time to ms
-			//m_deltaTData[m_currentDataIndex] = m_deltaT * 1000; // convert deltaT to ms
-			//m_elapsedTimeData[m_currentDataIndex] = m_elapsedTime * 1000; // convert elapsed time to ms
+			if (c_rollingPlot)
+			{
+				// Shift data
+				memmove(m_fpsData.data(), m_fpsData.data() + 1, (c_dataSize - 1) * sizeof(double));
+				memmove(m_tpsData.data(), m_tpsData.data() + 1, (c_dataSize - 1) * sizeof(double));
+				//memmove(m_frameTimeData.data(), m_frameTimeData.data() + 1, (c_dataSize - 1) * sizeof(double));
+				memmove(m_eventTimeData.data(), m_eventTimeData.data() + 1, (c_dataSize - 1) * sizeof(double));
+				memmove(m_updateTimeData.data(), m_updateTimeData.data() + 1, (c_dataSize - 1) * sizeof(double));
+				memmove(m_drawTimeData.data(), m_drawTimeData.data() + 1, (c_dataSize - 1) * sizeof(double));
+				//memmove(m_deltaTData.data(), m_deltaTData.data() + 1, (c_dataSize - 1) * sizeof(double));
+				//memmove(m_elapsedTimeData.data(), m_elapsedTimeData.data() + 1, (c_dataSize - 1) * sizeof(double));
 
-			m_currentDataIndex = (m_currentDataIndex + 1) % c_dataSize; // Keep circular buffer
+				// Add new data
+				m_fpsData[c_dataSize - 1] = m_fps;
+				m_tpsData[c_dataSize - 1] = m_tps;
+				//m_frameTimeData[c_dataSize - 1] = m_frameTime * 1000; // convert frame time to ms
+				m_eventTimeData[c_dataSize - 1] = m_eventTime * 1000; // convert event time to ms
+				m_updateTimeData[c_dataSize - 1] = m_updateTime * 1000; // convert update time to ms
+				m_drawTimeData[c_dataSize - 1] = m_drawTime * 1000; // convert draw time to ms
+				//m_deltaTData[c_dataSize - 1] = m_deltaT * 1000; // convert deltaT to ms
+				//m_elapsedTimeData[c_dataSize - 1] = m_elapsedTime * 1000; // convert elapsed time to ms
+
+			}
+			else
+			{
+
+				// Update data arrays with new values
+				m_fpsData[m_currentDataIndex] = m_fps;
+				m_tpsData[m_currentDataIndex] = m_tps;
+				//m_frameTimeData[m_currentDataIndex] = m_frameTime * 1000; // convert frame time to ms
+				m_eventTimeData[m_currentDataIndex] = m_eventTime * 1000; // convert event time to ms
+				m_updateTimeData[m_currentDataIndex] = m_updateTime * 1000; // convert update time to ms
+				m_drawTimeData[m_currentDataIndex] = m_drawTime * 1000; // convert draw time to ms
+				//m_deltaTData[m_currentDataIndex] = m_deltaT * 1000; // convert deltaT to ms
+				//m_elapsedTimeData[m_currentDataIndex] = m_elapsedTime * 1000; // convert elapsed time to ms
+
+				m_currentDataIndex = (m_currentDataIndex + 1) % c_dataSize; // Keep circular buffer
+			}
 
 			// Start drawing the window
 			if (ImGui::Begin("Stats Window"))
@@ -200,6 +227,8 @@ namespace QSFML
 					ImPlot::SetupAxesLimits(0, c_dataSize - 1, 0, 100, ImPlotCond_Once); // 0 for Y means auto-scaling
 					ImPlot::SetupAxes("Frame", "Value");
 					ImPlot::SetupAxes("Y-Axis", NULL, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoTickLabels);
+					// Set the y-axis to automatically fit the data
+					//ImPlot::SetupAxis(ImAxis_Y1, NULL, ImPlotAxisFlags_AutoFit);
 
 					// Plot FPS
 					ImPlot::PlotLine("FPS", m_fpsData.data(), c_dataSize, c_dataSize, 0, sizeof(float));

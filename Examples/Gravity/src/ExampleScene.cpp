@@ -19,12 +19,21 @@ ExampleScene::ExampleScene(QWidget *parent)
     , ui(new Ui::ExampleScene)
 {
     ui->setupUi(this);
+    Log::UI::NativeConsoleView::createStaticInstance();
+    Log::UI::NativeConsoleView::getStaticInstance()->show();
 	
-    m_scene = nullptr;
-    setupScene();
-	Log::UI::NativeConsoleView::createStaticInstance();
-	Log::UI::NativeConsoleView::getStaticInstance()->show();
     
+    m_worldSize = 2000;
+	
+    setupGeneralObjects();
+
+    setupVectorField();
+    //setupScene_solarSystem();
+    setupScene_gravityAssist_accelerate();
+    //setupScene_gravityAssist_decelerate();
+	
+   
+    m_scene->start();
 #ifdef ENABLE_SCREEN_CAPTURE
 	Utilities::CameraRecorder* recorder = new Utilities::CameraRecorder(m_scene->getDefaultCamera(),8);
 	QTimer* timer = new QTimer(this);
@@ -43,39 +52,83 @@ ExampleScene::~ExampleScene()
     delete m_scene;
 }
 
-void ExampleScene::setupScene()
+void ExampleScene::setupGeneralObjects()
 {
     SceneSettings settings;
     settings.layout.fixedSize = sf::Vector2u(400, 100);
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 0.01;
-    settings.timing.physicsFixedDeltaT = 1;
-	settings.timing.physicsDeltaTScale = 2;
+    settings.timing.frameTime = 0.02;
+    settings.timing.physicsFixedDeltaT = 0.5;
+    settings.timing.physicsDeltaTScale = 2;
 
     m_scene = new Scene(ui->SceneWidget, settings);
 
-    float worldSize = 2000;
 
-    DefaultEditor* defaultEditor = new DefaultEditor("Editor", sf::FloatRect(-worldSize/2, -worldSize/2, worldSize, worldSize));
+    m_planetSystem = new GameObject("PlanetSystem");
+
+    DefaultEditor* defaultEditor = new DefaultEditor("Editor", sf::FloatRect(-m_worldSize / 2, -m_worldSize / 2, m_worldSize, m_worldSize));
     defaultEditor->setRenderLayer(RenderLayer::layer_0);
+    defaultEditor->getGrid()->setEnabled(false);
     m_scene->addObject(defaultEditor);
 
-	// The planet system object updates the movement of the planets
-    GameObject* planetSystem = new GameObject("PlanetSystem");
-    QSFML::Components::VectorFieldPainter *vectorField = new QSFML::Components::VectorFieldPainter();
-    planetSystem->addComponent(vectorField);
+
+    // The update function is called every frame and calculates the vector field
+    m_planetSystem->addUpdateFunction([](GameObject&)
+        {
+            // The dynamics for each planet is already calculated in each planets update function a
+            // and just has to be applied here. This ensures that the planets movement is in sync with each other
+            const QSFML::vector<Planet*>& planets = Planet::getPlanets();
+            for (auto planet : planets)
+            {
+                planet->applyVelocity();
+            }
+        });
+
+	m_planetSystem->addDrawFunction(
+		[](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
+		{
+			// Draw Kinetic Energy using ImGui
+			//ImGui::Begin("Kinetic Energy");
+			const QSFML::vector<Planet*>& planets = Planet::getPlanets();
+			for (auto planet : planets)
+			{
+                if (planet->isShowingPlots())
+                    planet->drawPlots();
+			}
+			//ImGui::End();
+		});
+
+    // Define in which order the gameObject updates
+    m_planetSystem->setUpdateOrder(
+        {
+            QSFML::Objects::GameObject::UpdateSequenceElement::childs,
+            QSFML::Objects::GameObject::UpdateSequenceElement::components,
+            QSFML::Objects::GameObject::UpdateSequenceElement::customUpdateFunctions
+        });
+	m_planetSystem->setRenderLayer(RenderLayer::layer_1);
+    m_planetSystem->updateObjectChanges();
+    qDebug() << m_planetSystem->toString().c_str();
+
+    m_scene->addObject(m_planetSystem);
+}
+void ExampleScene::setupVectorField()
+{
+	GameObject* vectorFieldObject = new GameObject("VectorField");
+    QSFML::Components::VectorFieldPainter* vectorField = new QSFML::Components::VectorFieldPainter();
+    vectorFieldObject->addComponent(vectorField);
 
     Planet::setEnableCollision(false);
     //Planet::setWorldBounds(sf::FloatRect(-worldSize * 0.5, -worldSize * 0.5, worldSize, worldSize));
 
     int spacing = 10;
-   
+    float vecNormalScale = spacing / 2;
+
     // Building the vector field buffer
     QSFML::vector<QSFML::Components::VectorFieldPainter::Element> field;
-    field.reserve((worldSize / spacing)*(worldSize / spacing));
-    for (int x = -worldSize * 0.5; x < worldSize*0.5; x += spacing)
+    field.reserve((m_worldSize / spacing) * (m_worldSize / spacing));
+    for (int x = -m_worldSize * 0.5; x < m_worldSize * 0.5; x += spacing)
     {
-        for (int y = -worldSize * 0.5; y < worldSize*0.5; y += spacing)
+        for (int y = -m_worldSize * 0.5; y < m_worldSize * 0.5; y += spacing)
         {
             QSFML::Components::VectorFieldPainter::Element element;
             element.position = sf::Vector2f(x, y);
@@ -85,50 +138,27 @@ void ExampleScene::setupScene()
     }
     vectorField->setField(field);
 
-	// Create planets with a random position and velocity
-    int positionRange = worldSize / 2;
-	unsigned int numPlanets = 5;
-    Planet* sun = new Planet();
-    sun->setMass(1000);
-    planetSystem->addChild(sun);
-    for (size_t i = 0; i < numPlanets; ++i)
-    {
-        Planet* planet = new Planet();
-		float distanceFromCenter = (i + 1) * positionRange / numPlanets;
-		float mass = (rand() % 10) + 1;
-        sf::Vector2f randPos = VectorMath::getRotatedUnitVector((float)(rand() % 360)) * distanceFromCenter;
-        sf::Vector2f randVel = VectorMath::getNormalized(VectorMath::getRotatedRAD(randPos, M_PI_2)) * std::powf(sun->getMass()*Planet::G/distanceFromCenter, 0.5f);
-        planet->setPosition(randPos);
-        planet->setVelocity(randVel);
-        planet->setMass(mass);
-        planetSystem->addChild(planet);
-    }
-
-	// The update function is called every frame and calculates the vector field
-    planetSystem->addUpdateFunction([planetSystem, vectorField](GameObject &)
-	{
-        // The dynamics for each planet is already calculated in each planets update function a
-		// and just has to be applied here. This ensures that the planets movement is in sync with each other
-		const QSFML::vector<Planet*> &planets = Planet::getPlanets();
-        for (auto planet : planets)
+	vectorFieldObject->addUpdateFunction(
+        [vectorField, vecNormalScale](GameObject& obj)
 		{
-			planet->applyVelocity();
-		}
+            // Calculate vector Field
+            for (auto& fieldElement : *vectorField)
+            {
+                sf::Vector2f dir = Planet::calculateForce(fieldElement.position) * 10.f;
+                float magnitudeSqr = dir.x * dir.x + dir.y * dir.y;
+                const static QSFML::vector<sf::Color> colors = { sf::Color::Blue, sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow, sf::Color(200,200,0), sf::Color::Red };
+                fieldElement.color = Color::lerpCubic(colors, pow(magnitudeSqr, 0.3));
+                dir = VectorMath::getNormalized(dir) * vecNormalScale;
+                fieldElement.direction = dir;
+            }
+		});
 
-        // Calculate vector Field
-        for(auto & fieldElement : *vectorField)
-		{
-            sf::Vector2f dir = Planet::calculateForce(fieldElement.position)*10.f;
-            float magnitudeSqr = dir.x * dir.x + dir.y * dir.y;
-            const static QSFML::vector<sf::Color> colors = {sf::Color::Blue, sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow, sf::Color(200,200,0), sf::Color::Red};
-            fieldElement.color = Color::lerpCubic(colors, pow(magnitudeSqr, 0.3));
-            dir = VectorMath::getNormalized(dir)*10.f;
-			fieldElement.direction = dir;
-		}
-	});
-
-    planetSystem->addDrawFunction(
-        [planetSystem, worldSize](const GameObject&, sf::RenderTarget& target, sf::RenderStates states)
+	m_scene->addObject(vectorFieldObject);
+}
+void ExampleScene::setupGradientPainter()
+{
+    m_planetSystem->addDrawFunction(
+        [this](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
         {
             //Draw contour line
             const size_t numLines = 10;
@@ -139,16 +169,16 @@ void ExampleScene::setupScene()
             sf::VertexArray contourLines(sf::Lines);
             contourLines.resize(vertexCount);
 
-            float startX = -worldSize/2;
-			float xIncrement = worldSize / numLines;
+            float startX = -m_worldSize / 2;
+            float xIncrement = m_worldSize / numLines;
             for (size_t j = 0; j < numLines; ++j)
             {
-				// Start lines at equal spaced over the X-Axis
+                // Start lines at equal spaced over the X-Axis
                 sf::Vector2f start = sf::Vector2f(startX + j * xIncrement, 0);
 
-				// Start with color white
-				sf::Color color = sf::Color::White;
-                
+                // Start with color white
+                sf::Color color = sf::Color::White;
+
                 for (size_t i = 0; i < vertexCount; ++i)
                 {
                     sf::Vector2f gradient = Planet::calculateForce(start);
@@ -159,88 +189,95 @@ void ExampleScene::setupScene()
                     contourLines[i + 1].color = color;
                     start = end;
                     i++;
-                    
-					// Fade the color to transparent
-					color.a = 255 - (i*255 / vertexCount);
+
+                    // Fade the color to transparent
+                    color.a = 255 - (i * 255 / vertexCount);
                 }
                 target.draw(contourLines, states);
             }
-
         });
-
-    m_scene->addObject(planetSystem);
-
-    // Define in which order the gameObject updates
-    planetSystem->setUpdateOrder(
-        {
-            QSFML::Objects::GameObject::UpdateSequenceElement::childs,
-            QSFML::Objects::GameObject::UpdateSequenceElement::components,
-			QSFML::Objects::GameObject::UpdateSequenceElement::customUpdateFunctions
-        });
-
-
-    planetSystem->updateObjectChanges();
-    qDebug() << planetSystem->toString().c_str();
-    m_scene->start();
 }
-
-
-/*
-void ExampleScene::onScreenCapture()
-{
-    static size_t counter = 0;
-
-	if (counter >= 100)
-	{
-		return;
-	}
-    
-	if (m_threadData.size() == 0)
-	{
-        size_t threadCount = 6;
-		m_threadData.resize(threadCount);
-        for (size_t i = 0; i < threadCount; ++i)
-        {
-			m_threadData[i].thread = new std::thread([this, i]()
-			{
-				 ThreadData& data = m_threadData[i];
-				 while (true)
-				 {
-					 std::unique_lock<std::mutex> lock(data.mutex);
-					 data.condition.wait(lock, [this, &data] {return !data.images.empty(); });
-
-					 QSFML::vector<ThreadData::ImageData> images = data.images;
-					 data.images.clear();
-                     data.images.reserve(10);
-					 lock.unlock();
-					 for (auto image : images)
-					 {
-						 image.image->saveToFile("screenshots/" + std::to_string(image.index) + ".jpg");
-                         delete image.image;
-					 }
-					// data.log.logInfo("Saved " + std::to_string(images.size()) + " images");
-				 }
-			});
-            m_threadData[i].log.setParentID(m_scene->getSceneLogger().getID());
-			m_threadData[i].log.setName("Thread " + std::to_string(i));
-        }
-	}
-
-	size_t currentIndex = counter % m_threadData.size();
-	ThreadData& data = m_threadData[currentIndex];
-
-	sf::Image* image = new sf::Image();
-	m_scene->captureScreen(*image);
-    //delete image;
-    //return;
+void ExampleScene::setupScene_solarSystem()
+{ 
+	// Create planets with a random position and velocity
+    int positionRange = m_worldSize / 2;
+	unsigned int numPlanets = 5;
+    Planet* sun = new Planet();
+    sun->setMass(1000);
+    m_planetSystem->addChild(sun);
+    for (size_t i = 0; i < numPlanets; ++i)
     {
-		std::lock_guard<std::mutex> lock(data.mutex);
-		data.images.push_back({ image, counter });
-        data.condition.notify_one();
+        Planet* planet = new Planet();
+		float distanceFromCenter = (i + 1) * positionRange / numPlanets;
+		float mass = (rand() % 10) + 1;
+        sf::Vector2f randPos = VectorMath::getRotatedUnitVector((float)(rand() % 360)) * distanceFromCenter;
+        sf::Vector2f randVel = VectorMath::getNormalized(VectorMath::getRotatedRAD(randPos, M_PI_2)) * std::powf(sun->getMass()*Planet::G/distanceFromCenter, 0.5f);
+        planet->setPosition(randPos);
+        planet->setVelocity(randVel);
+        planet->setMass(mass);
+        m_planetSystem->addChild(planet);
     }
-    ++counter;
 }
-*/
+void ExampleScene::setupScene_gravityAssist_accelerate()
+{
+    Planet* largePlanet1 = new Planet("largePlanet1");
+    largePlanet1->setMass(1000);
+    largePlanet1->setPosition(sf::Vector2f(0, 1100));
+	largePlanet1->setVelocity(sf::Vector2f(0, -2));
+    //largePlanet1->showPlots(true);
+    m_planetSystem->addChild(largePlanet1);
+
+    Planet* largePlanet2 = new Planet("largePlanet2");
+    largePlanet2->setMass(1000);
+    largePlanet2->setPosition(sf::Vector2f(900,-1000));
+    largePlanet2->setVelocity(sf::Vector2f(-2, 0));
+    m_planetSystem->addChild(largePlanet2);
+
+    Planet* largePlanet3 = new Planet("largePlanet3");
+    largePlanet3->setMass(1000);
+    largePlanet3->setPosition(sf::Vector2f(-1200, -2100));
+    largePlanet3->setVelocity(sf::Vector2f(0, 2));
+    m_planetSystem->addChild(largePlanet3);
+
+    Planet* largePlanet4 = new Planet("largePlanet4");
+    largePlanet4->setMass(1000);
+    largePlanet4->setPosition(sf::Vector2f(-3000, -0));
+    largePlanet4->setVelocity(sf::Vector2f(1, 1));
+    m_planetSystem->addChild(largePlanet4);
+   
+
+	Planet* spaceShip = new Planet("spaceShip");
+	spaceShip->setMass(0.1);
+	spaceShip->setPosition(sf::Vector2f(-m_worldSize / 2, 800));
+	spaceShip->setVelocity(sf::Vector2f(3, 0));
+    spaceShip->showPlots(true);
+	m_planetSystem->addChild(spaceShip);
+
+}
+void ExampleScene::setupScene_gravityAssist_decelerate()
+{
+    Planet* largePlanet = new Planet();
+    largePlanet->setMass(1000);
+    largePlanet->setPosition(sf::Vector2f(0, 0));
+    largePlanet->setVelocity(sf::Vector2f(0, 0));
+    //largePlanet->showKineticEnergy(true);
+    m_planetSystem->addChild(largePlanet);
+
+    Planet* moon = new Planet();
+    moon->setMass(10);
+    moon->setPosition(sf::Vector2f(600, 0));
+    moon->setVelocity(sf::Vector2f(0, -3));
+    //moon->showKineticEnergy(true);
+    m_planetSystem->addChild(moon);
+
+
+    Planet* spaceShip = new Planet();
+    spaceShip->setMass(0.001);
+    spaceShip->setPosition(sf::Vector2f(-m_worldSize / 2-300, 650));
+    spaceShip->setVelocity(sf::Vector2f(1, -1));
+	spaceShip->showPlots(true);
+    m_planetSystem->addChild(spaceShip);
+}
 void ExampleScene::closeEvent(QCloseEvent* event)
 {
     if (m_scene)

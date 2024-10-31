@@ -132,6 +132,7 @@ namespace QSFML
 
 #if IMPLOT_LIBRARY_AVAILABLE == 1
 			static constexpr size_t c_dataSize = 100;
+			static constexpr bool c_rollingPlot = true; // If true the plot will be a rolling plot, if false the plot will be a static overriding plot
 			mutable std::array<double, c_dataSize> m_fpsData;
 			mutable std::array<double, c_dataSize> m_tpsData;
 			//mutable std::array<double, c_dataSize> m_frameTimeData;

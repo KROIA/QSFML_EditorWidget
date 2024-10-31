@@ -1,4 +1,5 @@
 #include "components/drawable/PathPainter.h"
+#include "utilities/Color.h"
 #include <math.h>
 #include <SFML/Graphics.hpp>
 
@@ -13,6 +14,8 @@ namespace QSFML
             : Drawable(name)
             , m_thickness(2)
             , m_color(sf::Color::Green)
+			, m_enableFadeColor(false)
+			, m_fadeColors({ sf::Color::Green, sf::Color::Red })
         {
 
         }
@@ -21,6 +24,8 @@ namespace QSFML
             , m_thickness(other.m_thickness)
             , m_color(other.m_color)
             , m_vertecies(other.m_vertecies)
+			, m_enableFadeColor(other.m_enableFadeColor)
+			, m_fadeColors(other.m_fadeColors)
         {
 
         }
@@ -86,6 +91,7 @@ namespace QSFML
         void PathPainter::drawComponent(sf::RenderTarget& target,
                                         sf::RenderStates states) const
         {
+            glLineWidth(m_thickness);
 #ifdef QSFML_USE_GL_DRAW
 			QSFML_UNUSED(target);
             /*glLoadMatrixf(states.transform.getMatrix());
@@ -101,35 +107,62 @@ namespace QSFML
 
             glLoadMatrixf(states.transform.getMatrix());
 
-            glLineWidth(m_thickness);
+            
             // Start drawing the line strip
             glBegin(GL_LINE_STRIP);
 
             // Retrieve the data pointer
             const sf::Vertex* data = m_vertecies.data();
 
-            // Initialize previous color to a value that is different from any vertex color.
-            sf::Color previousColor = sf::Color(0, 0, 0, 0);
-
-            for (size_t i = 0; i < m_vertecies.size(); ++i)
+            if (m_enableFadeColor)
             {
-                const auto& el = data[i];
-
-                // Only set the color if it's different from the previous vertex
-                if (el.color != previousColor)
+                for (size_t i = 0; i < m_vertecies.size(); ++i)
                 {
-                    glColor4ub(el.color.r, el.color.g, el.color.b, el.color.a);
-                    previousColor = el.color;
+                    const auto& el = data[i];
+
+                    // Only set the color if it's different from the previous vertex
+					sf::Color color = Color::lerpLinear(m_fadeColors, i / static_cast<float>(m_vertecies.size()));
+                    glColor4ub(color.r, color.g, color.b, color.a);
+
+
+                    // Set the vertex position
+                    glVertex2f(el.position.x, el.position.y);
                 }
-
-                // Set the vertex position
-                glVertex2f(el.position.x, el.position.y);
             }
+            else
+            {
+                // Initialize previous color to a value that is different from any vertex color.
+                sf::Color previousColor = sf::Color(0, 0, 0, 0);
 
+                for (size_t i = 0; i < m_vertecies.size(); ++i)
+                {
+                    const auto& el = data[i];
+
+                    // Only set the color if it's different from the previous vertex
+                    if (el.color != previousColor)
+                    {
+                        glColor4ub(el.color.r, el.color.g, el.color.b, el.color.a);
+                        previousColor = el.color;
+                    }
+
+                    // Set the vertex position
+                    glVertex2f(el.position.x, el.position.y);
+                }
+            }
+            
             glEnd();
+            
 #else
+            if (m_enableFadeColor)
+            {
+				for (size_t i = 0; i < m_vertecies.size(); ++i)
+				{
+					m_vertecies[i].color = Color::lerpLinear(m_fadeColors, i / static_cast<float>(m_vertecies.size()));
+				}
+		    }
 			target.draw(m_vertecies.data(), m_vertecies.size(), sf::LineStrip, states);
 #endif
+            glLineWidth(1);
         }
     }
 }
