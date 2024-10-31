@@ -54,7 +54,7 @@ namespace QSFML
 
 		void TextureMap::bakeUVMapCoords()
 		{
-			m_uvMapCoords.resize(m_mapDim.x * m_mapDim.y);
+			m_uvMapCoords.resize(m_mapDim.x * m_mapDim.y + 1);
 			m_subImageSize = sf::Vector2f(m_texture.getSize().x / m_mapDim.x, m_texture.getSize().y / m_mapDim.y);
 			
 			for (size_t y = 0; y < m_mapDim.y; y++)
@@ -74,6 +74,18 @@ namespace QSFML
 					uvMapCoords.bottomLeft.y = uvMapCoords.bottomRight.y;
 				}
 			}
+
+			size_t idx = getIndex(0, m_mapDim.y);
+
+			UVMapCoords& uvMapCoords = m_uvMapCoords[idx];
+			uvMapCoords.topLeft.x = m_padding;
+			uvMapCoords.topLeft.y = m_mapDim.y + m_padding;
+			uvMapCoords.topRight.x = m_subImageSize.x - m_padding;
+			uvMapCoords.topRight.y = uvMapCoords.topLeft.y;
+			uvMapCoords.bottomRight.x = uvMapCoords.topRight.x;
+			uvMapCoords.bottomRight.y = m_mapDim.y + m_subImageSize.y - m_padding;
+			uvMapCoords.bottomLeft.x = uvMapCoords.topLeft.x;
+			uvMapCoords.bottomLeft.y = uvMapCoords.bottomRight.y;
 		}
 
 	}
