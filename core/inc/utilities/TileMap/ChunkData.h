@@ -34,7 +34,9 @@ namespace QSFML
 			}
 			size_t getTextureIndex(const sf::Vector2f& worldPosition)
 			{
-				sf::Vector2i localPos = sf::Vector2i(worldPosition.x - m_position.x, worldPosition.y - m_position.y);
+				sf::Vector2i localPos = sf::Vector2i(
+					static_cast<int>(worldPosition.x - m_position.x), 
+					static_cast<int>(worldPosition.y - m_position.y));
 				return getTextureIndex(localPos.x, localPos.y);
 			}
 			size_t getTextureIndex(const sf::Vector2i& worldPosition)

@@ -152,7 +152,7 @@ namespace QSFML
             if (newZoom < m_minZoom || newZoom > m_maxZoom)
                 return;
             sf::View view = cam->getThisCameraView();
-			sf::Vector2f orgPos = view.getCenter();
+			//sf::Vector2f orgPos = view.getCenter();
             m_currentZoom = newZoom;
 
             const sf::Vector2f beforeCoord = cam->getInThisCameraWorldSpace(pixel);
@@ -163,9 +163,10 @@ namespace QSFML
             const sf::Vector2f afterCoord{ cam->getInThisCameraWorldSpace(pixel) };
             const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
             view.move(offsetCoords);
-            positionCheck(view);
+            
 			sf::Vector2f newPos = view.getCenter();
-			view.setCenter(orgPos);
+			//view.setCenter(orgPos);
+            positionCheck(view);
 			cam->setPosition(newPos);
             cam->setThisCameraView(view);
         }
@@ -373,7 +374,7 @@ namespace QSFML
             {
                 viewRect.height = viewRect.width / aspectRatio;
             }
-            /*
+           /*
             if (cameraPos.x < m_maxMovingBounds.left)
                 cameraPos.x = m_maxMovingBounds.left;
             else if (cameraPos.x > m_maxMovingBounds.left + m_maxMovingBounds.width)
