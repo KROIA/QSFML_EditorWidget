@@ -19,9 +19,9 @@ namespace QSFML
 
 				sf::IntRect toIntRect() const
 				{
-					return sf::IntRect(topLeft.x, topLeft.y,
-									   topRight.x - topLeft.x,
-									   bottomLeft.y - topLeft.y);
+					return sf::IntRect(static_cast<int>(topLeft.x), static_cast<int>(topLeft.y),
+						static_cast<int>(topRight.x - topLeft.x),
+						static_cast<int>(bottomLeft.y - topLeft.y));
 				}
 			};
 

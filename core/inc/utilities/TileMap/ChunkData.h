@@ -32,6 +32,11 @@ namespace QSFML
 			{
 				return m_textureIdx[y * CHUNK_SIZE + x];
 			}
+			size_t getTextureIndex(const sf::Vector2f& worldPosition)
+			{
+				sf::Vector2i localPos = sf::Vector2i(worldPosition.x - m_position.x, worldPosition.y - m_position.y);
+				return getTextureIndex(localPos.x, localPos.y);
+			}
 
 			const sf::Color& getLowLevelReplacementColor() const
 			{

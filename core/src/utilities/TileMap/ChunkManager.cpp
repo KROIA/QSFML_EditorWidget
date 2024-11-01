@@ -422,31 +422,19 @@ namespace QSFML
 					}
 				}
 			}
-
-			
-		/*
-			sf::Vector2i start = sf::Vector2i(((int)(Chunk::CHUNK_SIZE * area.left / m_scale) / (int)Chunk::CHUNK_SIZE),
-											  ((int)(Chunk::CHUNK_SIZE * area.top / m_scale) / (int)Chunk::CHUNK_SIZE));
-
-			sf::Vector2i end = sf::Vector2i(((int)(Chunk::CHUNK_SIZE * (area.left + area.width) / m_scale) / (int)Chunk::CHUNK_SIZE),
-											((int)(Chunk::CHUNK_SIZE * (area.top + area.height) / m_scale) / (int)Chunk::CHUNK_SIZE));
-
-			for (int x = start.x; x <= end.x; x++)
-			{
-				for (int y = start.y; y <= end.y; y++)
-				{
-					QSFMLP_GENERAL_BLOCK("Find chunk", QSFML_COLOR_STAGE_2);
-					auto it = m_loadedChunks.find(sf::Vector2i(x, y));
-					if (it != m_loadedChunks.end())
-					{
-						m_visibleChunks.push_back(it->second);
-					}
-				}
-			}*/
 			m_needsDrawUpdate = false;
 			return m_visibleChunks;
 		}
-
+		Chunk* ChunkManager::getChunk(const sf::Vector2f& pos) const
+		{
+			sf::Vector2i chunkPos = getChunkPosition(pos);
+			auto it = m_loadedChunks.find(chunkPos);
+			if (it != m_loadedChunks.end())
+			{
+				return it->second;
+			}
+			return nullptr;
+		}
 		const QSFML::vector<ChunkManager::ChunkGroup*>& ChunkManager::getChunkGroups(const sf::FloatRect& area) const
 		{
 #ifdef QSFML_DEBUG

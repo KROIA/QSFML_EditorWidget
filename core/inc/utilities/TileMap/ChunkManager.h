@@ -40,6 +40,7 @@ namespace QSFML
 			
 
 			const QSFML::vector<Chunk*>& getChunks(const sf::FloatRect &area) const;
+			Chunk* getChunk(const sf::Vector2f& pos) const;
 			const sf::IntRect& getLoadedChunkBounds() const { return m_generatedChunkBounds; }
 			size_t getLoadedChunkCount() const { return m_loadedChunks.size(); }
 
