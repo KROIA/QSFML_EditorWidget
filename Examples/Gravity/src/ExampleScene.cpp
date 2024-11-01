@@ -39,8 +39,8 @@ ExampleScene::ExampleScene(QWidget *parent)
 	QTimer* timer = new QTimer(this);
 	timer->singleShot(1000, [recorder]()
 		{
-			// Take 1000 screenshots with 0.01 seconds delay
-			recorder->startCapture(100, 0.4, "screenshots/gravity");
+			// Take 100 screenshots with 0.1 seconds interval
+			recorder->startCapture(100, 0.1, "screenshots/gravity");
 		});
 	timer->start();
 #endif    
@@ -88,14 +88,12 @@ void ExampleScene::setupGeneralObjects()
 		[](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
 		{
 			// Draw Kinetic Energy using ImGui
-			//ImGui::Begin("Kinetic Energy");
 			const QSFML::vector<Planet*>& planets = Planet::getPlanets();
 			for (auto planet : planets)
 			{
                 if (planet->isShowingPlots())
                     planet->drawPlots();
 			}
-			//ImGui::End();
 		});
 
     // Define in which order the gameObject updates
@@ -224,7 +222,6 @@ void ExampleScene::setupScene_gravityAssist_accelerate()
     largePlanet1->setMass(1000);
     largePlanet1->setPosition(sf::Vector2f(0, 1100));
 	largePlanet1->setVelocity(sf::Vector2f(0, -2));
-    //largePlanet1->showPlots(true);
     m_planetSystem->addChild(largePlanet1);
 
     Planet* largePlanet2 = new Planet("largePlanet2");
@@ -252,7 +249,6 @@ void ExampleScene::setupScene_gravityAssist_accelerate()
 	spaceShip->setVelocity(sf::Vector2f(3, 0));
     spaceShip->showPlots(true);
 	m_planetSystem->addChild(spaceShip);
-
 }
 void ExampleScene::setupScene_gravityAssist_decelerate()
 {
