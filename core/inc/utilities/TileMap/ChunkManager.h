@@ -39,7 +39,9 @@ namespace QSFML
 			void loadChunk(const sf::Vector2f& pos);
 			
 
-			const QSFML::vector<Chunk*>& getChunks(const sf::FloatRect &area) const;
+			const QSFML::vector<Chunk*>& getVisibleChunks(const sf::FloatRect &area) const;
+			QSFML::vector<Chunk*> getChunks(const sf::FloatRect &area) const;
+			QSFML::vector<Chunk*> getChunks() const;
 			Chunk* getChunk(const sf::Vector2f& pos) const;
 			const sf::IntRect& getLoadedChunkBounds() const { return m_generatedChunkBounds; }
 			size_t getLoadedChunkCount() const { return m_loadedChunks.size(); }

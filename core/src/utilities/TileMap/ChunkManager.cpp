@@ -313,7 +313,7 @@ namespace QSFML
 		}
 
 
-		const QSFML::vector<Chunk*>& ChunkManager::getChunks(const sf::FloatRect& area) const
+		const QSFML::vector<Chunk*>& ChunkManager::getVisibleChunks(const sf::FloatRect& area) const
 		{
 			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
 #ifdef QSFML_DEBUG
@@ -340,10 +340,6 @@ namespace QSFML
 			// Take min range from ChunkBounds
 			sf::Vector2i chunkGroupStartBound = getChunkGroupPosition(sf::Vector2f(m_generatedChunkBounds.left, m_generatedChunkBounds.top));
 			sf::Vector2i chunkGroupEndBound = getChunkGroupPosition(sf::Vector2f(m_generatedChunkBounds.left + m_generatedChunkBounds.width, m_generatedChunkBounds.top + m_generatedChunkBounds.height));
-			//sf::Vector2i chunkGroupStart(std::max(areaStart.x, chunkGroupStartBound.x), std::max(areaStart.y, chunkGroupStartBound.y));
-			//sf::Vector2i chunkGroupEnd(std::max(areaEnd.x, chunkGroupEndBound.x), std::max(areaEnd.y, chunkGroupEndBound.y));
-			//sf::Vector2i chunkGroupStart(areaStart.x, areaStart.y);
-			//sf::Vector2i chunkGroupEnd(areaEnd.x, areaEnd.y);
 
 			sf::Vector2i chunkGroupStart(std::max(areaStart.x, m_generatedChunkBounds.left), std::max(areaStart.y, m_generatedChunkBounds.top));
 			sf::Vector2i chunkGroupEnd(std::min(areaEnd.x, m_generatedChunkBounds.left + m_generatedChunkBounds.width), std::min(areaEnd.y, m_generatedChunkBounds.top + m_generatedChunkBounds.height));
@@ -425,6 +421,95 @@ namespace QSFML
 			m_needsDrawUpdate = false;
 			return m_visibleChunks;
 		}
+
+		QSFML::vector<Chunk*> ChunkManager::getChunks(const sf::FloatRect& area) const
+		{
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
+			QSFML::vector<Chunk*> chunks;
+			QSFML::vector<ChunkGroup*> chunkGroups;
+
+			sf::Vector2f realPosStart = sf::Vector2f(area.left / m_scale, area.top / m_scale);
+			sf::Vector2f realPosEnd = sf::Vector2f((area.left + area.width) / m_scale, (area.top + area.height) / m_scale);
+
+			sf::Vector2i areaStart = getChunkGroupPosition(realPosStart);
+			sf::Vector2i areaEnd = getChunkGroupPosition(realPosEnd);
+
+			sf::Vector2i relativeStart = getRelativeChunkPosInGroup(realPosStart);
+			sf::Vector2i relativeStop = getRelativeChunkPosInGroup(realPosEnd);
+
+			// Take min range from ChunkBounds
+			sf::Vector2i chunkGroupStartBound = getChunkGroupPosition(sf::Vector2f(m_generatedChunkBounds.left, m_generatedChunkBounds.top));
+			sf::Vector2i chunkGroupEndBound = getChunkGroupPosition(sf::Vector2f(m_generatedChunkBounds.left + m_generatedChunkBounds.width, m_generatedChunkBounds.top + m_generatedChunkBounds.height));
+
+			sf::Vector2i chunkGroupStart(std::max(areaStart.x, m_generatedChunkBounds.left), std::max(areaStart.y, m_generatedChunkBounds.top));
+			sf::Vector2i chunkGroupEnd(std::min(areaEnd.x, m_generatedChunkBounds.left + m_generatedChunkBounds.width), std::min(areaEnd.y, m_generatedChunkBounds.top + m_generatedChunkBounds.height));
+
+			chunkGroupStart = getChunkGroupPosition(chunkGroupStart);
+			chunkGroupEnd = getChunkGroupPosition(chunkGroupEnd);
+
+			if (chunkGroupStart.x > chunkGroupEnd.x || chunkGroupStart.y > chunkGroupEnd.y)
+			{
+				return m_visibleChunks;
+			}
+			chunks.reserve(16);
+
+			// Find relevant ChunkGroups
+			for (int x = chunkGroupStart.x; x <= chunkGroupEnd.x; x += Chunk::CHUNK_SIZE_SQR)
+			{
+				for (int y = chunkGroupStart.y; y <= chunkGroupEnd.y; y += Chunk::CHUNK_SIZE_SQR)
+				{
+					QSFMLP_GENERAL_BLOCK("Find chunk group", QSFML_COLOR_STAGE_2);
+					const auto it = m_chunkGroups.find(sf::Vector2i(x, y));
+					if (it != m_chunkGroups.end())
+					{
+						chunkGroups.push_back(it->second);
+					}
+				}
+			}
+
+
+			relativeStop.x = std::min(relativeStop.x, Chunk::CHUNK_SIZE);
+			relativeStop.y = std::min(relativeStop.y, Chunk::CHUNK_SIZE);
+			// Search in chunk groups
+			for (auto& group : chunkGroups)
+			{
+				sf::Vector2i chunkGroupPos = group->position;
+
+				sf::Vector2i startIndex(0, 0);
+				sf::Vector2i endIndex(Chunk::CHUNK_SIZE - 1, Chunk::CHUNK_SIZE - 1);
+
+				if (areaStart.x >= chunkGroupPos.x)
+				{
+					startIndex.x = relativeStart.x;
+				}
+				if (areaStart.y >= chunkGroupPos.y)
+				{
+					startIndex.y = relativeStart.y;
+				}
+				if (areaEnd.x <= chunkGroupPos.x)
+				{
+					endIndex.x = relativeStop.x;
+				}
+				if (areaEnd.y <= chunkGroupPos.y)
+				{
+					endIndex.y = relativeStop.y;
+				}
+
+				for (int x = startIndex.x; x <= endIndex.x; x++)
+				{
+					for (int y = startIndex.y; y <= endIndex.y; y++)
+					{
+						QSFMLP_GENERAL_BLOCK("Find chunk", QSFML_COLOR_STAGE_2);
+						Chunk* chunk = group->getChunk(x, y);
+						if (chunk)
+						{
+							chunks.push_back(chunk);
+						}
+					}
+				}
+			}
+			return chunks;
+		}
 		Chunk* ChunkManager::getChunk(const sf::Vector2f& pos) const
 		{
 			sf::Vector2i chunkPos = getChunkPosition(pos);
@@ -434,6 +519,17 @@ namespace QSFML
 				return it->second;
 			}
 			return nullptr;
+		}
+		QSFML::vector<Chunk*> ChunkManager::getChunks() const
+		{
+			QSFMLP_GENERAL_FUNCTION(QSFML_COLOR_STAGE_1);
+			QSFML::vector<Chunk*> chunks;
+			chunks.reserve(m_loadedChunks.size());
+			for (auto& chunk : m_loadedChunks)
+			{
+				chunks.push_back(chunk.second);
+			}
+			return chunks;
 		}
 		const QSFML::vector<ChunkManager::ChunkGroup*>& ChunkManager::getChunkGroups(const sf::FloatRect& area) const
 		{
@@ -598,7 +694,7 @@ namespace QSFML
 #endif
 			if (zoom < 1)
 			{
-				const QSFML::vector<Chunk*>& chunks = getChunks(viewRect);
+				const QSFML::vector<Chunk*>& chunks = getVisibleChunks(viewRect);
 				if (zoom < 0.2)
 				{
 					states.texture = &m_resources.textureMap.getTexture();
