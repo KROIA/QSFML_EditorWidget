@@ -61,7 +61,8 @@ GameObject::GameObject(const std::string &name, GameObject* parent)
         DrawSequenceElement::components,
         DrawSequenceElement::childs,
         DrawSequenceElement::sfDrawables,
-		DrawSequenceElement::customDrawFunctions
+		DrawSequenceElement::customDrawFunctions,
+        DrawSequenceElement::gizmos
     };
    
     m_sceneParent = nullptr;
@@ -108,6 +109,8 @@ GameObject::GameObject(const GameObject &other)
 	m_boundingBox = other.m_boundingBox;
 
 	m_getCustomBoundingBoxFunction = other.m_getCustomBoundingBoxFunction;
+	m_enableDrawGizmos = other.m_enableDrawGizmos;
+    m_enableDrawGizmosRecursive = other.m_enableDrawGizmosRecursive;
 	
 
     //m_childs.reserve(other.m_childs.size());
@@ -956,7 +959,18 @@ void GameObject::draw(sf::RenderWindow& window, sf::RenderStates states) const
                     }
                     QSFMLP_OBJECT_END_BLOCK;
                 }
+                break;
             }
+			case DrawSequenceElement::gizmos:
+			{
+                if (m_enableDrawGizmos)
+                {
+                    QSFMLP_OBJECT_BLOCK("Gizmos draw", QSFML_COLOR_STAGE_2);
+                    drawGizmos(window, states);
+                    QSFMLP_OBJECT_END_BLOCK;
+                }
+                break;
+			}
         }
     }
 }

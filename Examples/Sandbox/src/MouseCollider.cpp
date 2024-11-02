@@ -15,7 +15,6 @@ MouseCollider::MouseCollider(const std::string& name, QSFML::Objects::GameObject
 		});
 
 	addComponent(m_collider);
-	addComponent(m_collider->createPainter());
 
 	m_mouseFollower = new QSFML::Components::MouseFollower();
 	connect(m_mouseFollower, &QSFML::Components::MouseFollower::mousePosChanged,
@@ -33,8 +32,7 @@ MouseCollider::MouseCollider(const std::string& name, QSFML::Objects::GameObject
 		}
 	);
 	m_staticCollider->setPos(sf::Vector2f(100.1f, 100.1f));
-	m_staticColliderPainter = m_staticCollider->createPainter();
-	addComponent(m_staticColliderPainter);
+	enableDrawGizmosRecursive(true);
 
 }
 MouseCollider::MouseCollider(const MouseCollider& other)
@@ -56,17 +54,5 @@ void MouseCollider::onMousePosChanged(const sf::Vector2f& worldPos,
 
 void MouseCollider::update()
 {
-	if (m_collider->getBoundingBox().intersects(m_staticCollider->getBoundingBox()))
-	{
-		  QSFML::vector<QSFML::Utilities::Collisioninfo> collisions;
-
-		if(m_collider->checkCollision(m_staticCollider, collisions))
-			m_staticColliderPainter->setColor(sf::Color::Green);
-		else
-			m_staticColliderPainter->setColor(sf::Color::Yellow);
-	}
-	else
-	{
-		m_staticColliderPainter->setColor(sf::Color::Red);
-	}
+	
 }

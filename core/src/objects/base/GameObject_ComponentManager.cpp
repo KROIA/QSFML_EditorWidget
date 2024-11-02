@@ -344,7 +344,8 @@ namespace QSFML
 			needsEventUpdate(m_componentsManagerData.eventHandler.size() > 0 || m_onEventCallbacks.size() > 0);
 			needsDrawUpdate(m_componentsManagerData.drawable.size() > 0 || 
 							m_onDrawCallbacks.size() > 0 || 
-							m_componentsManagerData.sfDrawable.size());
+							m_componentsManagerData.sfDrawable.size() ||
+							m_enableDrawGizmos);
 		}
 
 
@@ -439,6 +440,20 @@ namespace QSFML
 			m_onDrawCallbacks.push_back(func);
 		}
 
+		void GameObject::drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const
+		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_3);
+			//states.transform *= getTransform();
+			for (auto& comp : m_componentsManagerData.all)
+			{
+				comp->drawGizmos(target, states);
+			}
+			for (auto& obj : m_childObjectManagerData.objs)
+			{
+				obj->drawGizmos(target, states);
+			}
+		}
+
 		bool GameObject::isColliderDirty() const
 		{
 			for (const auto& collider : m_componentsManagerData.colliders)
@@ -519,6 +534,29 @@ namespace QSFML
 					objCollider->checkCollision(otherColliders, collisions, onlyFirstCollision);
 				}
 			}
+		}
+		void GameObject::enableDrawGizmos(bool enable)
+		{
+			m_enableDrawGizmos = enable; 
+			m_enableDrawGizmosRecursive = false; 
+			needsDrawUpdate(m_componentsManagerData.drawable.size() > 0 ||
+				m_onDrawCallbacks.size() > 0 ||
+				m_componentsManagerData.sfDrawable.size() ||
+				m_enableDrawGizmos);
+		}
+		void GameObject::enableDrawGizmosRecursive(bool enable)
+		{
+			QSFMLP_OBJECT_FUNCTION(QSFML_COLOR_STAGE_1);
+			m_enableDrawGizmos = enable;
+			m_enableDrawGizmosRecursive = enable;
+			for (auto& obj : m_childObjectManagerData.objs)
+			{
+				obj->enableDrawGizmosRecursive(enable);
+			}
+			needsDrawUpdate(m_componentsManagerData.drawable.size() > 0 ||
+				m_onDrawCallbacks.size() > 0 ||
+				m_componentsManagerData.sfDrawable.size() ||
+				m_enableDrawGizmos);
 		}
 	}
 }

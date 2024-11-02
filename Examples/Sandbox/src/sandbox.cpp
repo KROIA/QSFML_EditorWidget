@@ -156,7 +156,7 @@ SandBox::SandBox(QWidget *parent)
 				sf::Vector2f(0,100)
 			});
         obj->addComponent(collider);
-        obj->addComponent(collider->createPainter());
+        obj->enableDrawGizmosRecursive(true);
 
         Components::MouseFollower* mouseFollower = new Components::MouseFollower();
         obj->addComponent(mouseFollower);
@@ -338,7 +338,10 @@ void addShape(Scene* scene)
     //
 
 
-    obj->addComponent(testRay->createRayPainter());
+	obj->addDrawFunction([testRay](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
+		{
+            testRay->drawGizmos(target, states);
+		});
     obj->addComponent(shape);
 
     scene->addObject(obj);

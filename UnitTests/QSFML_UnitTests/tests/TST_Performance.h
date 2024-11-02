@@ -272,9 +272,9 @@ private:
 		m_pointPainter = new QSFML::Components::PointPainter();
 		m_pointPainter->setColor(sf::Color::Yellow);
 		pointPainterObj->addComponent(m_pointPainter);
-		QSFML::Utilities::ObjectQuadTree::ObjectQuadTreePainter* treePainter = m_tree.createPainter();
+		//QSFML::Utilities::ObjectQuadTree::ObjectQuadTreePainter* treePainter = m_tree.createPainter();
 		//treePainter->enableText(false);
-		pointPainterObj->addComponent(treePainter);
+		//pointPainterObj->addComponent(treePainter);
 		
 
 		//m_update.start(10);
@@ -282,6 +282,10 @@ private:
 
 
 		scene->addObject(pointPainterObj);
+		pointPainterObj->addDrawFunction([this](const QSFML::Objects::GameObject&, sf::RenderTarget& target, sf::RenderStates states)
+			{
+				m_tree.drawGizmos(target, states);
+			});
 
 		sf::Color color1 = sf::Color::Red;
 		sf::Color color2 = sf::Color::Green;

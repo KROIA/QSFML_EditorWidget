@@ -140,6 +140,7 @@ namespace QSFML
 			QSFML::vector<Painter*> m_painters;
 
 
+
 		};
 	}
 }

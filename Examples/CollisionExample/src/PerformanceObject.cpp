@@ -27,7 +27,10 @@ PerformanceObject::PerformanceObject(const std::string& name, QSFML::Objects::Ga
 	m_collider->setVertecies(vertecies);
 
 	addComponent(m_collider);
-	addComponent(m_collider->createPainter());
+	addDrawFunction([this](const GameObject&, sf::RenderTarget& target, sf::RenderStates states)
+		{
+			m_collider->drawGizmos(target, states);
+		});
 }
 PerformanceObject::PerformanceObject(const QSFML::vector<sf::Vector2f>& vertecies, const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
@@ -39,7 +42,7 @@ PerformanceObject::PerformanceObject(const QSFML::vector<sf::Vector2f>& vertecie
 	m_collider->setVertecies(vertecies);
 	
 	addComponent(m_collider);
-	addComponent(m_collider->createPainter());
+	enableDrawGizmosRecursive(true);
 	
 }
 PerformanceObject::~PerformanceObject()

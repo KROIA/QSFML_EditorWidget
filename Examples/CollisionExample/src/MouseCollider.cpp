@@ -15,7 +15,7 @@ MouseCollider::MouseCollider(const std::string& name, QSFML::Objects::GameObject
 		});
 
 	addComponent(m_collider);
-	addComponent(m_collider->createPainter());
+	enableDrawGizmosRecursive(true);
 
 	m_mouseFollower = new QSFML::Components::MouseFollower();
 	connect(m_mouseFollower, &QSFML::Components::MouseFollower::mousePosChanged,
@@ -36,5 +36,5 @@ MouseCollider::~MouseCollider()
 void MouseCollider::onMousePosChanged(const sf::Vector2f& worldPos,
 									  const sf::Vector2i& pixelPos)
 {
-	m_collider->setPos(worldPos);
+	GameObject::setPosition(worldPos);
 }

@@ -2,13 +2,16 @@
 #include "utilities/Stats.h"
 #include "objects/base/GameObject.h"
 #include "components/physics/Collider.h"
-#include "utilities/Stats.h"
+#include "Scene/Scene.h"
 
 
 namespace QSFML
 {
 	namespace Utilities
 	{
+		sf::Color ObjectQuadTree::s_gizmoColor(0, 0, 255, 255);
+		bool ObjectQuadTree::s_gizmoEnableText = true;
+
 		ObjectQuadTree::ObjectQuadTree(Utilities::StatsManager *statsManager, const Utilities::AABB& area, size_t maxDepth)
 			: m_tree(statsManager, area, 0, maxDepth)
 			, m_threadWorker(nullptr)
@@ -19,11 +22,6 @@ namespace QSFML
 		ObjectQuadTree::~ObjectQuadTree()
 		{
 			enableCollisionThreads(false);
-			for (size_t i = 0; i < m_painters.size(); ++i)
-			{
-				m_painters[i]->m_tree = nullptr;
-				m_painters[i]->deleteLater();
-			}
 		}
 		void ObjectQuadTree::setStatsManager(Utilities::StatsManager* manager)
 		{
@@ -550,86 +548,23 @@ namespace QSFML
 			target.draw(rect);
 		}
 
-		ObjectQuadTree::ObjectQuadTreePainter* ObjectQuadTree::createPainter()
+		void ObjectQuadTree::drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const
 		{
-			ObjectQuadTreePainter* painter = new ObjectQuadTreePainter(this);
-			m_painters.push_back(painter);
-			painter->setColor(sf::Color::Blue);
-			return painter;
-		}
-		void ObjectQuadTree::removePainter(ObjectQuadTreePainter* painter)
-		{
-			if (!painter) return;
-			for (size_t i = 0; i < m_painters.size(); ++i)
+			sf::RectangleShape rect;
+			rect.setFillColor(sf::Color(0, 0, 0, 0));
+
+			rect.setOutlineColor(s_gizmoColor);
+			rect.setOutlineThickness(0.5);
+			if (s_gizmoEnableText)
 			{
-				if (m_painters[i] == painter)
-				{
-					m_painters.erase(m_painters.begin() + i);
-					painter->m_tree = nullptr;
-					return;
-				}
-			}			
-		}
-		void ObjectQuadTree::assignPainter(ObjectQuadTreePainter* painter)
-		{
-			if (!painter) return;
-			for (size_t i = 0; i < m_painters.size(); ++i)
-			{
-				if (m_painters[i] == painter)
-				{
-					return;
-				}
+				sf::Text text;
+				text.setFont(Scene::getDefaultTextFont()); // font is a sf::Font
+				text.setScale(sf::Vector2f(0.08, 0.08));
+				text.setCharacterSize(40);
+				m_tree.draw(text, rect, s_gizmoColor, target, states);
 			}
-			painter->m_tree = this;
-			m_painters.push_back(painter);
+			else
+				m_tree.draw(rect, s_gizmoColor, target, states);
 		}
-
-		ObjectQuadTree::ObjectQuadTreePainter::ObjectQuadTreePainter(ObjectQuadTree* tree, const std::string& name)
-			: Drawable(name)
-			, m_tree(tree)
-		{
-
-		}
-		ObjectQuadTree::ObjectQuadTreePainter::ObjectQuadTreePainter(const ObjectQuadTreePainter& other)
-			: Drawable(other)
-			, m_tree(nullptr)
-		{
-			assignTree(other.m_tree);
-		}
-		COMPONENT_IMPL(ObjectQuadTree::ObjectQuadTreePainter);
-		ObjectQuadTree::ObjectQuadTreePainter::~ObjectQuadTreePainter()
-		{
-			if (m_tree)
-				m_tree->removePainter(this);
-		}
-		void ObjectQuadTree::ObjectQuadTreePainter::assignTree(ObjectQuadTree* tree)
-		{
-			if (m_tree)
-			{
-				m_tree->removePainter(this);
-			}
-			m_tree = tree;
-			if (m_tree)
-				m_tree->assignPainter(this);
-
-		}
-		ObjectQuadTree* ObjectQuadTree::ObjectQuadTreePainter::getTree() const
-		{
-			return m_tree;
-		}
-		void ObjectQuadTree::ObjectQuadTreePainter::setColor(const sf::Color& color)
-		{
-			m_color = color;
-		}
-		const sf::Color& ObjectQuadTree::ObjectQuadTreePainter::getColor() const
-		{
-			return m_color;
-		}
-		/*void ObjectQuadTree::ObjectQuadTreePainter::drawComponent(sf::RenderTarget& target,
-			sf::RenderStates states) const
-		{
-			if (m_tree)
-				m_tree->m_tree.draw(getTextFont(), m_color, target, states);
-		}*/
 	}
 }

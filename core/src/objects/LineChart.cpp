@@ -251,7 +251,7 @@ void LineChart::LineChartPainter::drawComponent(sf::RenderTarget& target,
     target.draw(axis, 4, sf::Lines, states);
 
     // Draw content
-    size_t count = m_chart->m_dataPoints.size();
+    size_t count = m_chart->m_points.size();
     if(count < 2)
         return;
 //    float xSpacing = m_chart->m_size.x / ((float)count-1.f);

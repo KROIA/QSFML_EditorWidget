@@ -50,6 +50,8 @@ Car::Car(const sf::ContextSettings& settings,
 	m_stearingSpeed = 500;
 	//m_acceleration = sf::Vector2f(0, 0);
 
+	enableDrawGizmosRecursive(true);
+
 	setRenderLayer(RenderLayer::layer_0);
 }
 

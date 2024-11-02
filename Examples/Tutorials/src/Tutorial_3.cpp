@@ -89,8 +89,6 @@ GameObject* createLaserObject()
     // Then use the rays as members of that class.
     QSFML::Utilities::Ray* ray = new QSFML::Utilities::Ray();
     ray->setPosition(0, 0);
-    auto* rayPainter = ray->createRayPainter();
-    laserObj->addComponent(rayPainter);
 
     //   Create a mouse follower component
     QSFML::Components::MouseFollower* mouseFollower = new QSFML::Components::MouseFollower();
@@ -126,5 +124,11 @@ GameObject* createLaserObject()
                     " Collision point = {" + std::to_string(collisionPoint.x) + "," + std::to_string(collisionPoint.y) + "}");
             }
         });
+
+	laserObj->addDrawFunction([ray](const GameObject&, sf::RenderTarget& target, sf::RenderStates states)
+		{
+			// Draw the ray
+			ray->drawGizmos(target, states);
+		});
     return laserObj;
 }

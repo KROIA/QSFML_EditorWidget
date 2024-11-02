@@ -8,11 +8,15 @@ namespace QSFML
 {
 	namespace Utilities
 	{
+		sf::Color Ray::s_gizmoLineColor(255, 0, 0, 255);
+		sf::Color Ray::s_gizmoPointColor(255,255,255,255);
+		float Ray::s_gizmoPointRadius = 10;
+		size_t Ray::s_maxGizmoCount = 10;
+
 		Ray::Ray()
 			: m_pos(0,0)
 			, m_dir(1,0)
 			, m_dirLength(1)
-			, m_rayPainter(nullptr)
 		{
 
 		}
@@ -20,7 +24,6 @@ namespace QSFML
 			: m_pos(other.m_pos)
 			, m_dir(other.m_dir)
 			, m_dirLength(other.m_dirLength)
-			, m_rayPainter(nullptr)
 		{
 			
 		}
@@ -28,7 +31,6 @@ namespace QSFML
 			: m_pos(position)
 			, m_dir(direction)
 			, m_dirLength(sqrt(direction.x * direction.x + direction.y * direction.y))
-			, m_rayPainter(nullptr)
 		{
 
 		}
@@ -36,18 +38,13 @@ namespace QSFML
 			: m_pos(posX, posY)
 			, m_dir(dirX, dirY)
 			, m_dirLength(sqrt(dirX * dirX + dirY * dirY))
-			, m_rayPainter(nullptr)
 		{
 
 		}
 
 		Ray::~Ray()
 		{
-			if (m_rayPainter)
-			{
-				m_rayPainter->disconnect_onDestroy(this, &Ray::onRayPainterDestroyed);
-				m_rayPainter = nullptr;
-			}
+
 		}
 
 		Ray& Ray::operator=(const Ray& other)
@@ -230,14 +227,14 @@ namespace QSFML
 						  float& outDistanceFactorB) const
 		{
 			bool ret = raycast(m_pos, m_dir, other.m_pos, other.m_dir, outDistanceFactorA, outDistanceFactorB);
-			if(ret && m_rayPainter)
+			if(ret && m_gizmoPoints.size() < s_maxGizmoCount)
 			{
 				sf::Vector2f pointA = getPoint(outDistanceFactorA);
 				sf::Vector2f pointB = other.getPoint(outDistanceFactorB);
-				m_rayPainter->addPoint(pointA);
-				m_rayPainter->addPoint(pointB);
-				m_rayPainter->addLine(m_pos, pointA);
-				m_rayPainter->addLine(other.m_pos, pointB);
+				m_gizmoPoints.push_back(pointA);
+				m_gizmoPoints.push_back(pointB);
+				m_gizmoLines.push_back({ m_pos, pointA });
+				m_gizmoLines.push_back({ other.m_pos, pointB });
 			}
 			return ret;
 		}
@@ -282,11 +279,11 @@ namespace QSFML
 		bool Ray::raycast(const Components::Shape& shape, float& outDistanceFactor, size_t& outEdge) const
 		{
 			bool ret = raycast_internal(shape, outDistanceFactor, outEdge);
-			if (ret && m_rayPainter)
+			if (ret && m_gizmoPoints.size() < s_maxGizmoCount)
 			{
 				sf::Vector2f point = getPoint(outDistanceFactor);
-				m_rayPainter->addPoint(point);
-				m_rayPainter->addLine(m_pos, point);
+				m_gizmoPoints.push_back(point);
+				m_gizmoLines.push_back({ m_pos, point });
 			}
 			return ret;
 		}
@@ -312,11 +309,11 @@ namespace QSFML
 					}
 				}
 			}
-			if (ret && m_rayPainter)
+			if (ret && m_gizmoPoints.size() < s_maxGizmoCount)
 			{
 				sf::Vector2f point = getPoint(outDistanceFactor);
-				m_rayPainter->addPoint(point);
-				m_rayPainter->addLine(m_pos, point);
+				m_gizmoPoints.push_back(point);
+				m_gizmoLines.push_back({ m_pos, point });
 			}
 			return ret;
 		}
@@ -342,22 +339,22 @@ namespace QSFML
 					}
 				}
 			}
-			if (ret && m_rayPainter)
+			if (ret && m_gizmoPoints.size() < s_maxGizmoCount)
 			{
 				sf::Vector2f point = getPoint(outDistanceFactor);
-				m_rayPainter->addPoint(point);
-				m_rayPainter->addLine(m_pos, point);
+				m_gizmoPoints.push_back(point);
+				m_gizmoLines.push_back({ m_pos, point });
 			}
 			return ret;
 		}
 		bool Ray::raycast(const AABB& aabb, float& outDistanceFactor, size_t& outEdge) const
 		{
 			bool ret = raycast_internal(aabb, outDistanceFactor, outEdge);
-			if (ret && m_rayPainter)
+			if (ret && m_gizmoPoints.size() < s_maxGizmoCount)
 			{
 				sf::Vector2f point = getPoint(outDistanceFactor);
-				m_rayPainter->addPoint(point);
-				m_rayPainter->addLine(m_pos, point);
+				m_gizmoPoints.push_back(point);
+				m_gizmoLines.push_back({ m_pos, point });
 			}
 			return ret;
 		}
@@ -431,111 +428,80 @@ namespace QSFML
 			return false;
 		}
 
-		Ray::RayPainter* Ray::createRayPainter()
-		{
-			if (m_rayPainter)
-				return m_rayPainter;
-			m_rayPainter = new Ray::RayPainter();
-			m_rayPainter->connect_onDestroy(this, &Ray::onRayPainterDestroyed);
-			return m_rayPainter;
-		}
-		void Ray::onRayPainterDestroyed()
-		{
-			m_rayPainter = nullptr;
-		}
-
-
-		Ray::RayPainter::RayPainter(const std::string& name)
-			: Drawable(name)
-			, m_pointColor(sf::Color::Red)
-			, m_lineColor(sf::Color::White)
-			, m_pointRadius(2)
-		{
-
-		}
-		
-		Ray::RayPainter::~RayPainter()
-		{
-
-		}
-
-		void Ray::RayPainter::addPoint(const sf::Vector2f& point)
-		{
-			m_points.push_back(point);
-		}
-		void Ray::RayPainter::addLine(const sf::Vector2f& pointA, const sf::Vector2f& pointB)
-		{
-			LinePainter line;
-			line.line[0] = pointA;
-			line.line[1] = pointB;
-
-			m_lines.push_back(line);
-		}
-
-		void Ray::RayPainter::drawComponent(sf::RenderTarget& target, sf::RenderStates states) const
+		void Ray::drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			QSFML_UNUSED(states);
 #ifdef QSFML_USE_GL_DRAW
 			QSFML_UNUSED(target);
 			glLoadMatrixf(sf::Transform::Identity.getMatrix());
+			glLineWidth(1);
 			glBegin(GL_LINES);
-			glColor4ub(m_lineColor.r, m_lineColor.g, m_lineColor.b, m_lineColor.a);
-			for (size_t i = 0; i < m_lines.size(); ++i)
+			glColor4ub(s_gizmoLineColor.r, s_gizmoLineColor.g, s_gizmoLineColor.b, s_gizmoLineColor.a);
+			for (size_t i = 0; i < m_gizmoLines.size(); ++i)
 			{
-				const LinePainter& line = m_lines[i];
-				
-				glVertex2f(line.line[0].x, line.line[0].y);
-				//glColor4ub(line.m_line[1].color.r, line.m_line[1].color.g, line.m_line[1].color.b, line.m_line[1].color.a);
-				glVertex2f(line.line[1].x, line.line[1].y);
+				const auto& line = m_gizmoLines[i];
+				glVertex2f(line.first.x, line.first.y);
+				glVertex2f(line.second.x, line.second.y);
 			}
 			glEnd();
 
 			glBegin(GL_LINES);
-			glColor4ub(m_pointColor.r, m_pointColor.g, m_pointColor.b, m_pointColor.a);
-			for (size_t i = 0; i < m_points.size(); ++i)
+			glColor4ub(s_gizmoPointColor.r, s_gizmoPointColor.g, s_gizmoPointColor.b, s_gizmoPointColor.a);
+			for (size_t i = 0; i < m_gizmoPoints.size(); ++i)
 			{
-				const sf::Vector2f& point = m_points[i];
-				sf::Vector2f tl = point - sf::Vector2f(m_pointRadius, m_pointRadius);
-				sf::Vector2f tr = point + sf::Vector2f(m_pointRadius, -m_pointRadius);
-				sf::Vector2f bl = point + sf::Vector2f(-m_pointRadius, m_pointRadius);
-				sf::Vector2f br = point + sf::Vector2f(m_pointRadius, m_pointRadius);
+				const sf::Vector2f& point = m_gizmoPoints[i];
+				sf::Vector2f tl = point - sf::Vector2f(s_gizmoPointRadius, s_gizmoPointRadius);
+				sf::Vector2f tr = point + sf::Vector2f(s_gizmoPointRadius, -s_gizmoPointRadius);
+				sf::Vector2f bl = point + sf::Vector2f(-s_gizmoPointRadius, s_gizmoPointRadius);
+				sf::Vector2f br = point + sf::Vector2f(s_gizmoPointRadius, s_gizmoPointRadius);
 
 				// Draw cross on that point
-				glVertex2f(tl.x,tl.y);
-				glVertex2f(br.x,br.y);
-				glVertex2f(tr.x,tr.y);
-				glVertex2f(bl.x,bl.y);
+				glVertex2f(tl.x, tl.y);
+				glVertex2f(br.x, br.y);
+				glVertex2f(tr.x, tr.y);
+				glVertex2f(bl.x, bl.y);
 
 
 				//glVertex2f(point.x, point.y);
 			}
 			glEnd();
-			m_lines.clear();
-			m_points.clear();
+			
 #else
 			//states.transform = m_ra();
-			for (size_t i = 0; i < m_lines.size(); ++i)
+			sf::Vertex line[2];
+			line[0].color = s_gizmoLineColor;
+			line[1].color = s_gizmoLineColor;
+			for (size_t i = 0; i < m_gizmoLines.size(); ++i)
 			{
-				sf::Vertex line[2];
-				line[0].position = m_lines[i].line[0];
-				line[1].position = m_lines[i].line[1];
-				line[0].color = m_lineColor;
-				line[1].color = m_lineColor;
+				line[0].position = m_gizmoLines[i].first;
+				line[1].position = m_gizmoLines[i].second;
 				target.draw(line, 2, sf::Lines);
 			}
-			
-			sf::CircleShape point(m_pointRadius);
-			point.setFillColor(m_pointColor);
-			point.setOrigin(m_pointRadius, m_pointRadius);
-			for (size_t i = 0; i < m_points.size(); ++i)
-			{
-				point.setPosition(m_points[i]);
-				target.draw(point);
-			}
-			m_lines.clear();
-			m_points.clear();
-#endif
-		}
 
+			line[0].color = s_gizmoPointColor;
+			line[1].color = s_gizmoPointColor;
+			
+			for (size_t i = 0; i < m_gizmoPoints.size(); ++i)
+			{
+				const sf::Vector2f& point = m_gizmoPoints[i];
+				sf::Vector2f tl = point - sf::Vector2f(s_gizmoPointRadius, s_gizmoPointRadius);
+				sf::Vector2f tr = point + sf::Vector2f(s_gizmoPointRadius, -s_gizmoPointRadius);
+				sf::Vector2f bl = point + sf::Vector2f(-s_gizmoPointRadius, s_gizmoPointRadius);
+				sf::Vector2f br = point + sf::Vector2f(s_gizmoPointRadius, s_gizmoPointRadius);
+
+				line[0].position = tl;
+				line[1].position = br;
+				target.draw(line, 2, sf::Lines);
+
+				line[0].position = tr;
+				line[1].position = bl;
+				target.draw(line, 2, sf::Lines);
+			}
+#endif
+			m_gizmoLines.clear();
+			m_gizmoPoints.clear();
+			m_gizmoLines.reserve(s_maxGizmoCount);
+			m_gizmoPoints.reserve(s_maxGizmoCount);
+		}
 	}
 }

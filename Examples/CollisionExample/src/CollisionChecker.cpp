@@ -70,7 +70,7 @@ CollisionChecker::CollisionChecker(const std::string& name, QSFML::Objects::Game
 	connect(m_mouseFollower, &QSFML::Components::MouseFollower::mousePosChanged,
 		this, &CollisionChecker::onMousePosChanged);
 	addComponent(m_mouseFollower);
-	addComponent(m_tree.createPainter());
+	//addComponent(m_tree.createPainter());
 	addComponent(m_pointPainter);
 	m_tree.enableCollisionThreads(true);
 	setMode(Mode::performanceTest);

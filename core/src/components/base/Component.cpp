@@ -51,6 +51,11 @@ void Component::deleteComponent(ComponentPtr comp)
     }    
 }
 
+void Component::drawGizmos(sf::RenderTarget&, sf::RenderStates) const
+{
+
+}
+
 
 void Component::deleteLater()
 {

@@ -33,11 +33,7 @@ Collider::Collider(const Collider& other)
 }
 Collider::~Collider()
 {
-    for (size_t i = 0; i < m_painters.size(); ++i)
-    {
-        if(Internal::LifetimeChecker::isAlive(m_painters[i]))
-            m_painters[i]->onColliderDelete();
-    }
+
 }
 
 Collider& Collider::operator=(const Collider& other)
@@ -365,13 +361,57 @@ bool Collider::contains(const QSFML::vector<sf::Vector2f>& polygon,
     // If the number of edge crossings is odd, the const sf::Vector2f & is inside the polygon
     return (crossingCount % 2) == 1;
 }
-Collider::Painter* Collider::createPainter()
+
+void Collider::drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    Painter *p = new Painter(this, getName() + " Painter");
-    p->setColorAABB(sf::Color(200, 0, 0));
-    p->setColorCollider(sf::Color(0, 200, 0));
-    m_painters.push_back(p);
-    return p;
+#ifdef QSFML_USE_GL_DRAW
+    QSFML_UNUSED(target);
+    QSFML_UNUSED(states);
+
+    glLoadMatrixf(sf::Transform::Identity.getMatrix());
+    glBegin(GL_LINE_LOOP);
+    glColor4ub(0,255,0,255);
+    for (size_t i = 0; i < m_absoluteVertices.size(); ++i)
+    {
+        glVertex2f(m_absoluteVertices[i].x, m_absoluteVertices[i].y);
+    }
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    // set color
+    glColor4ub(255,0,0,255);
+    glVertex2f(m_boundingBox.TL().x, m_boundingBox.TL().y);
+    glVertex2f(m_boundingBox.TR().x, m_boundingBox.TR().y);
+    glVertex2f(m_boundingBox.BR().x, m_boundingBox.BR().y);
+    glVertex2f(m_boundingBox.BL().x, m_boundingBox.BL().y);
+    glEnd();
+#else
+    QSFML_UNUSED(states);
+
+    sf::Color aabbColor(255, 0, 0);
+    sf::Vertex aabb[] =
+    {
+        sf::Vertex(m_boundingBox.TL(), aabbColor),
+        sf::Vertex(m_boundingBox.TR(), aabbColor),
+        sf::Vertex(m_boundingBox.BR(), aabbColor),
+        sf::Vertex(m_boundingBox.BL(), aabbColor),
+        sf::Vertex(m_boundingBox.TL(), aabbColor),
+    };
+    size_t certexCount = m_absoluteVertices.size();
+    if (certexCount > 0)
+    {
+        sf::Vertex* coll = new sf::Vertex[certexCount + 1];
+		sf::Color colliderColor(0, 255, 0);
+        for (size_t i = 0; i < certexCount; ++i)
+        {
+            coll[i] = sf::Vertex(m_absoluteVertices[i], colliderColor);
+        }
+        coll[m_relativeVertices.size()] = sf::Vertex(m_absoluteVertices[0], colliderColor);
+        target.draw(coll, certexCount + 1, sf::LineStrip);
+        delete[] coll;
+    }
+    target.draw(aabb, 5, sf::LineStrip);
+#endif
 }
 
 void Collider::updateColliderData() const
@@ -383,8 +423,8 @@ void Collider::updateColliderData() const
 
 void Collider::calculateBoundingBox() const
 {
-    m_boundingBox = Utilities::AABB::getFrame(m_relativeVertices);
-    m_boundingBox.move(m_pos);
+    m_boundingBox = Utilities::AABB::getFrame(m_absoluteVertices);
+    //m_boundingBox.move(m_pos);
     //if (getParent())
     //    getParent()->updateBoundingBox();
 }
@@ -392,139 +432,13 @@ void Collider::calculateAbsPos() const
 {
     m_absoluteVertices.clear();
     m_absoluteVertices.reserve(m_relativeVertices.size());
+    sf::Transform transform = getParent()->getTransform();
     for (size_t i = 0; i < m_relativeVertices.size(); ++i)
-        m_absoluteVertices.push_back(m_relativeVertices[i] + m_pos);
-}
-void Collider::onPainterDeleted(Painter* p)
-{
-    for (size_t i = 0; i < m_painters.size(); ++i)
-    {
-        if (m_painters[i] == p)
-        {
-            m_painters.erase(m_painters.begin() + i);
-            return;
-        }
-    }
+        m_absoluteVertices.push_back(transform.transformPoint(m_relativeVertices[i]));
 }
 
 
 
 
-COMPONENT_IMPL(Collider::Painter);
-Collider::Painter::Painter(Collider* collider, const std::string& name)
-    : Drawable(name)
-    , m_collider(collider)
-{
-
-}
-Collider::Painter::Painter(const Painter& other)
-    : Drawable(other)
-    , m_collider(other.m_collider)
-{
-    if (m_collider)
-        m_collider->m_painters.push_back(this);
-}
-Collider::Painter::~Painter()
-{
-    if (m_collider && Internal::LifetimeChecker::isAlive(m_collider))
-        m_collider->onPainterDeleted(this);
-}
-void Collider::Painter::drawComponent(sf::RenderTarget& target,
-                             sf::RenderStates states) const
-{
-#ifdef QSFML_USE_GL_DRAW
-    QSFML_UNUSED(target);
-    QSFML_UNUSED(states);
-    if (!m_collider)
-        return;
-    
-    
-    glLoadMatrixf(sf::Transform::Identity.getMatrix());
-    glBegin(GL_LINE_LOOP);
-	glColor4ub(m_colliderColor.r, m_colliderColor.g, m_colliderColor.b, m_colliderColor.a);
-    for (size_t i = 0; i < m_collider->m_absoluteVertices.size(); ++i)
-	{
-		glVertex2f(m_collider->m_absoluteVertices[i].x, m_collider->m_absoluteVertices[i].y);
-    }
-	glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    // set color
-	glColor4ub(m_aabbColor.r, m_aabbColor.g, m_aabbColor.b, m_aabbColor.a);
-	glVertex2f(m_collider->m_boundingBox.TL().x, m_collider->m_boundingBox.TL().y);
-	glVertex2f(m_collider->m_boundingBox.TR().x, m_collider->m_boundingBox.TR().y);
-	glVertex2f(m_collider->m_boundingBox.BR().x, m_collider->m_boundingBox.BR().y);
-	glVertex2f(m_collider->m_boundingBox.BL().x, m_collider->m_boundingBox.BL().y);
-    glEnd();
-#else
-    QSFML_UNUSED(states);
-    if (!m_collider)
-        return;
-
-    sf::Vertex aabb[] =
-    {
-        sf::Vertex(m_collider->m_boundingBox.TL(), m_aabbColor),
-        sf::Vertex(m_collider->m_boundingBox.TR(), m_aabbColor),
-        sf::Vertex(m_collider->m_boundingBox.BR(), m_aabbColor),
-        sf::Vertex(m_collider->m_boundingBox.BL(), m_aabbColor),
-        sf::Vertex(m_collider->m_boundingBox.TL(), m_aabbColor),
-    };
-    size_t certexCount = m_collider->m_absoluteVertices.size();
-    if (certexCount > 0)
-    {
-        sf::Vertex* coll = new sf::Vertex[certexCount + 1];
-        for (size_t i = 0; i < certexCount; ++i)
-        {
-            coll[i] = sf::Vertex(m_collider->m_absoluteVertices[i], m_colliderColor);
-        }
-        coll[m_collider->m_relativeVertices.size()] = sf::Vertex(m_collider->m_absoluteVertices[0], m_colliderColor);
-        target.draw(coll, certexCount+1, sf::LineStrip);
-        delete[] coll;
-    }
-    target.draw(aabb, 5, sf::LineStrip);
-#endif
-    
-}
-void Collider::Painter::setColor(const sf::Color& color)
-{
-    int colorOffset = 50;
-    int r = (int)color.r + colorOffset;
-    int g = (int)color.g + colorOffset;
-    int b = (int)color.b + colorOffset;
-
-    if (r > 255)
-        r = 255;
-    if (g > 255)
-        g = 255;
-    if (b > 255)
-        b = 255;
-    m_aabbColor = sf::Color(r, g, b);
-    m_colliderColor = color;
-}
-void Collider::Painter::setColorAABB(const sf::Color& color)
-{
-    m_aabbColor = color;
-}
-const sf::Color& Collider::Painter::getColorAABB() const
-{
-    return m_aabbColor;
-}
-void Collider::Painter::setColorCollider(const sf::Color& color)
-{
-    m_colliderColor = color;
-}
-const sf::Color& Collider::Painter::getColorCollider() const
-{
-    return m_colliderColor;
-}
-const sf::Color& Collider::Painter::getColor() const
-{
-    return m_colliderColor;
-}
-void Collider::Painter::onColliderDelete()
-{
-    m_collider = nullptr;
-    setEnabled(false);
-}
 }
 }

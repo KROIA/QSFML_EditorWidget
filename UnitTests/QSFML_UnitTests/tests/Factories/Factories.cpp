@@ -46,15 +46,11 @@ namespace Factories
 		QSFML::Components::Collider* collider = new QSFML::Components::Collider();
 		collider->setVertecies(points);
 
-		QSFML::Components::Collider::Painter* painter = collider->createPainter();
-		painter->setColor(color);
-
 		// Create object
 		QSFML::Objects::GameObjectPtr obj = new QSFML::Objects::GameObject("RandomShape");
 
 		// Add components
 		obj->addComponent(collider);
-		obj->addComponent(painter);
 
 		obj->setPosition(position);
 		return obj;

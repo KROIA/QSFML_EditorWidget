@@ -304,6 +304,8 @@ namespace QSFML
 				m_childObjectManagerData.objs.push_back(obj);
 				obj->setParent_internal(this, m_rootParent, m_sceneParent);
 				obj->updateObjectChanges();
+				if(m_enableDrawGizmosRecursive)
+					obj->enableDrawGizmosRecursive(true);
 				_needsDrawUpdate |= obj->m_componentsManagerData.thisNeedsDrawUpdate;
 				_needsEventUpdate |= obj->m_componentsManagerData.thisNeedsEventUpdate;
 				++addCount;

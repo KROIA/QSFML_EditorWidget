@@ -37,6 +37,12 @@ namespace QSFML
 				QSFML::vector<Objects::GameObjectPtr>* containter;
 				QSFML::vector<Objects::GameObjectPtr>::iterator iterator;
 			};
+
+			static void setGizmoColor(const sf::Color& color) { s_gizmoColor = color; }
+			static const sf::Color& getGizmoColor() { return s_gizmoColor; }
+			static void enableGizmoText(bool enable) { s_gizmoEnableText = enable; }
+			static bool isGizmoTextEnabled() { return s_gizmoEnableText; }
+
 			ObjectQuadTree(Utilities::StatsManager* statsManager, const Utilities::AABB& area, size_t maxDepth = 10);
 			ObjectQuadTree(const ObjectQuadTree& other) = delete;
 			~ObjectQuadTree();
@@ -62,69 +68,15 @@ namespace QSFML
 								 bool onlyFirstCollision = true);
 
 
-			class QSFML_EDITOR_WIDGET_EXPORT ObjectQuadTreePainter : public Components::Drawable
-			{
-				friend ObjectQuadTree;
-				ObjectQuadTreePainter(ObjectQuadTree* tree, const std::string& name = "ObjectQuadTreePainter");
-				ObjectQuadTreePainter(const ObjectQuadTreePainter& other);
-			public:
-				COMPONENT_DECL(ObjectQuadTreePainter);
-				~ObjectQuadTreePainter();
 
-				void enableText(bool enable)
-				{
-					m_enableText = enable;
-				}
+			void drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const;
 
-				void assignTree(ObjectQuadTree* tree);
-				ObjectQuadTree* getTree() const;
-
-				void setColor(const sf::Color& color);
-				const sf::Color& getColor() const;
-
-				//void drawComponent(sf::RenderTarget& target,
-				//	sf::RenderStates states) const override;
-				void ObjectQuadTree::ObjectQuadTreePainter::drawComponent(sf::RenderTarget& target,
-					sf::RenderStates states) const override
-				{
-					if (m_tree)
-					{
-		
-						sf::RectangleShape rect;
-						//rect.setPosition(m_area.TL());
-						//rect.setSize(m_area.getSize());
-						rect.setFillColor(sf::Color(0, 0, 0, 0));
-
-						rect.setOutlineColor(m_color);
-						rect.setOutlineThickness(0.5);
-						if (m_enableText)
-						{
-							sf::Text text;
-							text.setFont(getTextFont()); // font is a sf::Font
-							text.setScale(sf::Vector2f(0.08, 0.08));
-							text.setCharacterSize(40);
-							m_tree->m_tree.draw(text, rect, m_color, target, states);
-						}
-						else
-							m_tree->m_tree.draw(rect, m_color, target, states);
-					}
-				}
-
-			private:
-				bool m_enableText = true;
-				ObjectQuadTree* m_tree;
-				sf::Color m_color;
-			};
-
-			ObjectQuadTreePainter* createPainter();
-			void removePainter(ObjectQuadTreePainter* painter);
-			void assignPainter(ObjectQuadTreePainter* painter);
 
 		private:
 			bool insert_internal(TreeItem& item);
 			class QSFML_EDITOR_WIDGET_EXPORT Tree
 			{
-				friend ObjectQuadTreePainter;
+				friend class ObjectQuadTree;
 			public:
 				Tree(Utilities::StatsManager* statsManager, const Utilities::AABB& area, size_t depth, size_t maxDepth);
 				~Tree();
@@ -191,7 +143,6 @@ namespace QSFML
 			Tree m_tree;
 			QSFML::vector<TreeItem> m_allObjs;
 			QSFML::unordered_map<Objects::GameObjectPtr, size_t> m_allObjMap;
-			QSFML::vector<ObjectQuadTreePainter*> m_painters;
 			ThreadWorker* m_threadWorker;
 
 			// special collision detection container for multithreading;
@@ -200,6 +151,9 @@ namespace QSFML
 			bool m_onlyFirstCollision;
 
 			Utilities::StatsManager* m_statsManager;
+
+			static sf::Color s_gizmoColor;
+			static bool s_gizmoEnableText;
 		};
 	}
 }

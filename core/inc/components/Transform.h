@@ -3,6 +3,9 @@
 #include "QSFML_EditorWidget_base.h"
 #include <SFML/Graphics.hpp>
 #include "components/base/Component.h"
+#ifdef QSFML_USE_GL_DRAW
+#include <SFML/OpenGL.hpp>
+#endif
 
 namespace QSFML
 {
@@ -12,6 +15,29 @@ namespace QSFML
 		{
 		public:
         COMPONENT_IMPL(Transform);
+
+		static void setGizmoAxisColor(const sf::Color& xAxisColor, const sf::Color& yAxisColor)
+		{
+			s_xAxisColor = xAxisColor;
+			s_yAxisColor = yAxisColor;
+		}
+		static const sf::Color& getGizmoXAxisColor()
+		{
+			return s_xAxisColor;
+		}
+		static const sf::Color& getGizmoYAxisColor()
+		{
+			return s_yAxisColor;
+		}
+        static void setGizmoAxisLength(float length)
+        {
+			s_axisLength = length;
+        }
+		static float getGizmoAxisLength()
+		{
+			return s_axisLength;
+		}
+
         Transform()
 			: Component("Transform")
 			, m_needsTransformUpdate(true)
@@ -155,7 +181,47 @@ namespace QSFML
         //    updateGlobalTransform();
         //    return m_globalTransform;
         //}
+		void drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const override
+		{
+#ifdef QSFML_USE_GL_DRAW
+            QSFML_UNUSED(target);
+            QSFML_UNUSED(states);
+            glLoadMatrixf(states.transform.getMatrix());
 
+            // Enable blending to match SFML's alpha blending
+            //glEnable(GL_BLEND);
+            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            // Iterate through the lines and draw each one using OpenGL
+
+			
+
+            glBegin(GL_LINES);
+			glColor4ub(s_xAxisColor.r, s_xAxisColor.g, s_xAxisColor.b, s_xAxisColor.a);
+			glVertex2f(0, 0);
+			glVertex2f(s_axisLength, 0);
+
+            glColor4ub(s_yAxisColor.r, s_yAxisColor.g, s_yAxisColor.b, s_yAxisColor.a);
+			glVertex2f(0, 0);
+			glVertex2f(0, s_axisLength);
+            glEnd();
+
+#else    
+			sf::Vertex xAxis[] =
+			{
+				sf::Vertex(sf::Vector2f(0, 0), s_xAxisColor),
+				sf::Vertex(sf::Vector2f(s_axisLength, 0), s_xAxisColor)
+		    };
+			sf::Vertex yAxis[] =
+			{
+				sf::Vertex(sf::Vector2f(0, 0), s_yAxisColor),
+				sf::Vertex(sf::Vector2f(0, s_axisLength), s_yAxisColor)
+			};
+			target.draw(xAxis, 2, sf::Lines, states);
+			target.draw(yAxis, 2, sf::Lines, states);
+            
+#endif
+		}
 			
 		protected:
         
@@ -190,6 +256,10 @@ namespace QSFML
 
 			mutable bool m_needsTransformUpdate;
 			mutable sf::Transform m_globalTransform;
+
+            static sf::Color s_xAxisColor;
+            static sf::Color s_yAxisColor;
+			static float s_axisLength;
 		};
 
         

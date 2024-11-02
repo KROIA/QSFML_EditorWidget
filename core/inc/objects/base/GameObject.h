@@ -220,7 +220,8 @@ protected:
             childs,
 			components,
 			sfDrawables,
-            customDrawFunctions
+            customDrawFunctions,
+            gizmos
 		};
 
         GameObject(const std::string &name = "GameObject",
@@ -940,6 +941,12 @@ protected:
         void checkCollision(const Utilities::ObjectQuadTree& tree,
             QSFML::vector<Utilities::Collisioninfo>& collisions,
             bool onlyFirstCollision);
+
+        void enableDrawGizmos(bool enable);
+		void enableDrawGizmosRecursive(bool enable);
+        bool isDrawGizmosEnabled() const { return m_enableDrawGizmos; }
+
+
         // ---------
 
         // Scene operations
@@ -1425,6 +1432,7 @@ protected:
 			addDrawFunction(func);
 		}
 
+
         
 		
 
@@ -1499,6 +1507,15 @@ protected:
 		 * @param newParent
 		 */
         virtual void onParentChange(GameObjectPtr oldParent, GameObjectPtr newParent);
+    
+        /**
+         * @brief
+         * Draw debug information of this object and its components
+         * @param target
+         * @param states
+         */
+        virtual void drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const;
+
     private:
         static Log::LogObject& getLogger();
 
@@ -1644,6 +1661,8 @@ protected:
 		QSFML::vector<EventSequenceElement> m_eventOrder;
 		QSFML::vector<UpdateSequenceElement> m_updateOrder;
 		QSFML::vector<DrawSequenceElement> m_drawOrder;
+		bool m_enableDrawGizmos = false;
+		bool m_enableDrawGizmosRecursive = false;
 
         // Static
         static size_t s_objNameCounter;

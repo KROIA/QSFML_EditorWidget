@@ -29,7 +29,7 @@ void CollisionObject::setup(const QSFML::vector<sf::Vector2f>& vertecies)
 	m_collider->setVertecies(vertecies);
 
 	addComponent(m_collider);
-	addComponent(m_collider->createPainter());
+	enableDrawGizmosRecursive(true);
 }
 void CollisionObject::onAwake()
 {

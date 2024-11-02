@@ -108,8 +108,14 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
             return m_enabled; 
         }
 
-
-        
+        /**
+         * @brief 
+         * Used to draw debug informations of the component.
+		 * For example the collider component will draw the bounding box.
+         * @param target 
+         * @param states 
+         */
+        virtual void drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const;
 
         
 

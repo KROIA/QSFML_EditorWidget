@@ -17,6 +17,40 @@ namespace QSFML
 		{
 			friend class RayPainter;
 		public:
+			static void setGizmoLineColor(const sf::Color& color)
+			{
+				s_gizmoLineColor = color;
+			}
+			static void setGizmoPointColor(const sf::Color& color)
+			{
+				s_gizmoPointColor = color;
+			}
+			static void setGizmoPointRadius(float radius)
+			{
+				s_gizmoPointRadius = radius;
+			}
+			static void setMaxGizmoCount(size_t count)
+			{
+				s_maxGizmoCount = count;
+			}
+			static const sf::Color& getGizmoLineColor()
+			{
+				return s_gizmoLineColor;
+			}
+			static const sf::Color& getGizmoPointColor()
+			{
+				return s_gizmoPointColor;
+			}
+			static float getGizmoPointRadius()
+			{
+				return s_gizmoPointRadius;
+			}
+			static size_t getMaxGizmoCount()
+			{
+				return s_maxGizmoCount;
+			}
+
+
 			Ray();
 			Ray(const Ray& other);
 			Ray(const sf::Vector2f& position, const sf::Vector2f& direction);
@@ -162,47 +196,25 @@ namespace QSFML
 			
 			bool raycast(const AABB& aabb, float &outDistanceFactor, size_t &outEdge) const;
 		
-			class QSFML_EDITOR_WIDGET_EXPORT RayPainter : public Components::Drawable
-			{
-				friend Ray;
-				RayPainter(const std::string& name = "RayPainter");
-				RayPainter(const RayPainter& other) = delete;
-				
-			public:
-				~RayPainter();
-				
+			void drawGizmos(sf::RenderTarget& target, sf::RenderStates states) const;
 
-				void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
-
-			private:
-				void addPoint(const sf::Vector2f& point);
-				void addLine(const sf::Vector2f& pointA, const sf::Vector2f& pointB);
-			
-				struct LinePainter
-				{
-					sf::Vector2f line[2];
-				};
-				sf::Color m_pointColor;
-				sf::Color m_lineColor;
-				float m_pointRadius;
-
-				mutable QSFML::vector<sf::Vector2f> m_points;
-				mutable QSFML::vector<LinePainter> m_lines;
-			};
-
-			RayPainter *createRayPainter();
 
 			private:
 			bool raycast_internal(const Components::Shape& shape, float& outDistanceFactor, size_t& outEdge) const;
 			bool raycast_internal(const AABB& aabb, float& outDistanceFactor, size_t& outEdge) const;
 
-			void onRayPainterDestroyed();
 
 			sf::Vector2f m_pos;
 			sf::Vector2f m_dir;
 			float m_dirLength;
+			mutable QSFML::vector<sf::Vector2f> m_gizmoPoints;
+			mutable QSFML::vector<QSFML::pair<sf::Vector2f, sf::Vector2f>> m_gizmoLines;
 
-			RayPainter* m_rayPainter;
+
+			static sf::Color s_gizmoLineColor;
+			static sf::Color s_gizmoPointColor;
+			static float s_gizmoPointRadius;
+			static size_t s_maxGizmoCount;
 		};
 	}
 }
