@@ -334,6 +334,10 @@ namespace QSFML
 			{
 				m_parent->onObjectsChanged();
 			}
+			if (m_sceneParent)
+			{
+				m_sceneParent->GameObjectContainer::objectHasChanged(this);
+			}
 		}
 
 

@@ -133,7 +133,7 @@ GameObject::~GameObject()
     {
         m_sceneParent->removeGameObject();
         m_sceneParent->removeComponent(m_componentsManagerData.all.size());
-        m_sceneParent->removeObject(this);
+        //m_sceneParent->removeObject(this);
     }
 
     for (auto& child : m_childObjectManagerData.objs)

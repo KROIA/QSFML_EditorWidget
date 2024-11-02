@@ -222,7 +222,7 @@ namespace QSFML
             {
                 sf::Transform transform;
                 m_rootParent->updateTransformInternal(transform);
-                updateBoundingBox();
+                m_rootParent->updateBoundingBox();
 				//return transform;
             }
             else
