@@ -175,33 +175,21 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
             return viewBounds.intersects(rect);
         }
 
-    protected:
-       
+
         /// @brief 
-        /// User defined draw function
-		/// @details
-		/// This function will be called on every frame
-		/// You must override this function and draw your stuff here
-		/// The states transform will already be moved to the correct relative position uf the object
-        /// @param target 
-        /// @param states 
-        virtual void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
-
-
-		/// @brief 
-		/// Draw a circle shape using OpenGL
-		/// @tparam segments 
-		/// The number of segments of the circle
-		/// @details
-		/// The template function allows you to specify the number of segments and thus the quality of the circle
-		/// On the first call, the function will create a cache of the shape
-		/// This makes it a lot faster to draw the circle 
-		/// @param pos 
-		/// Position of the center of the circle in world coordinates
-		/// @param radius 
-		/// Radius of the circle in world coordinates
+        /// Draw a circle shape using OpenGL
+        /// @tparam segments 
+        /// The number of segments of the circle
+        /// @details
+        /// The template function allows you to specify the number of segments and thus the quality of the circle
+        /// On the first call, the function will create a cache of the shape
+        /// This makes it a lot faster to draw the circle 
+        /// @param pos 
+        /// Position of the center of the circle in world coordinates
+        /// @param radius 
+        /// Radius of the circle in world coordinates
         /// 
-		/// @code
+        /// @code
         /// void MyDrawable::drawComponent(sf::RenderTarget& target, sf::RenderStates states)
         /// {
         ///     sf::Color color = sf::Color::Red;
@@ -210,8 +198,8 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
         ///     glColor4ub(color.r, color.g, color.b, color.a);
         ///     drawGlCircleShape<30>(pos, radius);
         /// }
-		/// @endcode
-		template <size_t segments>
+        /// @endcode
+        template <size_t segments>
         static void drawGlCircleShape(const sf::Vector2f& pos, float radius)
         {
             static bool initialized = false;
@@ -234,6 +222,21 @@ class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawabl
             }
             glEnd();
         }
+
+    protected:
+       
+        /// @brief 
+        /// User defined draw function
+		/// @details
+		/// This function will be called on every frame
+		/// You must override this function and draw your stuff here
+		/// The states transform will already be moved to the correct relative position uf the object
+        /// @param target 
+        /// @param states 
+        virtual void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
+
+
+		
 
         private:
 			bool m_ignoreTransform = false; ///< Ignore the transform of the drawable if it is set to true
