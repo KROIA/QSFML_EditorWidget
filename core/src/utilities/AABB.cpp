@@ -36,8 +36,8 @@ AABB AABB::getFrame(const QSFML::vector<sf::Vector2f>& points)
     min.x = std::numeric_limits<float>::max();
     min.y = std::numeric_limits<float>::max();
 
-    max.x = std::numeric_limits<float>::min();
-    max.y = std::numeric_limits<float>::min();
+    max.x = -std::numeric_limits<float>::max();
+    max.y = -std::numeric_limits<float>::max();
     for (size_t i = 0; i < points.size(); i++)
     {
         sf::Vector2f pos = points[i];
