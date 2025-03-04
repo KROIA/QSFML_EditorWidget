@@ -360,7 +360,8 @@ QSFML::vector<Objects::GameObjectPtr> GameObjectContainer::getAllObjectsRecursiv
 
 void GameObjectContainer::deleteLater(Objects::GameObjectPtr obj)
 {
-    m_allObjects->deleteLater(obj);
+    //m_allObjects->deleteLater(obj);
+    m_objectsToDelete.push_back(obj);
     if (obj->getRenderLayer() < RenderLayer::count)
         m_renderLayerGroup.removeObject(obj, obj->getRenderLayer());
 }
