@@ -175,6 +175,7 @@ void GameObjectContainer::applyObjectChanges()
             changedObjects[i]->updateObjectChanges();
         }
     }
+    m_renderLayerGroup.updateNewElements();
     if (objectsToAdd.empty() && objectsToRemove.empty() && objectsToDelete.empty())
         return;
     m_objectsToAdd.clear();
