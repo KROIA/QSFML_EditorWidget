@@ -5,7 +5,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
     set(LIB_NAME_1 imgui)
     set(LIB_MACRO_NAME_1 IMGUI_LIBRARY_AVAILABLE)
     set(GIT_REPO_1 https://github.com/ocornut/imgui.git)
-    set(GIT_TAG_1 master)
+    set(GIT_TAG_1 v1.91.5)
 
     set(LIB_NAME_2 imgui-sfml)
     set(LIB_MACRO_NAME_2 IMGUI_SFML_LIBRARY_AVAILABLE)
