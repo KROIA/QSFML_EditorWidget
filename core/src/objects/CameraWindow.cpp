@@ -208,9 +208,26 @@ namespace QSFML
 		{
             if (m_window)
             {
-                SetFocus((HWND)m_window->getSystemHandle());
+				HWND windowHandle = (HWND)m_window->getSystemHandle();
+				HWND currentFocus = GetFocus();
+                if (windowHandle != currentFocus)
+                {
+                    SetFocus(windowHandle);
+					m_lastFocusedHandle = currentFocus;
+                }
             }
 		}
+        void CameraWindow::releaseForceFocus()
+        {
+            if (m_window)
+            {
+                if (m_lastFocusedHandle)
+                {
+                    SetFocus(m_lastFocusedHandle);
+                    m_lastFocusedHandle = nullptr;
+                }
+            }
+        }
         bool CameraWindow::isMouseOverWindow() const
         {
 			if (!m_window) return false;

@@ -50,6 +50,7 @@ namespace QSFML
 			void enableFrameTimer(bool enable);
 
 			void setForceFocus();
+			void releaseForceFocus();
 			bool isMouseOverWindow() const;
 
 			/*
@@ -107,6 +108,8 @@ namespace QSFML
 			sf::Transform m_lastTransform;
 
 			mutable sf::Texture* m_screenCaptureTexture = nullptr;
+
+			HWND m_lastFocusedHandle = nullptr;
 
 			//Scene* m_scene = nullptr;
 		};

@@ -386,6 +386,10 @@ namespace QSFML {
             {
                 m_cameras.defaultCamera->setForceFocus();
             }
+            else
+            {
+				m_cameras.defaultCamera->releaseForceFocus();
+			}
         }
         ImGui::SetCurrentContext(m_imGuiContext);
 #if IMPLOT_LIBRARY_AVAILABLE == 1
