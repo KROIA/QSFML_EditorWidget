@@ -377,7 +377,16 @@ namespace QSFML {
         double elapsedSeconds = std::chrono::duration<double>(t2 - m_syncedUpdateT_t1).count();
 
 #if IMGUI_SFML_LIBRARY_AVAILABLE == 1
-        m_cameras.defaultCamera->setForceFocus();
+        // Check if mouse is over the window
+        sf::RenderWindow* camWindow = m_cameras.defaultCamera->getRenderWindow();
+        if (camWindow)
+        {
+            bool isMouseOverWindow = m_cameras.defaultCamera->geometry().contains(m_cameras.defaultCamera->mapFromGlobal(QCursor::pos()));
+            if (isMouseOverWindow)
+            {
+                m_cameras.defaultCamera->setForceFocus();
+            }
+        }
         ImGui::SetCurrentContext(m_imGuiContext);
 #if IMPLOT_LIBRARY_AVAILABLE == 1
 		ImPlot::SetCurrentContext(m_imPlotContext);
