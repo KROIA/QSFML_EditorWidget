@@ -15,5 +15,6 @@ int main(int argc, char *argv[])
     QSFML::Scene::setProfilerOutputFileName("Pendelum.prof");
     int ret = a.exec();
     
+    sf::Rect<int> r;
     return ret;
 }

@@ -51,6 +51,12 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
     add_library(implot STATIC
         ${IMPLOT_DIR}/implot.cpp
         ${IMPLOT_DIR}/implot_items.cpp
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
     )
     
     target_include_directories(implot PUBLIC ${IMGUI_DIR})

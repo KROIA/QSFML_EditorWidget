@@ -15,7 +15,7 @@ ExampleScene::ExampleScene(QWidget *parent)
     ui->setupUi(this);
 	Log::UI::NativeConsoleView::createStaticInstance();
 	Log::UI::NativeConsoleView::getStaticInstance()->show();
-    setupScene(Tutorial::tutorial_5);
+    setupScene(Tutorial::tutorial_4);
 
 	// QTimer* timer = new QTimer(this);
 	// connect(timer, &QTimer::timeout, this, &ExampleScene::onTimer);

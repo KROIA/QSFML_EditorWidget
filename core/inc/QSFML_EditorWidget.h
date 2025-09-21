@@ -60,6 +60,7 @@
 #include "utilities/TileMap/Chunk.h"
 #include "utilities/TileMap/ChunkData.h"
 #include "utilities/TileMap/ChunkManager.h"
+#include "utilities/DifferentialEvolution.h"
 
 #include "assets/TextureManager.h"
 #include "assets/TextureMap.h"
