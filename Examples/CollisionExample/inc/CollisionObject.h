@@ -12,7 +12,7 @@ public:
 		QSFML::Objects::GameObjectPtr parent = nullptr);
     ~CollisionObject();
 
-	virtual CLONE_FUNC_DEC(CollisionObject);
+	OBJECT_DECL(CollisionObject);
 
 	//QSFML::Components::Collider* getCollider() const;
 

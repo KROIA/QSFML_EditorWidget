@@ -1,7 +1,7 @@
 #include "Laser.h"
 #include "OpticalElement.h"
 
-CLONE_FUNC_IMPL(Laser);
+OBJECT_IMPL(Laser);
 
 Laser::Laser(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)

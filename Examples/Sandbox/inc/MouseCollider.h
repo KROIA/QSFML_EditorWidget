@@ -11,7 +11,7 @@ public:
 	MouseCollider(const MouseCollider& other);
     ~MouseCollider();
 
-	CLONE_FUNC_DEC(MouseCollider);
+	OBJECT_DECL(MouseCollider);
 
 
 private slots:

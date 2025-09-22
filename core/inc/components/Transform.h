@@ -14,7 +14,12 @@ namespace QSFML
 		class QSFML_EDITOR_WIDGET_EXPORT Transform : public Component
 		{
 		public:
-        COMPONENT_IMPL(Transform);
+        COMPONENT_HEADER_IMPL(Transform);
+
+        //auto* clone() const override
+        //{ 
+        //    return new Transform(*this);
+        //}
 
 		static void setGizmoAxisColor(const sf::Color& xAxisColor, const sf::Color& yAxisColor)
 		{

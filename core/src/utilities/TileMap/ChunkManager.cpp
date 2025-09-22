@@ -1,5 +1,6 @@
 #include "utilities/TileMap/ChunkManager.h"
 #include <SFML/OpenGL.hpp>
+#include <thread>
 
 namespace QSFML
 {
@@ -53,7 +54,7 @@ namespace QSFML
 			for (size_t i = 0; i < m_asyncChunkLoaderData.size(); ++i)
 			{
 				m_asyncChunkLoaderData[i]->stop = true;
-				for (auto& thread : m_asyncChunkLoaderData[i]->threads)
+				for (auto* thread : m_asyncChunkLoaderData[i]->threads)
 				{
 					thread->join();
 					delete thread;

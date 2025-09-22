@@ -1,6 +1,6 @@
 #include "FluidGrid.h"
 
-CLONE_FUNC_IMPL(FluidGrid)
+OBJECT_IMPL(FluidGrid)
 
 FluidGrid::FluidGrid(sf::Vector2u tiles,
 	sf::Vector2f tileSize, 

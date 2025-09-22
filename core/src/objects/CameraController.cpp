@@ -9,7 +9,7 @@ namespace QSFML
 {
     namespace Objects
     {
-        COMPONENT_IMPL(CameraController)
+        OBJECT_IMPL(CameraController)
             CameraController::CameraController(const std::string& name,
                 GameObjectPtr parent)
             : GameObject(name, parent)

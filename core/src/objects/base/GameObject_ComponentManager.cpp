@@ -27,6 +27,7 @@ namespace QSFML
 			onObjectsChanged();
 		}
 
+		
 		const QSFML::vector<Components::ComponentPtr>& GameObject::getComponents() const
 		{
 			return m_componentsManagerData.all;

@@ -17,7 +17,7 @@ public:
 
 	
 
-	CLONE_FUNC_DEC(Laser);
+	OBJECT_DECL(Laser);
 
 	void setPosition(const sf::Vector2f& pos);
 	const sf::Vector2f& getPosition() const;

@@ -3,7 +3,7 @@
 
 #define USE_QUADTREE
 
-CLONE_FUNC_IMPL(CollisionChecker);
+OBJECT_IMPL(CollisionChecker);
 CollisionChecker::CollisionChecker(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: QObject()
 	, GameObject(name)

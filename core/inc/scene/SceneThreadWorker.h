@@ -6,6 +6,7 @@
 #include <condition_variable>
 #include <atomic>
 #include <vector>
+#include <thread>
 
 
 namespace QSFML

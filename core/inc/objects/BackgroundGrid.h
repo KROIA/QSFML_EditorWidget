@@ -17,7 +17,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
                        GameObjectPtr parent = nullptr);
         BackgroundGrid(const BackgroundGrid &other);
         ~BackgroundGrid();
-        COMPONENT_DECL(BackgroundGrid);
+        OBJECT_DECL(BackgroundGrid);
 
         void setSize(const sf::IntRect &size);
         const sf::IntRect &getSize() const;

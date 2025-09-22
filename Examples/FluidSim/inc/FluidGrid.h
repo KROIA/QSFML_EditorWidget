@@ -12,7 +12,7 @@ public:
 		QSFML::Objects::GameObjectPtr parent = nullptr);
 	~FluidGrid();
 
-	CLONE_FUNC_DEC(FluidGrid);
+	OBJECT_DECL(FluidGrid);
 
 private:
 	struct CellData

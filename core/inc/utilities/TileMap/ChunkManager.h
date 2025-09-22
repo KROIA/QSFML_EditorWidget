@@ -3,7 +3,7 @@
 #include "QSFML_EditorWidget_base.h"
 #include "Chunk.h"
 #include "assets/TextureMap.h"
-
+#include <thread>
 
 namespace QSFML
 {

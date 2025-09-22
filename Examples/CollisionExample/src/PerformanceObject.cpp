@@ -1,6 +1,6 @@
 #include "PerformanceObject.h"
 
-CLONE_FUNC_IMPL(PerformanceObject);
+OBJECT_IMPL(PerformanceObject);
 PerformanceObject::PerformanceObject(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
 	, m_dynamic(true)

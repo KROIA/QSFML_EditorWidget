@@ -154,7 +154,7 @@ void GameObject::removeComponents()
             if (dynamic_cast<T>(comp))
             {
                 hasChanges = true;
-                m_componentsManagerData.toRemove.push_back(component);
+                m_componentsManagerData.toRemove.push_back(comp);
             }
         }
 		if (hasChanges)
@@ -169,13 +169,14 @@ void GameObject::removeComponents()
             if (dynamic_cast<T>(comp))
             {
                 hasChanges = true;
-                m_componentsManagerData.sfDrawableToRemove.push_back(component);
+                m_componentsManagerData.sfDrawableToRemove.push_back(comp);
             }
         }
         if (hasChanges)
             onObjectsChanged();
     }   
 }
+
 template <>
 void GameObject::removeComponents<Components::Collider>()
 {
@@ -269,7 +270,7 @@ Components::Transform* GameObject::getFirstComponent<Components::Transform>() co
 
 
 template <typename T>
-QSFML::vector<T*> GameObject::getComponents() const
+QSFML::vector<T*>  GameObject::getComponents() const
 {
     QSFML::vector<T*> components;
     if constexpr (std::is_base_of<Components::Component, T>::value)
@@ -289,6 +290,7 @@ QSFML::vector<T*> GameObject::getComponents() const
     }
     return components;
 }
+
 template <>
 QSFML::vector<Components::Collider*> GameObject::getComponents<Components::Collider>() const
 {

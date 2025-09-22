@@ -1,6 +1,6 @@
 #include "MouseCollider.h"
 
-CLONE_FUNC_IMPL(MouseCollider)
+OBJECT_IMPL(MouseCollider)
 
 MouseCollider::MouseCollider(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)

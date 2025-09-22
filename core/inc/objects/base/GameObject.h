@@ -20,6 +20,7 @@
 
 
 #include <vector>
+#include <type_traits>
 #include <functional>
 #include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
@@ -29,10 +30,13 @@ namespace QSFML
 namespace Objects
 {
 #define OBJECT_DECL(className) \
-    CLONE_FUNC_DEC(className) override;
+    CLONE_FUNC_DECL(QSFML::Objects::GameObject, className);
 
 #define OBJECT_IMPL(className) \
-    CLONE_FUNC_IMPL(className)
+    CLONE_FUNC_IMPL(QSFML::Objects::GameObject, className)
+
+#define OBJECT_HEADER_IMPL(className) \
+    CLONE_FUNC_HEADER_IMPL(QSFML::Objects::GameObject, className)
 
 #define OBJECT_TEMPLATE_IMPL(className) \
     CLONE_FUNC_TEMPLATE_IMPL(className)
@@ -236,7 +240,7 @@ protected:
         static void deleteObject(GameObjectPtr obj);
         
 
-        virtual CLONE_FUNC_DEC(GameObject);
+        virtual GameObject* clone() const;
         
         /**
          * @brief 
@@ -731,6 +735,7 @@ protected:
          */
         template <typename T>
         void removeComponents();
+        
         template <>
         void removeComponents<Components::Collider>();
         template <>
@@ -739,6 +744,9 @@ protected:
         void removeComponents<Components::SfEventHandle>();
         template <>
         void removeComponents<Components::Transform>();
+
+        
+
 
         /**
          * @brief 
@@ -766,6 +774,7 @@ protected:
 		 */
 		template <typename T>
         T* getFirstComponent() const;
+        
         template <>
         Components::Collider* getFirstComponent<Components::Collider>() const;
         template <>
@@ -781,8 +790,12 @@ protected:
 		 * @return list of components with the given type
          */
         const QSFML::vector<Components::ComponentPtr>& getComponents() const;
+
         template <typename T>
-        QSFML::vector<T*> getComponents() const;
+        QSFML::vector<T*>  getComponents() const;
+        //template <typename T>
+        //QSFML::vector<T*> getComponents() const;
+
         template <>
         QSFML::vector<Components::Collider*> getComponents<Components::Collider>() const;
         template <>
@@ -791,6 +804,7 @@ protected:
         QSFML::vector<Components::SfEventHandle*> getComponents<Components::SfEventHandle>() const;
         template <>
         QSFML::vector<Components::Transform*> getComponents<Components::Transform>() const;
+        
         template <typename T>
         QSFML::vector<T*> getComponentsRecursive() const;
 
@@ -1667,15 +1681,6 @@ protected:
         // Static
         static size_t s_objNameCounter;
 };
-
-
-
-
-
-
-
-
-
 }
 }
 

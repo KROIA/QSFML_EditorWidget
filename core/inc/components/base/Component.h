@@ -12,10 +12,14 @@ namespace QSFML
 namespace Components
 {
 #define COMPONENT_DECL(className) \
-    CLONE_FUNC_DEC(className) override;
+    CLONE_FUNC_DECL(QSFML::Components::Component, className)
 
 #define COMPONENT_IMPL(className) \
-    CLONE_FUNC_IMPL(className)
+    CLONE_FUNC_IMPL(QSFML::Components::Component, className)
+
+#define COMPONENT_HEADER_IMPL(className) \
+    CLONE_FUNC_HEADER_IMPL(QSFML::Components::Component, className)
+
 /**
  * \brief Component class for GameObjects
  * \details Each GameObject can contain multiple Components.
@@ -48,7 +52,7 @@ class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
         static void deleteComponent(ComponentPtr comp);
         
 
-        virtual CLONE_FUNC_DEC(Component);
+        virtual Component* clone() const;
 
        
 

@@ -1,6 +1,8 @@
 #include "utilities/CameraRecorder.h"
 #include "objects/CameraWindow.h"
 #include <QDir>
+#include <windows.h>
+#include <processthreadsapi.h>
 
 namespace QSFML
 {
@@ -46,8 +48,10 @@ namespace QSFML
 				for (size_t i = 0; i < m_threadCount; ++i)
 				{
 					m_threadData[i].thread = new std::thread(threadFunction, std::ref(m_threadData[i]), std::ref(*this));
-					HANDLE threadHandle = m_threadData[i].thread->native_handle();
-					SetThreadDescription(threadHandle, L"CameraRecorder Thread");
+					HANDLE threadHandle = reinterpret_cast<HANDLE>(m_threadData[i].thread->native_handle());
+
+					PCWSTR threadName = L"CameraRecorder Thread";
+					SetThreadDescription(threadHandle, threadName);
 					SetThreadPriority(threadHandle, THREAD_PRIORITY_LOWEST);
 				}
 			}

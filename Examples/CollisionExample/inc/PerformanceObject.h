@@ -12,7 +12,7 @@ public:
 		QSFML::Objects::GameObjectPtr parent = nullptr);
 	~PerformanceObject();
 
-	CLONE_FUNC_DEC(PerformanceObject);
+	OBJECT_DECL(PerformanceObject);
 
 	void setRange(const QSFML::Utilities::AABB& range);
 	void setDynamic(bool isDynamic);

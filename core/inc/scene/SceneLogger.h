@@ -8,7 +8,7 @@ namespace QSFML
 	{
 		class QSFML_EDITOR_WIDGET_EXPORT SceneLogger
 		{
-			friend class Scene;
+			friend class QSFML::Scene;
 		private:
 			SceneLogger();
 			~SceneLogger();

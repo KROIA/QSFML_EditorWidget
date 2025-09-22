@@ -1,6 +1,6 @@
 #include "CollisionObject.h"
 
-CLONE_FUNC_IMPL(CollisionObject);
+OBJECT_IMPL(CollisionObject);
 CollisionObject::CollisionObject(const std::string& name, QSFML::Objects::GameObjectPtr parent)
 	: GameObject(name)
 {

@@ -22,7 +22,7 @@ public:
 	CollisionChecker(const CollisionChecker &other);
     ~CollisionChecker();
 
-	CLONE_FUNC_DEC(CollisionChecker);
+	OBJECT_DECL(CollisionChecker);
 
 	void setMode(Mode mode);
 

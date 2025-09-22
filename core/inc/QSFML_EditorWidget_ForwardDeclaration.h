@@ -87,11 +87,17 @@ namespace QSFML
         fixedSimulationTime
     };
 
-#define CLONE_FUNC_DEC(className) \
-    className *clone() const
+#define CLONE_FUNC_DECL(baseClass, className) \
+    baseClass* clone() const override;
 
-#define CLONE_FUNC_IMPL(className) \
-    className* className::clone() const \
+#define CLONE_FUNC_IMPL(baseClass,className) \
+    baseClass* className::clone() const \
+    { \
+        return new className(*this); \
+    }
+
+#define CLONE_FUNC_HEADER_IMPL(baseClass,className) \
+    baseClass* clone() const \
     { \
         return new className(*this); \
     }

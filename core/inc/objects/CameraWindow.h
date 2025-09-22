@@ -15,7 +15,7 @@ namespace QSFML
 		{
 			Q_OBJECT
 				void setup();
-			friend class Scene;
+			friend class QSFML::Scene;
 			public:
 			CameraWindow(const sf::ContextSettings &settings, const std::string& name = "CameraWindow",
 						 QWidget* parent = nullptr);
