@@ -106,7 +106,7 @@ namespace QSFML
         size_t count = 0;
         for (size_t i = 0; i < m_container.size(); ++i)
         {
-            count += m_container[i].getObjectsCount<T>();
+            count += m_container[i]->getObjectsCount<T>();
         }
         return count;
     }
@@ -115,7 +115,7 @@ namespace QSFML
     {
         if (layer > m_layerSize)
             return 0;
-        return m_container[layer].getObjectsCount<T>();
+        return m_container[layer]->getObjectsCount<T>();
     }
     template<typename T>
     QSFML::vector<T*> GameObjectLayerGroup::getObjects() const
@@ -123,7 +123,7 @@ namespace QSFML
         QSFML::vector<T*> list;
         for (size_t i = 0; i < m_container.size(); ++i)
         {
-            QSFML::vector<T*>buff = m_container[i].getObjects();
+            QSFML::vector<T*>buff = m_container[i]->getObjects();
             list.insert(list.end, buff.begin(), buff.end());
         }
         return list;
@@ -134,14 +134,14 @@ namespace QSFML
         if (layer > m_layerSize)
             return QSFML::vector<T*>();
 
-        return m_container[layer].getObjects<T>();
+        return m_container[layer]->getObjects<T>();
     }
     template<typename T>
     std::shared_ptr<T> GameObjectLayerGroup::getFirstObject() const
     {
         for (size_t i = 0; i < m_container.size(); ++i)
         {
-            T* obj = m_container[i].getFirstObject<T>();
+            T* obj = m_container[i]->getFirstObject<T>();
             if (obj)
                 return obj;
         }
@@ -152,7 +152,7 @@ namespace QSFML
     {
         if (layer > m_layerSize)
             return nullptr;
-        return m_container[layer].getFirstObject<T>();
+        return m_container[layer]->getFirstObject<T>();
     }
     template<typename T>
     bool GameObjectLayerGroup::objectExists(std::shared_ptr<T> obj, const QSFML::vector<std::shared_ptr<T>>& list)
