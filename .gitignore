@@ -37,15 +37,11 @@
 # Paths
 bin
 build
-Sandbox/bin
 UnitTests/bin
-extern/SFML-2.5.1/doc
-extern/SFML-2.5.1/examples
 doxygen
 out
 include
 installation
 lib
 LICENSE.APACHE
-
 LICENSE.MIT
