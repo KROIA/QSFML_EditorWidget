@@ -17,8 +17,12 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     set(${LIB_NAME}_NO_EXAMPLES True)						# Disables the examlpes of the library
     set(${LIB_NAME}_NO_UNITTESTS True)						# Disables the unittests of the library
 
-    message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
-    FetchContent_MakeAvailable(${LIB_NAME})
+    # Check if already populated
+	FetchContent_GetProperties(${LIB_NAME})
+	if(NOT ${LIB_NAME}_POPULATED)
+		message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
+		FetchContent_MakeAvailable(${LIB_NAME})
+	endif()
 
     # Add this library to the specific profiles of this project
     list(APPEND DEPS_FOR_SHARED_LIB ${LIB_NAME}_shared)

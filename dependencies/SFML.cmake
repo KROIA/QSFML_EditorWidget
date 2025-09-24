@@ -24,8 +24,12 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
 
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build SFML as static library.")
 
-    message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
-    FetchContent_MakeAvailable(${LIB_NAME})
+    # Check if already populated
+	FetchContent_GetProperties(${LIB_NAME})
+	if(NOT ${LIB_NAME}_POPULATED)
+		message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
+		FetchContent_MakeAvailable(${LIB_NAME})
+	endif()
 
     target_compile_definitions(sfml-graphics	PRIVATE		SFML_STATIC)
     target_compile_definitions(sfml-audio		PRIVATE		SFML_STATIC)

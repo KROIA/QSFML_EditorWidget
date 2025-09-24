@@ -14,8 +14,12 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
         GIT_TAG        ${GIT_TAG}
     )
 
-    message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
-    FetchContent_MakeAvailable(${LIB_NAME})
+    # Check if already populated
+	FetchContent_GetProperties(${LIB_NAME})
+	if(NOT ${LIB_NAME}_POPULATED)
+		message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
+		FetchContent_MakeAvailable(${LIB_NAME})
+	endif()
 
     # Add this library to the specific profiles of this project
     #list(APPEND DEPS_FOR_SHARED_LIB ${LIB_NAME})
