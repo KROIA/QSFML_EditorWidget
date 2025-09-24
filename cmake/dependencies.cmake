@@ -61,3 +61,4 @@ list(REMOVE_DUPLICATES DEPENDENCY_NAME_MACRO)
 
 # Caching DEPENDENCY_NAME_MACRO
 set(DEPENDENCY_NAME_MACRO ${DEPENDENCY_NAME_MACRO} CACHE STRING "Global defines to use in code to check for available libraries" FORCE)
+

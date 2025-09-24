@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20)
 
 
 ## INFO
-## Template version: 1.4.3
+## Template version: 1.5.1
 ##
 ## This is a template for a CMake project.
 ## It is designed to be used with the Visual Studio
@@ -51,7 +51,7 @@ set(QT_MODULES
 )
 
 # Library file name settings
-set(DEBUG_POSTFIX_STR "-d")                    # <AUTO_REPLACED> 
+set(DEBUG_POSTFIX_STR "-d")                     # <AUTO_REPLACED> 
 set(STATIC_POSTFIX_STR "-s")                    # <AUTO_REPLACED> 
 set(PROFILING_POSTFIX_STR "-p")                 # <AUTO_REPLACED>  
 

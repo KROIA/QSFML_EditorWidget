@@ -1,5 +1,4 @@
 ## description: SFML: Simple and fast multimedia library
-include(FetchContent)
 
 function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
@@ -7,12 +6,17 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     set(LIB_MACRO_NAME SFML_LIBRARY_AVAILABLE)
     set(GIT_REPO https://github.com/SFML/SFML.git)
     set(GIT_TAG 2.6.1)
+	set(ADDITIONAL_INCLUDE_PATHS )
 
-    FetchContent_Declare(
-        ${LIB_NAME}
-        GIT_REPOSITORY ${GIT_REPO}
-        GIT_TAG        ${GIT_TAG}
-    )
+	list(APPEND SFML_DEPS 
+			sfml-graphics
+			sfml-audio
+			sfml-network
+			sfml-system
+			sfml-window)
+	set(SHARED_LIB_DEPENDENCY ${SFML_DEPS})
+	set(STATIC_LIB_DEPENDENCY ${SFML_DEPS})
+	set(STATIC_PROFILE_LIB_DEPENDENCY ${SFML_DEPS})
 
     # Specific SFML settings
     # SFML Static Lib
@@ -21,15 +25,9 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     set(BUILD_SHARED_LIBS OFF)
     set(SFML_USE_STATIC_LIBS ON)
 
-
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build SFML as static library.")
 
-    # Check if already populated
-	FetchContent_GetProperties(${LIB_NAME})
-	if(NOT ${LIB_NAME}_POPULATED)
-		message("Downloading dependency: ${LIB_NAME} from: ${GIT_REPO} tag: ${GIT_TAG}")
-		FetchContent_MakeAvailable(${LIB_NAME})
-	endif()
+    downloadExternalLibrary()
 
     target_compile_definitions(sfml-graphics	PRIVATE		SFML_STATIC)
     target_compile_definitions(sfml-audio		PRIVATE		SFML_STATIC)
@@ -37,12 +35,7 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     target_compile_definitions(sfml-system		PRIVATE		SFML_STATIC)
     target_compile_definitions(sfml-window		PRIVATE		SFML_STATIC)
 
-    list(APPEND SFML_DEPS 
-	    sfml-graphics
-        sfml-audio
-        sfml-network
-        sfml-system
-        sfml-window)
+    
 
     # Add this library to the specific profiles of this project
     list(APPEND DEPS_FOR_SHARED_LIB ${SFML_DEPS})

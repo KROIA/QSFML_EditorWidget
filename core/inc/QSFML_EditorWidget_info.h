@@ -29,7 +29,7 @@ namespace QSFML
 
 /// USER_SECTION_END
 
-	class QSFML_EDITOR_WIDGET_EXPORT LibraryInfo
+	class QSFML_EDITOR_WIDGET_API LibraryInfo
 	{
 		LibraryInfo() = delete;
 		LibraryInfo(const LibraryInfo&) = delete;

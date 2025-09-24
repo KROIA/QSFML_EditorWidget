@@ -68,11 +68,15 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # Get all source files
 FILE_DIRECTORIES(H_FILES *.h)
 FILE_DIRECTORIES(CPP_FILES *.cpp)
+FILE_DIRECTORIES(C_FILES *.c)
+FILE_DIRECTORIES(INL_FILES *.inl)
 
 
 set(SOURCES 
 	${H_FILES}
-	${CPP_FILES})
+	${CPP_FILES}
+	${INL_FILES}
+    ${C_FILES})
 
 if(QT_ENABLE)
     # Search for QT specific files

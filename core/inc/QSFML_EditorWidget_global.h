@@ -11,13 +11,13 @@
 #ifndef BUILD_STATIC
 	//#pragma message("QSFML_EDITOR_WIDGET_LIB is a shared library")
 	#if defined(QSFML_EDITOR_WIDGET_LIB)
-		#define QSFML_EDITOR_WIDGET_EXPORT __declspec(dllexport)
+		#define QSFML_EDITOR_WIDGET_API __declspec(dllexport)
 	#else
-		#define QSFML_EDITOR_WIDGET_EXPORT __declspec(dllimport)
+		#define QSFML_EDITOR_WIDGET_API __declspec(dllimport)
 	#endif
 #else 
 	//#pragma message("QSFML_EDITOR_WIDGET_LIB is a static library")
-	#define QSFML_EDITOR_WIDGET_EXPORT
+	#define QSFML_EDITOR_WIDGET_API
 #endif
 
 /// USER_SECTION_START 2

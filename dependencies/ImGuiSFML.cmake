@@ -1,5 +1,4 @@
 ## description: Dear ImGui backend for use with SFML 
-include(FetchContent)
 
 function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE_PATHS)
     set(LIB_NAME_1 imgui)
@@ -33,30 +32,19 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
 		GIT_TAG        ${GIT_TAG_3}
 	)
 	
-	# Check if already populated
-	FetchContent_GetProperties(${LIB_NAME_1})
-	if(NOT ${LIB_NAME}_POPULATED)
-		message("Downloading dependency: ${LIB_NAME_1} from: ${GIT_REPO_1} tag: ${GIT_TAG_1}")
-		FetchContent_MakeAvailable(${LIB_NAME_1})
-	endif()
+
+	message("Downloading dependency: ${LIB_NAME_1} from: ${GIT_REPO_1} tag: ${GIT_TAG_1}")
+	FetchContent_MakeAvailable(${LIB_NAME_1})
 
     set(IMGUI_DIR ${imgui_SOURCE_DIR})
     set(IMGUI_SFML_FIND_SFML OFF)
-    set(IMGUI_SFML_IMGUI_DEMO ON)
+
+	message("Downloading dependency: ${LIB_NAME_2} from: ${GIT_REPO_2} tag: ${GIT_TAG_2}")
+	FetchContent_MakeAvailable(${LIB_NAME_2})
+
 	
-	# Check if already populated
-	FetchContent_GetProperties(${LIB_NAME_2})
-	if(NOT ${LIB_NAME}_POPULATED)
-		message("Downloading dependency: ${LIB_NAME_2} from: ${GIT_REPO_2} tag: ${GIT_TAG_2}")
-		FetchContent_MakeAvailable(${LIB_NAME_2})
-	endif()
-	
-	# Check if already populated
-	FetchContent_GetProperties(${LIB_NAME_3})
-	if(NOT ${LIB_NAME}_POPULATED)
-		message("Downloading dependency: ${LIB_NAME_3} from: ${GIT_REPO_3} tag: ${GIT_TAG_3}")
-		FetchContent_MakeAvailable(${LIB_NAME_3})
-	endif()
+	message("Downloading dependency: ${LIB_NAME_3} from: ${GIT_REPO_3} tag: ${GIT_TAG_3}")
+	FetchContent_MakeAvailable(${LIB_NAME_3})
 
 
     set(IMPLOT_DIR ${implot_SOURCE_DIR})
