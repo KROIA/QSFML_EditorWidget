@@ -183,7 +183,7 @@ namespace Objects
  * };
  * \endcode
  */
-class QSFML_EDITOR_WIDGET_EXPORT GameObject: 
+class QSFML_EDITOR_WIDGET_API GameObject: 
     public Events::DestroyEvent
 {
         friend Scene;

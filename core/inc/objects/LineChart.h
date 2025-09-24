@@ -10,7 +10,7 @@ namespace QSFML
 {
 namespace Objects
 {
-    class QSFML_EDITOR_WIDGET_EXPORT LineChart: public GameObject
+    class QSFML_EDITOR_WIDGET_API LineChart: public GameObject
     {
             class LineChartPainter;
             friend LineChartPainter;

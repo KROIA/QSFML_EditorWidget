@@ -12,7 +12,7 @@ namespace QSFML
 {
 namespace Objects
 {
-class QSFML_EDITOR_WIDGET_EXPORT DefaultEditor: public QObject, public GameObject
+class QSFML_EDITOR_WIDGET_API DefaultEditor: public QObject, public GameObject
 {
     Q_OBJECT
     public:

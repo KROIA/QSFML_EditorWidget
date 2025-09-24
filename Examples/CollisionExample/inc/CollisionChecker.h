@@ -55,7 +55,7 @@ private:
 	QSFML::Utilities::ObjectQuadTree m_tree;
 	
 /*
-	class QSFML_EDITOR_WIDGET_EXPORT Painter : public QSFML::Components::Drawable
+	class QSFML_EDITOR_WIDGET_API Painter : public QSFML::Components::Drawable
 	{
 	public:
 		Painter(CollisionChecker* checker, const std::string& name = "Painter");

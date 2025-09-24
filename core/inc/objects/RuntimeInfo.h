@@ -9,7 +9,7 @@ namespace QSFML
 {
 	namespace Objects
 	{
-        class QSFML_EDITOR_WIDGET_EXPORT RuntimeInfo : public GameObject
+        class QSFML_EDITOR_WIDGET_API RuntimeInfo : public GameObject
         {
         public:
             RuntimeInfo(const std::string& name = "RuntimeInfo");

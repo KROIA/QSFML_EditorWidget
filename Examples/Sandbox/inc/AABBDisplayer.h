@@ -62,7 +62,7 @@ class AABBDisplayer: public QSFML::Objects::GameObject
         
 
 
-    class QSFML_EDITOR_WIDGET_EXPORT RectPainterClone : public Components::RectPainter
+    class QSFML_EDITOR_WIDGET_API RectPainterClone : public Components::RectPainter
     {
         public:
         RectPainterClone(const std::string& name = "RectPainterClone")

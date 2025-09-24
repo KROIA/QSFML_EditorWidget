@@ -9,7 +9,7 @@ namespace QSFML
 {
 namespace Objects
 {
-class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
+class QSFML_EDITOR_WIDGET_API BackgroundGrid: public GameObject
 {
         class DrawableComp;
     public:
@@ -43,7 +43,7 @@ class QSFML_EDITOR_WIDGET_EXPORT BackgroundGrid: public GameObject
 
         friend DrawableComp;
 
-        class QSFML_EDITOR_WIDGET_EXPORT DrawableComp : public Components::Drawable
+        class QSFML_EDITOR_WIDGET_API DrawableComp : public Components::Drawable
         {
         public:
             DrawableComp(const std::string& name = "GridPainter");

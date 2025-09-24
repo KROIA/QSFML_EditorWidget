@@ -8,7 +8,7 @@ namespace QSFML
 {
 namespace Objects
 {
-class QSFML_EDITOR_WIDGET_EXPORT VisibleCamera : public CameraController
+class QSFML_EDITOR_WIDGET_API VisibleCamera : public CameraController
 {
         class DrawableComp;
     public:

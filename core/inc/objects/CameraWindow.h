@@ -11,7 +11,7 @@ namespace QSFML
 {
 	namespace Objects
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT CameraWindow : public QWidget, public GameObject
+		class QSFML_EDITOR_WIDGET_API CameraWindow : public QWidget, public GameObject
 		{
 			Q_OBJECT
 				void setup();

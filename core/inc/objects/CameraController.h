@@ -11,7 +11,7 @@ namespace QSFML
 namespace Objects
 {
 
-class QSFML_EDITOR_WIDGET_EXPORT CameraController: public GameObject
+class QSFML_EDITOR_WIDGET_API CameraController: public GameObject
 {
         class SfEventComponent;
     public:
