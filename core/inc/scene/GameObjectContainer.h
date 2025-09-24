@@ -11,7 +11,7 @@
 
 namespace QSFML
 {
-    class QSFML_EDITOR_WIDGET_EXPORT GameObjectContainer
+    class QSFML_EDITOR_WIDGET_API GameObjectContainer
     {
     public:
         GameObjectContainer(Scene* parent, SceneSettings& settings);

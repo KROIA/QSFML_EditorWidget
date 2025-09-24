@@ -10,7 +10,7 @@ namespace QSFML
 		/**
 		*  @brief A class for destroying objects.
 		*/
-		class QSFML_EDITOR_WIDGET_EXPORT DestroyEvent
+		class QSFML_EDITOR_WIDGET_API DestroyEvent
 		{
 		public:
 			typedef Utilities::Signal<> Slot;

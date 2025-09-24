@@ -10,7 +10,7 @@ namespace QSFML
 {
 	namespace Components
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT Shape : public Drawable
+		class QSFML_EDITOR_WIDGET_API Shape : public Drawable
 		{
 		public:
 			Shape(const std::string& name = "Shape");

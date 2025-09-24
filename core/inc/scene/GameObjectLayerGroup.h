@@ -7,7 +7,7 @@
 
 namespace QSFML
 {
-    class QSFML_EDITOR_WIDGET_EXPORT GameObjectLayerGroup
+    class QSFML_EDITOR_WIDGET_API GameObjectLayerGroup
     {
         friend GameObjectContainer;
         friend Scene;

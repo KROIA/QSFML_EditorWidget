@@ -34,7 +34,7 @@ namespace Components
  *           See predefined Components
  *
  */
-class QSFML_EDITOR_WIDGET_EXPORT Component : public Events::DestroyEvent
+class QSFML_EDITOR_WIDGET_API Component : public Events::DestroyEvent
 {
     friend class Internal::LifetimeChecker;
 	friend class Objects::GameObject;

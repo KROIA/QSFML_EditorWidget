@@ -10,7 +10,7 @@ namespace QSFML
 {
 namespace Components
 {
-class QSFML_EDITOR_WIDGET_EXPORT KeyPressEvent : public AbstractPressEvent
+class QSFML_EDITOR_WIDGET_API KeyPressEvent : public AbstractPressEvent
 {
         Q_OBJECT
     public:

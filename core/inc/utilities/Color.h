@@ -15,7 +15,7 @@ namespace QSFML
 		/// <param name="color2">Color for t=1</param>
 		/// <param name="t">Interpolation parameter. Range: [0 : 1]</param>
 		/// <returns>The the interpolated color</returns>
-		QSFML_EDITOR_WIDGET_EXPORT sf::Color lerpLinear(const sf::Color& color1, const sf::Color& color2, float t);
+		QSFML_EDITOR_WIDGET_API sf::Color lerpLinear(const sf::Color& color1, const sf::Color& color2, float t);
 
 		/// <summary>
 		/// Interpolates linearly between between the colors in the list using the factor t.
@@ -23,7 +23,7 @@ namespace QSFML
 		/// <param name="colors">List of colors which are equaly spaced in the t domain</param>
 		/// <param name="t">Interpolation parameter. Range: [0 : 1]</param>
 		/// <returns>The the interpolated color</returns>
-		QSFML_EDITOR_WIDGET_EXPORT sf::Color lerpLinear(const QSFML::vector<sf::Color>& colors, float t);
+		QSFML_EDITOR_WIDGET_API sf::Color lerpLinear(const QSFML::vector<sf::Color>& colors, float t);
 
 
 		/// <summary>
@@ -33,7 +33,7 @@ namespace QSFML
 		/// <param name="color2">Color for t=1</param>
 		/// <param name="t">Interpolation parameter. Range: [0 : 1]</param>
 		/// <returns>The the interpolated color</returns>
-		QSFML_EDITOR_WIDGET_EXPORT sf::Color lerpCubic(const sf::Color& color1, const sf::Color& color2, float t);
+		QSFML_EDITOR_WIDGET_API sf::Color lerpCubic(const sf::Color& color1, const sf::Color& color2, float t);
 
 		/// <summary>
 		/// Interpolates cubic between between the colors in the list using the factor t.
@@ -41,7 +41,7 @@ namespace QSFML
 		/// <param name="colors">List of colors which are equaly spaced in the t domain</param>
 		/// <param name="t">Interpolation parameter. Range: [0 : 1]</param>
 		/// <returns>The the interpolated color</returns>
-		QSFML_EDITOR_WIDGET_EXPORT sf::Color lerpCubic(const QSFML::vector<sf::Color>& colors, float t);
+		QSFML_EDITOR_WIDGET_API sf::Color lerpCubic(const QSFML::vector<sf::Color>& colors, float t);
 	
 	}
 }

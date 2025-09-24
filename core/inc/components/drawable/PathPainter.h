@@ -9,7 +9,7 @@ namespace QSFML
 {
     namespace Components
     {
-        class QSFML_EDITOR_WIDGET_EXPORT PathPainter : public Drawable
+        class QSFML_EDITOR_WIDGET_API PathPainter : public Drawable
         {
             public:
             PathPainter(const std::string& name = "PathPainter");

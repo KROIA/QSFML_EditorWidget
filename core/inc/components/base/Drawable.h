@@ -52,7 +52,7 @@ namespace Components
 ///     }
 /// };
 /// @endcode
-class QSFML_EDITOR_WIDGET_EXPORT Drawable : public Component, public sf::Drawable, public sf::Transformable
+class QSFML_EDITOR_WIDGET_API Drawable : public Component, public sf::Drawable, public sf::Transformable
 {
     public:
         Drawable(const std::string& name = "Drawable");

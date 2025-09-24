@@ -9,7 +9,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT ChunkManager
+		class QSFML_EDITOR_WIDGET_API ChunkManager
 		{
 			struct VectorHash {
 				std::size_t operator()(const sf::Vector2i& v) const {

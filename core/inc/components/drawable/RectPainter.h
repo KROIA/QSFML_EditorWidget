@@ -8,7 +8,7 @@ namespace QSFML
 {
     namespace Components
     {
-        class QSFML_EDITOR_WIDGET_EXPORT RectPainter : public Drawable
+        class QSFML_EDITOR_WIDGET_API RectPainter : public Drawable
         {
         public:
             RectPainter(const std::string& name = "RectPainter");

@@ -11,7 +11,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT CameraRecorder : public QObject
+		class QSFML_EDITOR_WIDGET_API CameraRecorder : public QObject
 		{
 			Q_OBJECT
 			public:

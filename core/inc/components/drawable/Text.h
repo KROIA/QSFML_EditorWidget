@@ -12,7 +12,7 @@ namespace QSFML
 namespace Components
 {
 
-class QSFML_EDITOR_WIDGET_EXPORT Text : public Drawable
+class QSFML_EDITOR_WIDGET_API Text : public Drawable
 {
     public:
         /**

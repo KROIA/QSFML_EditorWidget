@@ -12,7 +12,7 @@ namespace QSFML
 {
 	namespace Internal
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT LifetimeChecker
+		class QSFML_EDITOR_WIDGET_API LifetimeChecker
 		{
 			LifetimeChecker();
 			~LifetimeChecker();

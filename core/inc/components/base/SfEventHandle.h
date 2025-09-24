@@ -45,7 +45,7 @@ namespace Components
  * };
  * \endcode
  */
-class QSFML_EDITOR_WIDGET_EXPORT SfEventHandle :   public Component
+class QSFML_EDITOR_WIDGET_API SfEventHandle :   public Component
 {
     friend class Objects::GameObject;
     public:

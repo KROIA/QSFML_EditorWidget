@@ -10,7 +10,7 @@ namespace QSFML
 {
 namespace Components
 {
-class QSFML_EDITOR_WIDGET_EXPORT Button : public MousePressEvent, public Utilities::AABB
+class QSFML_EDITOR_WIDGET_API Button : public MousePressEvent, public Utilities::AABB
 {
     Q_OBJECT
     public:

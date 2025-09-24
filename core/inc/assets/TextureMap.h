@@ -7,7 +7,7 @@ namespace QSFML
 {
 	namespace Assets
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT TextureMap
+		class QSFML_EDITOR_WIDGET_API TextureMap
 		{
 			public:
 			struct UVMapCoords

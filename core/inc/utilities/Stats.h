@@ -14,7 +14,7 @@ namespace QSFML
 	namespace Utilities
 	{
 		class StatsManager;
-		class QSFML_EDITOR_WIDGET_EXPORT Stats
+		class QSFML_EDITOR_WIDGET_API Stats
 		{
 			friend StatsManager;
 		public:
@@ -148,7 +148,7 @@ namespace QSFML
 
 			size_t m_tick;
 		};
-		class QSFML_EDITOR_WIDGET_EXPORT StatsManager//: public Singleton<StatsManager>
+		class QSFML_EDITOR_WIDGET_API StatsManager//: public Singleton<StatsManager>
 		{
 			friend Objects::GameObject;
 			friend Components::Component;

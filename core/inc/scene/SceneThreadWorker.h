@@ -11,7 +11,7 @@
 
 namespace QSFML
 {
-    class QSFML_EDITOR_WIDGET_EXPORT SceneThreadWorker
+    class QSFML_EDITOR_WIDGET_API SceneThreadWorker
     {
         public:
             SceneThreadWorker(size_t threadCount,

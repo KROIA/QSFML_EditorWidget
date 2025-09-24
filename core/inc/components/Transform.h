@@ -11,7 +11,7 @@ namespace QSFML
 {
 	namespace Components
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT Transform : public Component
+		class QSFML_EDITOR_WIDGET_API Transform : public Component
 		{
 		public:
         COMPONENT_HEADER_IMPL(Transform);

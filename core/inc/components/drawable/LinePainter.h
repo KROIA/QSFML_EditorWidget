@@ -9,7 +9,7 @@ namespace QSFML
 {
 namespace Components
 {
-class QSFML_EDITOR_WIDGET_EXPORT LinePainter : public Drawable
+class QSFML_EDITOR_WIDGET_API LinePainter : public Drawable
 {
     public:
         struct LineData

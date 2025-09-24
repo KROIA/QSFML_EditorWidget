@@ -16,11 +16,11 @@ namespace QSFML
 {
 namespace Components
 {
-    class QSFML_EDITOR_WIDGET_EXPORT Collider: public Component
+    class QSFML_EDITOR_WIDGET_API Collider: public Component
     {
             
         public:
-            class QSFML_EDITOR_WIDGET_EXPORT Painter;
+            class QSFML_EDITOR_WIDGET_API Painter;
             friend Painter;
             explicit Collider(const std::string &name = "Collider");
             Collider(const Collider &other);

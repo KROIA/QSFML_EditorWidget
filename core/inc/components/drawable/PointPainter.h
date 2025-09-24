@@ -9,7 +9,7 @@ namespace QSFML
 {
     namespace Components
     {
-        class QSFML_EDITOR_WIDGET_EXPORT PointPainter : public Drawable
+        class QSFML_EDITOR_WIDGET_API PointPainter : public Drawable
         {
         public:
             class PointData

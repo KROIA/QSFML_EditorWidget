@@ -6,7 +6,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT PerlinNoise
+		class QSFML_EDITOR_WIDGET_API PerlinNoise
 		{
 		public:
 			PerlinNoise();

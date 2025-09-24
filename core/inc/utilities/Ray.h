@@ -13,7 +13,7 @@ namespace QSFML
 	namespace Utilities
 	{
 		class AABB;
-		class QSFML_EDITOR_WIDGET_EXPORT Ray //: public Utilities::Transformable
+		class QSFML_EDITOR_WIDGET_API Ray //: public Utilities::Transformable
 		{
 			friend class RayPainter;
 		public:

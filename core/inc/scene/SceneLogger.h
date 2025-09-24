@@ -6,7 +6,7 @@ namespace QSFML
 {
 	namespace Internal
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT SceneLogger
+		class QSFML_EDITOR_WIDGET_API SceneLogger
 		{
 			friend class QSFML::Scene;
 		private:

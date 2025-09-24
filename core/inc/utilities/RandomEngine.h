@@ -7,7 +7,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT RandomEngine
+		class QSFML_EDITOR_WIDGET_API RandomEngine
 		{
 			public:
 				static void init();

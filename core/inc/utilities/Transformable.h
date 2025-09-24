@@ -7,7 +7,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT Transformable
+		class QSFML_EDITOR_WIDGET_API Transformable
 		{
 		public:
         Transformable()

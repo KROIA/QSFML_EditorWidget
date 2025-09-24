@@ -9,7 +9,7 @@ namespace QSFML
      *  @tparam T The type of the singleton object.
      */
     template<class T>
-    class QSFML_EDITOR_WIDGET_EXPORT Singleton {
+    class QSFML_EDITOR_WIDGET_API Singleton {
     public:
         /*
          *  @brief Returns the instance of the singleton object.

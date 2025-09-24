@@ -7,7 +7,7 @@ namespace QSFML
 {
 namespace Utilities
 {
-    class QSFML_EDITOR_WIDGET_EXPORT Updatable
+    class QSFML_EDITOR_WIDGET_API Updatable
     {
         public:
             virtual ~Updatable()

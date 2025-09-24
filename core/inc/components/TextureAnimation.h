@@ -31,7 +31,7 @@ namespace QSFML
 		 * | 4  | 5  | 6  | 7  |
 		 * +----+----+----+----+
 		 */
-		class QSFML_EDITOR_WIDGET_EXPORT TextureAnimation : public Component, public Utilities::Updatable
+		class QSFML_EDITOR_WIDGET_API TextureAnimation : public Component, public Utilities::Updatable
 		{
 		public:
 			

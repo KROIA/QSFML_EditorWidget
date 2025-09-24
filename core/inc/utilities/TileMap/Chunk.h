@@ -12,7 +12,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{ 
-	    class QSFML_EDITOR_WIDGET_EXPORT Chunk
+	    class QSFML_EDITOR_WIDGET_API Chunk
 		{
 			public:
 			struct Resources

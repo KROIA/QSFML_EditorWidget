@@ -13,7 +13,7 @@ namespace Components
  * @class MouseFollower
  * @brief The MouseFollower is a Component that will emit a signal when the mouse moves
  */
-class QSFML_EDITOR_WIDGET_EXPORT MouseFollower : public QObject, public SfEventHandle
+class QSFML_EDITOR_WIDGET_API MouseFollower : public QObject, public SfEventHandle
 {
         Q_OBJECT
     public:

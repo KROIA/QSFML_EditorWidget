@@ -11,7 +11,7 @@ namespace QSFML
 {
 namespace Components
 {
-class QSFML_EDITOR_WIDGET_EXPORT AbstractPressEvent : public QObject,  public Component, public Utilities::Updatable
+class QSFML_EDITOR_WIDGET_API AbstractPressEvent : public QObject,  public Component, public Utilities::Updatable
 {
         Q_OBJECT
     public:

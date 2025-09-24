@@ -6,7 +6,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT Origin
+		class QSFML_EDITOR_WIDGET_API Origin
 		{
 		public:
 			enum Type

@@ -10,7 +10,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT Pathfinder
+		class QSFML_EDITOR_WIDGET_API Pathfinder
 		{
 			friend class Painter;
 		public:
@@ -70,7 +70,7 @@ namespace QSFML
 
 
 			// Painter 
-			class QSFML_EDITOR_WIDGET_EXPORT Painter : public Components::Drawable
+			class QSFML_EDITOR_WIDGET_API Painter : public Components::Drawable
 			{
 				friend Pathfinder;
 				Painter(Pathfinder* pathfinder, const std::string& name = "PathfinderPainter");

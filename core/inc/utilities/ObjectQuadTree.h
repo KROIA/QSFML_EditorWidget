@@ -16,11 +16,11 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT ObjectQuadTree
+		class QSFML_EDITOR_WIDGET_API ObjectQuadTree
 		{
-			class QSFML_EDITOR_WIDGET_EXPORT Tree;
+			class QSFML_EDITOR_WIDGET_API Tree;
 		public:
-			struct QSFML_EDITOR_WIDGET_EXPORT TreeItem
+			struct QSFML_EDITOR_WIDGET_API TreeItem
 			{
 				friend ObjectQuadTree;
 				friend Tree;
@@ -74,7 +74,7 @@ namespace QSFML
 
 		private:
 			bool insert_internal(TreeItem& item);
-			class QSFML_EDITOR_WIDGET_EXPORT Tree
+			class QSFML_EDITOR_WIDGET_API Tree
 			{
 				friend class ObjectQuadTree;
 			public:

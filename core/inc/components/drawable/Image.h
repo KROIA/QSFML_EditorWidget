@@ -7,7 +7,7 @@ namespace QSFML
 {
     namespace Components
     {
-        class QSFML_EDITOR_WIDGET_EXPORT Image : public Drawable
+        class QSFML_EDITOR_WIDGET_API Image : public Drawable
         {
         public:
             Image(const std::string& name = "Image");

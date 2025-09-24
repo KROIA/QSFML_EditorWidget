@@ -24,7 +24,7 @@
 namespace QSFML
 {
 
-class QSFML_EDITOR_WIDGET_EXPORT Scene :
+class QSFML_EDITOR_WIDGET_API Scene :
         public QObject,
         public Utilities::StatsManager,
         public GameObjectContainer

@@ -8,7 +8,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT Timer
+		class QSFML_EDITOR_WIDGET_API Timer
 		{
 		public:
 			Timer();

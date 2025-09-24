@@ -9,7 +9,7 @@ namespace QSFML
 {
     namespace Components
     {
-        class QSFML_EDITOR_WIDGET_EXPORT PixelPainter : public Drawable
+        class QSFML_EDITOR_WIDGET_API PixelPainter : public Drawable
         {
         public:
             PixelPainter(const std::string& name = "PixelPainter");

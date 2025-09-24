@@ -7,7 +7,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT DifferentialEvolution
+		class QSFML_EDITOR_WIDGET_API DifferentialEvolution
 		{
 		public:
 			struct Individual

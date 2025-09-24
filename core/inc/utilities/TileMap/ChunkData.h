@@ -8,7 +8,7 @@ namespace QSFML
 {
 	namespace Utilities
 	{
-		class QSFML_EDITOR_WIDGET_EXPORT ChunkData
+		class QSFML_EDITOR_WIDGET_API ChunkData
 		{
 			friend class Chunk;
 			public:

@@ -8,12 +8,12 @@
 
 namespace QSFML
 {
-struct QSFML_EDITOR_WIDGET_EXPORT SceneSettings
+struct QSFML_EDITOR_WIDGET_API SceneSettings
 {
     /**
      * \brief The layout of the Scene, how it will behave on the screen
      */
-    struct QSFML_EDITOR_WIDGET_EXPORT Layout
+    struct QSFML_EDITOR_WIDGET_API Layout
     {
         bool autoAjustSize;         /*!< If set to true, the Scene will automatically
                                          resizes based on its parent widget. */
@@ -24,7 +24,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT SceneSettings
          * \details This will define how many pixels in each direction the
          *          Scene will be spaced inside of the parent widget.
          */
-        struct QSFML_EDITOR_WIDGET_EXPORT Margin
+        struct QSFML_EDITOR_WIDGET_API Margin
         {
             unsigned int left;
             unsigned int top;
@@ -53,7 +53,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT SceneSettings
     /**
      * \brief The Colors of different parts on the Scene
      */
-    struct QSFML_EDITOR_WIDGET_EXPORT Colors
+    struct QSFML_EDITOR_WIDGET_API Colors
     {
         sf::Color defaultBackground; //!< Background color of parts on which nothing was painted
 
@@ -67,7 +67,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT SceneSettings
     /**
      * \brief The time related settings
      */
-    struct QSFML_EDITOR_WIDGET_EXPORT Timing
+    struct QSFML_EDITOR_WIDGET_API Timing
     {
         double frameTime;  //!< Time between each frame [s]
 
@@ -90,7 +90,7 @@ struct QSFML_EDITOR_WIDGET_EXPORT SceneSettings
      */
     //std::string fontPath;
 
-    struct QSFML_EDITOR_WIDGET_EXPORT UpdateControlls
+    struct QSFML_EDITOR_WIDGET_API UpdateControlls
     {
         bool enableEventLoop;
         bool enableUpdateLoop;

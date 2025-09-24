@@ -9,7 +9,7 @@ namespace QSFML
 {
 namespace Components
 {
-class QSFML_EDITOR_WIDGET_EXPORT VectorPainter: public Drawable
+class QSFML_EDITOR_WIDGET_API VectorPainter: public Drawable
 {
     public:
     VectorPainter(const std::string &name = "VectorPainter");
