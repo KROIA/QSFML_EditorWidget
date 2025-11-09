@@ -735,15 +735,6 @@ protected:
          */
         template <typename T>
         void removeComponents();
-        
-        template <>
-        void removeComponents<Components::Collider>();
-        template <>
-        void removeComponents<Utilities::Updatable>();
-        template <>
-        void removeComponents<Components::SfEventHandle>();
-        template <>
-        void removeComponents<Components::Transform>();
 
         
 
@@ -775,14 +766,6 @@ protected:
 		template <typename T>
         T* getFirstComponent() const;
         
-        template <>
-        Components::Collider* getFirstComponent<Components::Collider>() const;
-        template <>
-        Utilities::Updatable* getFirstComponent<Utilities::Updatable>() const;
-        template <>
-        Components::SfEventHandle* getFirstComponent<Components::SfEventHandle>() const;
-        template <>
-        Components::Transform* getFirstComponent<Components::Transform>() const;
 
         /**
          * @brief 
@@ -795,15 +778,6 @@ protected:
         QSFML::vector<T*>  getComponents() const;
         //template <typename T>
         //QSFML::vector<T*> getComponents() const;
-
-        template <>
-        QSFML::vector<Components::Collider*> getComponents<Components::Collider>() const;
-        template <>
-        QSFML::vector<Utilities::Updatable*> getComponents<Utilities::Updatable>() const;
-        template <>
-        QSFML::vector<Components::SfEventHandle*> getComponents<Components::SfEventHandle>() const;
-        template <>
-        QSFML::vector<Components::Transform*> getComponents<Components::Transform>() const;
         
         template <typename T>
         QSFML::vector<T*> getComponentsRecursive() const;

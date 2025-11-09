@@ -142,10 +142,41 @@ QSFML::vector<T*> GameObject::getChildsRecusrive() const
 }
 
 
+
+
 template <typename T>
 void GameObject::removeComponents()
 {
-    if constexpr (std::is_base_of<Components::Component, T>::value)
+    if constexpr (std::is_same<Components::Collider, T>::value)
+    {
+        m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.colliders.size());
+        for (size_t i = 0; i < m_componentsManagerData.colliders.size(); ++i)
+        {
+            Components::ComponentPtr component = static_cast<Components::Component*>(m_componentsManagerData.colliders[i]);
+            removeComponent(component);
+        }
+    }
+    else if constexpr (std::is_same<Utilities::Updatable, T>::value)
+    {
+        m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.updatables.size());
+        for (auto& comp : m_componentsManagerData.updatables)
+        {
+            removeComponent(dynamic_cast<Components::Component*>(comp));
+        }
+    }
+    else if constexpr (std::is_same<Components::SfEventHandle, T>::value)
+    {
+        m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.eventHandler.size());
+        for (size_t i = 0; i < m_componentsManagerData.eventHandler.size(); ++i)
+        {
+            removeComponent(dynamic_cast<Components::Component*>(m_componentsManagerData.eventHandler[i]));
+        }
+    }
+    else if constexpr (std::is_same<Components::Transform, T>::value)
+    {
+        removeComponent(static_cast<Components::Component*>(m_componentsManagerData.transform));
+    }
+    else if constexpr (std::is_base_of<Components::Component, T>::value)
     {
         m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.all.size());
         bool hasChanges = false;
@@ -157,8 +188,8 @@ void GameObject::removeComponents()
                 m_componentsManagerData.toRemove.push_back(comp);
             }
         }
-		if (hasChanges)
-			onObjectsChanged();
+        if (hasChanges)
+            onObjectsChanged();
     }
     else if constexpr (std::is_base_of<sf::Drawable, T>::value)
     {
@@ -174,41 +205,7 @@ void GameObject::removeComponents()
         }
         if (hasChanges)
             onObjectsChanged();
-    }   
-}
-
-template <>
-void GameObject::removeComponents<Components::Collider>()
-{
-    m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.colliders.size());
-    for (size_t i = 0; i < m_componentsManagerData.colliders.size(); ++i)
-    {
-        Components::ComponentPtr component = static_cast<Components::Component*>(m_componentsManagerData.colliders[i]);
-        removeComponent(component);
     }
-}
-template <>
-void GameObject::removeComponents<Utilities::Updatable>()
-{
-    m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.updatables.size());
-    for (auto& comp : m_componentsManagerData.updatables)
-    {
-        removeComponent(dynamic_cast<Components::Component*>(comp));
-    }
-}
-template <>
-void GameObject::removeComponents<Components::SfEventHandle>()
-{
-    m_componentsManagerData.toRemove.reserve(m_componentsManagerData.toRemove.size() + m_componentsManagerData.eventHandler.size());
-    for (size_t i = 0; i < m_componentsManagerData.eventHandler.size(); ++i)
-    {
-        removeComponent(dynamic_cast<Components::Component*>(m_componentsManagerData.eventHandler[i]));
-    }
-}
-template <>
-void GameObject::removeComponents<Components::Transform>()
-{
-    removeComponent(static_cast<Components::Component*>(m_componentsManagerData.transform));
 }
 
 template <typename T, typename>
@@ -222,7 +219,29 @@ void GameObject::deleteComponentLater(T sfDrawable)
 template <typename T>
 T* GameObject::getFirstComponent() const
 {
-    if constexpr (std::is_base_of<Components::Component, T>::value)
+    if constexpr (std::is_same<Components::Collider, T>::value)
+    {
+        if (m_componentsManagerData.colliders.size() > 0)
+            return m_componentsManagerData.colliders[0];
+        return nullptr;
+    }
+    else if constexpr (std::is_same<Utilities::Updatable, T>::value)
+    {
+        if (m_componentsManagerData.updatables.size() > 0)
+            return m_componentsManagerData.updatables[0];
+        return nullptr;
+    }
+    else if constexpr (std::is_same<Components::SfEventHandle, T>::value)
+    {
+        if (m_componentsManagerData.eventHandler.size() > 0)
+            return m_componentsManagerData.eventHandler[0];
+        return nullptr;
+    }
+    else if constexpr (std::is_same<Components::Transform, T>::value)
+    {
+        return m_componentsManagerData.transform;
+    }
+    else if constexpr (std::is_base_of<Components::Component, T>::value)
     {
         for (auto& comp : m_componentsManagerData.all)
         {
@@ -241,40 +260,32 @@ T* GameObject::getFirstComponent() const
     return nullptr;
 }
 
-template <>
-Components::Collider* GameObject::getFirstComponent<Components::Collider>() const
-{
-    if (m_componentsManagerData.colliders.size() > 0)
-        return m_componentsManagerData.colliders[0];
-    return nullptr;
-}
-template <>
-Utilities::Updatable* GameObject::getFirstComponent<Utilities::Updatable>() const
-{
-    if (m_componentsManagerData.updatables.size() > 0)
-        return m_componentsManagerData.updatables[0];
-    return nullptr;
-}
-template <>
-Components::SfEventHandle* GameObject::getFirstComponent<Components::SfEventHandle>() const
-{
-    if (m_componentsManagerData.eventHandler.size() > 0)
-        return m_componentsManagerData.eventHandler[0];
-    return nullptr;
-}
-template <>
-Components::Transform* GameObject::getFirstComponent<Components::Transform>() const
-{
-    return m_componentsManagerData.transform;
-}
+
 
 
 template <typename T>
 QSFML::vector<T*>  GameObject::getComponents() const
 {
-    QSFML::vector<T*> components;
-    if constexpr (std::is_base_of<Components::Component, T>::value)
+    
+    if constexpr (std::is_same<Components::Collider, T>::value)
     {
+        return m_componentsManagerData.colliders;
+    } 
+    else if constexpr (std::is_same<Utilities::Updatable, T>::value)
+    {
+        return m_componentsManagerData.updatables;
+    }
+    else if constexpr (std::is_same<Components::SfEventHandle, T>::value)
+    {
+        return m_componentsManagerData.eventHandler;
+    }
+    else if constexpr (std::is_same<Components::Transform, T>::value)
+    {
+        return m_componentsManagerData.transform;
+    }
+    else if constexpr (std::is_base_of<Components::Component, T>::value)
+    {
+        QSFML::vector<T*> components;
         components.reserve(m_componentsManagerData.all.size());
         for (auto& comp : m_componentsManagerData.all)
         {
@@ -283,34 +294,15 @@ QSFML::vector<T*>  GameObject::getComponents() const
                 components.push_back(t);
             }
         }
+		return components;
     }
     else if constexpr (std::is_base_of<sf::Drawable, T>::value)
     {
-		components = m_componentsManagerData.sfDrawable;
+        return m_componentsManagerData.sfDrawable;
     }
-    return components;
+    return {};
 }
 
-template <>
-QSFML::vector<Components::Collider*> GameObject::getComponents<Components::Collider>() const
-{
-    return m_componentsManagerData.colliders;
-}
-template <>
-QSFML::vector<Utilities::Updatable*> GameObject::getComponents<Utilities::Updatable>() const
-{
-    return m_componentsManagerData.updatables;
-}
-template <>
-QSFML::vector<Components::SfEventHandle*> GameObject::getComponents<Components::SfEventHandle>() const
-{
-    return m_componentsManagerData.eventHandler;
-}
-template <>
-QSFML::vector<Components::Transform*> GameObject::getComponents<Components::Transform>() const
-{
-    return { m_componentsManagerData.transform };
-}
 
 template <typename T>
 QSFML::vector<T*> GameObject::getComponentsRecursive() const

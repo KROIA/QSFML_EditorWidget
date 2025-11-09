@@ -13,7 +13,7 @@ private:
 
 	double objectiveFunction(const std::vector<double>& parameters);
 	void initializerFunction(QSFML::Utilities::DifferentialEvolution::Individual& individual);
-	sf::Color DifferentialEvol::getColor(double value);
+	sf::Color getColor(double value);
 
 	size_t m_evolutionUpdateCounter = 0;
 
