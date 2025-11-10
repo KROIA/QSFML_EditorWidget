@@ -49,7 +49,7 @@ class AABBDisplayer: public QSFML::Objects::GameObject
             Components::PathPainter *pathPainter = getFirstComponent<Components::PathPainter>();
             Components::VectorPainter *vectorPainter = getFirstComponent<Components::VectorPainter>();
             sf::Transform transform = getGlobalTransform();
-            pathPainter->appenPoint(transform.transformPoint(vectorPainter->getEnd()));
+            pathPainter->appendPoint(transform.transformPoint(vectorPainter->getEnd()));
             if (pathPainter->getPointCount() > 1000)
             {
                 pathPainter->popPointAtStart();

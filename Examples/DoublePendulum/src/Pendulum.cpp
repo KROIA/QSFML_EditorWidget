@@ -179,7 +179,7 @@ void Pendulum::update()
 
         if (m_pathPainter->getPointCount() > m_maxPathLength)
             m_pathPainter->popPointAtStart(m_pathPainter->getPointCount() - m_maxPathLength);
-        m_pathPainter->appenPoint(sf::Vector2f(m_pendulumData[1].endPos.x, m_pendulumData[1].endPos.y));
+        m_pathPainter->appendPoint(sf::Vector2f(m_pendulumData[1].endPos.x, m_pendulumData[1].endPos.y));
 
    // }
 

@@ -64,7 +64,7 @@ void Planet::update()
 				m_nextPosition.y = m_worldBounds.top;
 		}
 	}
-	m_pathPainter->appenPoint(m_nextPosition);
+	m_pathPainter->appendPoint(m_nextPosition);
 	if (m_pathPainter->getPointCount() > 5000)[[likely]]
 		m_pathPainter->popPointAtStart(1);
 }

@@ -126,7 +126,7 @@ void ExampleScene::pathPainterComponent()
             }
 
             lastDirAngle += (rand() % (int)(M_PI * 25)-(M_PI * 12.5)) / 100.f;
-            pathPainter->appenPoint(lastPoint + QSFML::VectorMath::getRotatedUnitVectorRAD(lastDirAngle)*10.f);
+            pathPainter->appendPoint(lastPoint + QSFML::VectorMath::getRotatedUnitVectorRAD(lastDirAngle)*10.f);
             if (pathPainter->getPointCount() > 1000)
                 pathPainter->popPointAtStart(1);
 

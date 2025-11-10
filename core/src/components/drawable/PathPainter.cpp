@@ -50,7 +50,7 @@ namespace QSFML
             }
             return p;
         }
-        void PathPainter::appenPoint(const sf::Vector2f& point)
+        void PathPainter::appendPoint(const sf::Vector2f& point)
         {
 			m_vertecies.push_back({ point, m_color });
         }

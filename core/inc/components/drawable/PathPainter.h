@@ -19,7 +19,7 @@ namespace QSFML
 			void setPath(const QSFML::vector<sf::Vector2f>& path);
             QSFML::vector<sf::Vector2f> getPath() const;
 
-			void appenPoint(const sf::Vector2f& point);
+			void appendPoint(const sf::Vector2f& point);
 			void popPointAtEnd(size_t count = 1);
 			void popPointAtStart(size_t count = 1);
 
