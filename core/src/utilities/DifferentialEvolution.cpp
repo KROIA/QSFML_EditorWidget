@@ -92,6 +92,7 @@ namespace QSFML
 				m_populationSize = MINIMUM_POPULATION_SIZE;  // Ensure at least one individual in the population
 			}
 			m_population.resize(m_populationSize, Individual(m_parameterCount));
+			m_currentGeneration = 0;
 		}
 
 		const DifferentialEvolution::Individual &DifferentialEvolution::getBestIndividual() const
@@ -120,6 +121,7 @@ namespace QSFML
 				m_populationSize = MINIMUM_POPULATION_SIZE;  // Ensure at least one individual in the population
 				m_population.resize(m_populationSize, Individual(m_parameterCount));
 			}
+			m_currentGeneration = 0;
 		}
 
 		void DifferentialEvolution::resetPopulation()
@@ -135,6 +137,15 @@ namespace QSFML
 		{
 			if (!m_fitnessFunction || m_currentGeneration >= m_maxGenerations)
 				return; // No fitness function defined or max generations reached
+
+			if(m_currentGeneration == 0)
+			{
+				// Evaluate initial population
+				for (auto &it : m_population)
+				{
+					it.fitness = m_fitnessFunction(it.parameters);
+				}
+			}
 		
 			std::vector<Individual> newPopulation(m_populationSize, Individual(m_parameterCount));
 			for (size_t i = 0; i < m_populationSize; ++i)
