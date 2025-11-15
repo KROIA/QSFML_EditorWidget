@@ -12,9 +12,8 @@ namespace QSFML
 		public:
 			struct Individual
 			{
-				double* parameters = nullptr;
+				std::vector<double> parameters;
 				double fitness = 0;
-				size_t parameterCount = 0;
 
 				Individual(size_t parameterCount);
 				Individual(const Individual& other);

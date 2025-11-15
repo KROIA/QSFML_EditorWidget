@@ -6,43 +6,34 @@ namespace QSFML
 	namespace Utilities
 	{
 		DifferentialEvolution::Individual::Individual(size_t parameterCount)
+			: parameters(parameterCount, 0)
 		{
-			this->parameterCount = parameterCount;
-			parameters = new double[parameterCount];
-			for (size_t i = 0; i < parameterCount; ++i)
-				parameters[i] = 0;
 		}
 		DifferentialEvolution::Individual::Individual(const Individual& other)
+			: parameters(other.parameters)
 		{
-			parameterCount = other.parameterCount;
-			parameters = new double[other.parameterCount];
 			fitness = other.fitness;
-			memcpy(parameters, other.parameters, sizeof(double) * other.parameterCount);
 		}
 		DifferentialEvolution::Individual::Individual(Individual&& other) noexcept
+			: parameters(std::move(other.parameters))
 		{
-			parameterCount = other.parameterCount;
-			parameters = other.parameters;
 			fitness = other.fitness;
-			other.parameters = nullptr;
 		}
 		DifferentialEvolution::Individual::~Individual()
 		{
-			delete[] parameters;
+			
 		}
 
 		DifferentialEvolution::Individual& DifferentialEvolution::Individual::operator=(const Individual& other)
 		{
 			if (this != &other)
 			{
-				if (parameterCount != other.parameterCount)
+				if (parameters.size() != other.parameters.size())
 				{
-					delete[] parameters;
-					parameterCount = other.parameterCount;
-					parameters = new double[parameterCount];
+					parameters.resize(other.parameters.size());
 				}
 				fitness = other.fitness;
-				memcpy(parameters, other.parameters, sizeof(double) * other.parameterCount);
+				std::copy(other.parameters.begin(), other.parameters.end(), parameters.begin());
 			}
 			return *this;
 		}
@@ -50,19 +41,16 @@ namespace QSFML
 		{
 			if (this != &other)
 			{
-				delete[] parameters;
-				parameterCount = other.parameterCount;
-				parameters = other.parameters;
+				parameters = std::move(other.parameters);
 				fitness = other.fitness;
-				other.parameters = nullptr;
 			}
 			return *this;
 		}
 		bool DifferentialEvolution::Individual::operator==(const Individual& other) const
 		{
-			if (parameterCount != other.parameterCount)
+			if (parameters.size() != other.parameters.size())
 				return false;
-			for (size_t i = 0; i < parameterCount; ++i)
+			for (size_t i = 0; i < parameters.size(); ++i)
 			{
 				if (parameters[i] != other.parameters[i])
 					return false;
@@ -126,7 +114,7 @@ namespace QSFML
 			m_population = population;
 			m_populationSize = population.size();
 			if(population.size() > 0)
-				m_parameterCount = population[0].parameterCount;
+				m_parameterCount = population[0].parameters.size();
 			if (m_populationSize < MINIMUM_POPULATION_SIZE)
 			{
 				m_populationSize = MINIMUM_POPULATION_SIZE;  // Ensure at least one individual in the population
@@ -180,7 +168,7 @@ namespace QSFML
 				}
 
 				// Selection
-				trial.fitness = m_fitnessFunction(std::vector<double>(trial.parameters, trial.parameters + m_parameterCount));
+				trial.fitness = m_fitnessFunction(trial.parameters);
 				if (trial.fitness > m_population[i].fitness)
 				{
 					newPopulation[i] = trial;
