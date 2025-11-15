@@ -125,6 +125,8 @@ namespace QSFML
 		{
 			m_population = population;
 			m_populationSize = population.size();
+			if(population.size() > 0)
+				m_parameterCount = population[0].parameterCount;
 			if (m_populationSize < MINIMUM_POPULATION_SIZE)
 			{
 				m_populationSize = MINIMUM_POPULATION_SIZE;  // Ensure at least one individual in the population

@@ -61,7 +61,7 @@ namespace QSFML
 
 			static constexpr size_t MINIMUM_POPULATION_SIZE = 4;
 
-			DifferentialEvolution(size_t parameterCount);
+			DifferentialEvolution(size_t parameterCount = 0);
 			DifferentialEvolution(size_t populationSize, size_t parameterCount, 
 								  double mutationFactor, double crossoverRate,
 								  size_t maxGeneration);
@@ -100,7 +100,7 @@ namespace QSFML
 
 			
 			size_t m_populationSize;
-			const size_t m_parameterCount;
+			size_t m_parameterCount;
 			double m_mutationFactor = 0.8;
 			double m_crossoverRate = 0.7;
 			size_t m_maxGenerations = 1000;
