@@ -180,14 +180,34 @@ namespace QSFML
 
 				// Selection
 				trial.fitness = m_fitnessFunction(trial.parameters);
-				if (trial.fitness > m_population[i].fitness)
+				switch (m_optimizingDirection)
 				{
-					newPopulation[i] = trial;
+					case OptimizingDirection::Minimize:
+					{
+						if (trial.fitness < m_population[i].fitness)
+						{
+							newPopulation[i] = trial;
+						}
+						else
+						{
+							newPopulation[i] = m_population[i];
+						}
+						continue;
+					}
+					case OptimizingDirection::Maximize:
+					{
+						if (trial.fitness > m_population[i].fitness)
+						{
+							newPopulation[i] = trial;
+						}
+						else
+						{
+							newPopulation[i] = m_population[i];
+						}
+						break;
+					}
 				}
-				else
-				{
-					newPopulation[i] = m_population[i];
-				}
+				
 			}
 			m_population = std::move(newPopulation);
 			++m_currentGeneration;

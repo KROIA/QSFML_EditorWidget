@@ -10,6 +10,11 @@ namespace QSFML
 		class QSFML_EDITOR_WIDGET_API DifferentialEvolution
 		{
 		public:
+			enum class OptimizingDirection
+			{
+				Minimize,
+				Maximize
+			};
 			struct Individual
 			{
 				std::vector<double> parameters;
@@ -66,6 +71,15 @@ namespace QSFML
 								  size_t maxGeneration);
 			~DifferentialEvolution();
 
+			void setOptimizingDirection(OptimizingDirection direction)
+			{
+				m_optimizingDirection = direction;
+			}
+			OptimizingDirection getOptimizingDirection() const
+			{
+				return m_optimizingDirection;
+			}
+
 			void setPopulationSize(size_t size);
 			size_t getPopulationSize() const { return m_populationSize; }
 			size_t getParameterCount() const { return m_parameterCount; }
@@ -108,6 +122,7 @@ namespace QSFML
 			std::function<void(Individual&)> m_individualInitializer;
 
 			size_t m_currentGeneration = 0;
+			OptimizingDirection m_optimizingDirection = OptimizingDirection::Maximize;
 		};
 	}
 }
