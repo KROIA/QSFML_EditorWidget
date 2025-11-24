@@ -97,15 +97,36 @@ namespace QSFML
 
 		const DifferentialEvolution::Individual &DifferentialEvolution::getBestIndividual() const
 		{
-			size_t bestIndex = -1;
-			double bestFitness = -std::numeric_limits<double>::max();
-			for (size_t i = 0; i < m_population.size(); ++i)
+			size_t bestIndex = 0;
+			switch (m_optimizingDirection)
 			{
-				const double& fitness = m_population[i].fitness;
-				if (fitness > bestFitness)
+				case OptimizingDirection::Minimize:
 				{
-					bestIndex = i;
-					bestFitness = fitness;
+					double bestFitness = std::numeric_limits<double>::max();
+					for (size_t i = 0; i < m_population.size(); ++i)
+					{
+						const double& fitness = m_population[i].fitness;
+						if (fitness < bestFitness)
+						{
+							bestIndex = i;
+							bestFitness = fitness;
+						}
+					}
+					return m_population[bestIndex];
+				}
+				case OptimizingDirection::Maximize:
+				{
+					double bestFitness = -std::numeric_limits<double>::max();
+					for (size_t i = 0; i < m_population.size(); ++i)
+					{
+						const double& fitness = m_population[i].fitness;
+						if (fitness > bestFitness)
+						{
+							bestIndex = i;
+							bestFitness = fitness;
+						}
+					}
+					return m_population[bestIndex];
 				}
 			}
 			return m_population[bestIndex];
