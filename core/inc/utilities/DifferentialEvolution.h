@@ -9,6 +9,7 @@ namespace QSFML
 	{
 		class QSFML_EDITOR_WIDGET_API DifferentialEvolution
 		{
+			static constexpr size_t s_maxThreadWorkerCount = 64;
 		public:
 			enum class OptimizingDirection
 			{
@@ -71,6 +72,8 @@ namespace QSFML
 								  size_t maxGeneration);
 			~DifferentialEvolution();
 
+			bool enableThreadPool(bool enable, size_t numThreads = std::thread::hardware_concurrency());
+
 			void setOptimizingDirection(OptimizingDirection direction)
 			{
 				m_optimizingDirection = direction;
@@ -107,7 +110,12 @@ namespace QSFML
 			void resetPopulation();
 			void evolve();
 
-
+			bool isThreadsBusy() const
+			{
+				if(m_useThreadPool)
+					return m_threadsBusy.load();
+				return false;
+			}
 		private:
 			
 
@@ -123,6 +131,27 @@ namespace QSFML
 
 			size_t m_currentGeneration = 0;
 			OptimizingDirection m_optimizingDirection = OptimizingDirection::Maximize;
+
+
+
+
+			// Thread pool members
+			bool m_useThreadPool = false;
+			std::vector<Individual> m_threadPopulation;
+			std::vector<std::thread> m_workerThreads;
+			size_t m_populationSizeOnSetup = 0;
+			std::mutex m_mutex;
+			std::condition_variable m_cvWork;
+			std::condition_variable m_cvComplete;
+			std::atomic<bool> m_stopThreads{ false };
+			std::atomic<bool>* m_threadHasWork{ nullptr };
+			//std::atomic<size_t> m_completedThreads{ 0 };
+
+			std::atomic<bool> m_threadsBusy{ false };
+
+			void workerThread(size_t threadId, size_t start, size_t end);
+			void initializeThreadPool(size_t numThreads);
+			void shutdownThreadPool();
 		};
 	}
 }
