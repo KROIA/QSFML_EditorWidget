@@ -92,7 +92,7 @@ namespace QSFML
 			size_t getMaxGenerations() const { return m_maxGenerations; }
 			size_t getCurrentGeneration() const { return m_currentGeneration; }
 
-			void setFitnessFunction(const std::function<double(const std::vector<double>&)>& func)
+			void setFitnessFunction(const std::function<double(const std::vector<double>&, size_t)>& func)
 			{
 				m_fitnessFunction = func;
 			}
@@ -118,7 +118,7 @@ namespace QSFML
 			double m_crossoverRate = 0.7;
 			size_t m_maxGenerations = 1000;
 			std::vector<Individual> m_population;
-			std::function<double(const std::vector<double>&)> m_fitnessFunction;
+			std::function<double(const std::vector<double>&, size_t)> m_fitnessFunction;
 			std::function<void(Individual&)> m_individualInitializer;
 
 			size_t m_currentGeneration = 0;

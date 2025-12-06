@@ -162,9 +162,11 @@ namespace QSFML
 			if(m_currentGeneration == 0)
 			{
 				// Evaluate initial population
+				size_t idx = 0;
 				for (auto &it : m_population)
 				{
-					it.fitness = m_fitnessFunction(it.parameters);
+					it.fitness = m_fitnessFunction(it.parameters, idx);
+					++idx;
 				}
 			}
 		
@@ -200,7 +202,7 @@ namespace QSFML
 				}
 
 				// Selection
-				trial.fitness = m_fitnessFunction(trial.parameters);
+				trial.fitness = m_fitnessFunction(trial.parameters, i);
 				switch (m_optimizingDirection)
 				{
 					case OptimizingDirection::Minimize:
