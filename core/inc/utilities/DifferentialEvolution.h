@@ -137,6 +137,7 @@ namespace QSFML
 
 			// Thread pool members
 			bool m_useThreadPool = false;
+			size_t m_targetThreadCount = 0;
 			std::vector<Individual> m_threadPopulation;
 			std::vector<std::thread> m_workerThreads;
 			size_t m_populationSizeOnSetup = 0;

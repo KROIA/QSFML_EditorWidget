@@ -117,9 +117,8 @@ namespace QSFML
 			m_currentGeneration = 0;
 			if (m_useThreadPool)
 			{
-				size_t threadCount = m_workerThreads.size();
 				shutdownThreadPool();
-				initializeThreadPool(threadCount);
+				initializeThreadPool(m_targetThreadCount);
 			}
 		}
 
@@ -412,16 +411,20 @@ namespace QSFML
 
 		void DifferentialEvolution::initializeThreadPool(size_t numThreads)
 		{
+			m_targetThreadCount = numThreads;
 			if (m_workerThreads.size() != 0)
 			{
 				shutdownThreadPool();
 			}
 			m_stopThreads = false;
+			size_t populationSize = m_population.size();
+			if (populationSize == 0)
+				return;
 			//m_hasWork = 0;
 			m_workerThreads.reserve(numThreads);
 
 			// Calculate fixed ranges for each thread
-			size_t populationSize = m_population.size();
+			
 			numThreads = std::min(numThreads, populationSize);
 			numThreads = std::min(numThreads, s_maxThreadWorkerCount);
 			size_t chunkSize = (populationSize + numThreads - 1) / numThreads;
