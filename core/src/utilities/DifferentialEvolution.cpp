@@ -173,9 +173,8 @@ namespace QSFML
 			m_currentGeneration = 0;
 			if (m_useThreadPool && sizeChanged)
 			{
-				size_t threadCount = m_workerThreads.size();
 				shutdownThreadPool();
-				initializeThreadPool(threadCount);
+				initializeThreadPool(m_targetThreadCount);
 			}
 		}
 
