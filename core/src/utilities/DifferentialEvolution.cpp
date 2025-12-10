@@ -204,39 +204,6 @@ namespace QSFML
 			}
 		
 			std::vector<Individual> newPopulation(m_populationSize, Individual(m_parameterCount));
-			m_threadPopulation.clear();
-			m_threadPopulation.reserve(m_populationSize);
-			for (size_t i = 0; i < m_populationSize; ++i)
-			{
-				// Mutation
-				size_t a, b, c;
-				do { a = rand() % m_populationSize; } while (a == i);
-				do { b = rand() % m_populationSize; } while (b == i || b == a);
-				do { c = rand() % m_populationSize; } while (c == i || c == a || c == b);
-
-				Individual mutant(m_parameterCount);
-				for (size_t j = 0; j < m_parameterCount; ++j)
-				{
-					mutant.parameters[j] = m_population[a].parameters[j] +
-						m_mutationFactor * (m_population[b].parameters[j] - m_population[c].parameters[j]);
-				}
-
-				// Crossover
-				Individual trial(m_parameterCount);
-				size_t R = rand() % m_parameterCount; // Ensure at least one parameter from mutant
-				for (size_t j = 0; j < m_parameterCount; ++j)
-				{
-					if (rand() / double(RAND_MAX) < m_crossoverRate || j == R)
-					{
-						trial.parameters[j] = mutant.parameters[j];
-					}
-					else
-					{
-						trial.parameters[j] = m_population[i].parameters[j];
-					}
-				}
-				m_threadPopulation.emplace_back(std::move(trial));
-			}
 
 			// Evaluate fitness in parallel if thread pool is used
 			if (m_useThreadPool)
