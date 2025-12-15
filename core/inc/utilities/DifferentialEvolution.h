@@ -16,7 +16,7 @@ namespace QSFML
 				Minimize,
 				Maximize
 			};
-			struct Individual
+			struct QSFML_EDITOR_WIDGET_API Individual
 			{
 				std::vector<double> parameters;
 				double fitness = 0;
