@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20)
 
 
 ## INFO
-## Template version: 1.5.3
+## Template version: 1.5.4
 ##
 ## This is a template for a CMake project.
 ## It is designed to be used with the Visual Studio

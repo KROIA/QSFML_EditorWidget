@@ -167,9 +167,10 @@ namespace QSFML
 		return widget;
 	}
 #else
-	QWidget* LibraryInfo::createInfoWidget(QWidget* parent)
+	QWidget* LibraryInfo::createInfoWidget(QWidget* parent, bool disableHyperlink)
 	{
 		QSFML_UNUSED(parent);
+		QSFML_UNUSED(disableHyperlink);
 		return nullptr;
 	}
 #endif
