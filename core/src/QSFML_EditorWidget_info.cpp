@@ -105,20 +105,39 @@ namespace QSFML
 	}
 
 #ifdef QT_WIDGETS_AVAILABLE
-	void addRow(const QString& labelText, const QString& valueText, QGridLayout* layout, int row) {
+	void addRow(const QString& labelText, const QString& valueText, QGridLayout* layout, int row, bool isHyperLink) {
 		QLabel* label = new QLabel(labelText);
 		label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+		// set bold font for the label
+		QFont font = label->font();
+		font.setBold(true);
+		label->setFont(font);
+
+		// Enable text selection for the label
+		label->setTextInteractionFlags(Qt::TextSelectableByMouse);
 		layout->addWidget(label, row, 0);
 
 		QLabel* valueLabel = new QLabel(valueText);
+		// Enable text selection for the label
+		valueLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+
+		if (isHyperLink)
+		{
+			valueLabel->setTextFormat(Qt::RichText);
+			valueLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+			valueLabel->setOpenExternalLinks(true);
+		}
+
 		layout->addWidget(valueLabel, row, 1);
 	}
-	QWidget* LibraryInfo::createInfoWidget(QWidget* parent)
+	QWidget* LibraryInfo::createInfoWidget(QWidget* parent, bool disableHyperlink)
 	{
 		QWidget* widget = new QWidget(parent);
 		QGridLayout* layout = new QGridLayout(widget);
-		
-		struct Pair 
+		layout->setContentsMargins(0, 0, 0, 0);
+		layout->setVerticalSpacing(1);
+
+		struct Pair
 		{
 			std::string label;
 			std::string value;
@@ -127,7 +146,7 @@ namespace QSFML
 			{"Library Name:", name},
 			{"Author:", author},
 			{"Email:", email},
-			{"Website:", website},
+			{"Website:", "<a href=\"" + std::string(website) + "\">" + std::string(website) + "</a>"},
 			{"License:", license},
 			{"Version:", version.toString()},
 			{"Compilation Date:", compilationDate},
@@ -136,7 +155,12 @@ namespace QSFML
 		};
 		int rowCount = 0;
 		for (const auto& pair : pairs) {
-			addRow(QString::fromStdString(pair.label), QString::fromStdString(pair.value), layout, rowCount++);
+			addRow(QString::fromStdString(pair.label),
+				QString::fromStdString(pair.value),
+				layout,
+				rowCount,
+				!disableHyperlink && rowCount == 3);
+			rowCount++;
 		}
 
 		widget->setLayout(layout);

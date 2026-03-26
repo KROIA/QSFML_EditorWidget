@@ -54,8 +54,8 @@
 /// USER_SECTION_END
 
 #if defined(QSFML_EDITOR_WIDGET_LIB)
-	#pragma warning (error : 4715) // not all control paths return a value shuld be an error instead of a warning
-	#pragma warning (error : 4700) // uninitialized local variable used shuld be an error instead of a warning
+    #pragma warning (error : 4715) // not all control paths return a value should be an error instead of a warning
+    #pragma warning (error : 4700) // uninitialized local variable used should be an error instead of a warning
 	#pragma warning (error : 4244) // Implicit conversions between data types 
 	#pragma warning (error : 4100) // Unused variables
 	#pragma warning (error : 4018) // Type mismatch 
@@ -63,8 +63,6 @@
 	#pragma warning (error : 4456) // declaration of 'x' hides previous local declaration
 	#pragma warning (error : 4065) // switch statement contains 'default' but no 'case' labels
 	#pragma warning (error : 4189) // Unused return value
-	#pragma warning (error : 4996) // unsafe function calls
-	#pragma warning (error : 4018) // signed/unsigned mismatch
 	#pragma warning (error : 4172) // Returning address of local temporary object
 #endif
 

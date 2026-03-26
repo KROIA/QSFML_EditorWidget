@@ -38,7 +38,7 @@ function(windeployqt targetName outputPath)
     set(targetExePath "${outputPath}/${targetName}.exe") 
     set(DEPLOY_COMMAND  "${QT_PATH}/bin/windeployqt.exe 
 		--no-compiler-runtime 
-		--no-translations 
+		--translations de,en
 		--no-system-d3d-compiler 
 		--no-opengl-sw 
 		--pdb 

@@ -107,7 +107,7 @@ namespace QSFML
 		// QT_MODULES contains the value "Widgets"
 		// It creates a widget with the library information
 		// No button is created to close the widget
-		static QWidget *createInfoWidget(QWidget* parent = nullptr);
+		static QWidget *createInfoWidget(QWidget* parent = nullptr, bool disableHyperlink = false);
 
 /// USER_SECTION_START 5
 
