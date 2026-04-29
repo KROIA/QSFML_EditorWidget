@@ -246,6 +246,19 @@ macro(downloadStandardLibrary)
     endif()
     FetchContent_MakeAvailable(${LIB_NAME})
 
+    # Auto-add the standard library's public include directory (core/inc convention).
+    # All KROIA template libraries expose headers at <source_root>/core/inc.
+    # Adding it here makes the path available through DEPENDENCIES_INCLUDE_PATHS so
+    # the parent library (and its consumers via PUBLIC) can find these headers even
+    # when the dep is linked PRIVATE.
+    string(TOLOWER "${LIB_NAME}" _ldc_std_lower)
+    set(_ldc_std_inc "${${_ldc_std_lower}_SOURCE_DIR}/core/inc")
+    if(EXISTS "${_ldc_std_inc}")
+        list(APPEND ADDITIONAL_INCLUDE_PATHS "${_ldc_std_inc}")
+    endif()
+    unset(_ldc_std_inc)
+    unset(_ldc_std_lower)
+
     # Add this library to the specific profiles of this project
     list(APPEND DEPS_FOR_SHARED_LIB ${LIB_NAME}_shared ${ADDITIONAL_SHARED_LIB_DEPENDENCIES})
     list(APPEND DEPS_FOR_STATIC_LIB ${LIB_NAME}_static ${ADDITIONAL_STATIC_LIB_DEPENDENCIES})
@@ -351,6 +364,15 @@ macro(downloadExternalLibrary)
     list(APPEND DEPS_FOR_SHARED_LIB ${SHARED_LIB_DEPENDENCY} ${ADDITIONAL_SHARED_LIB_DEPENDENCIES})
     list(APPEND DEPS_FOR_STATIC_LIB ${STATIC_LIB_DEPENDENCY} ${ADDITIONAL_STATIC_LIB_DEPENDENCIES})
     list(APPEND DEPS_FOR_STATIC_PROFILE_LIB ${STATIC_PROFILE_LIB_DEPENDENCY} ${ADDITIONAL_STATIC_PROFILE_LIB_DEPENDENCIES}) # only use for static profiling profile
+
+    # Auto-add a standard include/ directory if the source tree has one.
+    # Covers external libraries like SFML and EASTL whose public headers live in include/.
+    # _ldc_name_lower is already set at the top of this macro.
+    set(_ldc_ext_inc "${${_ldc_name_lower}_SOURCE_DIR}/include")
+    if(EXISTS "${_ldc_ext_inc}")
+        list(APPEND ADDITIONAL_INCLUDE_PATHS "${_ldc_ext_inc}")
+    endif()
+    unset(_ldc_ext_inc)
 
     # Auto-generate LIB_MACRO_NAME from LIB_NAME when the caller did not set it.
     # e.g. SFML → SFML_LIBRARY_AVAILABLE, imgui-sfml → IMGUI_SFML_LIBRARY_AVAILABLE

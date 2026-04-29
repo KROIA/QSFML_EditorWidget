@@ -123,18 +123,14 @@ set(OUTPUT_shared         ${LIBRARY_NAME})
 set(OUTPUT_static         ${LIBRARY_NAME}${STATIC_POSTFIX_STR})
 set(OUTPUT_static_profile ${LIBRARY_NAME}${STATIC_POSTFIX_STR}${PROFILING_POSTFIX_STR})
 
-# LIBRARY_DEPENDENCIES (Qt) is PUBLIC: our public headers expose Qt types so
-# consumers need Qt too.
-# DEPENDENCIES_FOR_* (FetchContent libs) is PRIVATE: they are implementation
-# details and must not be pulled into the export set.
-set(PRIVATE_DEPS_shared         ${DEPENDENCIES_FOR_SHARED_LIB})
-set(PRIVATE_DEPS_static         ${DEPENDENCIES_FOR_STATIC_LIB})
-set(PRIVATE_DEPS_static_profile ${DEPENDENCIES_FOR_STATIC_PROFILE_LIB})
+set(PUBLIC_DEPS_shared         ${DEPENDENCIES_FOR_SHARED_LIB})
+set(PUBLIC_DEPS_static         ${DEPENDENCIES_FOR_STATIC_LIB})
+set(PUBLIC_DEPS_static_profile ${DEPENDENCIES_FOR_STATIC_PROFILE_LIB})
 
-message("Extern dependencies for shared lib:           [${DEPENDENCIES_FOR_SHARED_LIB}]")
-message("Extern dependencies for static lib:           [${DEPENDENCIES_FOR_STATIC_LIB}]")
+message("Dependencies for shared lib:           [${DEPENDENCIES_FOR_SHARED_LIB}]")
+message("Dependencies for static lib:           [${DEPENDENCIES_FOR_STATIC_LIB}]")
 if(EASY_PROFILER_IS_AVAILABLE)
-    message("Extern dependencies for static profiling lib: [${DEPENDENCIES_FOR_STATIC_PROFILE_LIB}]")
+    message("Dependencies for static profiling lib: [${DEPENDENCIES_FOR_STATIC_PROFILE_LIB}]")
 endif()
 
 
@@ -154,12 +150,13 @@ foreach(profile IN LISTS PROFILES)
 
     target_link_libraries(${target}
         PUBLIC  ${LIBRARY_DEPENDENCIES}
-        PRIVATE ${PRIVATE_DEPS_${profile}})
+                ${PUBLIC_DEPS_${profile}})
 
     target_include_directories(${target} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
         $<INSTALL_INTERFACE:include/${LIBRARY_NAME}>
+        ${DEPENDENCIES_INCLUDE_PATHS}
     )
 
     if(QT_ENABLE)
