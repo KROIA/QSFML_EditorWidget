@@ -6,6 +6,7 @@
 
 #include "QSFML_EditorWidget_global.h"
 #include "QSFML_EditorWidget_debug.h"
+#include "QSFML_EditorWidget_meta.h"
 
 #include <sstream>
 
@@ -53,15 +54,15 @@ namespace QSFML
 		};
 
 
-		// Current version of the library
-		static constexpr int versionMajor				= 1;
-		static constexpr int versionMinor				= 0;
-		static constexpr int versionPatch				= 0;
+		// Current version of the library — driven by LIBRARY_VERSION in CMakeLists.txt
+		static constexpr int versionMajor				= QSFML_EditorWidget_VERSION_MAJOR;
+		static constexpr int versionMinor				= QSFML_EditorWidget_VERSION_MINOR;
+		static constexpr int versionPatch				= QSFML_EditorWidget_VERSION_PATCH;
 
 		static constexpr Version version{ versionMajor, versionMinor, versionPatch };
 
-		// Library name
-		static constexpr const char* name				= "QSFML_EditorWidget";
+		// Library name — driven by LIBRARY_NAME in CMakeLists.txt
+		static constexpr const char* name				= QSFML_EditorWidget_LIBRARY_NAME;
 		static constexpr const char* author				= "Alex Krieg";
 		static constexpr const char* email				= "";
 		static constexpr const char* website			= "";

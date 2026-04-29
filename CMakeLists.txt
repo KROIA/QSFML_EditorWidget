@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20)
 
 
 ## INFO
-## Template version: 1.6.0
+## Template version: 1.6.1
 ##
 ## This is a template for a CMake project.
 ## It is designed to be used with the Visual Studio
@@ -33,7 +33,7 @@ include(cmake/utility.cmake)
 set(LIBRARY_NAME QSFML_EditorWidget)                   # <AUTO_REPLACED>
 
 # Library version (used for CMake package version file)
-set(LIBRARY_VERSION 1.0.0)                    # <AUTO_REPLACED>
+set(LIBRARY_VERSION "1.0.0")                    # <AUTO_REPLACED>
 
 # Define is only active if the library is built
 set(LIB_DEFINE QSFML_EDITOR_WIDGET_LIB)                # <AUTO_REPLACED>
@@ -89,9 +89,7 @@ set_if_not_defined(COMPILE_UNITTESTS ON)					# <AUTO_REPLACED>
 #    TEST_DEFINE
 # )
 # 
-list(APPEND USER_SPECIFIC_DEFINES 
-
-)
+list(APPEND USER_SPECIFIC_DEFINES)
 
 # User specific defines which are added as defines to the compiler
 # Note: The defines are available for all dependencies and the library.
@@ -100,9 +98,7 @@ list(APPEND USER_SPECIFIC_DEFINES
 #    TEST_DEFINE
 # )
 # 
-list(APPEND USER_SPECIFIC_GLOBAL_DEFINES 
-
-)
+list(APPEND USER_SPECIFIC_GLOBAL_DEFINES)
 
 
 ## USER_SECTION_START 3
