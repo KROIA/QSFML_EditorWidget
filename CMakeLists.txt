@@ -150,13 +150,29 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(INSTALL_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_INCLUDE_FOLDER}")
     set(FETCHCONTENT_BASE_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dependencies/cache" CACHE PATH "Base directory for FetchContent" FORCE)
 
+    # Sentinel stamp: lives inside CMAKE_BINARY_DIR so it is deleted whenever
+    # "Delete Cache and Reconfigure" wipes the binary directory.
+    # When the stamp is absent the shared dependency source cache is wiped,
+    # forcing a fresh download on the next configure.
+    # On a plain reconfigure (cache intact) the stamp exists and the cached
+    # source trees are reused without any network access.
+    set(_KROIA_STAMP "${CMAKE_BINARY_DIR}/.deps_cache_stamp")
+    if(NOT EXISTS "${_KROIA_STAMP}")
+        if(EXISTS "${FETCHCONTENT_BASE_DIR}")
+            message(STATUS "CMake cache cleared — wiping dependency source cache for fresh download")
+            file(REMOVE_RECURSE "${FETCHCONTENT_BASE_DIR}")
+        endif()
+        file(TOUCH "${_KROIA_STAMP}")
+    endif()
+    unset(_KROIA_STAMP)
+
     # Do not re-download or git-fetch dependencies that are already present in
     # FETCHCONTENT_BASE_DIR.  On a plain reconfigure CMake will reuse the
     # existing source trees without touching the network.
-    # To force a full re-fetch: delete the build/…/dependencies/cache directory
-    # (or the whole build folder) so the source trees disappear.
+    # To force a full re-fetch: use "Delete Cache and Reconfigure" or manually
+    # delete the build/…/dependencies/cache directory.
     set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL
-        "Skip git-fetch/update for FetchContent deps already downloaded. Delete build/…/dependencies/cache to force a re-fetch.")
+        "Skip git-fetch/update for FetchContent deps already downloaded. Delete cache to force a re-fetch.")
 
     # Print output paths
     message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
