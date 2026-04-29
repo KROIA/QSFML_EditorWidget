@@ -2,6 +2,14 @@
 # This file is responsible for loading all dependencies to the project
 #
 
+# When this is the top-level project, reset the global macro accumulator so
+# macros from dependencies removed since the last configure don't persist.
+# Child projects (loaded as FetchContent) must NOT reset it — they only append.
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(DEPENDENCY_NAME_MACRO "" CACHE STRING
+        "Global availability macros accumulated from all libraries in the dependency tree" FORCE)
+endif()
+
 include(FetchContent)
 set(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
 set(LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/${RELATIVE_BUILD_FOLDER}")
@@ -53,12 +61,13 @@ foreach(child ${children})
     include(${dependency_dir}/${child})
 endforeach()
 
-get_property(DEPENDENCY_NAME_MACRO_TMP CACHE "DEPENDENCY_NAME_MACRO" PROPERTY VALUE)
-
-# Remove duplicates from DEPENDENCY_NAME_MACRO
-list(APPEND DEPENDENCY_NAME_MACRO ${DEPENDENCY_NAME_MACRO_TMP})
+# Merge transitive macros: every child project (loaded via FetchContent) writes
+# its own macro set to this same cache variable.  Reading the cached value
+# before writing captures what sibling/child projects contributed — otherwise
+# the last writer would erase everything the others set.
+get_property(_prev_dep_macros CACHE DEPENDENCY_NAME_MACRO PROPERTY VALUE)
+list(APPEND DEPENDENCY_NAME_MACRO ${_prev_dep_macros})
 list(REMOVE_DUPLICATES DEPENDENCY_NAME_MACRO)
-
-# Caching DEPENDENCY_NAME_MACRO
-set(DEPENDENCY_NAME_MACRO ${DEPENDENCY_NAME_MACRO} CACHE STRING "Global defines to use in code to check for available libraries" FORCE)
+set(DEPENDENCY_NAME_MACRO ${DEPENDENCY_NAME_MACRO} CACHE STRING
+    "Global availability macros accumulated from all libraries in the dependency tree" FORCE)
 

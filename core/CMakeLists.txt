@@ -1,6 +1,6 @@
-## 
-## This file will build the library in 3 different ways:
-##  1. Shared library
+##
+## This file will build the library in different profiles:
+##  1. Shared library (dynamic)
 ##  2. Static library
 ##  3. Static library with profiling using easy_profiler
 ##     This option is only available if the easy_profiler library is added to the dependencies
@@ -24,22 +24,16 @@ if(QT_ENABLE)
     list(LENGTH QT_MODULES list_length)
     if(NOT list_length EQUAL 0)
         find_package(${QT_PACKAGE_NAME} REQUIRED COMPONENTS ${QT_MODULES})
-
-        set(CMAKE_AUTOMOC ON)
-        set(CMAKE_AUTORCC ON)
-        #set(CMAKE_AUTOUIC ON)
     else()
         message("ERROR: QT_MODULES is empty. Please specify the required modules or set the variable \"QT_ENABLE\" to OFF")
     endif()
 endif()
 # end QT settings
 
-include_directories(${INCLUDE_PATH})
-
-FILE_DIRECTORIES(H_FILES *.h)
-FILE_DIRECTORIES(CPP_FILES *.cpp)
-FILE_DIRECTORIES(C_FILES *.c)
-FILE_DIRECTORIES(INL_FILES *.inl)
+GLOB_FILES(H_FILES *.h)
+GLOB_FILES(CPP_FILES *.cpp)
+GLOB_FILES(C_FILES *.c)
+GLOB_FILES(INL_FILES *.inl)
 
 
 set(SOURCES
@@ -55,141 +49,157 @@ set(SOURCES
 
 if(QT_ENABLE)
     # Search for QT specific files
-    FILE_DIRECTORIES(UI_FILES *.ui)    
-    FILE_DIRECTORIES(RES_FILES *.qrc)    
+    GLOB_FILES(UI_FILES *.ui)
+    GLOB_FILES(RES_FILES *.qrc)
 
-    # Identify headers containing Q_OBJECT macros
-    set(MOC_HEADERS "")
-    foreach(HEADER ${H_FILES})
-        file(READ ${H_FILES} HEADER_CONTENTS)
-        if(HEADER_CONTENTS MATCHES "Q_OBJECT")
-            list(APPEND MOC_HEADERS ${H_FILES})
-        endif()
-    endforeach()
-
-    # Use qt5_wrap_cpp to generate moc files for QObject classes
-    qt_wrap_internal_cpp(CPP_MOC_FILES ${MOC_HEADERS})
+    # Process .ui files explicitly.  qt_wrap_internal_ui receives the absolute
+    # paths produced by GLOB_RECURSE, so it works regardless of where .ui files
+    # sit inside core/.  AUTOUIC is NOT enabled on the targets because AUTOUIC
+    # searches for .ui files relative to the including .cpp directory and the
+    # AUTOUIC_SEARCH_PATHS /... recursive syntax has inconsistent behaviour
+    # across CMake versions when the .ui and .cpp are in different sub-trees.
+    # Generated ui_*.h files land in CMAKE_CURRENT_BINARY_DIR which is already
+    # in every target's include path via $<BUILD_INTERFACE:...>.
     qt_wrap_internal_ui(UIS_HDRS ${UI_FILES})
-    qt_add_internal_resources(RESOURCE_FILES ${RES_FILES})
 
+    # .qrc files stay in SOURCES; AUTORCC (set per-target below) handles them.
     set(SOURCES ${SOURCES}
-	    ${CPP_MOC_FILES}
-	    ${UIS_HDRS}
-        ${RESOURCE_FILES})
+        ${UIS_HDRS}
+        ${RES_FILES})
 
     # Link the QT modules to your executable
     foreach(MODULE ${QT_MODULES})
-        set(QT_LIBS ${QT_LIBS} ${QT_PACKAGE_NAME}::${MODULE})
+        list(APPEND QT_LIBS ${QT_PACKAGE_NAME}::${MODULE})
     endforeach()
-    set(LIBRARY_DEPENDENCIES ${LIBRARY_DEPENDENCIES} ${QT_LIBS})
+    list(APPEND LIBRARY_DEPENDENCIES ${QT_LIBS})
 endif()
 
 message("Create library with files:")
-FOREACH(file ${SOURCES})
+foreach(file ${SOURCES})
    message("  File: " ${file})
-ENDFOREACH()
+endforeach()
 
 
-# Set defines for inside the code of the library
-list(APPEND DEFINES_FOR_ALL_PROFILES ${LIB_DEFINE})
+# ---- Compile definitions ----------------------------------------------------
 
-# Add the names of the dependencies as a define
-list(APPEND DEFINES_FOR_ALL_PROFILES ${DEPENDENCY_NAME_MACRO};${USER_SPECIFIC_DEFINES})
+list(APPEND DEFINES_FOR_ALL_PROFILES
+    ${LIB_DEFINE}
+    ${DEPENDENCY_NAME_MACRO}
+    ${USER_SPECIFIC_DEFINES}
+)
 
 if(QT_ENABLE)
     list(APPEND DEFINES_FOR_ALL_PROFILES QT_ENABLED)
-    # Check if QT_MODULES contains Widgets
     list(FIND QT_MODULES "Widgets" _index)
-
     if(NOT ${_index} EQUAL -1)
         list(APPEND DEFINES_FOR_ALL_PROFILES QT_WIDGETS_ENABLED)
     endif()
 endif()
 
 message("Defines for all profiles:")
-FOREACH(def ${DEFINES_FOR_ALL_PROFILES})
+foreach(def ${DEFINES_FOR_ALL_PROFILES})
    message("   " ${def})
-ENDFOREACH()
-list(APPEND DEFINES_FOR_SHARED_LIB ${DEFINES_FOR_ALL_PROFILES} BUILD_SHARED)
-list(APPEND DEFINES_FOR_STATIC_LIB ${DEFINES_FOR_ALL_PROFILES} BUILD_STATIC)
+endforeach()
+
+
+# ---- Profile definitions ----------------------------------------------------
+# Add a new entry to PROFILES here to introduce a fourth profile without
+# touching any of the target-creation code below.
+
+set(PROFILES shared static)
 if(EASY_PROFILER_IS_AVAILABLE)
-    list(APPEND DEFINES_FOR_STATIC_PROFILE_LIB ${DEFINES_FOR_ALL_PROFILES} BUILD_STATIC ${LIB_PROFILE_DEFINE})
+    list(APPEND PROFILES static_profile)
+endif()
+
+set(TYPE_shared         SHARED)
+set(TYPE_static         STATIC)
+set(TYPE_static_profile STATIC)
+
+set(DEFS_shared         ${DEFINES_FOR_ALL_PROFILES} BUILD_SHARED)
+set(DEFS_static         ${DEFINES_FOR_ALL_PROFILES} BUILD_STATIC)
+set(DEFS_static_profile ${DEFINES_FOR_ALL_PROFILES} BUILD_STATIC ${LIB_PROFILE_DEFINE})
+
+set(OUTPUT_shared         ${LIBRARY_NAME})
+set(OUTPUT_static         ${LIBRARY_NAME}${STATIC_POSTFIX_STR})
+set(OUTPUT_static_profile ${LIBRARY_NAME}${STATIC_POSTFIX_STR}${PROFILING_POSTFIX_STR})
+
+# LIBRARY_DEPENDENCIES (Qt) is PUBLIC: our public headers expose Qt types so
+# consumers need Qt too.
+# DEPENDENCIES_FOR_* (FetchContent libs) is PRIVATE: they are implementation
+# details and must not be pulled into the export set.
+set(PRIVATE_DEPS_shared         ${DEPENDENCIES_FOR_SHARED_LIB})
+set(PRIVATE_DEPS_static         ${DEPENDENCIES_FOR_STATIC_LIB})
+set(PRIVATE_DEPS_static_profile ${DEPENDENCIES_FOR_STATIC_PROFILE_LIB})
+
+message("Extern dependencies for shared lib:           [${DEPENDENCIES_FOR_SHARED_LIB}]")
+message("Extern dependencies for static lib:           [${DEPENDENCIES_FOR_STATIC_LIB}]")
+if(EASY_PROFILER_IS_AVAILABLE)
+    message("Extern dependencies for static profiling lib: [${DEPENDENCIES_FOR_STATIC_PROFILE_LIB}]")
 endif()
 
 
-add_library(${LIBRARY_NAME_SHARED}                          SHARED      ${SOURCES})
-add_library(${LIBRARY_NAME_STATIC}                          STATIC      ${SOURCES})
-if(EASY_PROFILER_IS_AVAILABLE)
-    add_library(${LIBRARY_NAME_STATIC_PROFILE}                  STATIC      ${SOURCES})
-endif()
- 
-target_compile_definitions(${LIBRARY_NAME_SHARED}           PRIVATE     ${DEFINES_FOR_SHARED_LIB})
-target_compile_definitions(${LIBRARY_NAME_STATIC}           PRIVATE     ${DEFINES_FOR_STATIC_LIB})
-if(EASY_PROFILER_IS_AVAILABLE)
-    target_compile_definitions(${LIBRARY_NAME_STATIC_PROFILE}   PRIVATE     ${DEFINES_FOR_STATIC_PROFILE_LIB})
-endif()
+# ---- Create targets ---------------------------------------------------------
 
-set_target_properties(${LIBRARY_NAME_SHARED}                PROPERTIES  LINKER_LANGUAGE CXX  OUTPUT_NAME "${LIBRARY_NAME}"                                              DEBUG_POSTFIX ${DEBUG_POSTFIX_STR})
-set_target_properties(${LIBRARY_NAME_STATIC}                PROPERTIES  LINKER_LANGUAGE CXX  OUTPUT_NAME "${LIBRARY_NAME}${STATIC_POSTFIX_STR}"                         DEBUG_POSTFIX ${DEBUG_POSTFIX_STR})
-if(EASY_PROFILER_IS_AVAILABLE)
-    set_target_properties(${LIBRARY_NAME_STATIC_PROFILE}        PROPERTIES  LINKER_LANGUAGE CXX  OUTPUT_NAME "${LIBRARY_NAME}${STATIC_POSTFIX_STR}${PROFILING_POSTFIX_STR}" DEBUG_POSTFIX ${DEBUG_POSTFIX_STR})
-endif()
+foreach(profile IN LISTS PROFILES)
+    set(target ${LIBRARY_NAME}_${profile})
+
+    add_library(${target} ${TYPE_${profile}} ${SOURCES})
+
+    target_compile_definitions(${target} PRIVATE ${DEFS_${profile}})
+
+    set_target_properties(${target} PROPERTIES
+        LINKER_LANGUAGE CXX
+        OUTPUT_NAME     "${OUTPUT_${profile}}"
+        DEBUG_POSTFIX   ${DEBUG_POSTFIX_STR})
+
+    target_link_libraries(${target}
+        PUBLIC  ${LIBRARY_DEPENDENCIES}
+        PRIVATE ${PRIVATE_DEPS_${profile}})
+
+    target_include_directories(${target} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<INSTALL_INTERFACE:include/${LIBRARY_NAME}>
+    )
+
+    if(QT_ENABLE)
+        set_target_properties(${target} PROPERTIES
+            AUTOMOC ON
+            AUTORCC ON)
+    endif()
+endforeach()
+
 
 ## USER_SECTION_START 3
 
 ## USER_SECTION_END
 
-# External dependencies from the dependencies folder
-message("Extern dependencies for shared lib: [${DEPENDENCIES_FOR_SHARED_LIB}]")
-message("Extern dependencies for static lib: [${DEPENDENCIES_FOR_STATIC_LIB}]")
-if(EASY_PROFILER_IS_AVAILABLE)
-    message("Extern dependencies for static profiling lib: [${DEPENDENCIES_FOR_STATIC_PROFILE_LIB}]")
-endif()
-
-target_link_libraries(${LIBRARY_NAME_SHARED}            ${LIBRARY_DEPENDENCIES} ${DEPENDENCIES_FOR_SHARED_LIB})
-target_link_libraries(${LIBRARY_NAME_STATIC}            ${LIBRARY_DEPENDENCIES} ${DEPENDENCIES_FOR_STATIC_LIB})
-if(EASY_PROFILER_IS_AVAILABLE)
-    target_link_libraries(${LIBRARY_NAME_STATIC_PROFILE}    ${LIBRARY_DEPENDENCIES} ${DEPENDENCIES_FOR_STATIC_PROFILE_LIB})
-endif()
-
 ## USER_SECTION_START 4
 
 ## USER_SECTION_END
-
-target_include_directories(${LIBRARY_NAME_SHARED} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}>
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${DEPENDENCIES_INCLUDE_PATHS}
-	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
-)
-target_include_directories(${LIBRARY_NAME_STATIC}  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}>
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${DEPENDENCIES_INCLUDE_PATHS}
-	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
-)
-if(EASY_PROFILER_IS_AVAILABLE)
-target_include_directories(${LIBRARY_NAME_STATIC_PROFILE} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}>
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${DEPENDENCIES_INCLUDE_PATHS}
-	# $<INSTALL_INTERFACE:inc>  # <prefix>/inc 
-)
-endif()
 
 ## USER_SECTION_START 5
 
 ## USER_SECTION_END
 
-# Define the install path
-message("Installation to path: ${INSTALL_LIB_PATH}")
-if(EASY_PROFILER_IS_AVAILABLE)
-    install(TARGETS ${LIBRARY_NAME_SHARED} ${LIBRARY_NAME_STATIC}  ${LIBRARY_NAME_STATIC_PROFILE} DESTINATION "${INSTALL_LIB_PATH}")
-else()
-    install(TARGETS ${LIBRARY_NAME_SHARED} ${LIBRARY_NAME_STATIC} DESTINATION "${INSTALL_LIB_PATH}")
-endif()
 
-copyLibraryHeaders("${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}" "${INSTALL_INCLUDE_PATH}" "${LIBRARY_NAME}")
+# ---- Install & CMake package export -----------------------------------------
+# Only install/export when this library is the top-level cmake project.
+# When it is loaded as a FetchContent dependency by another library, these
+# commands are skipped — the parent project controls its own install.
+
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    message("Installation to path: ${INSTALL_LIB_PATH}")
+
+    foreach(profile IN LISTS PROFILES)
+        install(TARGETS ${LIBRARY_NAME}_${profile}
+                RUNTIME DESTINATION "${INSTALL_LIB_PATH}"
+                LIBRARY DESTINATION "${INSTALL_LIB_PATH}"
+                ARCHIVE DESTINATION "${INSTALL_LIB_PATH}")
+    endforeach()
+
+    copyLibraryHeaders("${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH}" "${INSTALL_INCLUDE_PATH}" "${LIBRARY_NAME}")
+endif()
 
 ## USER_SECTION_START 6
 

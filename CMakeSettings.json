@@ -29,7 +29,7 @@
         },
         {
             "buildRoot": "${projectDir}\\build\\${name}",
-            "cmakeCommandArgs": "-DQSFML_PROFILING=1",
+            "cmakeCommandArgs": "-DLIBRARY_NAME_SHORT_PROFILING=1",
             "configurationType": "Release",
             "ctestCommandArgs": "",
             "generator": "Ninja",
@@ -42,7 +42,7 @@
         {
             "buildCommandArgs": "",
             "buildRoot": "${projectDir}\\build\\${name}",
-            "cmakeCommandArgs": "-DQSFML_PROFILING=1",
+            "cmakeCommandArgs": "-DLIBRARY_NAME_SHORT_PROFILING=1",
             "configurationType": "Debug",
             "ctestCommandArgs": "",
             "generator": "Ninja",

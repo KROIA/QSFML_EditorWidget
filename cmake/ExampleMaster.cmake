@@ -52,10 +52,6 @@ if(QT_ENABLE)
     list(LENGTH QT_MODULES list_length)
     if(NOT list_length EQUAL 0)
         find_package(${QT_PACKAGE_NAME} REQUIRED COMPONENTS ${QT_MODULES})
-
-        set(CMAKE_AUTOMOC ON)
-        set(CMAKE_AUTORCC ON)
-        #set(CMAKE_AUTOUIC ON)
     else()
         message("ERROR: QT_MODULES is empty. Please specify the required modules or set the variable \"QT_ENABLE\" to OFF")
     endif()
@@ -66,10 +62,10 @@ include_directories(inc)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Get all source files
-FILE_DIRECTORIES(H_FILES *.h)
-FILE_DIRECTORIES(CPP_FILES *.cpp)
-FILE_DIRECTORIES(C_FILES *.c)
-FILE_DIRECTORIES(INL_FILES *.inl)
+GLOB_FILES(H_FILES *.h)
+GLOB_FILES(CPP_FILES *.cpp)
+GLOB_FILES(C_FILES *.c)
+GLOB_FILES(INL_FILES *.inl)
 
 
 set(SOURCES 
@@ -80,12 +76,8 @@ set(SOURCES
 
 if(QT_ENABLE)
     # Search for QT specific files
-    FILE_DIRECTORIES(UI_FILES *.ui)    
-    FILE_DIRECTORIES(RES_FILES *.qrc)    
-
-    qt_wrap_internal_cpp(CPP_MOC_FILES ${H_FILES})
-    qt_wrap_internal_ui(UIS_HDRS ${UI_FILES})
-    qt_add_internal_resources(RESOURCE_FILES ${RES_FILES})
+    GLOB_FILES(UI_FILES *.ui)
+    GLOB_FILES(RES_FILES *.qrc)
 
     list(APPEND DEFINES QT_ENABLED)
     # Check if QT_MODULES contains Widgets
@@ -94,10 +86,12 @@ if(QT_ENABLE)
         list(APPEND DEFINES QT_WIDGETS_ENABLED)
     endif()
 
+    # Process .ui files explicitly (same reasoning as core/CMakeLists.txt).
+    qt_wrap_internal_ui(UIS_HDRS ${UI_FILES})
+
     set(SOURCES ${SOURCES}
-	    ${CPP_MOC_FILES}
-	    ${UIS_HDRS}
-        ${RESOURCE_FILES})
+        ${UIS_HDRS}
+        ${RES_FILES})
 
     # Link the QT modules to your executable
     foreach(MODULE ${QT_MODULES})
@@ -107,6 +101,12 @@ if(QT_ENABLE)
 endif()
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${ADDITIONAL_SOURCES})
+
+if(QT_ENABLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        AUTOMOC ON
+        AUTORCC ON)
+endif()
 
 
 if(${PROFILING_NAME})

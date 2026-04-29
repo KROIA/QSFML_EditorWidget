@@ -11,9 +11,8 @@
 ## Override the QT_MODULES if you want to use other modules. 
 #[[
 set(QT_MODULES
-    Core
-    Widgets
-    Gui
+  Core
+  Widgets
 )
 ]]#
 

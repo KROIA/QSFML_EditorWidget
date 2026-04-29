@@ -1,0 +1,76 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 20,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "external"
+            }
+        },
+        {
+            "name": "x64-Debug",
+            "displayName": "x64 Debug",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "x64-Release",
+            "displayName": "x64 Release",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "x64-Debug-Profile",
+            "displayName": "x64 Debug (Profiling)",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "LIBRARY_NAME_SHORT_PROFILING": "1"
+            }
+        },
+        {
+            "name": "x64-Release-Profile",
+            "displayName": "x64 Release (Profiling)",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "LIBRARY_NAME_SHORT_PROFILING": "1"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "x64-Debug",
+            "configurePreset": "x64-Debug"
+        },
+        {
+            "name": "x64-Release",
+            "configurePreset": "x64-Release"
+        },
+        {
+            "name": "x64-Debug-Profile",
+            "configurePreset": "x64-Debug-Profile"
+        },
+        {
+            "name": "x64-Release-Profile",
+            "configurePreset": "x64-Release-Profile"
+        }
+    ]
+}

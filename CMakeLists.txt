@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20)
 
 
 ## INFO
-## Template version: 1.5.4
+## Template version: 1.6.0
 ##
 ## This is a template for a CMake project.
 ## It is designed to be used with the Visual Studio
@@ -32,6 +32,9 @@ include(cmake/utility.cmake)
 # Name of the library
 set(LIBRARY_NAME QSFML_EditorWidget)                   # <AUTO_REPLACED>
 
+# Library version (used for CMake package version file)
+set(LIBRARY_VERSION 1.0.0)                    # <AUTO_REPLACED>
+
 # Define is only active if the library is built
 set(LIB_DEFINE QSFML_EDITOR_WIDGET_LIB)                # <AUTO_REPLACED>
 
@@ -51,17 +54,16 @@ set(QT_MODULES
 )
 
 # Library file name settings
-set(DEBUG_POSTFIX_STR "-d")                     # <AUTO_REPLACED> 
-set(STATIC_POSTFIX_STR "-s")                    # <AUTO_REPLACED> 
-set(PROFILING_POSTFIX_STR "-p")                 # <AUTO_REPLACED>  
+set(DEBUG_POSTFIX_STR -d)                     # <AUTO_REPLACED> 
+set(STATIC_POSTFIX_STR -s)                    # <AUTO_REPLACED> 
+set(PROFILING_POSTFIX_STR -p)                 # <AUTO_REPLACED>  
 
 # Langauge settings
 set(CMAKE_CXX_STANDARD 17)                      # <AUTO_REPLACED> 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)             # <AUTO_REPLACED> 
 
 ## USER_SECTION_START 2
-set_if_not_defined(CMAKE_CXX_COMPILER "g++")
-set_if_not_defined(CMAKE_C_COMPILER "gcc")
+
 ## USER_SECTION_END
 
 # --------------------------------------------------------------------------------
@@ -87,7 +89,9 @@ set_if_not_defined(COMPILE_UNITTESTS ON)					# <AUTO_REPLACED>
 #    TEST_DEFINE
 # )
 # 
-list(APPEND USER_SPECIFIC_DEFINES)
+list(APPEND USER_SPECIFIC_DEFINES 
+
+)
 
 # User specific defines which are added as defines to the compiler
 # Note: The defines are available for all dependencies and the library.
@@ -96,8 +100,8 @@ list(APPEND USER_SPECIFIC_DEFINES)
 #    TEST_DEFINE
 # )
 # 
-list(APPEND USER_SPECIFIC_GLOBAL_DEFINES
-  LOGGER_ENABLE_DEBUG_BREAK_ON_ERROR
+list(APPEND USER_SPECIFIC_GLOBAL_DEFINES 
+
 )
 
 
@@ -113,7 +117,7 @@ list(APPEND USER_SPECIFIC_GLOBAL_DEFINES
 
 ## USER_SECTION_END
 
-set_if_not_defined(QT_INSTALL_BASE "C:\\Qt")
+set_if_not_defined(QT_INSTALL_BASE "C:/Qt")
 set_if_not_defined(QT_MAJOR_VERSION 5)
 set_if_not_defined(QT_VERSION "autoFind")
 set_if_not_defined(QT_COMPILER "autoFind")
@@ -128,7 +132,7 @@ set_if_not_defined(QT_COMPILER "autoFind")
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
 
-project(${LIBRARY_NAME})
+project(${LIBRARY_NAME} VERSION ${LIBRARY_VERSION})
  
 ## USER_SECTION_START 9
 
@@ -146,6 +150,14 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(INSTALL_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/${RELATIVE_INSTALL_INCLUDE_FOLDER}")
     set(FETCHCONTENT_BASE_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dependencies/cache" CACHE PATH "Base directory for FetchContent" FORCE)
 
+    # Do not re-download or git-fetch dependencies that are already present in
+    # FETCHCONTENT_BASE_DIR.  On a plain reconfigure CMake will reuse the
+    # existing source trees without touching the network.
+    # To force a full re-fetch: delete the build/…/dependencies/cache directory
+    # (or the whole build folder) so the source trees disappear.
+    set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL
+        "Skip git-fetch/update for FetchContent deps already downloaded. Delete build/…/dependencies/cache to force a re-fetch.")
+
     # Print output paths
     message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
     message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
@@ -162,8 +174,6 @@ endif()
 
 ## USER_SECTION_END
 
-
-link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 ## USER_SECTION_START 4
 
@@ -205,7 +215,7 @@ endif()
 
 if(COMPILE_UNITTESTS AND NOT QSFML_EditorWidget_NO_UNITTESTS)
     message("Include unittests for ${LIBRARY_NAME}")
-    add_subdirectory(unitTests)
+    add_subdirectory(unittests)
 endif()
 
 ## USER_SECTION_START 6

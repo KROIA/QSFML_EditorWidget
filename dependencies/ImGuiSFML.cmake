@@ -1,4 +1,4 @@
-## description: Dear ImGui backend for use with SFML 
+## description: Dear ImGui backend for use with SFML
 
 function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE_PATHS)
     set(LIB_NAME_1 imgui)
@@ -16,36 +16,16 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
     set(GIT_REPO_3 https://github.com/epezent/implot.git)
     set(GIT_TAG_3 v0.16)
 
-    FetchContent_Declare(
-        ${LIB_NAME_1}
-        GIT_REPOSITORY ${GIT_REPO_1}
-        GIT_TAG        ${GIT_TAG_1}
-    )
-    FetchContent_Declare(
-        ${LIB_NAME_2}
-        GIT_REPOSITORY ${GIT_REPO_2}
-        GIT_TAG        ${GIT_TAG_2}
-    )
-    FetchContent_Declare(
-		${LIB_NAME_3}
-		GIT_REPOSITORY ${GIT_REPO_3}
-		GIT_TAG        ${GIT_TAG_3}
-	)
-	
+    smartDeclare(${LIB_NAME_1} ${GIT_REPO_1} ${GIT_TAG_1})
+    smartDeclare(${LIB_NAME_2} ${GIT_REPO_2} ${GIT_TAG_2})
+    smartDeclare(${LIB_NAME_3} ${GIT_REPO_3} ${GIT_TAG_3})
 
-	message("Downloading dependency: ${LIB_NAME_1} from: ${GIT_REPO_1} tag: ${GIT_TAG_1}")
-	FetchContent_MakeAvailable(${LIB_NAME_1})
-
+    FetchContent_MakeAvailable(${LIB_NAME_1})
     set(IMGUI_DIR ${imgui_SOURCE_DIR})
     set(IMGUI_SFML_FIND_SFML OFF)
 
-	message("Downloading dependency: ${LIB_NAME_2} from: ${GIT_REPO_2} tag: ${GIT_TAG_2}")
-	FetchContent_MakeAvailable(${LIB_NAME_2})
-
-	
-	message("Downloading dependency: ${LIB_NAME_3} from: ${GIT_REPO_3} tag: ${GIT_TAG_3}")
-	FetchContent_MakeAvailable(${LIB_NAME_3})
-
+    FetchContent_MakeAvailable(${LIB_NAME_2})
+    FetchContent_MakeAvailable(${LIB_NAME_3})
 
     set(IMPLOT_DIR ${implot_SOURCE_DIR})
     # Add ImPlot to the project
@@ -59,27 +39,26 @@ function(dep LIBRARY_MACRO_NAME SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB INCLUDE
         ${IMGUI_DIR}/imgui_demo.cpp
         ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
     )
-    
+
     target_include_directories(implot PUBLIC ${IMGUI_DIR})
     target_include_directories(implot PUBLIC ${IMPLOT_DIR})
     target_link_libraries(implot PUBLIC ImGui-SFML::ImGui-SFML)
 
-    
     # Add this library to the specific profiles of this project
     list(APPEND DEPS_FOR_SHARED_LIB ImGui-SFML::ImGui-SFML implot)
     list(APPEND DEPS_FOR_STATIC_LIB ImGui-SFML::ImGui-SFML implot)
-    list(APPEND DEPS_FOR_STATIC_PROFILE_LIB ImGui-SFML::ImGui-SFML implot) # only use for static profiling profile
-    list(APPEND INCS ${IMGUI_DIR} ${IMPLOT_DIR}) 
+    list(APPEND DEPS_FOR_STATIC_PROFILE_LIB ImGui-SFML::ImGui-SFML implot)
+    list(APPEND INCS ${IMGUI_DIR} ${IMPLOT_DIR})
 
-	set(${LIBRARY_MACRO_NAME} "${${LIBRARY_MACRO_NAME}};${LIB_MACRO_NAME_1};${LIB_MACRO_NAME_2};${LIB_MACRO_NAME_3}" PARENT_SCOPE)
+    set(${LIBRARY_MACRO_NAME} "${${LIBRARY_MACRO_NAME}};${LIB_MACRO_NAME_1};${LIB_MACRO_NAME_2};${LIB_MACRO_NAME_3}" PARENT_SCOPE)
     set(${SHARED_LIB} "${${SHARED_LIB}};${DEPS_FOR_SHARED_LIB}" PARENT_SCOPE)
     set(${STATIC_LIB} "${${STATIC_LIB}};${DEPS_FOR_STATIC_LIB}" PARENT_SCOPE)
     set(${STATIC_PROFILE_LIB} "${${STATIC_PROFILE_LIB}};${DEPS_FOR_STATIC_PROFILE_LIB}" PARENT_SCOPE)
     set(${INCLUDE_PATHS} "${${INCLUDE_PATHS}};${INCS}" PARENT_SCOPE)
 endfunction()
 
-dep(DEPENDENCY_NAME_MACRO 
-    DEPENDENCIES_FOR_SHARED_LIB 
-    DEPENDENCIES_FOR_STATIC_LIB 
-    DEPENDENCIES_FOR_STATIC_PROFILE_LIB 
+dep(DEPENDENCY_NAME_MACRO
+    DEPENDENCIES_FOR_SHARED_LIB
+    DEPENDENCIES_FOR_STATIC_LIB
+    DEPENDENCIES_FOR_STATIC_PROFILE_LIB
     DEPENDENCIES_INCLUDE_PATHS)
